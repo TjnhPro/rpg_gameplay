@@ -104,3 +104,13 @@ applied-20 and decrease120→100 with applied10, minimum recovery and regenerati
 The EC08 integration explicitly passes a calculated stat100 then80 as maximum;
 no auto sync occurs. All old numerical/Foundation/Entity fixtures remain unchanged.
 Core pin, integrity, dependencies and static module registry are unchanged.
+
+## EC14–EC17 life policy boundary
+
+Life creation/defeat/revival invokes no Kernel operation. Reuse canonical EC10
+own-data/finite resource inspection, then compare current with caller bounds.
+Defeat is explicit equality at minimum; reachedMinimum remains a numerical
+diagnostic alone. EC12 recovery0→30 and EC11 reset/normalization are separate
+caller operations before life-only revival. No arithmetic, refill, rounding or
+applied reconstruction is added. Core revision/integrity and installed real
+Kernel regression evidence are unchanged.

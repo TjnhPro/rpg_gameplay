@@ -1,12 +1,12 @@
-# RPG Gameplay — v0.2.3 Resources & Transitions checkpoint
+# RPG Gameplay — v0.2.4 Life State & Death checkpoint
 
-> **Status: GF01–GF16 baseline accepted; EC01–EC13 checkpoints implemented. Phase v0.2.x IN_PROGRESS; acceptance PENDING final v0.2.5 review.**
+> **Status: GF01–GF16 baseline accepted; EC01–EC17 checkpoints implemented. Phase v0.2.x IN_PROGRESS; acceptance PENDING final v0.2.5 review.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
 > coordination, explicit command routing, synchronous event pub/sub and injected
 > clock/RNG/ID execution dependencies are available.
-> **Optional Entity supports identity, immutable collections/base attributes and caller-configured Kernel stats/resources; life state is deferred.**
+> **Optional Entity supports identity, immutable collections/base attributes and caller-configured Kernel stats/resources and explicit life transitions.**
 
 ## Mục tiêu
 
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16 and EC01–EC13 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16 and EC01–EC17 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation data-shape compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -57,7 +57,7 @@ Independent snapshots and collections can share an ID; IDs must be unique within
 each collection. Collection operations preserve exact IDs and insertion order.
 Module ID entity is distinct from actor identity. Explicit GF01–GF05 registration/
 selection/composition creates no actor and does not gate direct createEntity calls.
-See [API](docs/API.md), [checkpoint report](docs/reports/v0.2.3-resources-transitions.md)
+See [API](docs/API.md), [checkpoint report](docs/reports/v0.2.4-life-state-death.md)
 and [single-PR phase workflow](docs/TASK_EXECUTION.md).
 
 ```ts
@@ -265,3 +265,21 @@ task recorded under [task execution](docs/TASK_EXECUTION.md).
 - [TjnhPro/rpg_core](https://github.com/TjnhPro/rpg_core) (`@rpg/core/kernel`)
 
 Không có migration, legacy compatibility, game examples, renderer hoặc game loop.
+
+## Explicit life state (EC14–EC17)
+
+```ts
+import {createEntityLifeState, resolveEntityDefeat, reviveEntity} from '@rpg/gameplay';
+const life = createEntityLifeState(player, {status: 'alive'});
+// depleted/restored are caller-created EC11/EC12 resource snapshots for player.
+const policy = {resourceId: 'vitality', minimum: 5, maximum: 100};
+const defeat = resolveEntityDefeat(life, depleted, policy);
+const revival = reviveEntity(defeat.state, restored, policy);
+```
+
+Life state is a separate frozen entityId/status snapshot. Resource minimum alone
+never causes death, and recovery never causes revival. Caller explicitly evaluates
+minimum defeat and performs life-only revival after recovery above minimum within
+bounds. Repeated operations on the new snapshot return unchanged. Caller may
+publish changed outcomes through GF12; no automatic event, global store or replay
+guard. Old snapshots remain usable. EC18 and final phase review await v0.2.5.

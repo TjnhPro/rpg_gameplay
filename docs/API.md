@@ -1,4 +1,4 @@
-# Public API — v0.2.3 (GF01–GF16, EC01–EC13)
+# Public API — v0.2.4 (GF01–GF16, EC01–EC17)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -391,7 +391,7 @@ type EntitySnapshot = EntityDefinition;
 function createEntity(definition: EntityDefinition): EntitySnapshot;
 ```
 
-Current root inventory: 43 functions / 44 public types. Existing Foundation APIs
+Current root inventory: 46 functions / 49 public types. Existing Foundation APIs
 and root-only exports are preserved. Both fields must be nonblank strings, stored
 unchanged including whitespace/case/punctuation and arbitrary caller-defined kind.
 No enum, module-ID format, default, coercion or ID generation. Same ID represents
@@ -415,8 +415,8 @@ enable, resolve and compose it through GF01–GF05 explicitly; default disabled,
 no actor auto-creation. Selection is composition intent and does not gate direct
 creation. The caller may explicitly call nextExecutionId before passing that ID;
 Entity constructs no context and calls no providers, hooks, events or Kernel
-calculation. Attributes/stats/resources use separate states below; life-state
-and EC18 integration require later approved tasks.
+calculation. Attributes/stats/resources/life use separate states below;
+EC18 integration requires a later approved task.
 
 ## EC04–EC06: Entity collection and snapshot updates
 
@@ -547,8 +547,7 @@ states; membership checks remain caller responsibility. Determinism requires equ
 inputs/order and deterministic caller callbacks. Ordinary JS Proxy traps and
 callback closure state remain caller code; no runtime/IO isolation is promised.
 
-No generic arbitrary state bag, life state or future-milestone
-placeholder is exposed.
+Attributes/stats expose no generic arbitrary state bag or future-milestone placeholder.
 
 ## EC10–EC13: Resources and transitions
 
@@ -625,4 +624,74 @@ No fabricated numeric defaults or retry are used in that no-op path.
 Caller may pass an EC08 stat as maximum explicitly. Resource state stores no bound,
 stat snapshot or live binding. No policy infers HP/death/revive, performs schema
 updates, emits events, accesses Runtime/Messaging, or schedules automatic recovery.
-Five functions/seven types added; root inventory: 43 functions/44 public types.
+EC10–EC13 added five functions/seven types; current inventory including EC14–EC17
+is 46 functions/49 public types.
+
+## EC14–EC17: Life State & Death
+
+Root-only exports, same canonical Entity owner:
+
+```ts
+type EntityLifeStatus = 'alive' | 'dead';
+interface EntityLifeState {
+  readonly entityId: string;
+  readonly status: EntityLifeStatus;
+}
+interface EntityLifeResourcePolicy extends EntityResourceBounds {
+  readonly resourceId: string;
+}
+type EntityLifeTransitionOutcome = 'defeated' | 'revived' | 'unchanged';
+interface EntityLifeTransitionResult {
+  readonly entityId: string;
+  readonly before: EntityLifeStatus;
+  readonly after: EntityLifeStatus;
+  readonly outcome: EntityLifeTransitionOutcome;
+  readonly state: EntityLifeState;
+}
+function createEntityLifeState(entity: EntitySnapshot, options: {readonly status: EntityLifeStatus}): EntityLifeState;
+function resolveEntityDefeat(life: EntityLifeState, resources: EntityResourceState, policy: EntityLifeResourcePolicy): EntityLifeTransitionResult;
+function reviveEntity(life: EntityLifeState, resources: EntityResourceState, policy: EntityLifeResourcePolicy): EntityLifeTransitionResult;
+```
+
+Creation reuses EC03, requires explicit status and neither reads resources nor
+infers status from kind. Life state is independent from identity, membership,
+attributes, stats and resources. Any actor kind may opt in; no status default,
+coercion, provider, runtime, ID generation, numerical call or implicit event.
+
+Life/state/options/policy boundaries require closed own string data fields on
+plain/null-prototype records, without getters, symbols, extras or inherited
+records. Status is exactly alive/dead; IDs remain exact nonblank strings.
+Resource validation reuses the full EC10 boundary, including all finite current
+entries. Life/resource entityId must match exactly; selected own resource key
+must exist. Bounds are finite and ordered, including negative/nonzero minima.
+All inputs validate before any no-op. Malformed/inconsistent inputs throw
+TypeError, produce no successful result and mutate no caller data.
+
+| Operation | Valid current | Life before | Result |
+| --- | --- | --- | --- |
+| Defeat | current == minimum | alive | dead / defeated |
+| Defeat | current > minimum (including above maximum) | alive | alive / unchanged |
+| Defeat | current >= minimum | dead | dead / unchanged |
+| Revival | minimum < current <= maximum | dead | alive / revived |
+| Revival | minimum <= current <= maximum | alive | alive / unchanged |
+
+Current below minimum rejects for both operations. Revival above maximum always
+rejects; dead at minimum also rejects. Zero-width bounds cannot revive dead life.
+Alive at minimum may remain unchanged under revival evaluation pending explicit
+defeat. Defeat accepts stale above-max resources without normalizing them; caller
+can explicitly normalize through EC11. Life operations never change resource
+values or duplicate Kernel arithmetic. EC12 reachedMinimum is only a diagnostic;
+resource recovery and revival are separate operations, without joint atomicity.
+
+Every result (including unchanged) and nested state is freshly detached/frozen.
+Results contain only scalar diagnostics and the life snapshot, no resource alias,
+callback, binding or event history. Old snapshots remain valid; replaying the same
+old inputs can repeat the same transition. Sequential callers retain the newest
+snapshot to obtain unchanged on repeats. There is no global authority/replay guard.
+
+Caller may publish a changed result via GF12 using caller-defined event names and
+payloads. Entity neither registers listeners nor publishes events. GF13 preserves
+subscription order/snapshot fan-out/fail-fast delivery, without a queue. A listener
+failure after transition does not roll back the life result or retry publication.
+No resource synchronization, respawn, kill/reward/loot policy or EC18 is added.
+Three functions/five types added; current root inventory: 46 functions/49 types.

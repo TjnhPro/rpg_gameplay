@@ -100,3 +100,17 @@ before/after literals. Strict declarations prove composed Kernel compatibility,
 readonly state/diagnostics, complete options and absence of implicit life state.
 Old GF01–GF16/EC01–EC09 fixtures are unchanged. The v0.2.3 report maps R01–R25;
 source review confirms canonical resource ownership, without a game/scheduler.
+
+## EC14–EC17 installed life evidence
+
+entity-life.mjs/.ts adds five grouped scenarios to the same external tarball
+consumer: explicit10→0 defeat/0→30 recovery/revival and repeat no-ops; creation,
+detachment and actor isolation; exact arbitrary keys/nonzero or negative minimum,
+zero-width bounds/stale maximum and determinism with implicit time/RNG disabled;
+closed malformed life/policy/forged-resource rejection before no-op; caller GF12
+publication with GF13 order/snapshot/fail-fast and no rollback/retry. Expectations
+are literal states/diagnostics/traces, not calls into implementation to derive
+oracles. Full R01–R29 mapping is in the v0.2.4 report. Strict NodeNext verifies
+five public types, readonly nested state/result/policy and closed inputs.
+Old consumer fixtures remain unchanged. All 50 installed contracts and both outer
+tests must run with zero skips. No gameplay profile/application evidence is claimed.

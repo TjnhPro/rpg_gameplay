@@ -38,6 +38,7 @@ export {
   createEntityAttributeState, getEntityBaseAttributes, setEntityBaseAttribute, calculateEntityStats,
   createEntityResourceState, getEntityResourceCurrent, normalizeEntityResource,
   transitionEntityResource, regenerateEntityResource,
+  createEntityLifeState, resolveEntityDefeat, reviveEntity,
 } from './modules/entity/index.js';
 export type {
   EntityDefinition, EntitySnapshot, EntityCollection,
@@ -45,4 +46,6 @@ export type {
   EntityResourceState, EntityResourceDefinition, EntityResourceBounds,
   EntityResourceTransitionInput, EntityResourceRegenerationInput,
   EntityResourceNormalizationResult, EntityResourceTransitionResult,
+  EntityLifeStatus, EntityLifeState, EntityLifeResourcePolicy,
+  EntityLifeTransitionOutcome, EntityLifeTransitionResult,
 } from './modules/entity/index.js';

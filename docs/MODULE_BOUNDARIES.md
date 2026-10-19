@@ -29,7 +29,7 @@ Rules:
   command/event coordination has one owner at `src/foundation/messaging/`, also
   consuming only Module's public entrypoint. GF14–GF16 execution dependencies
   have one independent owner at `src/foundation/execution/`. All four are
-  separate from the static registry. EC01–EC13 has one canonical owner at
+  separate from the static registry. EC01–EC17 has one canonical owner at
   `src/modules/entity/index.ts`, optional with no module dependencies.
   Root re-exports follow the same public-entrypoint
   boundary as sibling imports. Core is the only approved runtime package;
@@ -51,4 +51,10 @@ EC10–EC13 adds current-only frozen Resource State to that same owner. Only pub
 Kernel normalization/transition/regeneration owns resource arithmetic. Explicit
 caller bounds/policy/time and stat maximum handoff create no Foundation/module
 dependency, global store, scheduler or new registry entry. EC01–EC09 and GF01–GF16
-owners/contracts stay intact; life state remains EC14+.
+owners/contracts stay intact; EC14–EC17 life state is described below.
+
+EC14–EC17 also belongs to src/modules/entity/index.ts. Separate life snapshots
+associate by exact entityId, not collection membership. Private shared resource
+validation is reused; no new module/dependency, resource calculator or engine.
+Caller may wire returned life outcomes into GF12; Entity imports no Foundation
+messaging/runtime owner and performs no implicit publication or lifecycle work.

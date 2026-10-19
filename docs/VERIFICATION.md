@@ -1,15 +1,15 @@
-# Verification gates — v0.2.3
+# Verification gates — v0.2.4
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
 
 | Command | Evidence | Limits |
 | --- | --- | --- |
-| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16 and EC01–EC13 only; no game loop |
+| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16 and EC01–EC17 only; no game loop |
 | `npm run typecheck` | Strict source typecheck, no emit | No gameplay semantics |
 | `npm run harness:check` | Registry, literal import/dependency direction, runtime package policy, obvious hidden RNG/time | Lexical, not full TS AST/semantic analysis |
 | `npm run harness:selftest` | Positive/negative boundary controls | No runtime module enable/disable |
-| `npm run test:functional` | External installed GF01–GF16/EC01–EC13, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
+| `npm run test:functional` | External installed GF01–GF16/EC01–EC17, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
 | `npm run verify` | Boundaries, self-tests, required build, typecheck and functional contracts, in that order | Automated evidence is not Developer acceptance |
 
 `verify` checks that all three production scripts exist before running any of
@@ -55,7 +55,7 @@ deep exports closed and private helpers absent from public declarations.
 EC07–EC09 adds installed typed immutable attributes, explicit Kernel stats and
 recalculation, malformed input rejection, independent 25/29/32 oracle, canonical
 modifier/precision/order edge cases and input/snapshot isolation. Root inventory
-is now 43 functions/44 types after EC10–EC13. The four EC07–EC09 functions
+is now 46 functions/49 types after EC14–EC17. The four EC07–EC09 functions
 and three types remain root-only;
 no new registry module, Core pin change or numerical duplicate implementation.
 Source audit and old unchanged GF/EC fixtures supplement these contract tests.
@@ -70,11 +70,19 @@ Report `PASS`, `FAIL`, `NOT_RUN`, `NOT_EVALUATED` or `BLOCKED_WITH_EVIDENCE` tru
 Semantic duplication, game policy and global gameplay state need source review;
 static import checks alone cannot prove their absence.
 
-EC10–EC13 adds five installed resource scenarios and strict public types. Forty-five
-installed contracts now cover Foundation29, identity3, collection3, stats5 and
-resources5; both outer test gates still run with zero skips. Resource diagnostics
+EC10–EC13 adds five installed resource scenarios and strict public types. Fifty
+installed contracts now cover Foundation29, identity3, collection3, stats5,
+resources5 and life5; both outer test gates still run with zero skips. Resource diagnostics
 include negative applied and above-max decrease magnitude, ineligible no-op getter
 non-evaluation, detached snapshots and explicit EC08 maximum handoff. All three
 public Kernel calls run against the pinned real package; source review confirms
-that L2 performs no arithmetic. Current root inventory is 43 functions/44 types,
+that L2 performs no arithmetic. Current root inventory is 46 functions/49 types,
 without adding a registry module, Core dependency or gameplay engine.
+
+EC14–EC17 adds installed life5 contracts, strict readonly declarations and
+LIFE_TRACE_PASS/LIFE_EVENTS_PASS markers. Full verification requires all existing
+gates and all 50 installed contracts, zero skips. Source review verifies reuse of
+EC10 validation, no new numerical Kernel call, automatic event, time/RNG/global
+store, Core/registry/dependency or old body change. CI verifies this same package
+on Windows/Linux Node22/24 for push and PR events at the exact delivered head.
+See reports/v0.2.4-life-state-death.md for checkpoint evidence and limitations.

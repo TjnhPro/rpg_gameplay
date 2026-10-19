@@ -97,3 +97,14 @@ diagnostics belong to the pinned public Kernel. No automatic Stats synchronizati
 life-state inference, scheduler, global resource store or new module is introduced.
 GF01–GF16 and EC01–EC09 contracts/pin remain unchanged. Continue phase branch and
 Draft PR #7; EC14+ and final v0.2.5 Developer acceptance remain pending.
+
+## v0.2.4 approved life checkpoint
+
+EC14–EC17 adds separate immutable alive/dead snapshots in the Entity owner.
+Caller explicitly supplies resource selection and bounds. Defeat evaluates minimum
+without resource arithmetic; revival only changes life after caller recovery.
+Malformed inputs throw TypeError before no-op. Already-dead defeat and valid
+already-alive revival return unchanged; above-max is allowed for defeat evaluation
+but rejected for revival. No global authority/replay protection or automatic events.
+Caller may publish transition outcomes using unchanged GF12/GF13. Core, old contracts,
+registry/deps and EC18 scope remain intact; phase acceptance is deferred to v0.2.5.

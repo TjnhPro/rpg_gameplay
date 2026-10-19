@@ -428,3 +428,68 @@ export function regenerateEntityResource(state: EntityResourceState, resourceId:
   const transition = Object.freeze({...calculateResourceRegeneration(input)});
   return Object.freeze({state: nextResource(captured, resource, transition.after), transition});
 }
+
+export type EntityLifeStatus = 'alive' | 'dead';
+
+/** Independent immutable life snapshot, associated by exact Entity ID only. */
+export interface EntityLifeState {
+  readonly entityId: string;
+  readonly status: EntityLifeStatus;
+}
+
+export interface EntityLifeResourcePolicy extends EntityResourceBounds {
+  readonly resourceId: string;
+}
+
+export type EntityLifeTransitionOutcome = 'defeated' | 'revived' | 'unchanged';
+
+export interface EntityLifeTransitionResult {
+  readonly entityId: string;
+  readonly before: EntityLifeStatus;
+  readonly after: EntityLifeStatus;
+  readonly outcome: EntityLifeTransitionOutcome;
+  readonly state: EntityLifeState;
+}
+
+function lifeStatus(input: unknown): EntityLifeStatus {
+  if (input !== 'alive' && input !== 'dead') throw new TypeError('Expected alive or dead life status');
+  return input;
+}
+
+/** Explicit initialization; never inspects resources or infers status from kind. */
+export function createEntityLifeState(entity: EntitySnapshot, options: {readonly status: EntityLifeStatus}): EntityLifeState {
+  return Object.freeze({entityId: createEntity(entity).id, status: lifeStatus(fields(options, ['status']).status)});
+}
+
+function lifeInputs(life: EntityLifeState, resources: EntityResourceState, policy: EntityLifeResourcePolicy) {
+  const input = fields(life, ['entityId', 'status']);
+  const state = Object.freeze({entityId: identifier(input.entityId), status: lifeStatus(input.status)});
+  // Reuse the canonical EC10 resource boundary, including all map entries.
+  const captured = resourceState(resources);
+  const config = fields(policy, ['resourceId', 'minimum', 'maximum']);
+  const key = identifier(config.resourceId), bounds = resourceBounds(config);
+  if (state.entityId !== captured.entityId) throw new TypeError('Life/resource Entity IDs must match');
+  const current = resourceCurrent(captured, key);
+  if (current < bounds.minimum) throw new TypeError('Life resource below minimum');
+  return {state, current, ...bounds};
+}
+
+function lifeResult(state: EntityLifeState, after: EntityLifeStatus): EntityLifeTransitionResult {
+  const outcome = state.status === after ? 'unchanged' : after === 'dead' ? 'defeated' : 'revived';
+  return Object.freeze({entityId: state.entityId, before: state.status, after, outcome,
+    state: Object.freeze({entityId: state.entityId, status: after})});
+}
+
+/** Minimum evaluation only; above-max resources are left for explicit EC11. */
+export function resolveEntityDefeat(life: EntityLifeState, resources: EntityResourceState, policy: EntityLifeResourcePolicy): EntityLifeTransitionResult {
+  const {state, current, minimum} = lifeInputs(life, resources, policy);
+  return lifeResult(state, current === minimum ? 'dead' : state.status);
+}
+
+/** Life-only revival after caller recovery; no refill, resource operation or event. */
+export function reviveEntity(life: EntityLifeState, resources: EntityResourceState, policy: EntityLifeResourcePolicy): EntityLifeTransitionResult {
+  const {state, current, minimum, maximum} = lifeInputs(life, resources, policy);
+  if (current > maximum) throw new TypeError('Revival resource exceeds maximum');
+  if (state.status === 'dead' && current === minimum) throw new TypeError('Revival requires resource recovery above minimum');
+  return lifeResult(state, 'alive');
+}
