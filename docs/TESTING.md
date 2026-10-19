@@ -156,3 +156,16 @@ experience.ts checks root-only strict NodeNext exports and readonly result/input
 diagnostic contracts. Existing GF/EC/PG01–PG03 consumer bodies remain unchanged.
 Total 57 installed contracts, 2 outer tests, zero skips; R01–R24 mapping in v0.3.1 report.
 Source review supplements no-automatic-effects and single-update-path evidence.
+
+## PG07–PG10 installed advancement evidence
+
+advancement.mjs executes three grouped contracts in the fresh installed tarball
+consumer: literal numeric/reason projections, whole-request fail-closed validation,
+and immutable isolation/replay. Task scenarios A-L cover cumulative 3/260 and local
+3/10/consumed250, partial prefix/eligibility/target/max, native fractions/zero/finite
+boundaries, no auto-level-down, no implicit clock/RNG and independent actors/domains.
+Each replay separately matches a literal oracle before the sessions are compared.
+advancement.ts checks all six types, readonly structures, mandatory policy and
+closed root-only exports under external strict NodeNext. No old fixture changed.
+60 installed contracts total (29 GF, 22 EC, 9 PG), 2 outer tests, zero skips.
+See v0.3.2 report for R01-R28 mapping. Game-profile behavior remains NOT_EVALUATED.

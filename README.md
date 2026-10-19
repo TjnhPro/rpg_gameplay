@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.3.1 Experience System
+# RPG Gameplay — v0.3.2 Level & Advancement
 
-> **Status: merged Entity v0.2.5 baseline; PG01–PG06 implemented. Progression phase IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.**
+> **Status: merged Entity v0.2.5 baseline; PG01–PG10 implemented. Progression phase IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18 and PG01–PG06 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18 and PG01–PG10 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -129,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.3.1.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.3.2.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -296,8 +296,8 @@ const progression = createProgressionState(actor, {level: 10, experience: 1500})
 
 The same API accepts Monster/NPC/custom actors. Caller supplies a positive safe
 integer level and finite nonnegative EXP (fractions preserved). EXP is a recorded
-number only; cumulative versus level-local semantics remain undecided. No defaults,
-level-up, curves, caps, points or automatic events. Optional Progression requires
+number only; advancement interprets it using an explicit caller-selected mode.
+Creation supplies no defaults, curves, caps, points or events. Optional Progression requires
 explicit Entity selection when composed; neither is automatically enabled.
 See [checkpoint report](docs/reports/v0.3.0-progression-foundation.md).
 
@@ -317,3 +317,27 @@ nonnegative maximum belongs to the current operation and must not be below curre
 EXP. Uncapped overflow throws TypeError; a valid cap bounds intermediate overflow.
 EXP stays a recorded scalar, with no cumulative/local conversion or automatic
 level-up. See [v0.3.1 evidence](docs/reports/v0.3.1-experience-system.md).
+
+## Level & Advancement (PG07–PG10)
+
+```ts
+import {evaluateLevelAdvancement, advanceProgressionLevel} from '@rpg/gameplay';
+const policy = {experienceMode: 'level-local' as const, maxLevel: 100, targetLevel: 4,
+  requirements: [
+    {toLevel: 2, requiredExperience: 100, eligible: true},
+    {toLevel: 3, requiredExperience: 150, eligible: true},
+    {toLevel: 4, requiredExperience: 200, eligible: true},
+  ]};
+const state = {entityId: 'player-1', level: 1, experience: 260};
+evaluateLevelAdvancement(state, policy); // dry-run: level3, EXP10, blocked at4
+advanceProgressionLevel(state, policy); // frozen state + identical transition
+```
+
+Every request supplies mode, max, target and all contiguous steps to that target.
+Cumulative mode uses nondecreasing absolute thresholds without consuming EXP;
+level-local subtracts successful per-step costs and preserves the remainder.
+Caller evaluates external eligibility first. The first blocker stops advancement
+and retains the successful prefix. Entire malformed policies throw before any
+projection, even for no-op/max-level. No automatic level-up, rewards, points,
+events or mode conversion. Caller maintains mode consistency across a lifecycle.
+See [API](docs/API.md) and [v0.3.2 report](docs/reports/v0.3.2-level-advancement.md).

@@ -37,7 +37,7 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
 `src/index.ts` exports GF01–GF05 module, GF06–GF09 lifecycle, GF10–GF13 messaging
-and GF14–GF16 execution functions, plus EC01–EC18 Entity/collection/attribute/stat/resource/life contracts and PG01–PG06 Progression snapshots/experience transitions.
+and GF14–GF16 execution functions, plus EC01–EC18 Entity/collection/attribute/stat/resource/life contracts and PG01–PG10 Progression snapshots/experience/advancement transitions.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
@@ -165,7 +165,7 @@ calculator, execution provider or runtime/messaging binding. The static optional
 progression entry depends on entity. GF04–GF05 still requires explicit selection
 of both; no automatic enablement or alternate resolver. Core pin and all existing
 Foundation/Entity contracts remain unchanged. L3 owns game curves and policies;
-EXP representation semantics and transitions await approved later milestones.
+Advancement now uses explicit caller-selected EXP modes; state stores neither mode nor cap.
 Progression phase IN_PROGRESS; Developer acceptance PENDING until v0.3.5 review.
 
 ## PG04–PG06 Experience System
@@ -184,3 +184,17 @@ after-before diagnostics. This is not an EXP formula. No suitable public Kernel
 EXP contract exists; no fabricated resource bound/policy or dummy Kernel call.
 All existing Entity numerical delegation and Core pin remain unchanged. Level,
 reward/point/event/lifecycle behavior is outside this transition.
+
+## PG07–PG10 Level & Advancement
+
+Same canonical Progression owner, optional dependency entity and three-scalar
+state. Existing PG02 level validator now also validates max/target/step levels.
+One private resolver validates/captures the whole closed policy and dense complete
+contiguous requirements, then resolves successful steps sequentially. Evaluate
+returns its frozen projection; advance returns that projection and a frozen next
+state, without resolving twice. Eligibility precedes EXP; first blocker retains
+the successful prefix. Cumulative thresholds do not consume EXP; local costs do.
+The caller selects mode/max/target/eligibility and maintains mode consistency.
+Only approved comparison/increment/subtraction/diagnostic bookkeeping is added;
+no curve, fake Kernel delegation, store, new module, engine, reward or event.
+Entity/Foundation/Core/registry and PG01–PG06 semantics remain unchanged.

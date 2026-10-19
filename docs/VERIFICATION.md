@@ -1,15 +1,15 @@
-# Verification gates — v0.3.1
+# Verification gates — v0.3.2
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
 
 | Command | Evidence | Limits |
 | --- | --- | --- |
-| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16 and EC01–EC18 only; no game loop |
+| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16, EC01–EC18, PG01–PG10; no game loop |
 | `npm run typecheck` | Strict source typecheck, no emit | No gameplay semantics |
 | `npm run harness:check` | Registry, literal import/dependency direction, runtime package policy, obvious hidden RNG/time | Lexical, not full TS AST/semantic analysis |
 | `npm run harness:selftest` | Positive/negative boundary controls | No runtime module enable/disable |
-| `npm run test:functional` | External installed GF01–GF16/EC01–EC18, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
+| `npm run test:functional` | External installed GF01–GF16/EC01–EC18/PG01–PG10, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
 | `npm run verify` | Boundaries, self-tests, required build, typecheck and functional contracts, in that order | Automated evidence is not Developer acceptance |
 
 `verify` checks that all three production scripts exist before running any of
@@ -124,3 +124,13 @@ boundaries,self-tests,build,typecheck,functional and fail-closed gate regression
 Earlier counts describe historical milestones. Exact-head push and PR CI must
 both pass Windows/Linux Node22/24. Gameplay profiles remain NOT_EVALUATED;
 Progression IN_PROGRESS, Developer acceptance PENDING final v0.3.5 review.
+
+## PG07–PG10 current milestone gate
+
+The installed runner requires advancement.mjs/.ts, three successful contracts,
+zero skips and ADVANCEMENT_TRACE_PASS. Its package identity is @rpg/gameplay0.3.2;
+strict external NodeNext, exact public root surface and closed deep exports remain
+mandatory. All 57 prior installed contracts are retained unchanged: 60 total,
+2 outer tests, zero skips. Full verify requires every existing gate and failure
+controls; no skip path was added. Both push and PR exact-head Windows/Linux Node22/24
+matrices must pass before CHECKPOINT_COMPLETE. Phase IN_PROGRESS, acceptance PENDING.

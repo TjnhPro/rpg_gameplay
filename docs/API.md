@@ -1,4 +1,4 @@
-# Public API — v0.3.1 (GF01–GF16, EC01–EC18, PG01–PG06)
+# Public API — v0.3.2 (GF01–GF16, EC01–EC18, PG01–PG10)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -737,8 +737,8 @@ and nonenumerable extras), inherited required fields and accessors throw TypeErr
 without invoking getters. Null-prototype data input is valid. Level is a positive
 safe integer, including MAX_SAFE_INTEGER; no game cap. EXP is finite nonnegative,
 including fractions and -0, preserved exactly as a JavaScript number. No coercion,
-clamping, defaults or relation between level and EXP is inferred. EXP does not yet
-mean lifetime or level-local EXP; later tasks must explicitly decide semantics.
+clamping, defaults or relation between level and EXP is inferred. Creation alone
+does not select EXP semantics; advancement requires explicit mode policy.
 
 The result is a fresh frozen three-scalar object. Caller input/Entity is untouched;
 independent snapshots can share an Entity ID. No collection membership or authority
@@ -752,7 +752,7 @@ EXP curves/caps, points/ranks or extra state bags are exposed at v0.3.0.
 ## PG04–PG06 recorded Experience transitions
 
 Same canonical Progression owner. Additive root exports: gainExperience and
-adjustExperience; three readonly types. Current root inventory: 49 functions/54 types.
+adjustExperience; three readonly types. v0.3.1 inventory: 49 functions/54 types.
 No redundant EXP getter: read ProgressionState.experience.
 
 ```ts
@@ -802,3 +802,83 @@ zero-delta no-op is not limited. Native number rounding alone does not set limit
 for example 1e20+1 remains 1e20, appliedDelta 0, limited false. No automatic advancement,
 EXP representation conversion, event, provider read or Entity-domain update.
 EXP remains a recorded scalar, not implicitly cumulative or level-local.
+
+## PG07–PG10 explicit Level & Advancement
+
+Root adds two functions and six readonly types (51 functions/60 types total):
+
+```ts
+type ExperienceMode = 'cumulative' | 'level-local';
+interface LevelRequirement {
+  readonly toLevel: number;
+  readonly requiredExperience: number;
+  readonly eligible: boolean;
+}
+interface LevelAdvancementPolicy {
+  readonly experienceMode: ExperienceMode;
+  readonly maxLevel: number;
+  readonly targetLevel: number;
+  readonly requirements: readonly LevelRequirement[];
+}
+type LevelAdvancementBlockReason = 'none' | 'target_reached' | 'max_level'
+  | 'insufficient_experience' | 'condition_not_met';
+interface LevelAdvancementAssessment {
+  readonly entityId: string;
+  readonly beforeLevel: number;
+  readonly projectedLevel: number;
+  readonly targetLevel: number;
+  readonly beforeExperience: number;
+  readonly projectedExperience: number;
+  readonly levelsGained: number;
+  readonly experienceConsumed: number;
+  readonly advancedLevels: readonly number[];
+  readonly blockedAtLevel?: number;
+  readonly reason: LevelAdvancementBlockReason;
+}
+interface LevelAdvancementResult {
+  readonly state: ProgressionState;
+  readonly transition: LevelAdvancementAssessment;
+}
+function evaluateLevelAdvancement(state: ProgressionState,
+  policy: LevelAdvancementPolicy): LevelAdvancementAssessment;
+function advanceProgressionLevel(state: ProgressionState,
+  policy: LevelAdvancementPolicy): LevelAdvancementResult;
+```
+
+Both use the same private resolver once per call. All state fields use existing
+PG02/PG06 closed own-data validation. Mode/max/target/requirements are mandatory
+own data; unknown string/symbol/nonenumerable properties, missing/inherited fields
+and accessors reject with TypeError without evaluating getters. Null-prototype
+records remain valid. All levels are positive safe integers and must satisfy
+current <= target <= max. No level-down or implicit default.
+
+Requirements must be a dense own-data array, without extras, with exactly one
+closed requirement per step current+1 through target in that order. No duplicate,
+missing, skipped, extra or reordered step; no sparse/accessor entry. requiredExperience
+is finite nonnegative (fractions and zero allowed); eligible is boolean, never a
+callback. Cumulative thresholds must be nondecreasing. Local costs may decrease.
+The entire policy/list validates before evaluation, including no-op, at-max and
+requests with an early blocker. Malformed input rejects the whole operation.
+
+Cumulative compares recorded EXP against absolute thresholds and retains EXP.
+Level-local compares remaining EXP to each cost then subtracts only successful
+costs. Eligibility false wins over insufficient EXP. A blocker stops at that step
+without skipping, preserving the successful prefix in the returned state.
+maxLevel never caps EXP. The target ends this call even if more EXP remains.
+
+Reason none means all requested steps completed (also when reaching max in this
+call). target_reached means target was already current; max_level takes precedence
+when current was already max. Blockers give condition_not_met or
+insufficient_experience and include blockedAtLevel; otherwise that property is
+absent. levelsGained = projectedLevel-beforeLevel; experienceConsumed =
+beforeExperience-projectedExperience, reflecting native JavaScript arithmetic.
+No epsilon/rounding/decimal policy. Invalid results reject rather than returning
+partial data; ordinary blocker results are valid partial advancements.
+
+Result, nested state, assessment and detached advancedLevels array are frozen.
+Evaluate is semantically equal to advance.transition for equivalent inputs.
+Exact entityId survives; caller state/policy/requirements and all other domains
+remain untouched. No callbacks, time/RNG, events, auto rewards or stored mode/cap.
+Caller maintains consistent EXP mode throughout a lifecycle; no mode conversion.
+PG05/PG06 retain their independent behavior, including unchanged level after gain
+or EXP loss. PG11–PG19 remain outside this checkpoint.

@@ -23,7 +23,7 @@ Gameplay profile behavior remains NOT_EVALUATED; Progression phase is IN_PROGRES
 | H08 | Capability Gap & Change Control | Policy + escalation/STOP workflow |
 | H09 | Three-Profile Functional Verification | Foundation action/opaque position/direction compatibility probes; no gameplay scenarios/apps |
 | H10 | Deterministic Functional Test Harness | Injected clock/RNG/IDs, independent scripted semantic/failure traces; lexical global-source checks + audit; no simulator/app |
-| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC18/PG01–PG06, full Foundation flow, payload profiles and gate controls |
+| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC18/PG01–PG10, full Foundation flow, payload profiles and gate controls |
 | H12 | Verification Gates & CI | Boundaries + build + typecheck + functional contracts; Windows/Linux, Node 22/24 |
 | H13 | Agent Task Execution Protocol | Implemented: approved-plan-first docs and task template |
 | H14 | Approval & Evidence Gates | Policy/report templates; Developer acceptance manual |
@@ -62,3 +62,10 @@ lookup and opaque profile event data, alongside prior Foundation probes.
 Concrete gameplay/profile behavior: NOT_EVALUATED (combat, movement, animation).
 H06 canonical numerical ownership is source-reviewed, not algorithmically proven
 by a regex checker. Final Developer acceptance remains PENDING.
+
+## v0.3.2 evidence extension
+
+Installed PG07–PG10 now covers explicit cumulative/local advancement, complete
+policy validation, frozen diagnostics, blockers/prefixes, dry-run and replay.
+60 installed contracts plus 2 outer tests; no gate bypass. Previous fixtures and
+Core pin unchanged. This is Progression evidence, not game-profile acceptance.

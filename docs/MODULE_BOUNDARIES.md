@@ -85,3 +85,12 @@ EXP store, Foundation dependency or Entity private import. Only task-approved
 scalar addition/floor/cap/after-before diagnostics are performed at L2; no curve,
 modifier, rounding algorithm or fabricated Kernel resource policy is introduced.
 Core and Entity ownership/delegation are unchanged.
+
+## PG07–PG10 advancement ownership
+
+Level stays in ProgressionState; no Level owner/store/module is added.
+src/modules/progression/index.ts owns one shared dry-run/advance resolver and
+reuses existing state/level validation. Static optional progression -> entity is
+unchanged; there is no Foundation/runtime/messaging import or execution binding.
+Caller supplies complete policy, external eligibility and EXP mode consistency.
+No Entity/Foundation/Core changes, hidden event, formula or second engine.
