@@ -36,7 +36,7 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
-`src/index.ts` exports GF01–GF03 declarations/registry/configuration functions.
+`src/index.ts` exports GF01–GF05 declarations/registry/configuration/dependency/composition functions.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
@@ -45,9 +45,10 @@ Tests/tooling run outside production `src/`; no engine/adapters or global gamepl
 state are introduced. Architecture registry remains empty. Root and sibling re-exports
 must use each module's public entrypoint.
 
-GF01–GF03 have one Foundation owner: `src/foundation/modules/`. Their public
-registry/configuration are immutable explicit consumer state, with no singleton,
-module execution or dependency resolution. They are separate from the static
+GF01–GF05 have one Foundation owner: `src/foundation/modules/`. Their public
+registry/configuration and resolved composition are immutable explicit consumer
+state, with no singleton or module execution. Composition uses the canonical
+dependency resolver; registration/configuration keep their original semantics. They are separate from the static
 architecture registry `harness/modules.json`, which remains empty until real
 gameplay feature modules are implemented. No Foundation placeholder is registered.
 

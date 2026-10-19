@@ -2,7 +2,7 @@
 
 Only production import: `@rpg/core/kernel`. Core root, Legacy entrypoints, source
 checkout paths and `dist` deep imports remain forbidden. No numerical code is
-copied or implemented in L2. GF01–GF03 registry/configuration functions require no
+copied or implemented in L2. GF01–GF05 registry/configuration/dependency/composition functions require no
 numerical calls; the accepted Core pin and package integration remain unchanged.
 
 ## Pin and reconstruction

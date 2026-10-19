@@ -19,7 +19,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF03, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF05, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -41,7 +41,7 @@ test('installed artifact: GF01–GF03, ESM root, closed exports, strict declarat
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assert.equal(packageJson.version, '0.1.1');
+    assert.equal(packageJson.version, '0.1.2');
     assert.equal(packageJson.private, true);
     assert.equal(packageJson.type, 'module');
     assert.deepEqual(packageJson.exports, {'.': {types: './dist/index.d.ts', import: './dist/index.js'}});
@@ -49,8 +49,8 @@ test('installed artifact: GF01–GF03, ESM root, closed exports, strict declarat
 import assert from 'node:assert/strict';
 import * as gameplay from '@rpg/gameplay';
 import {calculateResourceTransition} from '@rpg/core/kernel';
-assert.deepEqual(Object.keys(gameplay).sort(), ['configureModules', 'createModuleRegistry',
- 'getModule', 'isModuleEnabled', 'listModules', 'registerModule', 'validateModuleDefinition']);
+assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModules', 'createModuleRegistry',
+ 'getModule', 'isModuleEnabled', 'listModules', 'registerModule', 'resolveModuleDependencies', 'validateModuleDefinition']);
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
@@ -66,8 +66,14 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     assert.match(moduleEvidence, /# skipped 0/);
     console.log('INSTALLED_MODULE_CONTRACTS_PASS GF01–GF03; consumer_tests=3 skipped=0');
     fs.copyFileSync(path.join(root, 'tests/consumers/modules.ts'), path.join(temp, 'modules.ts'));
+    fs.copyFileSync(path.join(root, 'tests/consumers/composition.mjs'), path.join(temp, 'composition.mjs'));
+    const compositionEvidence = exec(['--test', '--test-reporter=tap', 'composition.mjs'], temp);
+    assert.match(compositionEvidence, /# pass 4/);
+    assert.match(compositionEvidence, /# skipped 0/);
+    console.log('INSTALLED_COMPOSITION_CONTRACTS_PASS GF04–GF05; consumer_tests=4 skipped=0');
+    fs.copyFileSync(path.join(root, 'tests/consumers/composition.ts'), path.join(temp, 'composition.ts'));
     const declarations = fs.readFileSync(path.join(installed, 'dist/foundation/modules/index.d.ts'), 'utf8');
-    assert.doesNotMatch(declarations, /\b(?:isRecord|requireId|readIds|Map|WeakMap)\b/);
+    assert.doesNotMatch(declarations, /\b(?:isRecord|requireId|readIds|describeCycle|Map|WeakMap)\b/);
     fs.writeFileSync(path.join(temp, 'consumer.ts'), `
 import * as gameplay from '@rpg/gameplay';
 import {calculateResourceTransition, type ResourceTransitionInput} from '@rpg/core/kernel';
@@ -83,7 +89,7 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
   } finally {
     const resolved = fs.realpathSync(temp);
