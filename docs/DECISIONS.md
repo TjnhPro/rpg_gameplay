@@ -72,3 +72,10 @@ EC01–EC03 has one owner at `src/modules/entity/`: caller-defined nonblank id/k
 closed two-field creation, detached immutable snapshots, no implicit identity or
 collection authority. Entity is optional with no dependencies. EC04+ remains
 outside this checkpoint and requires separately approved tasks.
+
+The approved v0.2.1 task extends that same Entity owner with EC04–EC06: immutable
+ordered collection snapshots, exact collection-local unique IDs, explicit add/
+lookup/list/remove and full same-ID replacement. Updates branch without mutation;
+missing remove/replace and malformed/duplicate data throw TypeError. EC03 remains
+the sole entity validator. No global store, arbitrary state bag, Foundation/Core
+change or EC07+ implementation. Continue the same branch/Draft PR #7.

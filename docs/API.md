@@ -1,4 +1,4 @@
-# Public API — v0.2.0 (GF01–GF16, EC01–EC03)
+# Public API — v0.2.1 (GF01–GF16, EC01–EC06)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -391,7 +391,7 @@ type EntitySnapshot = EntityDefinition;
 function createEntity(definition: EntityDefinition): EntitySnapshot;
 ```
 
-Current root inventory: 27 functions / 33 public types. Existing Foundation APIs
+Current root inventory: 34 functions / 34 public types. Existing Foundation APIs
 and root-only exports are preserved. Both fields must be nonblank strings, stored
 unchanged including whitespace/case/punctuation and arbitrary caller-defined kind.
 No enum, module-ID format, default, coercion or ID generation. Same ID represents
@@ -415,5 +415,51 @@ enable, resolve and compose it through GF01–GF05 explicitly; default disabled,
 no actor auto-creation. Selection is composition intent and does not gate direct
 creation. The caller may explicitly call nextExecutionId before passing that ID;
 Entity constructs no context and calls no providers, hooks, events or Kernel
-calculation. Collection/state/updates, stats, resources, life-state and EC18
-integration require later approved tasks.
+calculation. Stats, resources, life-state and EC18 integration require later
+approved tasks.
+
+## EC04–EC06: Entity collection and snapshot updates
+
+Same canonical Entity owner and root-only package exports:
+
+```ts
+interface EntityCollection {
+  readonly entities: readonly EntitySnapshot[];
+}
+function createEntityCollection(): EntityCollection;
+function addEntity(collection: EntityCollection, entity: EntityDefinition): EntityCollection;
+function getEntity(collection: EntityCollection, entityId: string): EntitySnapshot | undefined;
+function hasEntity(collection: EntityCollection, entityId: string): boolean;
+function listEntities(collection: EntityCollection): readonly EntitySnapshot[];
+function removeEntity(collection: EntityCollection, entityId: string): EntityCollection;
+function replaceEntity(collection: EntityCollection, entity: EntityDefinition): EntityCollection;
+```
+
+Creation returns a fresh frozen empty collection. Add appends a canonical EC03
+validated detached entity; duplicate exact ID throws TypeError even if kind differs.
+Uniqueness is collection-local. Lookup compares nonblank string IDs exactly,
+without normalization: unknown valid IDs return undefined/false. Malformed IDs
+throw TypeError. List returns frozen snapshots in insertion order, without sorting.
+Remove requires an existing ID and preserves remaining relative order; unknown
+or malformed IDs throw TypeError. Readding a removed ID appends it at the end.
+
+Replace requires an existing exact ID and a complete valid id/kind definition;
+it preserves the position and can change kind explicitly. No upsert, implicit
+rename, arbitrary partial patch or automatic behavior change. Every successful
+add/remove/replace returns a new frozen collection and frozen membership/entity
+data. All previous versions and branching updates stay independent; invalid
+operations leave them unchanged. Caller inputs are never frozen or mutated.
+
+Collections are structural data, not opaque live handles. Runtime input must be
+exactly an own entities data property holding a dense array of own data entries,
+with no extra collection/array keys. Entries go through createEntity; duplicates,
+malformed entries, holes, inherited fields and accessors throw TypeError without
+invoking getters. Valid structural caller inputs are accepted but detached on
+each operation, including lookup/list. Snapshot reference reuse is not promised.
+Boundary validation/copying is linear in collection size; no performance or
+collection-size limit is imposed. Ordinary Proxy traps remain caller code.
+
+There is no backing mutable map, singleton, implicit clock/RNG/ID, runtime,
+event/hook, Kernel calculation or separate module. The optional Entity registry
+entry/dependencies and GF01–GF16 contracts remain unchanged. No generic state bag,
+stats/resources/life state or future-milestone placeholder is exposed.

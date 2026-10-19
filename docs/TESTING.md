@@ -55,6 +55,15 @@ fields and reject premature state. No game runtime or duplicate profile matrix.
 Expected data is specified from the task contract; old Foundation fixtures remain
 unchanged. See the v0.2.0 report for R01–R15 evidence and limits.
 
+EC04–EC06 adds `entity-collection.mjs`/`.ts` to the same external installation.
+Three scenarios prove ordered operations/exact collection-local identity and
+determinism under forbidden implicit time/RNG, immutable branching/input ownership,
+and atomic duplicate/unknown/malformed rejection including canonical EC03
+accessor/extra-field checks. Strict types cover readonly membership/enumeration,
+optional lookup and complete replacements, with no generic state/numerical fields.
+Existing Entity/Foundation fixtures stay unchanged. The v0.2.1 report maps R01–R18
+to independent literal expectations, installed evidence and source review.
+
 - **Unit/function**: public function, success/rejection, result and ownership.
 - **Contract**: boundary, adapter interface, valid/invalid data, invariants.
 - **Integration at function level**: composition of multiple exported functions with direct inputs/outputs; still no game loop/app.

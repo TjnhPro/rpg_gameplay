@@ -1,12 +1,12 @@
-# RPG Gameplay — v0.2.0 Entity Foundation checkpoint
+# RPG Gameplay — v0.2.1 Entity State & Collection checkpoint
 
-> **Status: GF01–GF16 baseline accepted; EC01–EC03 checkpoint implemented. Phase v0.2.x IN_PROGRESS; acceptance PENDING final v0.2.5 review.**
+> **Status: GF01–GF16 baseline accepted; EC01–EC06 checkpoints implemented. Phase v0.2.x IN_PROGRESS; acceptance PENDING final v0.2.5 review.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
 > coordination, explicit command routing, synchronous event pub/sub and injected
 > clock/RNG/ID execution dependencies are available.
-> **Entity identity/classification is the first optional gameplay module; no collection, stats, resources, life state or game loop.**
+> **Optional Entity supports identity/classification and immutable collections; no stats, resources, life state or game loop.**
 
 ## Mục tiêu
 
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16 and EC01–EC03 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16 and EC01–EC06 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation data-shape compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -53,11 +53,26 @@ const npc = createEntity({id: 'npc-1', kind: 'npc'});
 One function supports arbitrary nonblank kinds/IDs preserved exactly. Definitions
 contain exactly own data fields id/kind; extras, accessors and inherited fields
 throw TypeError. Snapshots are detached/frozen; input stays caller-owned.
-Independent snapshots can share an ID; collection uniqueness is deferred to EC04.
+Independent snapshots and collections can share an ID; IDs must be unique within
+each collection. Collection operations preserve exact IDs and insertion order.
 Module ID entity is distinct from actor identity. Explicit GF01–GF05 registration/
 selection/composition creates no actor and does not gate direct createEntity calls.
-See [API](docs/API.md), [checkpoint report](docs/reports/v0.2.0-entity-foundation.md)
+See [API](docs/API.md), [checkpoint report](docs/reports/v0.2.1-entity-state-collection.md)
 and [single-PR phase workflow](docs/TASK_EXECUTION.md).
+
+```ts
+import {createEntityCollection, addEntity, replaceEntity, removeEntity, listEntities} from '@rpg/gameplay';
+const empty = createEntityCollection();
+const base = addEntity(empty, {id: 'actor-1', kind: 'npc'});
+const companion = replaceEntity(base, {id: 'actor-1', kind: 'companion'});
+const removed = removeEntity(base, 'actor-1');
+listEntities(base); // [{id: 'actor-1', kind: 'npc'}]; branches leave base unchanged
+```
+
+`getEntity`/`hasEntity` query exact IDs. Unknown valid lookup returns undefined/false;
+duplicate add and unknown remove/replace throw TypeError. Every change returns a
+new frozen collection; enumeration and contained snapshots are frozen/detached.
+Replace is full same-ID replacement at the old position, not upsert/partial patch.
 
 ## External package consumption (local artifacts, no publication)
 
@@ -66,7 +81,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.2.0.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.2.1.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -194,7 +209,7 @@ task recorded under [task execution](docs/TASK_EXECUTION.md).
 | [docs/TASK_EXECUTION.md](docs/TASK_EXECUTION.md) | Approved plan, stop conditions, acceptance |
 | [docs/TESTING.md](docs/TESTING.md) | Function-only tests; evidence thay cho số lượng |
 | [docs/VERIFICATION.md](docs/VERIFICATION.md) | Commands và giới hạn từng gate |
-| [harness/modules.json](harness/modules.json) | Registry module ban đầu rỗng |
+| [harness/modules.json](harness/modules.json) | Registry chỉ khai báo optional Entity |
 
 ## Reference
 

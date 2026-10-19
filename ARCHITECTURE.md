@@ -37,7 +37,7 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
 `src/index.ts` exports GF01–GF05 module, GF06–GF09 lifecycle, GF10–GF13 messaging
-and GF14–GF16 execution functions, plus EC01–EC03 Entity creation/contracts.
+and GF14–GF16 execution functions, plus EC01–EC06 Entity creation/collection contracts.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
@@ -87,10 +87,15 @@ gameplay behavior is not covered by its compatibility probes.
 
 EC01–EC03 have one gameplay owner: `src/modules/entity/`. Creation validates a
 closed id/kind definition and returns detached frozen scalar data. Caller supplies
-both strings; no subtype engines, state bags, ID generation, collection authority
+both strings; no subtype engines, state bags, ID generation
 or numerical calculation. Static ownership declares entity optional with no
 dependencies. Consumer registration/selection/composition remain explicit GF01–GF05
-operations. Entity phase acceptance is pending final v0.2.5 review; EC04+ is deferred.
+operations. EC04–EC06 extends this same owner with explicit immutable collection
+membership, exact collection-local uniqueness and ordered full-snapshot updates.
+Collections are frozen data, not capabilities backed by a global store. Structural
+inputs are validated/detached through EC03 before use; no mutable caller data is
+returned. No hooks, Foundation changes or Kernel calls. Entity phase acceptance
+is pending final v0.2.5 review; EC07+ is deferred.
 
 - Reusable module source: `src/modules/<module-id>/`.
 - Module register: `harness/modules.json`, currently optional Entity only.

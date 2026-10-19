@@ -1,15 +1,15 @@
-# Verification gates — v0.2.0
+# Verification gates — v0.2.1
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
 
 | Command | Evidence | Limits |
 | --- | --- | --- |
-| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16 and EC01–EC03 only; no game loop |
+| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16 and EC01–EC06 only; no game loop |
 | `npm run typecheck` | Strict source typecheck, no emit | No gameplay semantics |
 | `npm run harness:check` | Registry, literal import/dependency direction, runtime package policy, obvious hidden RNG/time | Lexical, not full TS AST/semantic analysis |
 | `npm run harness:selftest` | Positive/negative boundary controls | No runtime module enable/disable |
-| `npm run test:functional` | External installed GF01–GF16/EC01–EC03, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
+| `npm run test:functional` | External installed GF01–GF16/EC01–EC06, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
 | `npm run verify` | Boundaries, self-tests, required build, typecheck and functional contracts, in that order | Automated evidence is not Developer acceptance |
 
 `verify` checks that all three production scripts exist before running any of
@@ -45,6 +45,12 @@ only. EC01–EC03 additionally proves Entity creation/validation/immutability an
 explicit optional module composition. Gameplay profile behavior remains
 **NOT_EVALUATED**. Foundation is the accepted baseline; Entity phase acceptance
 is PENDING final v0.2.5 review. No fake passing scripts or placeholder APIs.
+
+EC04–EC06 adds installed immutable ordered collections, exact collection-local
+identity, lookup and full replacement/removal, isolated old versions/branches and
+malformed/duplicate/unknown rejection. EC03 validation remains canonical. Root
+inventory/declarations include seven new functions and EntityCollection, with
+deep exports closed and private helpers absent from public declarations.
 
 `src/index.ts` remains mandatory. If it is absent, verification fails with
 `VERIFY_FAIL` and exit code 1; there is no scaffold-success fallback. Build,

@@ -28,9 +28,9 @@ Preflight repo & approved task -> xác nhận boundaries -> implement chỉ tron
 - `npm run harness:check`: check registry, imports, module boundary.
 - `npm run harness:selftest`: chứng minh checker bắt được các vi phạm cơ bản.
 - Fresh install: `npm run core:prepare` then `npm ci --ignore-scripts` (see Core integration).
-- `npm run verify`: boundaries, self-tests, build, strict typecheck and installed GF01–GF16/EC01–EC03 contracts. Messaging/execution are opt-in; providers and lifecycle cleanup are caller-wired. Text/2D/2.5D probes cover Foundation data compatibility only; gameplay profile behavior remains NOT_EVALUATED. Entity phase acceptance requires final Developer review.
+- `npm run verify`: boundaries, self-tests, build, strict typecheck and installed GF01–GF16/EC01–EC06 contracts. Messaging/execution are opt-in; providers and lifecycle cleanup are caller-wired. Text/2D/2.5D probes cover Foundation data compatibility only; gameplay profile behavior remains NOT_EVALUATED. Entity phase acceptance requires final Developer review.
 
-v0.2.0 adds installed EC01–EC03 identity/creation contracts; `harness/modules.json`
+v0.2.0–v0.2.1 add installed EC01–EC06 identity/creation/immutable collection contracts; `harness/modules.json`
 declares optional Entity at `src/modules/entity/`. GF01–GF16 is the accepted
 baseline. Entity phase uses one branch/Draft PR through v0.2.5; report intermediate
 CHECKPOINT_COMPLETE, not phase acceptance. Gameplay profile behavior remains
