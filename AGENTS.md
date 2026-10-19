@@ -28,6 +28,6 @@ Preflight repo & approved task -> xác nhận boundaries -> implement chỉ tron
 - `npm run harness:check`: check registry, imports, module boundary.
 - `npm run harness:selftest`: chứng minh checker bắt được các vi phạm cơ bản.
 - Fresh install: `npm run core:prepare` then `npm ci --ignore-scripts` (see Core integration).
-- `npm run verify`: boundaries, self-tests, build, strict typecheck and installed-package contracts including GF01–GF13. Messaging is opt-in; lifecycle cleanup is explicitly caller-wired. Gameplay execution/profiles remain NOT_EVALUATED.
+- `npm run verify`: boundaries, self-tests, build, strict typecheck and installed-package GF01–GF16 contracts. Messaging/execution are opt-in; providers and lifecycle cleanup are explicitly caller-wired. Text/2D/2.5D probes cover Foundation data compatibility only; gameplay behavior remains NOT_EVALUATED. Closure requires Developer acceptance.
 
 Không claim gameplay pass khi chưa có gameplay. Không sửa baseline/expected chỉ để làm test xanh.

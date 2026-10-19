@@ -1,10 +1,11 @@
-# RPG Gameplay — v0.1.4 Command & Event System
+# RPG Gameplay — v0.1.5 Clock, Determinism & Foundation Closure
 
-> **Status: GF01–GF13 implemented; v0.1.4 Developer acceptance PENDING.**
+> **Status: GF01–GF16 implemented; Foundation closure PENDING Developer acceptance.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
-> coordination, explicit command routing and synchronous event pub/sub are available.
+> coordination, explicit command routing, synchronous event pub/sub and injected
+> clock/RNG/ID execution dependencies are available.
 > **No concrete gameplay modules or game loop.**
 
 ## Mục tiêu
@@ -37,8 +38,8 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF13 through an installed-package consumer.
-It does **not** prove gameplay execution or Text/2D/2.5D profiles.
+including GF01–GF16 through an installed-package consumer. Text/2D/2.5D probes
+prove Foundation data-shape compatibility; gameplay behavior is NOT_EVALUATED.
 
 ## External package consumption (local artifacts, no publication)
 
@@ -47,7 +48,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.1.4.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.1.5.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -137,6 +138,28 @@ registration-order snapshot and stop at the first failure, reporting completed
 deliveries. Same-context nested dispatch/publish throws; no queue or automatic
 command-to-event publication. Foundation metadata is frozen; arbitrary business
 payloads/values remain caller-owned. See [API](docs/API.md) for full contracts.
+
+## Explicit execution dependencies
+
+```ts
+import {createExecutionContext, readExecutionTime, nextExecutionRandom} from '@rpg/gameplay';
+const execution = createExecutionContext({
+  clock: {now: () => 1000}, // milliseconds, caller-chosen origin
+  random: {next: () => 0.25}, // optional; no fallback
+});
+readExecutionTime(execution); // 1000; exactly one explicit provider call
+nextExecutionRandom(execution); // 0.25
+```
+
+Clock is required; RNG and IDs are optional. Methods/receivers are captured at
+creation without calling or freezing providers. Time must be finite/nonnegative,
+RNG finite in [0,1), IDs nonblank strings unchanged. Missing/invalid providers or
+outputs throw TypeError; provider exceptions propagate unchanged. Caller wires
+the context into existing callbacks through closures. Equivalent inputs, call
+order and starting provider/callback states give reproducible Foundation traces;
+arbitrary callback effects are the caller's responsibility. No scheduler, global
+store, PRNG or ID algorithm is supplied. See [API](docs/API.md) and the
+[closure evidence](docs/reports/v0.1.5-clock-determinism-foundation-closure.md).
 
 Read [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md) and
 [accepted decisions](docs/DECISIONS.md). Future implementation needs an approved

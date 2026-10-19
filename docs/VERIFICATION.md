@@ -1,15 +1,15 @@
-# Verification gates — v0.1.4
+# Verification gates — v0.1.5
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
 
 | Command | Evidence | Limits |
 | --- | --- | --- |
-| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF13 only; no game loop |
+| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16 Foundation only; no game loop |
 | `npm run typecheck` | Strict source typecheck, no emit | No gameplay semantics |
 | `npm run harness:check` | Registry, literal import/dependency direction, runtime package policy, obvious hidden RNG/time | Lexical, not full TS AST/semantic analysis |
 | `npm run harness:selftest` | Positive/negative boundary controls | No runtime module enable/disable |
-| `npm run test:functional` | External installed-artifact GF01–GF13, ESM/declarations/closed exports/real Kernel; gate orchestration failures | Build first; no gameplay execution/profiles |
+| `npm run test:functional` | External installed-artifact GF01–GF16, full Foundation flow and profile payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay behavior evidence |
 | `npm run verify` | Boundaries, self-tests, required build, typecheck and functional contracts, in that order | Automated evidence is not Developer acceptance |
 
 `verify` checks that all three production scripts exist before running any of
@@ -27,7 +27,7 @@ matrix. The implementation report records actual commands/results.
 
 ## Honest scope
 
-GF01–GF13 tests execute from an external installed tarball, with independent
+GF01–GF16 tests execute from an external installed tarball, with independent
 expected values for registration, validation, selection, dependency order/errors, composition and
 state isolation, synchronous lifecycle order/transitions, partial failure and
 cleanup progress, runtime replay protection and read-only inspection.
@@ -37,8 +37,12 @@ integration, plus context isolation, hidden internals and nested execution guard
 Strict NodeNext consumer checks public types/readonly contracts. Missing consumer
 fixtures fail on file copy; missing required test files fail the explicit Node
 test command. Existing packaging, Kernel and fail-closed gate controls remain.
-Gameplay execution, GF14–GF16, and Text/2D/2.5D profiles are
-**NOT_EVALUATED**. No placeholder gameplay functions or fake passing scripts.
+Execution adds injected clock/RNG/IDs, boundary validation, ownership/identity,
+and two independently created full-flow sessions with literal expected semantic
+traces. Changed-provider and failure traces prove dependency sensitivity and
+partial cleanup. Text/2D/2.5D probes prove Foundation data-shape compatibility
+only. Gameplay behavior is **NOT_EVALUATED**; Foundation closure is PENDING
+Developer acceptance. No placeholder gameplay functions or fake passing scripts.
 
 `src/index.ts` remains mandatory. If it is absent, verification fails with
 `VERIFY_FAIL` and exit code 1; there is no scaffold-success fallback. Build,

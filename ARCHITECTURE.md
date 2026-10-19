@@ -36,7 +36,8 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
-`src/index.ts` exports GF01–GF05 module, GF06–GF09 lifecycle and GF10–GF13 messaging functions.
+`src/index.ts` exports GF01–GF05 module, GF06–GF09 lifecycle, GF10–GF13 messaging
+and GF14–GF16 execution functions.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
@@ -73,6 +74,16 @@ snapshot fan-out and fail-fast diagnostics. Same-context nested execution reject
 there is no queue, scheduler or automatic command-to-event pipeline. Lifecycle
 integration is explicit caller wiring of subscribe/owner cleanup in existing
 hooks, never a claim of live Runtime authority or an implicit lifecycle engine.
+
+GF14–GF16 have one execution dependency owner: `src/foundation/execution/`.
+It captures caller clock/RNG/ID callbacks and receivers behind private weak
+capability associations, with no dependency on the other owners. No counters,
+implicit providers, scheduling or automatic metadata are introduced. Existing
+callbacks integrate through caller closures, preserving public signatures and
+failure handling. Equivalent explicit inputs/call order and equivalent starting
+provider/callback states give reproducible Foundation traces; callback external
+effects remain outside that guarantee. Foundation closure is PENDING Developer
+acceptance; concrete gameplay behavior is not covered by the compatibility probes.
 
 - Reusable module source: `src/modules/<module-id>/`.
 - Module register: `harness/modules.json`, initially empty.

@@ -19,7 +19,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF13, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -31,7 +31,8 @@ test('installed artifact: GF01–GF13, ESM root, closed exports, strict declarat
     const packedResult = JSON.parse(exec([cli, 'pack', '--ignore-scripts', '--json', '--pack-destination', temp], root));
     const packed = Array.isArray(packedResult) ? packedResult[0] : packedResult['@rpg/gameplay'];
     assert.deepEqual(packed.files.map(x => x.path).sort(), [
-      'README.md', 'dist/foundation/messaging/index.d.ts', 'dist/foundation/messaging/index.js',
+      'README.md', 'dist/foundation/execution/index.d.ts', 'dist/foundation/execution/index.js',
+      'dist/foundation/messaging/index.d.ts', 'dist/foundation/messaging/index.js',
       'dist/foundation/modules/index.d.ts', 'dist/foundation/modules/index.js',
       'dist/foundation/runtime/index.d.ts', 'dist/foundation/runtime/index.js',
       'dist/index.d.ts', 'dist/index.js', 'package.json',
@@ -43,7 +44,7 @@ test('installed artifact: GF01–GF13, ESM root, closed exports, strict declarat
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assert.equal(packageJson.version, '0.1.4');
+    assert.equal(packageJson.version, '0.1.5');
     assert.equal(packageJson.private, true);
     assert.equal(packageJson.type, 'module');
     assert.deepEqual(packageJson.exports, {'.': {types: './dist/index.d.ts', import: './dist/index.js'}});
@@ -54,12 +55,13 @@ import {calculateResourceTransition} from '@rpg/core/kernel';
 assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModules', 'createGameplayRuntime', 'createModuleRegistry',
  'disposeGameplayRuntime', 'getModule', 'initializeGameplayRuntime', 'inspectGameplayRuntime', 'isModuleEnabled', 'listModules',
  'registerModule', 'resolveModuleDependencies', 'startGameplayRuntime', 'stopGameplayRuntime', 'validateModuleDefinition',
- 'createGameplayMessaging', 'registerCommandHandler', 'dispatchCommand', 'subscribeEvent', 'publishEvent', 'unsubscribeEvent', 'unsubscribeModuleEvents'].sort());
+ 'createGameplayMessaging', 'registerCommandHandler', 'dispatchCommand', 'subscribeEvent', 'publishEvent', 'unsubscribeEvent', 'unsubscribeModuleEvents',
+ 'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
  {resource:'energy',before:8,after:5,applied:3,reachedMinimum:false});
-for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', '@rpg/gameplay/foundation/modules', '@rpg/gameplay/foundation/runtime', '@rpg/gameplay/dist/foundation/runtime/index.js', '@rpg/gameplay/foundation/messaging', '@rpg/gameplay/dist/foundation/messaging/index.js']) {
+for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', '@rpg/gameplay/foundation/modules', '@rpg/gameplay/foundation/runtime', '@rpg/gameplay/dist/foundation/runtime/index.js', '@rpg/gameplay/foundation/messaging', '@rpg/gameplay/dist/foundation/messaging/index.js', '@rpg/gameplay/foundation/execution', '@rpg/gameplay/dist/foundation/execution/index.js']) {
  await assert.rejects(import(spec), {code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 }
 `);
@@ -88,6 +90,16 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     assert.match(messagingEvidence, /# skipped 0/);
     console.log('INSTALLED_MESSAGING_CONTRACTS_PASS GF10–GF13; consumer_tests=7 skipped=0');
     fs.copyFileSync(path.join(root, 'tests/consumers/messaging.ts'), path.join(temp, 'messaging.ts'));
+    fs.copyFileSync(path.join(root, 'tests/consumers/execution.mjs'), path.join(temp, 'execution.mjs'));
+    const executionEvidence = exec(['--test', '--test-reporter=tap', 'execution.mjs'], temp);
+    assert.match(executionEvidence, /# pass 7/);
+    assert.match(executionEvidence, /# skipped 0/);
+    assert.match(executionEvidence, /FOUNDATION_TRACE_PASS/);
+    console.log('INSTALLED_EXECUTION_CLOSURE_PASS GF14–GF16 + GF01–GF13 integration/profiles; consumer_tests=7 skipped=0');
+    console.log(executionEvidence.split(/\r?\n/).find(line => line.includes('FOUNDATION_TRACE_PASS')));
+    fs.copyFileSync(path.join(root, 'tests/consumers/execution.ts'), path.join(temp, 'execution.ts'));
+    const executionDeclarations = fs.readFileSync(path.join(installed, 'dist/foundation/execution/index.d.ts'), 'utf8');
+    assert.doesNotMatch(executionDeclarations, /\b(?:ExecutionData|executionRecords|capture|readContext|WeakMap)\b/);
     const messagingDeclarations = fs.readFileSync(path.join(installed, 'dist/foundation/messaging/index.d.ts'), 'utf8');
     assert.doesNotMatch(messagingDeclarations, /\b(?:MessagingData|messagingRecords|readMessaging|beginExecution|snapshotMessage|requireSynchronous|Map|WeakMap|WeakSet)\b/);
     const runtimeDeclarations = fs.readFileSync(path.join(installed, 'dist/foundation/runtime/index.d.ts'), 'utf8');
@@ -109,7 +121,7 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
   } finally {
     const resolved = fs.realpathSync(temp);

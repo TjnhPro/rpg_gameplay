@@ -55,4 +55,13 @@ Caller wires cleanup into existing lifecycle hooks. Same-context nested
 dispatch/publish throws; other contexts remain independent. Private capability
 associations expose no tables/bindings through reflection. Coordination metadata
 is frozen; arbitrary business payload/value references remain caller-owned.
-No live Runtime gating, Core changes, GF14+ clock/RNG or async scheduler is decided.
+No live Runtime gating, Core changes or async scheduler is decided by v0.1.4.
+
+The approved v0.1.5 task adds GF14–GF16 at `src/foundation/execution/`: required
+caller clock, optional RNG/ID ports, captured methods/receivers and private weak
+identity associations. No defaults, provider calls during creation, global store,
+framework counters or scheduling. Invalid boundaries/output throw TypeError;
+provider throws propagate unchanged. Existing callbacks integrate by closures.
+GF16 is conditional on equivalent explicit inputs/order and starting provider/
+callback state. Installed integration and opaque Text/2D/2.5D payload probes
+support Foundation closure review; Developer acceptance remains PENDING.
