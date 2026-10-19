@@ -1,15 +1,15 @@
-# Verification gates — v0.3.2
+# Verification gates — v0.3.3
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
 
 | Command | Evidence | Limits |
 | --- | --- | --- |
-| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16, EC01–EC18, PG01–PG10; no game loop |
+| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16, EC01–EC18, PG01–PG13; no game loop |
 | `npm run typecheck` | Strict source typecheck, no emit | No gameplay semantics |
 | `npm run harness:check` | Registry, literal import/dependency direction, runtime package policy, obvious hidden RNG/time | Lexical, not full TS AST/semantic analysis |
 | `npm run harness:selftest` | Positive/negative boundary controls | No runtime module enable/disable |
-| `npm run test:functional` | External installed GF01–GF16/EC01–EC18/PG01–PG10, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
+| `npm run test:functional` | External installed GF01–GF16/EC01–EC18/PG01–PG13, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
 | `npm run verify` | Boundaries, self-tests, required build, typecheck and functional contracts, in that order | Automated evidence is not Developer acceptance |
 
 `verify` checks that all three production scripts exist before running any of
@@ -134,3 +134,13 @@ mandatory. All 57 prior installed contracts are retained unchanged: 60 total,
 2 outer tests, zero skips. Full verify requires every existing gate and failure
 controls; no skip path was added. Both push and PR exact-head Windows/Linux Node22/24
 matrices must pass before CHECKPOINT_COMPLETE. Phase IN_PROGRESS, acceptance PENDING.
+
+## PG11–PG13 current milestone gate
+
+Runner requires installed @rpg/gameplay0.3.3 attribute-points.mjs4 PASS,zero skips,
+ATTRIBUTE_POINTS_TRACE_PASS and INSTALLED_ATTRIBUTE_POINTS_CONTRACTS_PASS markers.
+Strict external NodeNext attribute-points.ts plus closed root exports/declarations
+remain mandatory. All60 old contracts retained:64 installed,2 outer,zero skips.
+Full verify runs harness checks/self-tests, clean build,typecheck and installed
+functional tests; missing source or selected failures fail closed. Exact-head
+push and PR Ubuntu/Windows Node22/24 evidence belongs in the checkpoint report.

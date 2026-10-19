@@ -46,3 +46,9 @@ creation through one shared actor API. PG04–PG06 adds explicit scalar gain/adj
 PG07–PG10 adds caller-configured cumulative/local level advancement and immutable
 diagnostics. PG11–PG19 remain NOT_STARTED; no curves, points or skill upgrades. Phase
 IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.
+
+PG11–PG13 adds explicit separate Attribute Point snapshots, completed-level
+rewards with immutable cursor and caller-priced canonical Entity allocation.
+No automatic stat/resource/EXP/event changes, global reward authority, Skill
+Points/Ranks or PG14+ implementation. Progression remains IN_PROGRESS pending
+final v0.3.5 Developer review; game profiles remain NOT_EVALUATED.

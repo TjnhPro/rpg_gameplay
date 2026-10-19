@@ -1,4 +1,5 @@
-import {createEntity, type EntitySnapshot} from '../entity/index.js';
+import {createEntity, getEntityBaseAttributes, setEntityBaseAttribute,
+  type EntitySnapshot, type EntityAttributeState} from '../entity/index.js';
 
 /** Explicit initial values; no starting level, EXP curve or cap is supplied. */
 export interface ProgressionInitialState {
@@ -218,4 +219,164 @@ export function advanceProgressionLevel(state: ProgressionState, policy: LevelAd
   const transition = resolveLevelAdvancement(state, policy);
   return Object.freeze({state: Object.freeze({entityId: transition.entityId,
     level: transition.projectedLevel, experience: transition.projectedExperience}), transition});
+}
+
+export interface AttributePointInitialState {
+  readonly unspentPoints: number;
+  readonly spentPoints: number;
+  readonly rewardedThroughLevel: number;
+}
+
+/** Independent immutable pool; cursor tracks processed rewards, not live level. */
+export interface EntityAttributePointState extends AttributePointInitialState {
+  readonly entityId: string;
+}
+
+export interface AttributePointRewardPolicy {
+  readonly pointsByLevel: Readonly<Record<number, number>>;
+}
+
+export interface AttributePointRewardResult {
+  readonly state: EntityAttributePointState;
+  readonly transition: {
+    readonly entityId: string;
+    readonly rewardedLevels: readonly number[];
+    readonly pointsGranted: number;
+    readonly beforeUnspent: number;
+    readonly afterUnspent: number;
+  };
+}
+
+export interface AttributePointAllocation {
+  readonly attributeId: string;
+  readonly pointCost: number;
+  readonly newBaseValue: number;
+}
+
+export interface AttributePointAllocationResult {
+  readonly points: EntityAttributePointState;
+  readonly attributes: EntityAttributeState;
+  readonly transition: {
+    readonly entityId: string;
+    readonly attributeId: string;
+    readonly beforeValue: number;
+    readonly afterValue: number;
+    readonly pointsSpent: number;
+    readonly beforeUnspent: number;
+    readonly afterUnspent: number;
+  };
+}
+
+function safePoints(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0) {
+    throw new TypeError('Points must be nonnegative safe integers');
+  }
+  return value;
+}
+
+function pointValues(input: Record<string, unknown>): AttributePointInitialState {
+  const unspentPoints = safePoints(input.unspentPoints), spentPoints = safePoints(input.spentPoints);
+  safePoints(unspentPoints + spentPoints);
+  return {unspentPoints, spentPoints, rewardedThroughLevel: positiveLevel(input.rewardedThroughLevel)};
+}
+
+function readPointState(input: EntityAttributePointState): EntityAttributePointState {
+  const data = dataFields(input, ['entityId', 'unspentPoints', 'spentPoints', 'rewardedThroughLevel']);
+  const entityId = data.entityId;
+  if (typeof entityId !== 'string' || !entityId.trim()) throw new TypeError('Point entityId must be a nonblank string');
+  return {entityId, ...pointValues(data)};
+}
+
+export function createAttributePointState(state: ProgressionState, initial: AttributePointInitialState): EntityAttributePointState {
+  const progression = readState(state);
+  const values = pointValues(dataFields(initial, ['unspentPoints', 'spentPoints', 'rewardedThroughLevel']));
+  if (values.rewardedThroughLevel > progression.level) throw new TypeError('Reward cursor cannot exceed current level');
+  return Object.freeze({entityId: progression.entityId, ...values});
+}
+
+/** Validate receipt consistency; never rerun advancement or infer rewards from EXP. */
+function readRewardAdvancement(input: LevelAdvancementResult) {
+  const result = dataFields(input, ['state', 'transition']);
+  const state = readState(result.state as ProgressionState);
+  const receipt = dataFields(result.transition, ['entityId', 'beforeLevel', 'projectedLevel', 'targetLevel',
+    'beforeExperience', 'projectedExperience', 'levelsGained', 'experienceConsumed', 'advancedLevels', 'reason'], ['blockedAtLevel']);
+  const beforeLevel = positiveLevel(receipt.beforeLevel), projectedLevel = positiveLevel(receipt.projectedLevel);
+  const target = positiveLevel(receipt.targetLevel), gained = safePoints(receipt.levelsGained);
+  const beforeExperience = finite(receipt.beforeExperience), projectedExperience = finite(receipt.projectedExperience);
+  const consumed = finite(receipt.experienceConsumed);
+  if (receipt.entityId !== state.entityId || projectedLevel !== state.level || projectedExperience !== state.experience
+    || beforeLevel > projectedLevel || projectedLevel > target || gained !== projectedLevel - beforeLevel
+    || beforeExperience < projectedExperience || consumed < 0 || consumed !== beforeExperience - projectedExperience
+    || (gained === 0 && consumed !== 0)) {
+    throw new TypeError('Inconsistent advancement receipt');
+  }
+  const list = receipt.advancedLevels;
+  if (!Array.isArray(list) || list.length !== gained || Reflect.ownKeys(list).length !== list.length + 1) {
+    throw new TypeError('Completed levels must be a dense contiguous sequence');
+  }
+  const advancedLevels: number[] = [];
+  for (let index = 0; index < list.length; index++) {
+    const field = Object.getOwnPropertyDescriptor(list, String(index));
+    if (!field || !('value' in field) || field.value !== beforeLevel + index + 1) {
+      throw new TypeError('Invalid completed level entry');
+    }
+    advancedLevels.push(field.value as number);
+  }
+  const reason = receipt.reason, blocked = Object.hasOwn(receipt, 'blockedAtLevel');
+  if (reason === 'condition_not_met' || reason === 'insufficient_experience') {
+    if (!blocked || receipt.blockedAtLevel !== projectedLevel + 1 || projectedLevel >= target) {
+      throw new TypeError('Inconsistent advancement blocker');
+    }
+  } else if (blocked || (reason === 'none' ? gained === 0 || projectedLevel !== target
+    : (reason !== 'target_reached' && reason !== 'max_level') || gained !== 0 || beforeLevel !== target)) {
+    throw new TypeError('Invalid advancement completion reason');
+  }
+  return {state, beforeLevel, advancedLevels};
+}
+
+/** Explicit per-level reward grant; replay guard requires the updated snapshot. */
+export function grantAttributePointRewards(points: EntityAttributePointState, advancement: LevelAdvancementResult,
+  policy: AttributePointRewardPolicy): AttributePointRewardResult {
+  const current = readPointState(points), receipt = readRewardAdvancement(advancement);
+  if (current.entityId !== receipt.state.entityId || current.rewardedThroughLevel !== receipt.beforeLevel) {
+    throw new TypeError('Mismatched entity or stale reward cursor');
+  }
+  const rewards = dataFields(policy, ['pointsByLevel']).pointsByLevel;
+  if (typeof rewards !== 'object' || rewards === null || Array.isArray(rewards)
+    || ![Object.prototype, null].includes(Object.getPrototypeOf(rewards))) {
+    throw new TypeError('Rewards must be an own-data level map');
+  }
+  // Exact canonical decimal keys also reject aliases such as 02 or 2e0.
+  const keys = receipt.advancedLevels.map(String);
+  const captured = dataFields(rewards, keys);
+  let pointsGranted = 0;
+  for (const key of keys) pointsGranted = safePoints(pointsGranted + safePoints(captured[key]));
+  const unspentPoints = safePoints(current.unspentPoints + pointsGranted);
+  safePoints(unspentPoints + current.spentPoints);
+  return Object.freeze({state: Object.freeze({...current, unspentPoints,
+    rewardedThroughLevel: receipt.state.level}),
+  transition: Object.freeze({entityId: current.entityId, rewardedLevels: Object.freeze(receipt.advancedLevels),
+    pointsGranted, beforeUnspent: current.unspentPoints, afterUnspent: unspentPoints})});
+}
+
+/** Spend caller-priced points via the canonical Entity attribute setter. */
+export function allocateAttributePoints(points: EntityAttributePointState, attributes: EntityAttributeState,
+  allocation: AttributePointAllocation): AttributePointAllocationResult {
+  const current = readPointState(points);
+  const baseAttributes = getEntityBaseAttributes(attributes);
+  // Canonical Entity validation above guarantees this own string data field.
+  const entityId = Object.getOwnPropertyDescriptor(attributes, 'entityId')!.value as string;
+  if (entityId !== current.entityId) throw new TypeError('Point and attribute identities must match');
+  const input = dataFields(allocation, ['attributeId', 'pointCost', 'newBaseValue']);
+  const pointCost = positiveLevel(input.pointCost), newBaseValue = finite(input.newBaseValue);
+  if (pointCost > current.unspentPoints) throw new TypeError('Insufficient attribute points');
+  // The public setter owns key validation, existence and the detached update.
+  const nextAttributes = setEntityBaseAttribute({entityId, baseAttributes}, input.attributeId as string, newBaseValue);
+  const attributeId = input.attributeId as string, beforeValue = baseAttributes[attributeId]!;
+  if (newBaseValue <= beforeValue) throw new TypeError('Allocation must increase the base attribute');
+  const unspentPoints = current.unspentPoints - pointCost;
+  const spentPoints = safePoints(current.spentPoints + pointCost);
+  return Object.freeze({points: Object.freeze({...current, unspentPoints, spentPoints}), attributes: nextAttributes,
+    transition: Object.freeze({entityId, attributeId, beforeValue, afterValue: newBaseValue,
+      pointsSpent: pointCost, beforeUnspent: current.unspentPoints, afterUnspent: unspentPoints})});
 }

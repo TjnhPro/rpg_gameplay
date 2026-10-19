@@ -131,3 +131,12 @@ EXP is preserved. Core 2.0.0 has no Level/EXP-specific calculator; no synthetic
 resource policy, dummy Kernel call, curve or parallel numerical engine is added.
 The pin/reconstruction/dependencies remain unchanged; installed real Kernel and
 all Entity delegation regressions continue to run. PG05/PG06 arithmetic is unchanged.
+
+## PG11–PG13 approved point bookkeeping
+
+Safe integer point grants/spending and reward cursor checks are L2 bookkeeping.
+Caller provides per-level rewards and allocation cost/new base value. Canonical
+Entity setter updates Base Attributes; later explicit Entity stat calculation
+still invokes real pinned Kernel. No Progression stat formula/calculator, Core
+change or dependency change. Installed trace independently expects strength20 ->
+power45, then strength23 -> power51 only after explicit recalculation.

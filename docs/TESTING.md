@@ -169,3 +169,17 @@ advancement.ts checks all six types, readonly structures, mandatory policy and
 closed root-only exports under external strict NodeNext. No old fixture changed.
 60 installed contracts total (29 GF, 22 EC, 9 PG), 2 outer tests, zero skips.
 See v0.3.2 report for R01-R28 mapping. Game-profile behavior remains NOT_EVALUATED.
+
+## PG11–PG13 installed point evidence
+
+`tests/consumers/attribute-points.mjs` runs four grouped contracts through the real
+packed/installed package: explicit state/actual receipts/rewards/cursor; malformed
+inputs and overflow; canonical allocation and atomic rejection; independent
+actors/domains plus literal deterministic replay and real Kernel integration.
+Two sessions independently expect rewards5+5=10, spend3, final7/3/cursor3,
+base20->23 and explicitly recalculated power45->51. Zero rewards, partial/no-level
+advancement, updated-cursor replay, stale snapshot branching, frozen detachment,
+exact unusual attribute keys and getter-free rejection are covered.
+`attribute-points.ts` compiles strict external NodeNext root-only readonly types.
+All 60 previous installed contracts retained:64 total (29GF+22EC+13PG),2 outer,
+zero skips. R01–R30 mapping is in the v0.3.3 report. Game profiles NOT_EVALUATED.

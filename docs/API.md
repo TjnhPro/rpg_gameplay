@@ -1,4 +1,4 @@
-# Public API — v0.3.2 (GF01–GF16, EC01–EC18, PG01–PG10)
+# Public API — v0.3.3 (GF01–GF16, EC01–EC18, PG01–PG13)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -882,3 +882,40 @@ remain untouched. No callbacks, time/RNG, events, auto rewards or stored mode/ca
 Caller maintains consistent EXP mode throughout a lifecycle; no mode conversion.
 PG05/PG06 retain their independent behavior, including unchanged level after gain
 or EXP loss. PG11–PG19 remain outside this checkpoint.
+
+## PG11–PG13 Attribute Points
+
+Root adds three functions and six readonly types (54 functions/66 types total):
+
+```ts
+createAttributePointState(state: ProgressionState, initial: AttributePointInitialState): EntityAttributePointState;
+grantAttributePointRewards(points: EntityAttributePointState, advancement: LevelAdvancementResult, policy: AttributePointRewardPolicy): AttributePointRewardResult;
+allocateAttributePoints(points: EntityAttributePointState, attributes: EntityAttributeState, allocation: AttributePointAllocation): AttributePointAllocationResult;
+```
+
+- `AttributePointInitialState`: explicit `unspentPoints`, `spentPoints`,
+  `rewardedThroughLevel`. Balances and their sum are nonnegative safe integers;
+  cursor is a positive safe integer <= initial progression level.
+- `EntityAttributePointState`: initial fields plus exact `entityId`. Separate from
+  ProgressionState. All creation/transition results are frozen detached snapshots.
+- `AttributePointRewardPolicy`: `pointsByLevel: Readonly<Record<number, number>>`,
+  plain/null-prototype own-data map with exactly canonical completed-level keys.
+  No missing/extra keys, aliases, getters, negative/fractional/unsafe values.
+- `AttributePointRewardResult`: `{state, transition}`. Transition has `entityId`,
+  frozen `rewardedLevels`, `pointsGranted`, `beforeUnspent`, `afterUnspent`.
+- `AttributePointAllocation`: closed `{attributeId, pointCost, newBaseValue}`.
+  Cost positive safe integer within available balance; existing exact attribute
+  key; finite strictly increased value. No point-to-attribute conversion formula.
+- `AttributePointAllocationResult`: `{points, attributes, transition}`. Transition
+  has `entityId`, `attributeId`, `beforeValue`, `afterValue`, `pointsSpent`,
+  `beforeUnspent`, `afterUnspent`. Canonical Entity setter owns attribute updates.
+
+Reward input is the actual PG09 result, structurally validated for identity,
+state/diagnostic consistency, contiguous completed levels, consumption and blocker.
+Cursor must equal `beforeLevel`; only completed levels receive caller rewards.
+Zero rewards advance cursor; no-level receipts preserve cursor and balances.
+Updated cursor rejects repeated successful receipts. Stale snapshots can branch;
+structural receipts do not authenticate provenance. No global exactly-once ledger.
+Allocation builds both snapshots atomically in memory, not a database transaction.
+Caller owns economics/restrictions, joint persistence, events and explicit stat
+recalculation. No EXP/level/resource changes, respec or Skill Point/Rank system.

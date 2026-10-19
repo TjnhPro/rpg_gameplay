@@ -37,7 +37,7 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
 `src/index.ts` exports GF01–GF05 module, GF06–GF09 lifecycle, GF10–GF13 messaging
-and GF14–GF16 execution functions, plus EC01–EC18 Entity/collection/attribute/stat/resource/life contracts and PG01–PG10 Progression snapshots/experience/advancement transitions.
+and GF14–GF16 execution functions, plus EC01–EC18 Entity/collection/attribute/stat/resource/life contracts and PG01–PG13 Progression snapshots/experience/advancement transitions.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
@@ -198,3 +198,14 @@ The caller selects mode/max/target/eligibility and maintains mode consistency.
 Only approved comparison/increment/subtraction/diagnostic bookkeeping is added;
 no curve, fake Kernel delegation, store, new module, engine, reward or event.
 Entity/Foundation/Core/registry and PG01–PG06 semantics remain unchanged.
+
+## PG11–PG13 Attribute Points
+
+The existing optional Progression owner holds a separate immutable point pool,
+not fields on ProgressionState. Its cursor requires the next actual advancement
+receipt to start at the last rewarded level; zero rewards still move the cursor.
+Complete receipt/policy validation precedes grants. Updated snapshots provide a
+local replay guard; no global authority or persistent exactly-once guarantee.
+Allocation uses public Entity get/set APIs, returns points and attributes together
+and never recalculates stats. Caller supplies cost/value and stores both snapshots.
+Entity/Foundation/Core and PG01–PG10 behavior remain unchanged.

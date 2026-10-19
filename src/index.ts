@@ -41,10 +41,13 @@ export {
   createEntityLifeState, resolveEntityDefeat, reviveEntity,
 } from './modules/entity/index.js';
 export {createProgressionState, gainExperience, adjustExperience,
-  evaluateLevelAdvancement, advanceProgressionLevel} from './modules/progression/index.js';
+  evaluateLevelAdvancement, advanceProgressionLevel,
+  createAttributePointState, grantAttributePointRewards, allocateAttributePoints} from './modules/progression/index.js';
 export type {ProgressionInitialState, ProgressionState, ExperienceAdjustment, ExperienceTransition, ExperienceTransitionResult,
   ExperienceMode, LevelRequirement, LevelAdvancementPolicy, LevelAdvancementBlockReason,
-  LevelAdvancementAssessment, LevelAdvancementResult} from './modules/progression/index.js';
+  LevelAdvancementAssessment, LevelAdvancementResult,
+  EntityAttributePointState, AttributePointInitialState, AttributePointRewardPolicy,
+  AttributePointRewardResult, AttributePointAllocation, AttributePointAllocationResult} from './modules/progression/index.js';
 export type {
   EntityDefinition, EntitySnapshot, EntityCollection,
   EntityAttributeState, EntityStatConfiguration, EntityStatSnapshot,

@@ -94,3 +94,11 @@ reuses existing state/level validation. Static optional progression -> entity is
 unchanged; there is no Foundation/runtime/messaging import or execution binding.
 Caller supplies complete policy, external eligibility and EXP mode consistency.
 No Entity/Foundation/Core changes, hidden event, formula or second engine.
+
+## PG11–PG13 point ownership
+
+Progression owns only its separate point pool/cursor/reward/allocation bookkeeping.
+It consumes PG09 results and public Entity `getEntityBaseAttributes` /
+`setEntityBaseAttribute`; no copied attribute validation, new owner or calculator.
+Optional progression -> entity dependency and static registry remain unchanged.
+No Foundation/Core changes, global store, automatic events or PG14+ implementation.

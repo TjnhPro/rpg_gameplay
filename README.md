@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.3.2 Level & Advancement
+# RPG Gameplay — v0.3.3 Attribute Points
 
-> **Status: merged Entity v0.2.5 baseline; PG01–PG10 implemented. Progression phase IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.**
+> **Status: merged Entity v0.2.5 baseline; PG01–PG13 implemented. Progression phase IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18 and PG01–PG10 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18 and PG01–PG13 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -129,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.3.2.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.3.3.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -341,3 +341,17 @@ and retains the successful prefix. Entire malformed policies throw before any
 projection, even for no-op/max-level. No automatic level-up, rewards, points,
 events or mode conversion. Caller maintains mode consistency across a lifecycle.
 See [API](docs/API.md) and [v0.3.2 report](docs/reports/v0.3.2-level-advancement.md).
+
+## Attribute Points (PG11–PG13)
+
+`createAttributePointState(progression, initial)` captures explicit unspent/spent
+safe integer balances and a reward cursor. `grantAttributePointRewards(points,
+advancement, {pointsByLevel})` consumes the actual level advancement result and
+caller rewards for exactly its completed levels. `allocateAttributePoints(points,
+attributes, {attributeId, pointCost, newBaseValue})` spends points through the
+canonical Entity setter, returning combined immutable snapshots.
+
+Updated cursors reject receipt replay; stale snapshots can branch. Caller owns
+upgrade economics, storage and explicit stat recalculation. No automatic rewards,
+events or global ledger. See [API](docs/API.md) and
+[v0.3.3 evidence](docs/reports/v0.3.3-attribute-points.md).
