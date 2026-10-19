@@ -1,4 +1,4 @@
-# Verification gates — v0.3.4
+# Verification gates — v0.3.5
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
@@ -9,7 +9,7 @@ Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 | `npm run typecheck` | Strict source typecheck, no emit | No gameplay semantics |
 | `npm run harness:check` | Registry, literal import/dependency direction, runtime package policy, obvious hidden RNG/time | Lexical, not full TS AST/semantic analysis |
 | `npm run harness:selftest` | Positive/negative boundary controls | No runtime module enable/disable |
-| `npm run test:functional` | External installed GF01–GF16/EC01–EC18/PG01–PG18, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
+| `npm run test:functional` | External installed GF01–GF16/EC01–EC18/PG01–PG19, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
 | `npm run verify` | Boundaries, self-tests, required build, typecheck and functional contracts, in that order | Automated evidence is not Developer acceptance |
 
 `verify` checks that all three production scripts exist before running any of
@@ -154,3 +154,19 @@ helper/deep-export closure stay mandatory. All64 old contracts unchanged:69 tota
 2 outer tests,zero skips. Full verify still runs every harness/build/typecheck/
 functional gate, including fail-closed missing source/spaced Node path controls.
 Exact-head push+PR Ubuntu/Windows Node22/24 must pass; macOS NOT_RUN.
+
+
+## PG19 final Progression gate
+
+Runner requires actual packed/installed @rpg/gameplay0.3.5 and the mandatory
+progression-integration.mjs/.ts fixtures. One successful integration contract,
+zero skips, PROGRESSION_INTEGRATION_TRACE_PASS and
+PROGRESSION_INTEGRATION_SESSIONS_PASS are required. Missing fixtures/markers,
+failed contracts or strict external NodeNext errors fail verification. The runner
+prints INSTALLED_PROGRESSION_INTEGRATION_PASS only after all assertions succeed.
+All69 prior contracts retained:70 installed,2 outer,zero skips. No gate removed
+or bypassed. Exact final-head push AND PR matrices must pass Ubuntu/Windows
+Node22/24. Tracked closure report records pre-commit results with CI pending;
+ignored final review handoff records actual head/CI, without a follow-up commit.
+Phase REVIEW_PENDING; Developer acceptance PENDING. macOS NOT_RUN; concrete
+Text/2D/2.5D gameplay profiles NOT_EVALUATED.

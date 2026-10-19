@@ -148,3 +148,13 @@ comparisons and immutable diagnostics are task-approved L2 bookkeeping. Caller
 supplies per-level rewards, rank caps, per-request cost and eligibility. No Skill
 damage/cost/cooldown/effect/scaling calculator or dummy Kernel call. Core pin,
 lock integrity and real installed Kernel/Entity numerical regression remain intact.
+
+
+## PG19 installed integration
+
+The v0.3.5 external consumer installs actual gameplay/Core tarballs and asserts
+strength20 -> power45, then explicit canonical allocation to23 -> power51 through
+calculateEntityStats. A caller transform counter proves allocation never invokes
+stat calculation. No Progression formula/Kernel mock or numerical fallback.
+Pin, peer/dev dependencies and tarball SHA-512 remain unchanged across the whole
+Progression phase; the installed runner verifies artifact bytes against the lock.

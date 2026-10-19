@@ -1,4 +1,4 @@
-# Public API — v0.3.4 (GF01–GF16, EC01–EC18, PG01–PG18)
+# Public API — v0.3.5 (GF01–GF16, EC01–EC18, PG01–PG19)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -975,3 +975,20 @@ Stale snapshots can branch; structural pool types do not authenticate domains or
 receipt provenance. Caller jointly stores next snapshots; no persistent transaction
 or global exactly-once guarantee. No Skill execution/effects/catalog, respec,
 automatic reward/event/level change, time/RNG or generic prerequisite graph.
+
+
+## PG19 installed integration (no new API)
+
+The root remains exactly 60 runtime functions / 77 public types, including the
+14 Progression functions / 28 types above. No integration facade or deep export.
+Existing strict consumers cover every Progression declaration; the additional
+progression-integration.ts proves cross-domain result assignability, readonly
+outputs, actual receipt requirements and closed root-only package exports.
+Caller sequences PG01-PG18 with Entity and opt-in GF10-GF13. Actual level results
+can feed both reward operations independently. Allocation returns points and
+attributes together; upgrade returns ranks and points together. Caller applies
+both next snapshots, recalculates stats and publishes events explicitly.
+Updated cursors/expectedRank reject sequential replay; old immutable snapshots
+can branch. Structural receipts/pool types do not authenticate provenance/domain.
+No persistent exactly-once, global transaction, lock, automatic rewards/events,
+EXP mode conversion or Skill execution. Phase REVIEW_PENDING; acceptance PENDING.

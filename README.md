@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.3.4 Skill Progression
+# RPG Gameplay — v0.3.5 Progression Integration & Closure
 
-> **Status: merged Entity v0.2.5 baseline; PG01–PG18 implemented. Progression phase IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.**
+> **Status: merged Entity v0.2.5 baseline; PG01–PG19 implemented and integration verified. Progression phase REVIEW_PENDING; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18 and PG01–PG18 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18 and PG01–PG19 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -129,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.3.4.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.3.5.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -381,3 +381,20 @@ eligibility, points. Stale expectedRank throws; valid blockers return diagnostic
 and unchanged frozen values. Each success adds exactly one rank, including free
 upgrades. No Skill execution/effects or automatic events. See
 [v0.3.4 evidence](docs/reports/v0.3.4-skill-progression.md).
+
+
+## v0.3.5 Progression integration and review
+
+PG19 uses existing public functions only: explicit EXP/level operations, separate
+Attribute/Skill rewards from the same actual advancement receipt, canonical Entity
+allocation and Kernel stat recalculation, one-rank upgrade and caller GF12 events.
+Two independent installed sessions each match the task's literal oracle:
+level3/EXP260, Attribute Points7/3, strength23/power51, Skill Points1/2, mastery1.
+Local EXP separately ends at level3/EXP10. Replay/blocked/invalid paths, actor
+isolation, lifecycle cleanup and immutable snapshots are included.
+70 installed contracts (all69 prior retained), strict external NodeNext and full
+verify run without skips. No production API/engine/dependency added by PG19.
+Phase REVIEW_PENDING, not accepted/closed; no merge/tag/publish. See the
+[closure report](docs/reports/v0.3.5-progression-integration-closure.md). Exact final
+SHA/CI and self-contained review handoff live in ignored
+`.artifacts/progression-v0.3-final-review.md` after final push/CI.

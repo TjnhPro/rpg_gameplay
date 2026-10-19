@@ -166,7 +166,7 @@ progression entry depends on entity. GF04–GF05 still requires explicit selecti
 of both; no automatic enablement or alternate resolver. Core pin and all existing
 Foundation/Entity contracts remain unchanged. L3 owns game curves and policies;
 Advancement now uses explicit caller-selected EXP modes; state stores neither mode nor cap.
-Progression phase IN_PROGRESS; Developer acceptance PENDING until v0.3.5 review.
+Progression phase REVIEW_PENDING; Developer acceptance PENDING.
 
 ## PG04–PG06 Experience System
 
@@ -222,4 +222,17 @@ cap/level/prerequisite/eligibility/point priority. Dry-run and upgrade share tha
 resolution. Upgrade constructs frozen combined next rank/point data, one rank per
 request. expectedRank is a local optimistic precondition, not a global lock.
 L3 supplies definitions/caps/costs/eligibility; no Skill Engine/catalog, automatic
-execution/events, graph traversal or numerical formula. PG19 remains NOT_STARTED.
+execution/events, graph traversal or numerical formula. PG19 integration is consumer evidence only, described below.
+
+
+## PG19 integration and phase audit
+
+Existing Progression functions compose with public Entity and opt-in Foundation
+functions in an external installed consumer. PG19 adds no production source/API,
+orchestration facade or mutable authority. PG01-PG18 semantics stay unchanged.
+Entity owns Base Attributes/resources/life; Entity delegates stats to real pinned
+Kernel. L3/caller explicitly advances, grants both independent pools, allocates,
+recalculates, upgrades and publishes. No operation synchronizes another domain.
+Full PR diff from merged Entity baseline is classified in the closure report.
+Static registry remains optional entity and optional progression -> entity; no
+Skill/Reward placeholders. Phase REVIEW_PENDING; Developer alone accepts/closes.

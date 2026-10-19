@@ -197,3 +197,19 @@ Strict external NodeNext `skill-progression.ts` proves eleven public types,
 readonly/required/closed shapes, optional lookup and root-only imports.
 All64 previous installed contracts unchanged:69 total (29GF+22EC+18PG),2 outer,
 zero skips. R01–R35 mapping in v0.3.4 report. No fake Skill Engine/game simulator.
+
+
+## PG19 full Progression integration
+
+progression-integration.mjs adds one cross-domain contract, not a second engine.
+Both independent sessions create all snapshots/policies/contexts anew and each
+matches literal final state/trace before comparing sessions. Actual PG09 receipts
+feed AP and SP separately; real Entity/Kernel calculates45 ->51. Cumulative/local
+projections, valid blockers, malformed later requirements, reward/upgrade replay,
+unknown IDs, failed command/listener, immutable detachment, actor/resource/life
+isolation and explicit GF12 publication/cleanup are observed. Date.now/Math.random
+throw throughout sessions. GF providers remain unread. Existing milestone tests
+supply exhaustive numeric/shape edge coverage without duplicating those suites.
+External strict progression-integration.ts joins every old consumer. All69 prior
+contracts remain unchanged:70 installed contracts,2 outer tests,zero skips.
+R01-R36 and N01-N16 mappings are in the v0.3.5 report.

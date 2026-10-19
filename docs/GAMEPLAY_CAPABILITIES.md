@@ -55,5 +55,15 @@ final v0.3.5 Developer review; game profiles remain NOT_EVALUATED.
 PG14–PG18 adds registered exact-key Skill Ranks, independent Skill Point pools/
 cursors, explicit per-level rewards and caller-configured one-rank upgrades with
 prerequisites, blockers and expectedRank guards. No Skill execution/catalog/effects
-or generic talent graph. PG19 remains NOT_STARTED; phase IN_PROGRESS and Developer
-acceptance PENDING final v0.3.5 review.
+or generic talent graph. PG19 installed integration is now verified; phase
+REVIEW_PENDING and Developer acceptance PENDING.
+
+
+## v0.3.5 Progression integration
+
+Group03 PG01-PG19 implementation and installed integration evidence are complete
+for Developer review, not acceptance. Explicit EXP/levels, independent AP/SP,
+canonical Entity allocation/Kernel recalculation and rank upgrade integrate with
+caller Foundation commands/events. No new production capability/module. Other
+candidate groups remain unimplemented; Skill execution/catalog/effects are not
+implied by Skill Rank bookkeeping. Progression phase REVIEW_PENDING.
