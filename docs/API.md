@@ -1,9 +1,10 @@
-# Public API — v0.1.4 (GF01–GF13)
+# Public API — v0.1.5 (GF01–GF16)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
-Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05) and
+Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
 `src/foundation/runtime/index.ts` (GF06–GF09), and
-`src/foundation/messaging/index.ts` (GF10–GF13). No classes, Core numerical wrappers,
+`src/foundation/messaging/index.ts` (GF10–GF13) and
+`src/foundation/execution/index.ts` (GF14–GF16). No classes, Core numerical wrappers,
 persistence or global gameplay state. Module contracts below remain unchanged.
 
 ## Contracts
@@ -325,4 +326,54 @@ const runtime = createGameplayRuntime(composition, {
 This does not change GF07 transitions or automatically gate messaging by Runtime
 status. A context can dispatch/publish before start or after disposal if the caller
 keeps registrations. Historical runtime inspection is not live authority. No
-clock/RNG, gameplay state, async bus, implicit dependencies or automatic events.
+implicit clock/RNG, gameplay state, async bus, implicit dependencies or automatic events.
+
+## GF14–GF16: execution dependencies and conditional determinism
+
+Canonical owner: `src/foundation/execution/index.ts`, exported only through the
+package root. This independent capability can be captured by existing lifecycle,
+command or event callbacks; those APIs and their failure handling are unchanged.
+
+```ts
+interface GameplayClock { now(): number; }
+interface GameplayRandom { next(): number; }
+interface GameplayIdProvider { next(): string; }
+interface GameplayExecutionDependencies {
+  readonly clock: GameplayClock;
+  readonly random?: GameplayRandom;
+  readonly ids?: GameplayIdProvider;
+}
+// GameplayExecutionContext is opaque, obtained only by creation.
+```
+
+| Function | Contract |
+| --- | --- |
+| `createExecutionContext(dependencies): GameplayExecutionContext` | Requires a clock and validates supplied ports/methods without invoking them. Returns frozen opaque capability. |
+| `readExecutionTime(context): number` | Calls captured clock once; finite nonnegative milliseconds relative to caller origin. Backward movement and fractional values allowed. |
+| `nextExecutionRandom(context): number` | Calls captured RNG once; finite [0,1). Missing RNG throws. |
+| `nextExecutionId(context): string` | Calls captured ID provider once; nonblank string returned unchanged, no Module ID format or uniqueness restriction. Missing provider throws. |
+
+Dependencies/providers must be non-null non-array objects, with callable `now` or
+`next`. Creation captures each original method and its receiver: later replacing
+a slot/method does not rebind the capability. Provider mutable state stays with
+the caller and remains observable through those captured methods. No provider is
+cloned, mutated or frozen. Intentionally sharing one provider shares caller
+state; separate providers remain isolated. Reflection cannot reach callbacks or
+records, and copying brands/properties cannot forge a valid identity.
+
+Malformed dependencies, missing optional ports on access, invalid outputs and
+forged contexts throw TypeError. Provider-thrown values propagate by identity;
+there is no retry, wrapping, sequence rollback, caching or implicit increment.
+When called inside existing callbacks, those owners convert errors according to
+their existing command/event/lifecycle contracts. No request reads another port.
+Creation/inspection/registration/dispatch/publication never read providers unless
+caller code explicitly does so. Ports are synchronous; Promise outputs are invalid.
+
+GF16 guarantees reproducible **Foundation semantic observations** for equivalent
+inputs, selected composition, registration/call order and starting provider and
+callback states. It does not make arbitrary external side effects deterministic.
+No hidden time/RNG/ID source, default implementation, seeded algorithm, scheduler,
+global gameplay store, rollback, persistence or replay service exists. Metadata
+has no implicit timestamps/IDs. Snapshot semantics of the other owners remain
+unchanged. Text/2D/2.5D evidence covers opaque data compatibility only; it does not
+implement coordinates, direction processing, movement, combat or rendering.

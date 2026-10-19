@@ -41,4 +41,4 @@ if (!npmCli || !fs.existsSync(npmCli)) {
 run(process.execPath,[npmCli,'run','build']);
 run(process.execPath,[npmCli,'run','typecheck']);
 run(process.execPath,[npmCli,'run','test:functional']);
-console.log(`VERIFY_PASS harness + build + typecheck + functional package contracts; source_files=${source.length}. GF01–GF13 module/lifecycle/isolation/inspection/messaging contracts verified. Gameplay execution/profile coverage is NOT_EVALUATED.`);
+console.log(`VERIFY_PASS harness + build + typecheck + functional package contracts; source_files=${source.length}. GF01–GF16 Foundation contracts and Text/2D/2.5D data-shape compatibility verified. Gameplay behavior is NOT_EVALUATED; Foundation closure is PENDING Developer acceptance.`);

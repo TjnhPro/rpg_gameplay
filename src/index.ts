@@ -25,3 +25,10 @@ export type {
   CommandFailure, CommandResult, GameplayEvent, EventSubscription,
   EventSubscriptionRegistration, EventFailure, EventPublishResult,
 } from './foundation/messaging/index.js';
+export {
+  createExecutionContext, readExecutionTime, nextExecutionRandom, nextExecutionId,
+} from './foundation/execution/index.js';
+export type {
+  GameplayClock, GameplayRandom, GameplayIdProvider, GameplayExecutionDependencies,
+  GameplayExecutionContext,
+} from './foundation/execution/index.js';
