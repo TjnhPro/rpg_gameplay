@@ -57,7 +57,10 @@ It consumes the Module owner's public definition validator and validated
 composition order; it never registers, selects or resolves a new graph. Explicit
 caller bindings supply synchronous hooks, separate from module metadata. Runtime
 capabilities return immutable lifecycle snapshots; each snapshot has a local
-execution guard against replay/reentrancy. There is no global mutable registry,
+execution guard against replay/reentrancy. A private WeakMap associates capability
+identity with its record; reflection cannot reach bindings or execution mutators.
+It is not enumerable and does not share progress between runtimes.
+There is no global gameplay registry,
 state store, implicit service, application loop or Core numerical operation.
 Inspection exposes frozen lifecycle data only. The static registry stays empty.
 

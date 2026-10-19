@@ -3,7 +3,7 @@
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05) and
 `src/foundation/runtime/index.ts` (GF06–GF09). No classes, Core numerical wrappers,
-persistence or global mutable state. Module contracts below remain unchanged.
+persistence or global gameplay state. Module contracts below remain unchanged.
 
 ## Contracts
 
@@ -182,7 +182,9 @@ Each runtime snapshot is an execution capability that advances once. Always use
 `result.runtime` for the next operation; replaying a consumed snapshot (including
 reentrant calls from its hook) rejects before invoking hooks. Its inspection
 snapshot stays unchanged forever. A small per-snapshot closure guards execution;
-there is no global store or singleton. Concurrent independent runtimes share no
+its record is associated privately by identity, never stored on the public object.
+JavaScript reflection exposes no internal bindings or execution mutators. There
+is no global gameplay store or singleton. Concurrent independent runtimes share no
 framework progress, even when created from the same composition.
 
 Hooks must return undefined synchronously. A throw, Promise/thenable, or other

@@ -255,3 +255,38 @@ test('GF06–GF09: empty, absent hooks and early disposal follow real lifecycle'
   assert.deepEqual(calls,['initialize:unit','dispose:unit']);
   assert.deepEqual(progress(initializedDisposed),[{id:'unit',status:'disposed',completedStages:['initialize','dispose']}]);
 });
+
+test('GF06–GF09 regression: reflection exposes no execution mutators or lifecycle bindings', () => {
+  const calls = [];
+  const bindings = {unit:probe(calls,'unit')};
+  let runtime = create(compositionOf([definition('unit')]),bindings);
+  const created = runtime;
+  function assertOpaque(value) {
+    // Inspect all own descriptors, including symbols/non-enumerable properties,
+    // and any custom prototype. An opaque capability exposes passive metadata only.
+    for (let object = value; object !== null && object !== Object.prototype; object = Object.getPrototypeOf(object)) {
+      for (const key of Reflect.ownKeys(object)) {
+        const descriptor = Object.getOwnPropertyDescriptor(object,key);
+        assert.equal(descriptor.get,undefined,'no callable internal accessors');
+        assert.equal(descriptor.set,undefined,'no callable internal mutators');
+        assert.notEqual(typeof descriptor.value,'function','no executable internals');
+        assert.ok(descriptor.value === null || typeof descriptor.value !== 'object','no internal data/bindings reachable');
+      }
+    }
+    assert.equal(Object.isFrozen(value),true);
+  }
+  for (const transition of [initialize,start,stop,dispose]) {
+    assertOpaque(runtime);
+    const old = inspect(runtime);
+    assert.throws(() => inspect({...runtime}),TypeError);
+    runtime = advance(transition,runtime); // Reflection cannot consume/poison the capability.
+    assert.equal(inspect(created).status,'created');
+    assert.equal(Object.isFrozen(old),true);
+  }
+  assertOpaque(runtime);
+  assert.deepEqual(calls,['initialize:unit','start:unit','stop:unit','dispose:unit']);
+  const failed = initialize(create(compositionOf([definition('unit')]),{unit:{initialize(){throw Error('probe');}}}));
+  assert.equal(failed.ok,false);
+  assertOpaque(failed.runtime);
+  assertOpaque(advance(dispose,failed.runtime));
+});

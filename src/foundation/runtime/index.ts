@@ -37,7 +37,6 @@ export type ModuleLifecycleBindings = Readonly<Partial<Record<LifecycleStage, (c
 export type LifecycleBindings = Readonly<Record<string, ModuleLifecycleBindings>>;
 
 const runtimeIdentity: unique symbol = Symbol('GameplayRuntime');
-const runtimeData = Symbol('RuntimeData');
 
 /** Opaque execution capability; obtain immutable data through inspection. */
 export interface GameplayRuntime {
@@ -52,9 +51,12 @@ interface RuntimeData {
   readonly composition: ModuleComposition;
   readonly bindings: LifecycleBindings;
   readonly snapshot: GameplayRuntimeSnapshot;
-  readonly owns: (value: unknown) => boolean;
   readonly claim: () => void;
 }
+
+// Private capability associations only: no enumerable runtime registry or shared
+// gameplay state. Neither records nor executable bindings live on public objects.
+const runtimeRecords = new WeakMap<GameplayRuntime, RuntimeData>();
 
 const stages: readonly LifecycleStage[] = Object.freeze(['initialize', 'start', 'stop', 'dispose']);
 const targetStatus: Readonly<Record<LifecycleStage, RuntimeStatus>> = Object.freeze({
@@ -117,22 +119,19 @@ function makeRuntime(composition: ModuleComposition, bindings: LifecycleBindings
   // Per-snapshot execution guard, not a global runtime registry. Inspection stays
   // immutable even after this capability advances. Claim before entering user code.
   let advanced = false;
-  const runtime: GameplayRuntime = {
-    [runtimeIdentity]: true,
-    ...{[runtimeData]: Object.freeze({composition, bindings, snapshot,
-      owns: (value: unknown) => value === runtime,
-      claim: () => {
-        if (advanced) throw new TypeError('Runtime snapshot already advanced or transition in progress');
-        advanced = true;
-      },
-    } satisfies RuntimeData)},
-  };
-  return Object.freeze(runtime);
+  const runtime: GameplayRuntime = Object.freeze({[runtimeIdentity]: true as const});
+  runtimeRecords.set(runtime, Object.freeze({composition, bindings, snapshot,
+    claim: () => {
+      if (advanced) throw new TypeError('Runtime snapshot already advanced or transition in progress');
+      advanced = true;
+    },
+  } satisfies RuntimeData));
+  return runtime;
 }
 
 function readRuntime(runtime: GameplayRuntime): RuntimeData {
-  const data = (runtime as unknown as Record<symbol, RuntimeData> | null)?.[runtimeData];
-  if (!data || !data.owns(runtime)) throw new TypeError('Expected a runtime created by createGameplayRuntime');
+  const data = runtimeRecords.get(runtime);
+  if (!data) throw new TypeError('Expected a runtime created by createGameplayRuntime');
   return data;
 }
 
