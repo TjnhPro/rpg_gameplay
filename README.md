@@ -1,10 +1,10 @@
-# RPG Gameplay — v0.1.2 Module Dependency & Composition
+# RPG Gameplay — v0.1.3 Runtime Context & Lifecycle
 
-> **Status: GF01–GF05 implemented; Developer acceptance PENDING.**
+> **Status: GF01–GF09 implemented; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
-> registry, selection, dependency resolution and data composition are available. **No gameplay execution, concrete
-> gameplay modules or lifecycle.**
+> registry, selection, dependency resolution, composition and synchronous lifecycle
+> coordination are available. **No concrete gameplay modules or game loop.**
 
 ## Mục tiêu
 
@@ -36,7 +36,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF05 through an installed-package consumer.
+including GF01–GF09 through an installed-package consumer.
 It does **not** prove gameplay execution or Text/2D/2.5D profiles.
 
 ## External package consumption (local artifacts, no publication)
@@ -46,7 +46,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.1.2.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.1.3.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -81,6 +81,32 @@ registration priority among currently ready modules at each step. They never
 auto-enable or initialize modules; configuration order stays unchanged.
 See [public API](docs/API.md) for types, validation, errors and ownership.
 
+## Runtime context and lifecycle
+
+```ts
+import {
+  createGameplayRuntime, initializeGameplayRuntime, startGameplayRuntime,
+  stopGameplayRuntime, disposeGameplayRuntime, inspectGameplayRuntime,
+} from '@rpg/gameplay';
+
+let runtime = createGameplayRuntime(composition, {
+  'optional-capability': {initialize: context => { void context.moduleId; }},
+}); // No hooks run during creation.
+for (const transition of [initializeGameplayRuntime, startGameplayRuntime,
+  stopGameplayRuntime, disposeGameplayRuntime]) {
+  const result = transition(runtime);
+  runtime = result.runtime;
+  if (!result.ok) break; // Inspect failure/progress; explicitly dispose if needed.
+}
+inspectGameplayRuntime(runtime); // Frozen lifecycle data; no hooks or services.
+```
+
+Use each returned runtime for the next operation. Previous snapshots remain
+inspectable but cannot advance twice. Hook errors return `ok:false` with the
+failed runtime and module/stage diagnostic. Initialize/start follow composition
+order; stop/dispose reverse it. See [API](docs/API.md) for transitions, cleanup,
+composition validation and synchronous callback limits.
+
 Read [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md) and
 [accepted decisions](docs/DECISIONS.md). Future implementation needs an approved
 task recorded under [task execution](docs/TASK_EXECUTION.md).
@@ -103,4 +129,4 @@ task recorded under [task execution](docs/TASK_EXECUTION.md).
 - [OpenAI — Harness engineering](https://openai.com/index/harness-engineering/)
 - [TjnhPro/rpg_core](https://github.com/TjnhPro/rpg_core) (`@rpg/core/kernel`)
 
-Không có migration, legacy compatibility, game examples, renderer hoặc gameplay runtime.
+Không có migration, legacy compatibility, game examples, renderer hoặc game loop.

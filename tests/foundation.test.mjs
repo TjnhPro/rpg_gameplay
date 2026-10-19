@@ -19,7 +19,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF05, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF09, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -32,6 +32,7 @@ test('installed artifact: GF01–GF05, ESM root, closed exports, strict declarat
     const packed = Array.isArray(packedResult) ? packedResult[0] : packedResult['@rpg/gameplay'];
     assert.deepEqual(packed.files.map(x => x.path).sort(), [
       'README.md', 'dist/foundation/modules/index.d.ts', 'dist/foundation/modules/index.js',
+      'dist/foundation/runtime/index.d.ts', 'dist/foundation/runtime/index.js',
       'dist/index.d.ts', 'dist/index.js', 'package.json',
     ]);
     fs.writeFileSync(path.join(temp, 'package.json'), JSON.stringify({name: 'foundation-consumer', private: true, type: 'module'}));
@@ -41,7 +42,7 @@ test('installed artifact: GF01–GF05, ESM root, closed exports, strict declarat
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assert.equal(packageJson.version, '0.1.2');
+    assert.equal(packageJson.version, '0.1.3');
     assert.equal(packageJson.private, true);
     assert.equal(packageJson.type, 'module');
     assert.deepEqual(packageJson.exports, {'.': {types: './dist/index.d.ts', import: './dist/index.js'}});
@@ -49,13 +50,14 @@ test('installed artifact: GF01–GF05, ESM root, closed exports, strict declarat
 import assert from 'node:assert/strict';
 import * as gameplay from '@rpg/gameplay';
 import {calculateResourceTransition} from '@rpg/core/kernel';
-assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModules', 'createModuleRegistry',
- 'getModule', 'isModuleEnabled', 'listModules', 'registerModule', 'resolveModuleDependencies', 'validateModuleDefinition']);
+assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModules', 'createGameplayRuntime', 'createModuleRegistry',
+ 'disposeGameplayRuntime', 'getModule', 'initializeGameplayRuntime', 'inspectGameplayRuntime', 'isModuleEnabled', 'listModules',
+ 'registerModule', 'resolveModuleDependencies', 'startGameplayRuntime', 'stopGameplayRuntime', 'validateModuleDefinition']);
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
  {resource:'energy',before:8,after:5,applied:3,reachedMinimum:false});
-for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', '@rpg/gameplay/foundation/modules']) {
+for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', '@rpg/gameplay/foundation/modules', '@rpg/gameplay/foundation/runtime', '@rpg/gameplay/dist/foundation/runtime/index.js']) {
  await assert.rejects(import(spec), {code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 }
 `);
@@ -72,6 +74,14 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     assert.match(compositionEvidence, /# skipped 0/);
     console.log('INSTALLED_COMPOSITION_CONTRACTS_PASS GF04–GF05; consumer_tests=4 skipped=0');
     fs.copyFileSync(path.join(root, 'tests/consumers/composition.ts'), path.join(temp, 'composition.ts'));
+    fs.copyFileSync(path.join(root, 'tests/consumers/runtime.mjs'), path.join(temp, 'runtime.mjs'));
+    const runtimeEvidence = exec(['--test', '--test-reporter=tap', 'runtime.mjs'], temp);
+    assert.match(runtimeEvidence, /# pass 8/);
+    assert.match(runtimeEvidence, /# skipped 0/);
+    console.log('INSTALLED_RUNTIME_CONTRACTS_PASS GF06–GF09; consumer_tests=8 skipped=0');
+    fs.copyFileSync(path.join(root, 'tests/consumers/runtime.ts'), path.join(temp, 'runtime.ts'));
+    const runtimeDeclarations = fs.readFileSync(path.join(installed, 'dist/foundation/runtime/index.d.ts'), 'utf8');
+    assert.doesNotMatch(runtimeDeclarations, /\b(?:RuntimeData|snapshotComposition|snapshotBindings|readRuntime|makeRuntime|transition|WeakMap)\b/);
     const declarations = fs.readFileSync(path.join(installed, 'dist/foundation/modules/index.d.ts'), 'utf8');
     assert.doesNotMatch(declarations, /\b(?:isRecord|requireId|readIds|describeCycle|Map|WeakMap)\b/);
     fs.writeFileSync(path.join(temp, 'consumer.ts'), `
@@ -89,7 +99,7 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts', 'composition.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
   } finally {
     const resolved = fs.realpathSync(temp);

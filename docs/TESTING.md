@@ -28,7 +28,9 @@ Avoid forcing Inventory/Item/Progression through three duplicate fixtures unless
 
 The package uses Node's built-in test runner (`tests/*.test.mjs`). The functional gate
 proves installed package/declaration/Kernel integration contracts and verification
-failure propagation plus installed-package GF01–GF05 contracts. The consumer
+failure propagation plus installed-package GF01–GF09 contracts. Lifecycle probes record explicit hook order, progress and failure/cleanup
+without concrete gameplay modules. Runtime snapshots and replay/reentrancy controls
+are tested alongside independent instances. The consumer
 fixtures under `tests/consumers/` are copied into the external installation and
 run there; they never import repository source. They contain no game or gameplay profile
 evidence. Build before running `npm run test:functional` directly; `verify` builds

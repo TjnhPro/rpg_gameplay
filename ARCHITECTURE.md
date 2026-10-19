@@ -36,7 +36,7 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
-`src/index.ts` exports GF01–GF05 declarations/registry/configuration/dependency/composition functions.
+`src/index.ts` exports GF01–GF05 module functions and GF06–GF09 lifecycle functions.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
@@ -51,6 +51,18 @@ state, with no singleton or module execution. Composition uses the canonical
 dependency resolver; registration/configuration keep their original semantics. They are separate from the static
 architecture registry `harness/modules.json`, which remains empty until real
 gameplay feature modules are implemented. No Foundation placeholder is registered.
+
+GF06–GF09 have one separate Foundation owner: `src/foundation/runtime/`.
+It consumes the Module owner's public definition validator and validated
+composition order; it never registers, selects or resolves a new graph. Explicit
+caller bindings supply synchronous hooks, separate from module metadata. Runtime
+capabilities return immutable lifecycle snapshots; each snapshot has a local
+execution guard against replay/reentrancy. A private WeakMap associates capability
+identity with its record; reflection cannot reach bindings or execution mutators.
+It is not enumerable and does not share progress between runtimes.
+There is no global gameplay registry,
+state store, implicit service, application loop or Core numerical operation.
+Inspection exposes frozen lifecycle data only. The static registry stays empty.
 
 - Reusable module source: `src/modules/<module-id>/`.
 - Module register: `harness/modules.json`, initially empty.

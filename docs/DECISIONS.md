@@ -37,3 +37,12 @@ data composition via that canonical resolver. Earliest registration among
 currently ready modules wins at each step. GF01–GF03 retain their behavior;
 there is no auto-enablement or execution. Context/lifecycle and GF06+ remain
 undecided until their own approved tasks.
+
+The approved v0.1.3 task adds GF06–GF09 at `src/foundation/runtime/`: explicit
+synchronous lifecycle bindings, immutable runtime progress and read-only
+inspection. Bindings stay separate from GF01 metadata and GF05 composition.
+Creation validates the supplied order without dependency resolution. Each
+snapshot advances once; errors retain partial progress and require explicit
+cleanup. No shared mutable registry, implicit service, async orchestration,
+command/event system, clock/RNG, game loop or concrete gameplay implementation.
+GF10+ remains outside this task. Developer acceptance remains a separate gate.
