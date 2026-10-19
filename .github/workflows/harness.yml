@@ -5,20 +5,22 @@ on:
 
 jobs:
   verify:
-    name: Harness & functional gate (Node ${{ matrix.node }})
-    runs-on: ubuntu-latest
+    name: Foundation (${{ matrix.os }}, Node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         node: ['22', '24']
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      - name: Install dependencies when lockfile exists
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci --ignore-scripts
-          fi
+      - name: Pin npm tooling
+        run: npm install --global npm@12.2.0
+      - name: Rebuild pinned Core artifact
+        run: npm run core:prepare
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
       - name: Run gates
         run: npm run verify

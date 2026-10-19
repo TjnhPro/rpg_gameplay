@@ -27,6 +27,7 @@ Preflight repo & approved task -> xác nhận boundaries -> implement chỉ tron
 ## Quick commands
 - `npm run harness:check`: check registry, imports, module boundary.
 - `npm run harness:selftest`: chứng minh checker bắt được các vi phạm cơ bản.
-- `npm run verify`: chỉ Harness ở scaffold; **bắt buộc typecheck & functional tests khi đã có production `src/`**.
+- Fresh install: `npm run core:prepare` then `npm ci --ignore-scripts` (see Core integration).
+- `npm run verify`: boundaries, self-tests, build, strict typecheck and installed-package functional contracts. Gameplay profiles remain NOT_EVALUATED in v0.1.0.
 
 Không claim gameplay pass khi chưa có gameplay. Không sửa baseline/expected chỉ để làm test xanh.

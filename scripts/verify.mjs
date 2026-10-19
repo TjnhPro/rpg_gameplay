@@ -25,9 +25,9 @@ if (source.length===0) {
   process.exit(0);
 }
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
-for (const name of ['typecheck','test:functional']) {
+for (const name of ['build','typecheck','test:functional']) {
   if (typeof pkg.scripts?.[name]!=='string' || pkg.scripts[name].trim()==='') {
-    console.error(`VERIFY_FAIL: production src exists but package.json is missing '${name}' script. Add real TS & gameplay function test tooling in approved task.`);
+    console.error(`VERIFY_FAIL: production src exists but package.json is missing '${name}' script. Add real build, TS and functional contract tooling in approved task.`);
     process.exit(1);
   }
 }
@@ -38,6 +38,7 @@ if (!npmCli || !fs.existsSync(npmCli)) {
   console.error('VERIFY_FAIL: npm CLI unavailable. Run verification with npm run verify.');
   process.exit(1);
 }
+run(process.execPath,[npmCli,'run','build']);
 run(process.execPath,[npmCli,'run','typecheck']);
 run(process.execPath,[npmCli,'run','test:functional']);
-console.log(`VERIFY_PASS harness + declared production gates; source_files=${source.length}. Review test evidence for actual requirements/profile coverage.`);
+console.log(`VERIFY_PASS harness + build + typecheck + functional package contracts; source_files=${source.length}. Gameplay behavior/profile coverage is NOT_EVALUATED in v0.1.0.`);
