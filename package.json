@@ -1,12 +1,27 @@
 {
   "name": "@rpg/gameplay",
-  "version": "0.0.0-harness-foundation",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {".": {"types": "./dist/index.d.ts", "import": "./dist/index.js"}},
+  "files": ["dist", "README.md"],
+  "packageManager": "npm@12.2.0",
   "engines": {"node": ">=22.13.0"},
   "scripts": {
+    "core:prepare": "node scripts/prepare-core.mjs",
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:functional": "node --test tests/foundation.test.mjs tests/verify.test.mjs",
+    "prepack": "npm run build",
     "harness:check": "node scripts/check-boundaries.mjs",
     "harness:selftest": "node scripts/harness-selftest.mjs",
     "verify": "node scripts/verify.mjs"
+  },
+  "peerDependencies": {"@rpg/core": "2.0.0"},
+  "devDependencies": {
+    "@rpg/core": "file:.artifacts/rpg-core-2.0.0.tgz",
+    "typescript": "6.0.3"
   }
 }

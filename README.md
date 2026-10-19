@@ -1,7 +1,9 @@
-# RPG Gameplay — Harness Foundation
+# RPG Gameplay — v0.1.0 Package Foundation
 
-> **Status: SCAFFOLD ONLY.** Đây là repository mới cho L2 `rpg_gameplay`.
-> ZIP này cài đặt knowledge base, quy trình approved-task, module registry và các kiểm tra Harness ban đầu. **Chưa có gameplay implementation hoặc gameplay functional tests.**
+> **Status: Foundation implemented; Developer acceptance PENDING.**
+> Private native ESM/strict TypeScript package with installed-package contract
+> verification and pinned Core Kernel integration. **No gameplay runtime, modules
+> or gameplay behavior yet.** Root exports are intentionally empty.
 
 ## Mục tiêu
 
@@ -14,14 +16,47 @@ Phát triển thư viện **headless, function-first, reusable RPG gameplay** d�
 
 ## Khởi tạo
 
-1. Giải nén ZIP; thư mục `rpg_gameplay/` là repo root.
-2. `cd rpg_gameplay && git init` (hoặc copy nội dung vào repo mới).
-3. Dùng Node.js >=22.13.0: chạy `npm run verify` để kiểm tra **Harness scaffold**.
-4. Đọc [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md), [docs/DECISIONS.md](docs/DECISIONS.md).
-5. Khi có *task đã duyệt từ ChatGPT*, lưu plan theo [docs/TASK_EXECUTION.md](docs/TASK_EXECUTION.md), rồi giao agent triển khai.
-6. Trước task gameplay đầu tiên, pin/install artifact của `rpg_core` theo [docs/CORE_INTEGRATION.md](docs/CORE_INTEGRATION.md) và bổ sung `typecheck` + `test:functional` ở task đã duyệt.
+Clone this repository. Development/CI uses npm **12.2.0** and compatible Node
+(22.22.2+, or 24.15+); library runtime requires Node >=22.13.0. Git and network
+access to GitHub/npm are required to reconstruct the pinned Core artifact.
 
-`npm run verify` **chỉ thông báo Harness PASS** khi chưa có `src/`; không được diễn giải là 14 chức năng gameplay đã kiểm thử.
+```sh
+npm install --global npm@12.2.0
+npm run core:prepare
+npm ci --ignore-scripts
+npm run verify
+```
+
+`core:prepare` builds/packs the exact revision in [Core pin](harness/core-pin.json)
+into ignored `.artifacts/`, checks its SHA-512 against the lockfile, and never
+changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
+
+`npm run build` emits `dist/index.js` and `dist/index.d.ts`. `npm run typecheck`
+checks strict NodeNext source; `npm run test:functional` requires a preceding
+build and tests installed package contracts/Kernel integration plus gate failures.
+`npm run verify` runs boundaries, self-tests, build, typecheck and these contracts.
+It does **not** prove gameplay behavior or Text/2D/2.5D profiles.
+
+## External package consumption (local artifacts, no publication)
+
+`npm pack --pack-destination .artifacts` builds a private gameplay tarball. In an
+independent ESM project, install **both** that tarball and the prepared Core tarball
+using paths appropriate to that project:
+
+```sh
+npm install /path/to/rpg-gameplay-0.1.0.tgz /path/to/rpg-core-2.0.0.tgz
+```
+
+Core is an exact `2.0.0` peer so the package contains no machine-local dependency
+path. Use the pinned artifact, not an assumed registry package. The repository's
+dev dependency/lockfile pins the local artifact for development and CI. The
+consumer is responsible for supplying that same Core artifact. Only import
+`@rpg/gameplay` and `@rpg/core/kernel`; gameplay deep exports are closed. No game
+API is available yet. [Core integration](docs/CORE_INTEGRATION.md) explains the pin.
+
+Read [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md) and
+[accepted decisions](docs/DECISIONS.md). Future implementation needs an approved
+task recorded under [task execution](docs/TASK_EXECUTION.md).
 
 ## Điều hướng
 
@@ -41,4 +76,4 @@ Phát triển thư viện **headless, function-first, reusable RPG gameplay** d�
 - [OpenAI — Harness engineering](https://openai.com/index/harness-engineering/)
 - [TjnhPro/rpg_core](https://github.com/TjnhPro/rpg_core) (`@rpg/core/kernel`)
 
-Không có migration, legacy compatibility, game examples, renderer hoặc gameplay code trong scaffold.
+Không có migration, legacy compatibility, game examples, renderer hoặc gameplay runtime.

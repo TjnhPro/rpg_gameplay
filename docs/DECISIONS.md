@@ -21,4 +21,8 @@ This document captures decisions already made with Developer, not a proposal to 
 
 ## Still deliberately undecided
 
-Exact module splits, exported APIs, object vs functional store contracts, package boundaries, runtime adapters, test runner/version, persistence schema, detailed gameplay mechanics, turn/realtime scheduler — decide **per approved task** with evidence. Harness's initial CLI runs dependency-free under Node; introduce TS tooling with the first module task.
+Exact module splits, gameplay APIs, object vs functional store contracts, runtime
+adapters, persistence schema, gameplay mechanics, turn/realtime scheduler — decide
+**per approved task** with evidence. The approved v0.1.0 task establishes one
+private native ESM package, strict TypeScript 6.0.3, and Node's built-in contract
+test runner; it does not decide any gameplay contract or runtime.

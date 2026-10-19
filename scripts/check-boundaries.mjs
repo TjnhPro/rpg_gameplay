@@ -111,6 +111,17 @@ function moduleFor(file, modulesRoot) {
 export function inspect(rootDirectory) {
   const root=path.resolve(rootDirectory), errors=[];
   const modules=readRegistry(root,errors);
+  // v0.1.0 approves only Core as a runtime package. A future approved task may
+  // extend this policy; arbitrary external packages cannot bypass L2 boundaries.
+  const packagePath=path.join(root,'package.json');
+  if (fs.existsSync(packagePath)) {
+    const pkg=JSON.parse(fs.readFileSync(packagePath,'utf8'));
+    for(const group of ['dependencies','optionalDependencies','peerDependencies']) {
+      for(const name of Object.keys(pkg[group]??{})) {
+        if(name!=='@rpg/core') errors.push(`package.json: unapproved production dependency '${name}'`);
+      }
+    }
+  }
   const src=path.join(root,'src'), modulesRoot=path.join(src,'modules');
   for (const name of BANNED_TOP_LEVEL) {
     const folder=path.join(root,name);
@@ -141,7 +152,10 @@ export function inspect(rootDirectory) {
       if (spec.startsWith('@/') || spec.startsWith('~/')) {
         errors.push(`${label}: path aliases require explicit boundary-checker support. Use relative imports for now.`);continue;
       }
-      if (!spec.startsWith('.')) continue;
+      if (!spec.startsWith('.')) {
+        errors.push(`${label}: unapproved external import '${spec}'; only @rpg/core/kernel is approved`);
+        continue;
+      }
       const target=path.resolve(path.dirname(file),spec);
       if (!isInside(src,target)) {
         errors.push(`${label}: relative import '${spec}' escapes L2 production src/`);continue;
@@ -154,11 +168,9 @@ export function inspect(rootDirectory) {
         if (owner && !modules.get(owner)?.dependencies?.includes(targetOwner)) {
           errors.push(`${label}: undeclared module dependency ${owner} -> ${targetOwner}`);continue;
         }
-        if (owner) {
-          const relativeToTarget=path.relative(path.join(modulesRoot,targetOwner),target).replaceAll(path.sep,'/');
-          if (!/^(?:index(?:\.(?:[cm]?[jt]s|tsx))?)$/.test(relativeToTarget)) {
-            errors.push(`${label}: cross-module import must target ${targetOwner}/index public entry, not '${spec}'`);
-          }
+        const relativeToTarget=path.relative(path.join(modulesRoot,targetOwner),target).replaceAll(path.sep,'/');
+        if (!/^(?:index(?:\.(?:[cm]?[jt]s|tsx))?)$/.test(relativeToTarget)) {
+          errors.push(`${label}: cross-module import must target ${targetOwner}/index public entry, not '${spec}'`);
         }
       }
     }

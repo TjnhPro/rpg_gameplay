@@ -1,6 +1,8 @@
 # Harness Features H01–H16 — scope vs. implementation
 
-**Important:** A feature listed here is NOT proof of implementation. Foundation includes only minimal docs/guard checks. Verify functional coverage via actual runnable tests once gameplay exists.
+**Important:** A feature listed here is NOT proof of gameplay implementation.
+v0.1.0 adds real package/Kernel integration contracts and strict build tooling;
+gameplay functional coverage remains absent until approved gameplay tasks.
 
 | ID | Harness capability | Foundation status |
 | --- | --- | --- |
@@ -14,8 +16,8 @@
 | H08 | Capability Gap & Change Control | Policy + escalation/STOP workflow |
 | H09 | Three-Profile Functional Verification | Defined contract: Text/2D/2.5D functional scenarios, not apps; no scenarios yet |
 | H10 | Deterministic Functional Test Harness | Design policy: injected RNG/clock; harness checks obvious violations; no simulator/app |
-| H11 | Contract & Integration Test Harness | Test quality policy and evidence template; no gameplay tests yet |
-| H12 | Verification Gates & CI | Implemented: scaffold harness gate + CI; gameplay gates required when source is introduced |
+| H11 | Contract & Integration Test Harness | Installed package/Kernel contracts and orchestration controls; no gameplay tests yet |
+| H12 | Verification Gates & CI | Boundaries + build + typecheck + functional contracts; Windows/Linux, Node 22/24 |
 | H13 | Agent Task Execution Protocol | Implemented: approved-plan-first docs and task template |
 | H14 | Approval & Evidence Gates | Policy/report templates; Developer acceptance manual |
 | H15 | Architecture Drift & Quality Audit | P1 after real module experience |
@@ -25,4 +27,5 @@
 
 Static regex import guard catches conventional literal import/export and some obvious dynamic imports; it is **not** a full TypeScript AST security analyzer. Refine via compiler API once TypeScript is installed in an approved module task. Some invariants are semantic/manual, particularly no duplicate implementation and meaningfully proven reuse.
 
-`npm run verify` at empty scaffold reports `GAMEPLAY_NOT_EVALUATED`; it is not allowed to claim the framework works until real function tests run.
+`npm run verify` proves v0.1.0 package infrastructure; gameplay profiles remain
+NOT_EVALUATED. It does not prove the framework's future gameplay capabilities.

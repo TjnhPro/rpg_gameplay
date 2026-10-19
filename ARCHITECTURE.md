@@ -32,6 +32,18 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 
 ## Module boundary (initial convention; can evolve with approved task)
 
+### v0.1.0 public package boundary
+
+`@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
+Only the root export is exposed, with JS and declarations in `dist/`. Its current
+`src/index.ts` exports no gameplay API. Core 2.0.0 is an exact peer; development
+and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
+Only Core is currently approved as a runtime package. The import/dependency guard
+rejects other external runtime dependencies pending an approved task.
+Tests/tooling run outside production `src/`; no engine/adapters or global gameplay
+state are introduced. Module registry remains empty. Root and sibling re-exports
+must use each module's public entrypoint.
+
 - Reusable module source: `src/modules/<module-id>/`.
 - Module register: `harness/modules.json`, initially empty.
 - Sibling imports must reference declared dependencies and sibling public entry point, not private implementation files.

@@ -22,5 +22,9 @@ Rules:
 - Production `src/` is headless; no UI/renderers/engine package or Node built-ins for gameplay.
 - Core numerical computation is delegated to `@rpg/core/kernel` only.
 - No module added to registry simply to satisfy catalog count; no empty placeholders.
+- In v0.1.0 the registry stays empty; `src/index.ts` is the only source file and
+  has no gameplay exports. Root re-exports follow the same public-entrypoint
+  boundary as sibling imports. Core is the only approved runtime package;
+  dependency declarations and external source imports are checked.
 
 The script is a **minimum static enforcement**. Semantic independence, registration/disable behavior and duplicate implementations require tests/review once modules exist.

@@ -26,6 +26,12 @@ Avoid forcing Inventory/Item/Progression through three duplicate fixtures unless
 
 ## Layers of tests
 
+v0.1.0 uses Node's built-in test runner (`tests/*.test.mjs`). The functional gate
+proves installed package/declaration/Kernel integration contracts and verification
+failure propagation. It contains no gameplay implementation or gameplay profile
+evidence. Build before running `npm run test:functional` directly; `verify` builds
+first. Expected values and requirement mapping are in the implementation report.
+
 - **Unit/function**: public function, success/rejection, result and ownership.
 - **Contract**: boundary, adapter interface, valid/invalid data, invariants.
 - **Integration at function level**: composition of multiple exported functions with direct inputs/outputs; still no game loop/app.
