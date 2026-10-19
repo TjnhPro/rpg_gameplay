@@ -1,4 +1,4 @@
-# Verification gates — v0.2.5
+# Verification gates — v0.3.1
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
@@ -111,3 +111,16 @@ Current total: 54 installed contracts (29 GF + 22 EC + 3 PG), 2 outer tests,
 zero skips. Historical milestone totals above describe their original checkpoints.
 Gameplay profile behavior stays NOT_EVALUATED; Progression IN_PROGRESS, acceptance
 PENDING final v0.3.5. Exact-head push and PR CI must pass Windows/Linux Node22/24.
+
+## PG04–PG06 current milestone gate
+
+npm run test:functional executes targeted experience.mjs from a fresh packed,
+installed @rpg/gameplay@0.3.1 consumer (three contracts, zero skips), then strict
+external NodeNext including experience.ts. The runner requires the marker
+INSTALLED_EXPERIENCE_CONTRACTS_PASS and literal EXPERIENCE_TRACE_PASS; test/type/
+missing-fixture failure propagates. All prior 54 installed contracts retained:
+57 total, 2 outer tests, zero skips. Current full npm run verify still requires
+boundaries,self-tests,build,typecheck,functional and fail-closed gate regression.
+Earlier counts describe historical milestones. Exact-head push and PR CI must
+both pass Windows/Linux Node22/24. Gameplay profiles remain NOT_EVALUATED;
+Progression IN_PROGRESS, Developer acceptance PENDING final v0.3.5 review.

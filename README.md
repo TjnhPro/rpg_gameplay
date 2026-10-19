@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.3.0 Progression Foundation
+# RPG Gameplay — v0.3.1 Experience System
 
-> **Status: merged Entity v0.2.5 baseline; PG01–PG03 implemented. Progression phase IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.**
+> **Status: merged Entity v0.2.5 baseline; PG01–PG06 implemented. Progression phase IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18 and PG01–PG03 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18 and PG01–PG06 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -129,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.3.0.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.3.1.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -300,3 +300,20 @@ number only; cumulative versus level-local semantics remain undecided. No defaul
 level-up, curves, caps, points or automatic events. Optional Progression requires
 explicit Entity selection when composed; neither is automatically enabled.
 See [checkpoint report](docs/reports/v0.3.0-progression-foundation.md).
+
+## Experience System (PG04–PG06)
+
+```ts
+import {gainExperience, adjustExperience} from '@rpg/gameplay';
+const gained = gainExperience(progression, 250); // EXP1500 -> 1750; level10 unchanged
+const reduced = adjustExperience(gained.state, {delta: -100}); // EXP1650
+const capped = gainExperience(reduced.state, 100, {maximumExperience: 1700});
+// transition: before1650, after1700, requestedDelta100, appliedDelta50, limitedtrue
+```
+
+Read EXP directly from the readonly state. Operations return frozen state and
+transition diagnostics; old snapshots remain intact. Minimum is 0; optional finite
+nonnegative maximum belongs to the current operation and must not be below current
+EXP. Uncapped overflow throws TypeError; a valid cap bounds intermediate overflow.
+EXP stays a recorded scalar, with no cumulative/local conversion or automatic
+level-up. See [v0.3.1 evidence](docs/reports/v0.3.1-experience-system.md).

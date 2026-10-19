@@ -42,6 +42,5 @@ v0.2.5 phase report. No global registry, persistent storage or gameplay engine.
 
 Entity v0.2.5 EC01–EC18 is the merged PR #7 baseline. PG01–PG03 now provides
 optional Progression identity, explicit level/EXP contracts and immutable validated
-creation through one shared actor API. PG04–PG19 remain NOT_STARTED. This does not
-implement experience gain, advancement, curves, points or skill upgrades. Phase
+creation through one shared actor API. PG04–PG06 now adds explicit scalar gain/adjustment; PG07–PG19 remain NOT_STARTED. No advancement, curves, points or skill upgrades are implemented. Phase
 IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.

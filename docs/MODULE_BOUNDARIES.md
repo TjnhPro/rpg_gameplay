@@ -75,3 +75,13 @@ createEntity/EntitySnapshot, with no private helpers or duplicate EC03 validator
 Root re-exports only the public entrypoint. Both modules must be explicitly
 selected for composition; Foundation resolver behavior remains unchanged.
 No new Foundation owner, numerical calculator, runtime package or global store.
+
+## PG04–PG06 same canonical transition owner
+
+Experience remains in progression/index.ts, with no new registry/module/dependency.
+Shared private PG03 shape/numeric helpers validate creation and transitions;
+adjustExperience owns the only EXP update path, gainExperience delegates. No second
+EXP store, Foundation dependency or Entity private import. Only task-approved
+scalar addition/floor/cap/after-before diagnostics are performed at L2; no curve,
+modifier, rounding algorithm or fabricated Kernel resource policy is introduced.
+Core and Entity ownership/delegation are unchanged.

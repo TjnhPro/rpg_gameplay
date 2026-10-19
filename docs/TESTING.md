@@ -143,3 +143,16 @@ unsafe levels, symbol/nonenumerable extras and reflection mutation are covered.
 NodeNext usage. No simulator or additional gameplay behavior is introduced.
 All 51 old GF/EC contracts remain unchanged; total 54 installed contracts plus
 2 outer tests, zero skips. R01–R24 mapping is in the v0.3.0 checkpoint report.
+
+## PG04–PG06 installed transition evidence
+
+experience.mjs adds three grouped external installed-package contracts: literal
+signed numeric/zero/floor/cap/fraction/overflow outcomes and frozen results; closed
+state/options validation including no-op boundaries and getter non-evaluation,
+atomic failure and detachment; actor/domain isolation, unchanged level and two
+independent sessions matching the literal 100->350->250->300 oracle with implicit
+time/RNG disabled. Each group proves distinct behavior; no profile duplication.
+experience.ts checks root-only strict NodeNext exports and readonly result/input/
+diagnostic contracts. Existing GF/EC/PG01–PG03 consumer bodies remain unchanged.
+Total 57 installed contracts, 2 outer tests, zero skips; R01–R24 mapping in v0.3.1 report.
+Source review supplements no-automatic-effects and single-update-path evidence.

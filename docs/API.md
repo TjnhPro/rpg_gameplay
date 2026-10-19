@@ -1,4 +1,4 @@
-# Public API — v0.3.0 (GF01–GF16, EC01–EC18, PG01–PG03)
+# Public API — v0.3.1 (GF01–GF16, EC01–EC18, PG01–PG06)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -748,3 +748,57 @@ Progression is optional: explicit registry definitions and selection of both ent
 and progression compose dependency-first. Missing selected Entity fails using the
 existing resolver. Creation itself requires no registry/runtime. No transitions,
 EXP curves/caps, points/ranks or extra state bags are exposed at v0.3.0.
+
+## PG04–PG06 recorded Experience transitions
+
+Same canonical Progression owner. Additive root exports: gainExperience and
+adjustExperience; three readonly types. Current root inventory: 49 functions/54 types.
+No redundant EXP getter: read ProgressionState.experience.
+
+```ts
+interface ExperienceAdjustment {
+  readonly delta: number;
+  readonly maximumExperience?: number;
+}
+interface ExperienceTransition {
+  readonly entityId: string;
+  readonly before: number;
+  readonly after: number;
+  readonly requestedDelta: number;
+  readonly appliedDelta: number;
+  readonly limited: boolean;
+}
+interface ExperienceTransitionResult {
+  readonly state: ProgressionState;
+  readonly transition: ExperienceTransition;
+}
+function adjustExperience(state: ProgressionState,
+  adjustment: ExperienceAdjustment): ExperienceTransitionResult;
+function gainExperience(state: ProgressionState, amount: number,
+  policy?: Omit<ExperienceAdjustment, 'delta'>): ExperienceTransitionResult;
+```
+
+Both validate a closed own-data entityId/level/experience state on every call,
+including no-ops. Identity is a nonblank string preserved exactly; PG03 level/EXP
+numeric validation is shared unchanged. Structural data need not be pre-frozen or
+created by this package. Required inherited/accessor fields and any own unknown
+string/symbol/nonenumerable field reject without calling getters. Null-prototype
+data remains valid. Adjustment has exactly delta and optional maximumExperience;
+gain policy allows only maximumExperience. Inherited optional maximum rejects.
+An own maximum with value undefined is invalid; omit the property instead.
+
+Delta must be finite; gain additionally requires nonnegative amount, including 0.
+Optional maximum must be finite/nonnegative and at least current EXP, even if the
+requested change would reduce EXP. Invalid inputs and uncapped nonfinite results
+throw TypeError before returning anything; caller objects stay unchanged.
+One canonical update adds delta using JavaScript number semantics, floors below 0
+and caps above explicit maximum. A finite valid cap also handles intermediate
+positive overflow. No implicit MAX_SAFE_INTEGER bound or decimal/precision policy.
+
+Result, next state and diagnostic are frozen detached objects. entityId/level stay
+unchanged; maximum is not stored. appliedDelta is exactly after-before, signed;
+limited means floor/cap clipped the requested sum. Reaching a bound exactly or a
+zero-delta no-op is not limited. Native number rounding alone does not set limited:
+for example 1e20+1 remains 1e20, appliedDelta 0, limited false. No automatic advancement,
+EXP representation conversion, event, provider read or Entity-domain update.
+EXP remains a recorded scalar, not implicitly cumulative or level-local.
