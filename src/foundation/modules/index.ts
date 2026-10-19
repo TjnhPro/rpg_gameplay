@@ -100,3 +100,68 @@ export function configureModules(registry: ModuleRegistry, selection: ModuleSele
 export function isModuleEnabled(configuration: ModuleConfiguration, id: string): boolean {
   return configuration.enabledModuleIds.includes(id);
 }
+
+/** Validated selection data, not a runtime instance or an execution result. */
+export interface ModuleComposition {
+  readonly moduleIds: readonly string[];
+  readonly definitions: readonly GameplayModuleDefinition[];
+}
+
+// Called only when no remaining node is ready: each has an edge to another
+// remaining node. Following those edges must reach a cycle; omit any prefix.
+function describeCycle(pending: readonly GameplayModuleDefinition[]): string {
+  const remaining = new Map(pending.map(definition => [definition.id, definition]));
+  const trail: string[] = [];
+  let current = pending[0]!;
+  while (!trail.includes(current.id)) {
+    trail.push(current.id);
+    const dependency = current.dependencies.find(id => remaining.has(id))!;
+    current = remaining.get(dependency)!;
+  }
+  return [...trail.slice(trail.indexOf(current.id)), current.id].join(' -> ');
+}
+
+/** Resolve only selected modules. Throws TypeError; never auto-enables dependencies. */
+export function resolveModuleDependencies(registry: ModuleRegistry, configuration: ModuleConfiguration): readonly string[] {
+  if (!isRecord(configuration)) throw new TypeError('Module configuration must be an object');
+  const enabled = new Set(readIds(configuration.enabledModuleIds, 'enabledModuleIds'));
+  for (const id of enabled) {
+    if (getModule(registry, id) === undefined) throw new TypeError(`Unknown enabled module '${id}'`);
+  }
+  for (const definition of listModules(registry)) {
+    if (!definition.optional && !enabled.has(definition.id)) {
+      throw new TypeError(`Required module '${definition.id}' is missing from configuration`);
+    }
+  }
+  const pending = listModules(registry).filter(definition => enabled.has(definition.id));
+  for (const definition of pending) {
+    for (const dependency of definition.dependencies) {
+      if (getModule(registry, dependency) === undefined) {
+        throw new TypeError(`Module '${definition.id}' requires unknown dependency '${dependency}'`);
+      }
+      if (!enabled.has(dependency)) {
+        throw new TypeError(`Module '${definition.id}' requires dependency '${dependency}' to be enabled`);
+      }
+    }
+  }
+  const resolved: string[] = [];
+  const completed = new Set<string>();
+  while (pending.length > 0) {
+    // Reconsider registration priority after every removal, including nodes
+    // that just became ready; batching a ready queue would change this contract.
+    const index = pending.findIndex(definition => definition.dependencies.every(id => completed.has(id)));
+    if (index === -1) throw new TypeError(`Module dependency cycle: ${describeCycle(pending)}`);
+    const [definition] = pending.splice(index, 1);
+    resolved.push(definition!.id);
+    completed.add(definition!.id);
+  }
+  return Object.freeze(resolved);
+}
+
+/** Canonical GF04 resolution plus corresponding definitions; performs no execution. */
+export function composeModules(registry: ModuleRegistry, configuration: ModuleConfiguration): ModuleComposition {
+  const moduleIds = resolveModuleDependencies(registry, configuration);
+  // Registered definitions are validated frozen snapshots, safe to share.
+  const definitions = moduleIds.map(id => getModule(registry, id)!);
+  return Object.freeze({moduleIds, definitions: Object.freeze(definitions)});
+}

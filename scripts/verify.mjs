@@ -41,4 +41,4 @@ if (!npmCli || !fs.existsSync(npmCli)) {
 run(process.execPath,[npmCli,'run','build']);
 run(process.execPath,[npmCli,'run','typecheck']);
 run(process.execPath,[npmCli,'run','test:functional']);
-console.log(`VERIFY_PASS harness + build + typecheck + functional package contracts; source_files=${source.length}. GF01–GF03 registration/configuration contracts verified. Gameplay execution/profile coverage is NOT_EVALUATED.`);
+console.log(`VERIFY_PASS harness + build + typecheck + functional package contracts; source_files=${source.length}. GF01–GF05 registration/configuration/dependency/composition contracts verified. Gameplay execution/profile coverage is NOT_EVALUATED.`);

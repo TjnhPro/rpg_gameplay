@@ -22,9 +22,9 @@ Rules:
 - Production `src/` is headless; no UI/renderers/engine package or Node built-ins for gameplay.
 - Core numerical computation is delegated to `@rpg/core/kernel` only.
 - No module added to registry simply to satisfy catalog count; no empty placeholders.
-- The architecture registry stays empty in v0.1.1. GF01–GF03 infrastructure has
+- The architecture registry stays empty in v0.1.2. GF01–GF05 infrastructure has
   one owner at `src/foundation/modules/`; root exports its public functions/types.
-  This is separate from consumer registration/selection state, with no runtime.
+  This is separate from consumer registration/selection/composition state, with no runtime.
   Root re-exports follow the same public-entrypoint
   boundary as sibling imports. Core is the only approved runtime package;
   dependency declarations and external source imports are checked.

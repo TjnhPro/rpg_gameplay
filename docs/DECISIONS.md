@@ -30,3 +30,10 @@ test runner; it does not decide any gameplay contract or runtime.
 The approved v0.1.1 task adds GF01–GF03: one Foundation owner for immutable
 module declarations/registration/selection. It does not decide dependency
 resolution, composition, lifecycle or concrete gameplay feature contracts.
+
+The approved v0.1.2 task adds GF04–GF05 in the same Foundation owner: selected
+dependency validation and deterministic dependency-first ordering, then immutable
+data composition via that canonical resolver. Earliest registration among
+currently ready modules wins at each step. GF01–GF03 retain their behavior;
+there is no auto-enablement or execution. Context/lifecycle and GF06+ remain
+undecided until their own approved tasks.
