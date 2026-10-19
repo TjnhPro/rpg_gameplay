@@ -47,3 +47,12 @@ blockers immediately. Only v0.2.5 performs full phase closure/regression and mov
 the PR to Ready for Review after required gates. Developer decides final phase
 acceptance and merge. Existing scope/authority rules remain in force; checkpoint
 completion does not authorize the next milestone without its approved task.
+
+## Active Progression phase
+
+Approved task: `tasks/active/v0.3.0-progression-foundation.md`.
+Phase branch `feat/v0.3-progression`, one Draft PR for v0.3.0–v0.3.5, base main
+at merged Entity PR #7. Each milestone has its own approved task, checkpoint commit,
+verification and exact-head CI. Milestone delivery is CHECKPOINT_COMPLETE only;
+phase stays IN_PROGRESS. No intermediate merge/tag/publish. Only final v0.3.5
+may prepare full phase review; Developer decides acceptance and merge.

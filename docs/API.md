@@ -1,4 +1,4 @@
-# Public API — v0.2.5 (GF01–GF16, EC01–EC18)
+# Public API — v0.3.0 (GF01–GF16, EC01–EC18, PG01–PG03)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -708,3 +708,43 @@ previous immutable state. Public inventory remains 46 functions / 49 types.
 No transaction, store, scheduler or implicit state synchronization is provided.
 See [phase evidence](reports/v0.2.5-entity-integration-closure.md).
 Three functions/five types added; current root inventory: 46 functions/49 types.
+
+## PG01–PG03 Progression Foundation
+
+Canonical owner: `src/modules/progression/index.ts`. Root-only exports add one
+function and two types (47 functions / 51 public types total).
+
+```ts
+interface ProgressionInitialState {
+  readonly level: number;
+  readonly experience: number;
+}
+interface ProgressionState {
+  readonly entityId: string;
+  readonly level: number;
+  readonly experience: number;
+}
+function createProgressionState(
+  entity: EntitySnapshot,
+  initialState: ProgressionInitialState,
+): ProgressionState;
+```
+
+Entity input passes canonical createEntity validation; exact id/kind strings are
+preserved without normalization. Initial input must have exactly own data fields
+level/experience. Null, arrays, wrong types, missing/extra fields (including symbol
+and nonenumerable extras), inherited required fields and accessors throw TypeError
+without invoking getters. Null-prototype data input is valid. Level is a positive
+safe integer, including MAX_SAFE_INTEGER; no game cap. EXP is finite nonnegative,
+including fractions and -0, preserved exactly as a JavaScript number. No coercion,
+clamping, defaults or relation between level and EXP is inferred. EXP does not yet
+mean lifetime or level-local EXP; later tasks must explicitly decide semantics.
+
+The result is a fresh frozen three-scalar object. Caller input/Entity is untouched;
+independent snapshots can share an Entity ID. No collection membership or authority
+is checked/updated, including after Entity removal. Existing attribute/resource/
+life snapshots remain independent. No clock/RNG/Kernel call, event or hook occurs.
+Progression is optional: explicit registry definitions and selection of both entity
+and progression compose dependency-first. Missing selected Entity fails using the
+existing resolver. Creation itself requires no registry/runtime. No transitions,
+EXP curves/caps, points/ranks or extra state bags are exposed at v0.3.0.

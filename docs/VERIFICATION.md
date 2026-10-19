@@ -98,3 +98,16 @@ explicit dependencies/lifecycle/commands/events, negative paths and cleanup.
 Foundation/Entity profile compatibility is EVALUATED; concrete gameplay profile
 behavior is NOT_EVALUATED. See reports/v0.2.5-entity-integration-closure.md.
 Phase is REVIEW_PENDING; only Developer can accept/close it.
+
+## PG01–PG03 current milestone gate
+
+`npm run test:functional` executes the targeted installed progression consumer
+(three contracts, zero skips), strict progression.ts and every existing GF/EC
+consumer. `npm run verify` requires boundary/self-tests/build/typecheck/functional
+gates; no skip path added. The runner requires the packaged Progression JS and
+declaration, exact additive root surface, closed deep exports and marker
+`INSTALLED_PROGRESSION_CONTRACTS_PASS PG01–PG03; consumer_tests=3 skipped=0`.
+Current total: 54 installed contracts (29 GF + 22 EC + 3 PG), 2 outer tests,
+zero skips. Historical milestone totals above describe their original checkpoints.
+Gameplay profile behavior stays NOT_EVALUATED; Progression IN_PROGRESS, acceptance
+PENDING final v0.3.5. Exact-head push and PR CI must pass Windows/Linux Node22/24.

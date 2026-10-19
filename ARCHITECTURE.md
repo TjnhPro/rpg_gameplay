@@ -37,20 +37,20 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
 `src/index.ts` exports GF01–GF05 module, GF06–GF09 lifecycle, GF10–GF13 messaging
-and GF14–GF16 execution functions, plus EC01–EC18 Entity/collection/attribute/stat/resource/life contracts.
+and GF14–GF16 execution functions, plus EC01–EC18 Entity/collection/attribute/stat/resource/life contracts and PG01–PG03 Progression snapshots.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
 rejects other external runtime dependencies pending an approved task.
 Tests/tooling run outside production `src/`; no engine/adapters or global gameplay
-state are introduced. Architecture registry declares optional Entity. Root and sibling re-exports
+state are introduced. Architecture registry declares optional Entity and Progression. Root and sibling re-exports
 must use each module's public entrypoint.
 
 GF01–GF05 have one Foundation owner: `src/foundation/modules/`. Their public
 registry/configuration and resolved composition are immutable explicit consumer
 state, with no singleton or module execution. Composition uses the canonical
 dependency resolver; registration/configuration keep their original semantics. They are separate from the static
-architecture registry `harness/modules.json`, which now declares Entity only.
+architecture registry `harness/modules.json`, which declares Entity and dependent Progression.
 No Foundation placeholder is registered.
 
 GF06–GF09 have one separate Foundation owner: `src/foundation/runtime/`.
@@ -101,7 +101,7 @@ Kernel public types; one calculateEntityStats path through Kernel modifier
 preparation and ordered stat calculation. L2 validates/captures input and projects
 two frozen numeric maps. No numerical algorithm, global store/cache, schema policy
 or membership synchronization is added. Foundation and EC01–EC06 semantics stay
-unchanged. Entity phase acceptance is pending Developer review; EC18 evidence is below.
+unchanged. Entity v0.2.5 is the merged baseline; EC18 evidence is below.
 
 EC10–EC13 stays in the same Entity owner: separate immutable entityId/current
 resource snapshots with fixed caller-defined keys. Bounds and policies arrive at
@@ -113,7 +113,7 @@ there is no numerical fallback. Stats-to-maximum handoff is explicit caller work
 No global store, scheduler, life state, events or additional module is introduced.
 
 - Reusable module source: `src/modules/<module-id>/`.
-- Module register: `harness/modules.json`, currently optional Entity only.
+- Module register: `harness/modules.json`, optional Entity and Progression (depends on Entity).
 - Sibling imports must reference declared dependencies and sibling public entry point, not private implementation files.
 - `src/index.ts` được phép re-export public modules. `src/shared/`/`src/contracts/` không import runtime modules.
 - Ownership of each actual module declared in registry; do not add all 14 empty modules in advance.
@@ -154,4 +154,16 @@ normalizes it, depletes/recover resources, resolves life outcomes and publishes
 events. No production API, state owner, calculator or dependency is added.
 Two independent sessions match a literal semantic oracle, preserve prior actor
 snapshots and expose fail-fast listener progress without automatic rollback.
-Phase status is REVIEW_PENDING; Developer acceptance remains PENDING.
+This Entity checkpoint was merged through PR #7 before Progression implementation.
+
+## PG01–PG03 Progression Foundation
+
+One separate canonical owner, `src/modules/progression/index.ts`, imports only
+Entity's public entrypoint for canonical identity validation through createEntity.
+It captures explicit level/experience as detached frozen scalar data; no store,
+calculator, execution provider or runtime/messaging binding. The static optional
+progression entry depends on entity. GF04–GF05 still requires explicit selection
+of both; no automatic enablement or alternate resolver. Core pin and all existing
+Foundation/Entity contracts remain unchanged. L3 owns game curves and policies;
+EXP representation semantics and transitions await approved later milestones.
+Progression phase IN_PROGRESS; Developer acceptance PENDING until v0.3.5 review.

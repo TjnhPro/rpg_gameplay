@@ -7,21 +7,22 @@ evidence, shared full-flow reproducibility and Foundation profile compatibility.
 v0.2.0 adds installed EC01–EC03 identity/creation/immutability and module evidence.
 v0.2.1 adds installed EC04–EC06 ordered immutable collection/update evidence.
 v0.2.2 adds installed EC07–EC09 immutable attributes/Kernel stats/recalculation evidence.
-Gameplay profile behavior remains NOT_EVALUATED; Entity phase acceptance is pending.
+v0.3.0 adds installed PG01–PG03 creation/validation/isolation evidence.
+Gameplay profile behavior remains NOT_EVALUATED; Progression phase is IN_PROGRESS.
 
 | ID | Harness capability | Foundation status |
 | --- | --- | --- |
 | H01 | Agent Onboarding & Routing | Implemented: concise `AGENTS.md` map |
 | H02 | Repository Knowledge Base | Implemented: scoped docs, accepted decisions |
 | H03 | Architecture Boundary Guard | Partial automation: check static imports and paths |
-| H04 | Module Ownership & Dependency Registry | Implemented: `harness/modules.json` declares optional Entity |
+| H04 | Module Ownership & Dependency Registry | Implemented: optional Entity and dependent optional Progression |
 | H05 | RPG Core Integration Guard | Partial automation: forbid Core root/Legacy/internal imports |
 | H06 | Canonical Implementation Guard | Governance/manual review; no fake algorithmic duplicate detector |
 | H07 | Module Isolation & Optionality Guard | Partial automation: imports, explicit deps; selected-module lifecycle/isolation contracts tested; dynamic enable/disable excluded |
 | H08 | Capability Gap & Change Control | Policy + escalation/STOP workflow |
 | H09 | Three-Profile Functional Verification | Foundation action/opaque position/direction compatibility probes; no gameplay scenarios/apps |
 | H10 | Deterministic Functional Test Harness | Injected clock/RNG/IDs, independent scripted semantic/failure traces; lexical global-source checks + audit; no simulator/app |
-| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC18, full Foundation flow, payload profiles and gate controls |
+| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC18/PG01–PG03, full Foundation flow, payload profiles and gate controls |
 | H12 | Verification Gates & CI | Boundaries + build + typecheck + functional contracts; Windows/Linux, Node 22/24 |
 | H13 | Agent Task Execution Protocol | Implemented: approved-plan-first docs and task template |
 | H14 | Approval & Evidence Gates | Policy/report templates; Developer acceptance manual |

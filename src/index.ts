@@ -40,6 +40,8 @@ export {
   transitionEntityResource, regenerateEntityResource,
   createEntityLifeState, resolveEntityDefeat, reviveEntity,
 } from './modules/entity/index.js';
+export {createProgressionState} from './modules/progression/index.js';
+export type {ProgressionInitialState, ProgressionState} from './modules/progression/index.js';
 export type {
   EntityDefinition, EntitySnapshot, EntityCollection,
   EntityAttributeState, EntityStatConfiguration, EntityStatSnapshot,

@@ -1,6 +1,6 @@
 # Module Registry Contract
 
-`harness/modules.json` starts empty. Add entries **only with an approved implementation task**. Default convention is `src/modules/<id>`; changing conventions requires reviewing architecture checks.
+`harness/modules.json` declares optional Entity and optional Progression (dependent on Entity). Add entries **only with an approved implementation task**. Default convention is `src/modules/<id>`; changing conventions requires reviewing architecture checks.
 
 Example (documentation only, **not an implemented module**):
 
@@ -22,7 +22,7 @@ Rules:
 - Production `src/` is headless; no UI/renderers/engine package or Node built-ins for gameplay.
 - Core numerical computation is delegated to `@rpg/core/kernel` only.
 - No module added to registry simply to satisfy catalog count; no empty placeholders.
-- The architecture registry declares only optional entity in v0.2.0. GF01–GF05 infrastructure has
+- The architecture registry declares optional entity and progression in v0.3.0. GF01–GF05 infrastructure has
   one owner at `src/foundation/modules/`; root exports its public functions/types.
   GF06–GF09 lifecycle coordination has a separate canonical owner at
   `src/foundation/runtime/`, consuming the Module public entrypoint. GF10–GF13
@@ -66,3 +66,12 @@ Entity remains optional, dependencies [], under src/modules/entity/index.ts.
 The root surface remains 46 functions and 49 types; deep imports stay blocked.
 Foundation sources are byte-for-byte unchanged from the accepted phase baseline.
 Caller wiring, including event publication and cleanup, lives in test consumers.
+
+## PG01–PG03 ownership
+
+Optional progression has one owner `src/modules/progression/index.ts` and one
+static dependency, entity. Its only sibling import is `../entity/index.js` for
+createEntity/EntitySnapshot, with no private helpers or duplicate EC03 validator.
+Root re-exports only the public entrypoint. Both modules must be explicitly
+selected for composition; Foundation resolver behavior remains unchanged.
+No new Foundation owner, numerical calculator, runtime package or global store.

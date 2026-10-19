@@ -130,3 +130,16 @@ All 50 prior installed contracts remain unchanged: 51 total plus 2 outer tests,
 zero skips. No count target drove this test; one scenario supplies R01-R30
 integration evidence together with existing targeted contracts and source audit.
 See reports/v0.2.5-entity-integration-closure.md for the full mapping and CI.
+
+## PG01–PG03 installed creation evidence
+
+The external tarball runner executes `progression.mjs` with three grouped contracts:
+shared actors/exact numeric values/immutable detachment; closed validation and
+canonical malformed Entity rejection without getters; collection/domain isolation,
+determinism and explicit optional-module dependency composition. Literal states
+are independent expected values. Fractional EXP, numeric extrema, -0 preservation,
+unsafe levels, symbol/nonenumerable extras and reflection mutation are covered.
+`progression.ts` verifies readonly types, closed input, root-only imports and strict
+NodeNext usage. No simulator or additional gameplay behavior is introduced.
+All 51 old GF/EC contracts remain unchanged; total 54 installed contracts plus
+2 outer tests, zero skips. R01–R24 mapping is in the v0.3.0 checkpoint report.

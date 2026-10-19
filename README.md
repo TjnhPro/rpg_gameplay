@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.2.5 Entity Integration & Closure
+# RPG Gameplay — v0.3.0 Progression Foundation
 
-> **Status: GF01–GF16 baseline accepted; EC01–EC18 implemented and verified. Phase v0.2.x REVIEW_PENDING; Developer acceptance PENDING.**
+> **Status: merged Entity v0.2.5 baseline; PG01–PG03 implemented. Progression phase IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16 and EC01–EC18 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18 and PG01–PG03 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -129,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.2.5.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.3.0.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -257,7 +257,7 @@ task recorded under [task execution](docs/TASK_EXECUTION.md).
 | [docs/TASK_EXECUTION.md](docs/TASK_EXECUTION.md) | Approved plan, stop conditions, acceptance |
 | [docs/TESTING.md](docs/TESTING.md) | Function-only tests; evidence thay cho số lượng |
 | [docs/VERIFICATION.md](docs/VERIFICATION.md) | Commands và giới hạn từng gate |
-| [harness/modules.json](harness/modules.json) | Registry chỉ khai báo optional Entity |
+| [harness/modules.json](harness/modules.json) | Optional Entity và Progression; Progression phụ thuộc Entity |
 
 ## Reference
 
@@ -284,3 +284,19 @@ bounds. Repeated operations on the new snapshot return unchanged. Caller may
 publish changed outcomes through GF12; no automatic event, global store or replay
 guard. Old snapshots remain usable. EC18 combines these public functions without
 new production APIs; final phase acceptance remains with Developer.
+
+## Progression Foundation (PG01–PG03)
+
+```ts
+import {createEntity, createProgressionState} from '@rpg/gameplay';
+const actor = createEntity({id: 'player-1', kind: 'player'});
+const progression = createProgressionState(actor, {level: 10, experience: 1500});
+// Frozen {entityId: 'player-1', level: 10, experience: 1500}
+```
+
+The same API accepts Monster/NPC/custom actors. Caller supplies a positive safe
+integer level and finite nonnegative EXP (fractions preserved). EXP is a recorded
+number only; cumulative versus level-local semantics remain undecided. No defaults,
+level-up, curves, caps, points or automatic events. Optional Progression requires
+explicit Entity selection when composed; neither is automatically enabled.
+See [checkpoint report](docs/reports/v0.3.0-progression-foundation.md).

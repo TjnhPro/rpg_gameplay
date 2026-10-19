@@ -37,3 +37,11 @@ candidate scope, not implemented capabilities. Text/2D/2.5D Foundation/Entity
 data compatibility is EVALUATED; concrete gameplay behavior is NOT_EVALUATED.
 Entity phase is REVIEW_PENDING with Developer acceptance PENDING; see the
 v0.2.5 phase report. No global registry, persistent storage or gameplay engine.
+
+## v0.3.0 Progression checkpoint
+
+Entity v0.2.5 EC01–EC18 is the merged PR #7 baseline. PG01–PG03 now provides
+optional Progression identity, explicit level/EXP contracts and immutable validated
+creation through one shared actor API. PG04–PG19 remain NOT_STARTED. This does not
+implement experience gain, advancement, curves, points or skill upgrades. Phase
+IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.
