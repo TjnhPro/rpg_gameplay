@@ -1,4 +1,4 @@
-# Public API — v0.1.5 (GF01–GF16)
+# Public API — v0.2.5 (GF01–GF16, EC01–EC18)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -237,7 +237,7 @@ own handlers/subscriptions; no default registrations or services are supplied.
 Eleven public types: `GameplayMessaging`, `GameplayCommand`, `CommandOutcome`,
 `CommandHandlerRegistration`, `CommandFailure`, `CommandResult`, `GameplayEvent`,
 `EventSubscription`, `EventSubscriptionRegistration`, `EventFailure`,
-`EventPublishResult`. Combined root inventory: 22 functions, 26 types. No deep
+`EventPublishResult`. Through GF13: 22 functions, 26 types. No deep
 exports, raw tables, execution guards or private helpers.
 
 ```ts
@@ -377,3 +377,334 @@ global gameplay store, rollback, persistence or replay service exists. Metadata
 has no implicit timestamps/IDs. Snapshot semantics of the other owners remain
 unchanged. Text/2D/2.5D evidence covers opaque data compatibility only; it does not
 implement coordinates, direction processing, movement, combat or rendering.
+
+## EC01–EC03: Entity identity and creation
+
+Canonical owner: `src/modules/entity/index.ts`. Root additions:
+
+```ts
+interface EntityDefinition {
+  readonly id: string;
+  readonly kind: string;
+}
+type EntitySnapshot = EntityDefinition;
+function createEntity(definition: EntityDefinition): EntitySnapshot;
+```
+
+Current root inventory: 46 functions / 49 public types. Existing Foundation APIs
+and root-only exports are preserved. Both fields must be nonblank strings, stored
+unchanged including whitespace/case/punctuation and arbitrary caller-defined kind.
+No enum, module-ID format, default, coercion or ID generation. Same ID represents
+the same logical identity under consumer rules; independent snapshots may share
+an ID. Object reference equality does not replace ID equality.
+
+The runtime definition is closed: exactly two own data properties id/kind on a
+non-null non-array object. Missing/inherited fields, accessors and extra string,
+symbol or nonenumerable keys throw TypeError. Accessors are not invoked.
+Null-prototype data objects are supported. TypeScript is structural: excess-field
+checks apply to fresh literals; runtime validation also rejects extra properties
+on structurally typed variables. No private validator is exported.
+
+Creation returns a fresh detached frozen scalar snapshot; input remains mutable
+and unfrozen. No deep-cloning machinery, writable record or global state. Invalid
+input creates no partial successful entity or framework side effect. Identical
+valid inputs yield equal semantic data with distinct snapshot references.
+
+Static ownership declares entity optional with no dependencies. Consumers register,
+enable, resolve and compose it through GF01–GF05 explicitly; default disabled,
+no actor auto-creation. Selection is composition intent and does not gate direct
+creation. The caller may explicitly call nextExecutionId before passing that ID;
+Entity constructs no context and calls no providers, hooks, events or Kernel
+calculation. Attributes/stats/resources/life use separate states below;
+EC18 integration uses these unchanged public APIs; see the final section below.
+
+## EC04–EC06: Entity collection and snapshot updates
+
+Same canonical Entity owner and root-only package exports:
+
+```ts
+interface EntityCollection {
+  readonly entities: readonly EntitySnapshot[];
+}
+function createEntityCollection(): EntityCollection;
+function addEntity(collection: EntityCollection, entity: EntityDefinition): EntityCollection;
+function getEntity(collection: EntityCollection, entityId: string): EntitySnapshot | undefined;
+function hasEntity(collection: EntityCollection, entityId: string): boolean;
+function listEntities(collection: EntityCollection): readonly EntitySnapshot[];
+function removeEntity(collection: EntityCollection, entityId: string): EntityCollection;
+function replaceEntity(collection: EntityCollection, entity: EntityDefinition): EntityCollection;
+```
+
+Creation returns a fresh frozen empty collection. Add appends a canonical EC03
+validated detached entity; duplicate exact ID throws TypeError even if kind differs.
+Uniqueness is collection-local. Lookup compares nonblank string IDs exactly,
+without normalization: unknown valid IDs return undefined/false. Malformed IDs
+throw TypeError. List returns frozen snapshots in insertion order, without sorting.
+Remove requires an existing ID and preserves remaining relative order; unknown
+or malformed IDs throw TypeError. Readding a removed ID appends it at the end.
+
+Replace requires an existing exact ID and a complete valid id/kind definition;
+it preserves the position and can change kind explicitly. No upsert, implicit
+rename, arbitrary partial patch or automatic behavior change. Every successful
+add/remove/replace returns a new frozen collection and frozen membership/entity
+data. All previous versions and branching updates stay independent; invalid
+operations leave them unchanged. Caller inputs are never frozen or mutated.
+
+Collections are structural data, not opaque live handles. Runtime input must be
+exactly an own entities data property holding a dense array of own data entries,
+with no extra collection/array keys. Entries go through createEntity; duplicates,
+malformed entries, holes, inherited fields and accessors throw TypeError without
+invoking getters. Valid structural caller inputs are accepted but detached on
+each operation, including lookup/list. Snapshot reference reuse is not promised.
+Boundary validation/copying is linear in collection size; no performance or
+collection-size limit is imposed. Ordinary Proxy traps remain caller code.
+
+Collection operations have no backing mutable map, singleton, implicit clock/RNG/
+ID, runtime, event/hook or Kernel calculation. Entity's optional registry entry
+and dependencies and GF01–GF16 contracts remain unchanged.
+
+## EC07–EC09: Attributes and Kernel stats
+
+Root-only exports, owned by `src/modules/entity/index.ts`:
+
+```ts
+import type {PreparedStatCalculationInput, NumericalModifier} from '@rpg/core/kernel';
+interface EntityAttributeState {
+  readonly entityId: string;
+  readonly baseAttributes: Readonly<Record<string, number>>;
+}
+type EntityStatConfiguration = Omit<PreparedStatCalculationInput, 'attributeBases'> & {
+  readonly modifiers: readonly NumericalModifier[];
+};
+interface EntityStatSnapshot {
+  readonly entityId: string;
+  readonly effectiveAttributes: Readonly<Record<string, number>>;
+  readonly stats: Readonly<Record<string, number>>;
+}
+function createEntityAttributeState(entity: EntitySnapshot, baseAttributes: Readonly<Record<string, number>>): EntityAttributeState;
+function getEntityBaseAttributes(state: EntityAttributeState): Readonly<Record<string, number>>;
+function setEntityBaseAttribute(state: EntityAttributeState, attributeId: string, value: number): EntityAttributeState;
+function calculateEntityStats(state: EntityAttributeState, configuration: EntityStatConfiguration): EntityStatSnapshot;
+```
+
+State is separate from closed Entity/collection data, with exact entityId association.
+Creation reuses createEntity validation. State reads/updates validate structural
+own entityId/baseAttributes data and detach it. Records accept ordinary or null
+prototypes; custom inherited records, symbols, accessors, arrays and callable data
+are rejected. Attribute keys are exact nonblank strings, including constructor and
+__proto__; finite negatives/fractions and empty maps are valid. No normalization,
+clamping or schema defaults. Keyed update rejects unknown keys and preserves the
+identity/other values in a new frozen state. No calculation is triggered.
+
+```ts
+import {createEntity, createEntityAttributeState, setEntityBaseAttribute, calculateEntityStats} from '@rpg/gameplay';
+const attributes = createEntityAttributeState(createEntity({id: 'actor-1', kind: 'any'}), {strength: 10});
+const configuration = {
+  attributeOrder: ['strength'], statOrder: ['power'],
+  attributeRules: {strength: {default: 0, enabled: true, bounds: {}}},
+  attributeBaselines: {strength: 0}, baseStats: {power: 5},
+  rules: {power: {default: 5, enabled: true, bounds: {}, training: 0,
+    scaling: [{attribute: 'strength', coefficient: 2, enabled: true}]}},
+  flatContributions: {}, modifiers: [],
+};
+calculateEntityStats(attributes, configuration).stats.power; // 25
+calculateEntityStats(setEntityBaseAttribute(attributes, 'strength', 12), configuration).stats.power; // 29
+```
+
+Configuration is captured before Kernel/callback execution, without freezing or
+mutating caller-owned rules, modifiers, arrays or callbacks. All required maps and
+orders must be supplied explicitly, including empty modifiers. Order arrays must
+be dense own data, with unique nonblank IDs. Attribute maps/base state must match
+attributeOrder exactly; rules match statOrder exactly. Attribute/stat targets must
+not collide. baseStats/flatContributions/transforms can omit ordered stat keys,
+but cannot introduce unordered keys. Scaling references must name ordered
+attributes, including disabled terms. Rule defaults, bounds, coefficients,
+training, baselines, contributions and modifiers are finite; enabled is boolean.
+Bounds are optional finite min/max with min <= max; optional precision requires
+integer decimalPlaces 0–100, the Kernel's JS rounding domain. Explicit undefined,
+unknown fields and incomplete rules are rejected, never silently filled.
+
+Modifiers require own identity source/sourceInstanceId/id, ordered target,
+enabled, finite value and one Kernel operation: add_flat, add_percent or
+add_percentage_points. L2 validates/copies them; Kernel alone performs canonical
+deduplication, conflict detection, aggregation and arithmetic. No-modifier calls
+use the same resolver/stat path. Kernel owns attribute/stat order, baselines,
+default stat bases, scaling, disabled rules, bounds and precision. training is
+passed through, with no extra training arithmetic in L2.
+
+Optional transforms are captured functions called by Kernel once per ordered
+stat, including disabled rules. They must synchronously return a finite number;
+invalid return types/nonfinite values throw TypeError, without coercion/repair.
+Caller throws and Kernel errors propagate. Valid values are projected verbatim
+from Kernel attributes/values into frozen detached numeric maps; mutable diagnostic
+details/modifier references are not exposed. No arithmetic runs while projecting.
+
+Recalculation explicitly calls calculateEntityStats again with new state/modifiers/
+configuration. No live binding, cache, events, provider injection or automatic
+resource synchronization. Old snapshots remain intact, even if caller inputs
+later change. Collection removal/replacement neither deletes nor rewrites attribute
+states; membership checks remain caller responsibility. Determinism requires equal
+inputs/order and deterministic caller callbacks. Ordinary JS Proxy traps and
+callback closure state remain caller code; no runtime/IO isolation is promised.
+
+Attributes/stats expose no generic arbitrary state bag or future-milestone placeholder.
+
+## EC10–EC13: Resources and transitions
+
+Same Entity owner and root-only exports. Kernel types are imported from
+`@rpg/core/kernel`; public options compose them without resource/current overrides.
+
+```ts
+interface EntityResourceState {
+  readonly entityId: string;
+  readonly current: Readonly<Record<string, number>>;
+}
+type EntityResourceDefinition = Omit<ResourceNormalizationInput, 'resource'>;
+type EntityResourceBounds = Omit<ResourceNormalizationInput, 'resource' | 'current'>;
+type EntityResourceTransitionInput = Omit<ResourceTransitionInput, 'resource' | 'current'>;
+type EntityResourceRegenerationInput = Omit<ResourceRegenerationInput, 'resource' | 'current'>;
+interface EntityResourceNormalizationResult {
+  readonly state: EntityResourceState;
+  readonly calculation: Readonly<ResourceNormalizationResult>;
+}
+interface EntityResourceTransitionResult {
+  readonly state: EntityResourceState;
+  readonly transition: Readonly<ResourceTransitionResult>;
+}
+function createEntityResourceState(entity: EntitySnapshot, definitions: Readonly<Record<string, EntityResourceDefinition>>): EntityResourceState;
+function getEntityResourceCurrent(state: EntityResourceState, resourceId: string): number | undefined;
+function normalizeEntityResource(state: EntityResourceState, resourceId: string, bounds: EntityResourceBounds): EntityResourceNormalizationResult;
+function transitionEntityResource(state: EntityResourceState, resourceId: string, options: EntityResourceTransitionInput): EntityResourceTransitionResult;
+function regenerateEntityResource(state: EntityResourceState, resourceId: string, options: EntityResourceRegenerationInput): EntityResourceTransitionResult;
+```
+
+Creation validates Entity using EC03 and captures the entire definition map before
+normalization. Definitions require finite minimum/maximum with minimum <= maximum;
+optional current must be finite if present (explicit undefined is rejected).
+Out-of-bounds normalization inputs are valid. Each value comes from Kernel
+normalizeResource, including omitted-current initialization; L2 supplies no fallback.
+Empty maps are valid. Resource IDs are exact nonblank strings, including whitespace,
+case, constructor and __proto__, without a fixed vocabulary. The key set is fixed
+at creation; mutation operations require an existing key. Valid unknown inspection
+returns undefined and invokes no Kernel; malformed IDs throw TypeError.
+
+Resource state is separate from Entity, collections, attributes and stats. Runtime
+structural input must contain exactly own entityId/current data; numeric maps and
+active configuration accept plain/null prototypes, own string data fields, no
+accessors, symbols, custom inherited records, extras or coercion. State current
+values must be finite. Old states and caller objects remain unchanged/unfrozen;
+all returned state/maps/envelopes/diagnostics are detached and frozen. TypeError
+rejects malformed inputs, and Kernel errors propagate without partial publication.
+Proxy traps remain caller code; no IO isolation is promised.
+
+Explicit normalization supplies finite ordered bounds and returns the authoritative
+resource/before/after/initialized calculation. Maximum changes never trigger an
+implicit update: current100 with new maximum80 becomes80 only on explicit request.
+Increasing maximum never automatically refills current.
+
+Transition requires operation increase/decrease, finite nonnegative amount, finite
+ordered rule.minimum/maximum, current >= minimum, complete rule with
+currentAboveMaximum allow/reject and boolean allowIncreaseFromMinimum. Kernel owns
+above-maximum rejection/clamping, recovery and all arithmetic. Diagnostics preserve
+resource/before/after/applied/reachedMinimum exactly: with current120/max100 and
+allow, increase10 returns after100/applied-20; decrease10 returns after100/applied10.
+Applied is not reconstructed from state delta. ReachedMinimum is not a life state.
+
+Eligible regeneration requires finite ordered bounds, current within those bounds,
+finite nonnegative ratePerSecond/elapsedSeconds and integer precision.decimalPlaces
+0–100. Caller explicitly supplies eligibility and time; no hidden clock read or
+precision/rate default. The entire active input is captured before Kernel execution.
+With eligible=false, only state/ID, options shape/known keys and own boolean eligible
+are checked: ignored bounds/rate/time/precision are never read, normalized or
+validated, including accessors. Kernel receives its early no-op input and returns
+unchanged current/applied0/reachedMinimum false even if current is outside new bounds.
+The TypeScript signature still requires the complete canonical options contract.
+No fabricated numeric defaults or retry are used in that no-op path.
+
+Caller may pass an EC08 stat as maximum explicitly. Resource state stores no bound,
+stat snapshot or live binding. No policy infers HP/death/revive, performs schema
+updates, emits events, accesses Runtime/Messaging, or schedules automatic recovery.
+EC10–EC13 added five functions/seven types; current inventory including EC14–EC17
+is 46 functions/49 public types.
+
+## EC14–EC17: Life State & Death
+
+Root-only exports, same canonical Entity owner:
+
+```ts
+type EntityLifeStatus = 'alive' | 'dead';
+interface EntityLifeState {
+  readonly entityId: string;
+  readonly status: EntityLifeStatus;
+}
+interface EntityLifeResourcePolicy extends EntityResourceBounds {
+  readonly resourceId: string;
+}
+type EntityLifeTransitionOutcome = 'defeated' | 'revived' | 'unchanged';
+interface EntityLifeTransitionResult {
+  readonly entityId: string;
+  readonly before: EntityLifeStatus;
+  readonly after: EntityLifeStatus;
+  readonly outcome: EntityLifeTransitionOutcome;
+  readonly state: EntityLifeState;
+}
+function createEntityLifeState(entity: EntitySnapshot, options: {readonly status: EntityLifeStatus}): EntityLifeState;
+function resolveEntityDefeat(life: EntityLifeState, resources: EntityResourceState, policy: EntityLifeResourcePolicy): EntityLifeTransitionResult;
+function reviveEntity(life: EntityLifeState, resources: EntityResourceState, policy: EntityLifeResourcePolicy): EntityLifeTransitionResult;
+```
+
+Creation reuses EC03, requires explicit status and neither reads resources nor
+infers status from kind. Life state is independent from identity, membership,
+attributes, stats and resources. Any actor kind may opt in; no status default,
+coercion, provider, runtime, ID generation, numerical call or implicit event.
+
+Life/state/options/policy boundaries require closed own string data fields on
+plain/null-prototype records, without getters, symbols, extras or inherited
+records. Status is exactly alive/dead; IDs remain exact nonblank strings.
+Resource validation reuses the full EC10 boundary, including all finite current
+entries. Life/resource entityId must match exactly; selected own resource key
+must exist. Bounds are finite and ordered, including negative/nonzero minima.
+All inputs validate before any no-op. Malformed/inconsistent inputs throw
+TypeError, produce no successful result and mutate no caller data.
+
+| Operation | Valid current | Life before | Result |
+| --- | --- | --- | --- |
+| Defeat | current == minimum | alive | dead / defeated |
+| Defeat | current > minimum (including above maximum) | alive | alive / unchanged |
+| Defeat | current >= minimum | dead | dead / unchanged |
+| Revival | minimum < current <= maximum | dead | alive / revived |
+| Revival | minimum <= current <= maximum | alive | alive / unchanged |
+
+Current below minimum rejects for both operations. Revival above maximum always
+rejects; dead at minimum also rejects. Zero-width bounds cannot revive dead life.
+Alive at minimum may remain unchanged under revival evaluation pending explicit
+defeat. Defeat accepts stale above-max resources without normalizing them; caller
+can explicitly normalize through EC11. Life operations never change resource
+values or duplicate Kernel arithmetic. EC12 reachedMinimum is only a diagnostic;
+resource recovery and revival are separate operations, without joint atomicity.
+
+Every result (including unchanged) and nested state is freshly detached/frozen.
+Results contain only scalar diagnostics and the life snapshot, no resource alias,
+callback, binding or event history. Old snapshots remain valid; replaying the same
+old inputs can repeat the same transition. Sequential callers retain the newest
+snapshot to obtain unchanged on repeats. There is no global authority/replay guard.
+
+Caller may publish a changed result via GF12 using caller-defined event names and
+payloads. Entity neither registers listeners nor publishes events. GF13 preserves
+subscription order/snapshot fan-out/fail-fast delivery, without a queue. A listener
+failure after transition does not roll back the life result or retry publication.
+No resource synchronization, respawn or kill/reward/loot policy is added.
+
+## EC18: integration evidence, no additional public API
+
+`tests/consumers/entity-integration.mjs` runs the root-only installed package.
+Caller configuration yields max-life 25, explicit attribute update yields 29,
+and explicit flat modifier yields 32. Caller selects maximum 25, normalizes
+health 30 to 25, decreases to 20 then 0, resolves defeat, explicitly regenerates
+to 10 and revives. GF10/GF12 command/event publication and lifecycle cleanup are
+explicit caller wiring. Two isolated sessions match the independent literal
+trace; invalid association/revival/transition and listener failure preserve
+previous immutable state. Public inventory remains 46 functions / 49 types.
+No transaction, store, scheduler or implicit state synchronization is provided.
+See [phase evidence](reports/v0.2.5-entity-integration-closure.md).
+Three functions/five types added; current root inventory: 46 functions/49 types.

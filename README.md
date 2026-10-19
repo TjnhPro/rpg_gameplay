@@ -1,12 +1,12 @@
-# RPG Gameplay — v0.1.5 Clock, Determinism & Foundation Closure
+# RPG Gameplay — v0.2.5 Entity Integration & Closure
 
-> **Status: GF01–GF16 implemented; Foundation closure PENDING Developer acceptance.**
+> **Status: GF01–GF16 baseline accepted; EC01–EC18 implemented and verified. Phase v0.2.x REVIEW_PENDING; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
 > coordination, explicit command routing, synchronous event pub/sub and injected
 > clock/RNG/ID execution dependencies are available.
-> **No concrete gameplay modules or game loop.**
+> **Optional Entity supports identity, immutable collections/base attributes and caller-configured Kernel stats/resources and explicit life transitions.**
 
 ## Mục tiêu
 
@@ -38,8 +38,89 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16 through an installed-package consumer. Text/2D/2.5D probes
-prove Foundation data-shape compatibility; gameplay behavior is NOT_EVALUATED.
+including GF01–GF16 and EC01–EC18 through an installed-package consumer. Text/2D/2.5D probes
+prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
+
+## Entity identity and classification
+
+```ts
+import {createEntity} from '@rpg/gameplay';
+const player = createEntity({id: 'player-1', kind: 'player'});
+const monster = createEntity({id: 'monster-1', kind: 'monster'});
+const npc = createEntity({id: 'npc-1', kind: 'npc'});
+```
+
+One function supports arbitrary nonblank kinds/IDs preserved exactly. Definitions
+contain exactly own data fields id/kind; extras, accessors and inherited fields
+throw TypeError. Snapshots are detached/frozen; input stays caller-owned.
+Independent snapshots and collections can share an ID; IDs must be unique within
+each collection. Collection operations preserve exact IDs and insertion order.
+Module ID entity is distinct from actor identity. Explicit GF01–GF05 registration/
+selection/composition creates no actor and does not gate direct createEntity calls.
+See [API](docs/API.md), [phase report](docs/reports/v0.2.5-entity-integration-closure.md)
+and [single-PR phase workflow](docs/TASK_EXECUTION.md).
+
+```ts
+import {createEntityCollection, addEntity, replaceEntity, removeEntity, listEntities} from '@rpg/gameplay';
+const empty = createEntityCollection();
+const base = addEntity(empty, {id: 'actor-1', kind: 'npc'});
+const companion = replaceEntity(base, {id: 'actor-1', kind: 'companion'});
+const removed = removeEntity(base, 'actor-1');
+listEntities(base); // [{id: 'actor-1', kind: 'npc'}]; branches leave base unchanged
+```
+
+`getEntity`/`hasEntity` query exact IDs. Unknown valid lookup returns undefined/false;
+duplicate add and unknown remove/replace throw TypeError. Every change returns a
+new frozen collection; enumeration and contained snapshots are frozen/detached.
+Replace is full same-ID replacement at the old position, not upsert/partial patch.
+
+## Attributes and Kernel stats
+
+`createEntityAttributeState(entity, baseAttributes)` captures arbitrary finite
+numeric keys in a separate immutable state associated by entityId. Empty maps,
+negative/fractional values and special property names are supported.
+`getEntityBaseAttributes(state)` returns frozen detached data;
+`setEntityBaseAttribute(state, existingKey, value)` returns a new state without
+calculating stats. Entity and collection schemas remain unchanged.
+
+`calculateEntityStats(state, configuration)` validates explicit attribute/stat
+orders, Kernel-compatible rules, baselines, baseStats, flatContributions and
+modifiers, then delegates to `prepareNumericalModifiers()` and `calculateStats()`.
+Optional synchronous numeric transforms belong to the caller. The result holds
+only frozen detached entityId/effectiveAttributes/stats. Call the same function
+again with changed inputs to recalculate; old snapshots remain intact. L3 owns
+schema and balancing; there is no implicit collection synchronization or cache.
+See [configuration example and validation contract](docs/API.md#ec07ec09-attributes-and-kernel-stats).
+
+## Resources and explicit Kernel transitions
+
+`createEntityResourceState(entity, definitions)` creates frozen current values
+associated by entityId. Each caller-defined resource supplies minimum/maximum and
+optional current; Kernel initializes omitted current at maximum. Empty sets are
+valid. Bounds are supplied at every operation and are never cached in state.
+
+```ts
+import {createEntityResourceState, transitionEntityResource, regenerateEntityResource} from '@rpg/gameplay';
+const resources = createEntityResourceState(player, {
+  health: {minimum: 0, maximum: 100, current: 80},
+  mana: {minimum: 0, maximum: 50},
+});
+const decreased = transitionEntityResource(resources, 'health', {
+  operation: 'decrease', amount: 25, maximum: 100,
+  rule: {minimum: 0, currentAboveMaximum: 'reject', allowIncreaseFromMinimum: true},
+}); // decreased.state.current.health=55; transition.applied=25
+regenerateEntityResource(decreased.state, 'health', {
+  minimum: 0, maximum: 100, ratePerSecond: 2, elapsedSeconds: 2.5,
+  eligible: true, precision: {decimalPlaces: 2},
+}); // current=60; caller supplies time, eligibility and all policy
+```
+
+`getEntityResourceCurrent` returns current or undefined for a valid unknown key.
+`normalizeEntityResource(state, key, {minimum, maximum})` explicitly normalizes a
+stored current when bounds change. Every numerical operation delegates to Kernel
+and returns frozen diagnostics with next state, leaving old versions unchanged.
+Stats maxima are handed over explicitly; no refill, automatic synchronization,
+scheduler, life-state interpretation or Combat/Skill behavior is introduced.
 
 ## External package consumption (local artifacts, no publication)
 
@@ -48,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.1.5.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.2.5.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -176,7 +257,7 @@ task recorded under [task execution](docs/TASK_EXECUTION.md).
 | [docs/TASK_EXECUTION.md](docs/TASK_EXECUTION.md) | Approved plan, stop conditions, acceptance |
 | [docs/TESTING.md](docs/TESTING.md) | Function-only tests; evidence thay cho số lượng |
 | [docs/VERIFICATION.md](docs/VERIFICATION.md) | Commands và giới hạn từng gate |
-| [harness/modules.json](harness/modules.json) | Registry module ban đầu rỗng |
+| [harness/modules.json](harness/modules.json) | Registry chỉ khai báo optional Entity |
 
 ## Reference
 
@@ -184,3 +265,22 @@ task recorded under [task execution](docs/TASK_EXECUTION.md).
 - [TjnhPro/rpg_core](https://github.com/TjnhPro/rpg_core) (`@rpg/core/kernel`)
 
 Không có migration, legacy compatibility, game examples, renderer hoặc game loop.
+
+## Explicit life state (EC14–EC17)
+
+```ts
+import {createEntityLifeState, resolveEntityDefeat, reviveEntity} from '@rpg/gameplay';
+const life = createEntityLifeState(player, {status: 'alive'});
+// depleted/restored are caller-created EC11/EC12 resource snapshots for player.
+const policy = {resourceId: 'vitality', minimum: 5, maximum: 100};
+const defeat = resolveEntityDefeat(life, depleted, policy);
+const revival = reviveEntity(defeat.state, restored, policy);
+```
+
+Life state is a separate frozen entityId/status snapshot. Resource minimum alone
+never causes death, and recovery never causes revival. Caller explicitly evaluates
+minimum defeat and performs life-only revival after recovery above minimum within
+bounds. Repeated operations on the new snapshot return unchanged. Caller may
+publish changed outcomes through GF12; no automatic event, global store or replay
+guard. Old snapshots remain usable. EC18 combines these public functions without
+new production APIs; final phase acceptance remains with Developer.

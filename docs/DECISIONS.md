@@ -64,4 +64,58 @@ framework counters or scheduling. Invalid boundaries/output throw TypeError;
 provider throws propagate unchanged. Existing callbacks integrate by closures.
 GF16 is conditional on equivalent explicit inputs/order and starting provider/
 callback state. Installed integration and opaque Text/2D/2.5D payload probes
-support Foundation closure review; Developer acceptance remains PENDING.
+supported Foundation closure review, accepted as the v0.2.0 baseline after PR #6 merge.
+
+The approved v0.2.0 task starts one Entity / Character phase branch and Draft PR
+through v0.2.5, with verified checkpoint commits and final phase acceptance only.
+EC01–EC03 has one owner at `src/modules/entity/`: caller-defined nonblank id/kind,
+closed two-field creation, detached immutable snapshots, no implicit identity or
+collection authority. Entity is optional with no dependencies. EC04+ remains
+outside this checkpoint and requires separately approved tasks.
+
+The approved v0.2.1 task extends that same Entity owner with EC04–EC06: immutable
+ordered collection snapshots, exact collection-local unique IDs, explicit add/
+lookup/list/remove and full same-ID replacement. Updates branch without mutation;
+missing remove/replace and malformed/duplicate data throw TypeError. EC03 remains
+the sole entity validator. No global store, arbitrary state bag, Foundation/Core
+change or EC07+ implementation. Continue the same branch/Draft PR #7.
+
+The approved v0.2.2 task adds EC07–EC09 in that same Entity owner: separate
+entityId-bound immutable base attributes, explicit caller configuration composed
+from Kernel types, validation/capture and detached calculated snapshots. Numerical
+operations use public prepareNumericalModifiers/calculateStats exclusively,
+including empty modifiers. Recalculation is an explicit repeat call, with no
+global state/cache, game schema, modifier lifecycle or collection synchronization.
+EC01–EC06 and Foundation remain unchanged; EC10+ is outside this checkpoint.
+
+## v0.2.3 approved resource checkpoint
+
+The approved task adds EC10–EC13 to the existing optional Entity owner, with
+separate current-only immutable snapshots and fixed arbitrary resource keys.
+Caller supplies bounds/policy/rate/time/precision; all resource arithmetic and
+diagnostics belong to the pinned public Kernel. No automatic Stats synchronization,
+life-state inference, scheduler, global resource store or new module is introduced.
+GF01–GF16 and EC01–EC09 contracts/pin remain unchanged. Continue phase branch and
+Draft PR #7; EC14+ and final v0.2.5 Developer acceptance remain pending.
+
+## v0.2.4 approved life checkpoint
+
+EC14–EC17 adds separate immutable alive/dead snapshots in the Entity owner.
+Caller explicitly supplies resource selection and bounds. Defeat evaluates minimum
+without resource arithmetic; revival only changes life after caller recovery.
+Malformed inputs throw TypeError before no-op. Already-dead defeat and valid
+already-alive revival return unchanged; above-max is allowed for defeat evaluation
+but rejected for revival. No global authority/replay protection or automatic events.
+Caller may publish transition outcomes using unchanged GF12/GF13. Core, old contracts,
+registry/deps and EC18 scope remain intact; phase acceptance is deferred to v0.2.5.
+
+## v0.2.5 approved integration and review readiness
+
+The approved task authorizes EC18 installed consumer evidence, full phase audit,
+version 0.2.5, report and existing PR #7 readiness after exact-head gates.
+No new production APIs or owners are needed. EC01-EC17 and GF01-GF16 semantics,
+Core revision/integrity, optional Entity registry and dependency pins stay intact.
+Two independent literal-oracle sessions exercise explicit cross-domain handoff,
+immutable state, commands/events and cleanup/failures. Agent may mark the same
+PR Ready for Review only after final CI; Developer acceptance/closure remains
+PENDING. No merge, tag, release, publish or task archival is authorized here.

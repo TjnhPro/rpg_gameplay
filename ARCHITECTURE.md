@@ -37,21 +37,21 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
 `src/index.ts` exports GF01–GF05 module, GF06–GF09 lifecycle, GF10–GF13 messaging
-and GF14–GF16 execution functions.
+and GF14–GF16 execution functions, plus EC01–EC18 Entity/collection/attribute/stat/resource/life contracts.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
 rejects other external runtime dependencies pending an approved task.
 Tests/tooling run outside production `src/`; no engine/adapters or global gameplay
-state are introduced. Architecture registry remains empty. Root and sibling re-exports
+state are introduced. Architecture registry declares optional Entity. Root and sibling re-exports
 must use each module's public entrypoint.
 
 GF01–GF05 have one Foundation owner: `src/foundation/modules/`. Their public
 registry/configuration and resolved composition are immutable explicit consumer
 state, with no singleton or module execution. Composition uses the canonical
 dependency resolver; registration/configuration keep their original semantics. They are separate from the static
-architecture registry `harness/modules.json`, which remains empty until real
-gameplay feature modules are implemented. No Foundation placeholder is registered.
+architecture registry `harness/modules.json`, which now declares Entity only.
+No Foundation placeholder is registered.
 
 GF06–GF09 have one separate Foundation owner: `src/foundation/runtime/`.
 It consumes the Module owner's public definition validator and validated
@@ -63,7 +63,7 @@ identity with its record; reflection cannot reach bindings or execution mutators
 It is not enumerable and does not share progress between runtimes.
 There is no global gameplay registry,
 state store, implicit service, application loop or Core numerical operation.
-Inspection exposes frozen lifecycle data only. The static registry stays empty.
+Inspection exposes frozen lifecycle data only. Runtime is not a static gameplay module.
 
 GF10–GF13 have one opt-in coordination owner: `src/foundation/messaging/`.
 It validates supplied composition identities/order through the Module public
@@ -82,11 +82,38 @@ implicit providers, scheduling or automatic metadata are introduced. Existing
 callbacks integrate through caller closures, preserving public signatures and
 failure handling. Equivalent explicit inputs/call order and equivalent starting
 provider/callback states give reproducible Foundation traces; callback external
-effects remain outside that guarantee. Foundation closure is PENDING Developer
-acceptance; concrete gameplay behavior is not covered by the compatibility probes.
+effects remain outside that guarantee. Foundation is the accepted v0.1.5 baseline;
+gameplay behavior is not covered by its compatibility probes.
+
+EC01–EC03 have one gameplay owner: `src/modules/entity/`. Creation validates a
+closed id/kind definition and returns detached frozen scalar data. Caller supplies
+both strings; no subtype engines, state bags, ID generation
+or numerical calculation. Static ownership declares entity optional with no
+dependencies. Consumer registration/selection/composition remain explicit GF01–GF05
+operations. EC04–EC06 extends this same owner with explicit immutable collection
+membership, exact collection-local uniqueness and ordered full-snapshot updates.
+Collections are frozen data, not capabilities backed by a global store. Structural
+inputs are validated/detached through EC03 before use; no mutable caller data is
+returned. Identity/collection operations invoke no hooks or Kernel calculations.
+EC07–EC09 stays in the same owner: separate immutable EntityAttributeState bound
+by exact entityId; explicit caller-owned EntityStatConfiguration composed from
+Kernel public types; one calculateEntityStats path through Kernel modifier
+preparation and ordered stat calculation. L2 validates/captures input and projects
+two frozen numeric maps. No numerical algorithm, global store/cache, schema policy
+or membership synchronization is added. Foundation and EC01–EC06 semantics stay
+unchanged. Entity phase acceptance is pending Developer review; EC18 evidence is below.
+
+EC10–EC13 stays in the same Entity owner: separate immutable entityId/current
+resource snapshots with fixed caller-defined keys. Bounds and policies arrive at
+operation boundaries. Initialization/normalization, increase/decrease and explicit
+regeneration delegate respectively to normalizeResource, calculateResourceTransition
+and calculateResourceRegeneration from the pinned public Kernel. L2 validates,
+captures inputs, replaces one current value and freezes diagnostics verbatim;
+there is no numerical fallback. Stats-to-maximum handoff is explicit caller work.
+No global store, scheduler, life state, events or additional module is introduced.
 
 - Reusable module source: `src/modules/<module-id>/`.
-- Module register: `harness/modules.json`, initially empty.
+- Module register: `harness/modules.json`, currently optional Entity only.
 - Sibling imports must reference declared dependencies and sibling public entry point, not private implementation files.
 - `src/index.ts` được phép re-export public modules. `src/shared/`/`src/contracts/` không import runtime modules.
 - Ownership of each actual module declared in registry; do not add all 14 empty modules in advance.
@@ -105,3 +132,26 @@ Separate an owner when behaviors have different lifecycle, state authority, depe
 - Interface changes or ownership moves require an approved task or explicit Developer decision.
 
 See `docs/TESTING.md` for how Text/2D/2.5D differences are checked **without building three games**.
+
+## EC14–EC17 Life State & Death
+
+Same Entity owner, optional registry entry and no module dependencies. Independent
+immutable entityId/status snapshots hold alive/dead; three pure functions create,
+resolve minimum defeat and revive after caller recovery. Canonical EC10 validation
+reads resource state; life operations compare values and call no Kernel numerical
+operation, Foundation provider, runtime or messaging function. L1 still owns all
+resource arithmetic, L3 owns resource selection/bounds/operation timing and event
+names/publication. All data validates before no-op; no hidden mutable authority,
+automatic normalization, hardcoded game policy, event dispatch or second life engine.
+EC01–EC13/GF01–GF16 bodies and Core pin remain unchanged.
+
+## EC18 installed integration
+
+v0.2.5 adds consumer evidence only. The existing Entity functions compose with
+Foundation module selection, lifecycle, commands/events and explicit execution
+ports. Caller wiring hands a calculated maximum to resources, explicitly
+normalizes it, depletes/recover resources, resolves life outcomes and publishes
+events. No production API, state owner, calculator or dependency is added.
+Two independent sessions match a literal semantic oracle, preserve prior actor
+snapshots and expose fail-fast listener progress without automatic rollback.
+Phase status is REVIEW_PENDING; Developer acceptance remains PENDING.

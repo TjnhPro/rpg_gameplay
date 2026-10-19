@@ -46,6 +46,35 @@ compatibility evidence; gameplay behavior remains NOT_EVALUATED.
 Build before running `npm run test:functional` directly; `verify` builds
 first. Expected values and requirement mapping are in the implementation report.
 
+EC01–EC03 uses `tests/consumers/entity.mjs` and `entity.ts` through that same
+external tarball installation. Three scenarios prove shared actor types/exact
+strings/immutable detached snapshots, closed malformed-input rejection without
+accessor invocation or partial state, and optional module composition with an
+explicit caller ID provider. Strict declarations prove readonly/string-only
+fields and reject premature state. No game runtime or duplicate profile matrix.
+Expected data is specified from the task contract; old Foundation fixtures remain
+unchanged. See the v0.2.0 report for R01–R15 evidence and limits.
+
+EC04–EC06 adds `entity-collection.mjs`/`.ts` to the same external installation.
+Three scenarios prove ordered operations/exact collection-local identity and
+determinism under forbidden implicit time/RNG, immutable branching/input ownership,
+and atomic duplicate/unknown/malformed rejection including canonical EC03
+accessor/extra-field checks. Strict types cover readonly membership/enumeration,
+optional lookup and complete replacements, with no generic state/numerical fields.
+Existing Entity/Foundation fixtures stay unchanged. The v0.2.1 report maps R01–R18
+to independent literal expectations, installed evidence and source review.
+
+EC07–EC09 adds `entity-stats.mjs`/`.ts` to that external package
+installation. Five behavior scenarios cover immutable arbitrary base state and
+collection-independent identity; malformed boundaries and no getter execution;
+the independent 25/29/32 stat oracle plus explicit recalculation; real Kernel
+modifier/ordering/bounds/precision semantics; and empty/special-key schemas plus
+captured callback inputs and invalid callback returns. Strict declarations reuse
+public Kernel types and enforce readonly maps, separate Entity state and no
+attributeBases override. Old Foundation/Entity/Collection fixtures stay intact.
+Source review supplements runtime evidence for canonical numerical ownership;
+the v0.2.2 report maps R01–R23 without a test-count quota.
+
 - **Unit/function**: public function, success/rejection, result and ownership.
 - **Contract**: boundary, adapter interface, valid/invalid data, invariants.
 - **Integration at function level**: composition of multiple exported functions with direct inputs/outputs; still no game loop/app.
@@ -59,3 +88,45 @@ No UI tests, rendering, asset pipelines, Godot, network server, browser E2E or t
 Use table in [task template](tasks/TASK_TEMPLATE.md). Give exact command, files, pass/fail, expected behavior source, limitations. State `NOT_EVALUATED` for missing tests, not `PASS`.
 
 A useful test should fail if the behavior is broken: avoid asserting only 'does not throw', blind snapshots or rewriting goldens to make tests green. Mutation/negative tests only where they prove a meaningful edge.
+
+EC10–EC13 adds entity-resources.mjs/.ts through the same installed package.
+Five scenarios group distinct contracts: arbitrary/empty/special-key initialization
+and normalization; authoritative transitions/above-max/minimum recovery; explicit
+regeneration and ignored-field no-op; atomic validation and accessor boundaries;
+and deterministic actor isolation with EC08 explicit maximum handoff. Literal
+oracles80/50/55/70,100→80,applied-20/10 and regen35 are independent of L2/Kernel
+calls. Fractional applied retains the IEEE-754 difference of independently specified
+before/after literals. Strict declarations prove composed Kernel compatibility,
+readonly state/diagnostics, complete options and absence of implicit life state.
+Old GF01–GF16/EC01–EC09 fixtures are unchanged. The v0.2.3 report maps R01–R25;
+source review confirms canonical resource ownership, without a game/scheduler.
+
+## EC14–EC17 installed life evidence
+
+entity-life.mjs/.ts adds five grouped scenarios to the same external tarball
+consumer: explicit10→0 defeat/0→30 recovery/revival and repeat no-ops; creation,
+detachment and actor isolation; exact arbitrary keys/nonzero or negative minimum,
+zero-width bounds/stale maximum and determinism with implicit time/RNG disabled;
+closed malformed life/policy/forged-resource rejection before no-op; caller GF12
+publication with GF13 order/snapshot/fail-fast and no rollback/retry. Expectations
+are literal states/diagnostics/traces, not calls into implementation to derive
+oracles. Full R01–R29 mapping is in the v0.2.4 report. Strict NodeNext verifies
+five public types, readonly nested state/result/policy and closed inputs.
+Old consumer fixtures remain unchanged. All 50 installed contracts and both outer
+tests must run with zero skips. No gameplay profile/application evidence is claimed.
+
+## EC18 installed integration and phase closure evidence
+
+entity-integration.mjs adds one end-to-end contract, executed explicitly from an
+external installed @rpg/gameplay@0.2.5 tarball with the real pinned Core. Two
+sessions create separate providers, callbacks, messaging and immutable states;
+each matches a literal expected trace before comparison with the other session.
+The scenario covers shared actors/collection, stats 25/29/32, selected maximum,
+health 30 to 25 to 20 to 0 to 10, explicit defeat/revival/publication, command and
+listener failures, identity rejection, previous snapshots and actor isolation.
+Runtime cleanup removes eight subscriptions; later delivery count is zero.
+The new .ts consumer checks cross-domain typed wiring and readonly projections.
+All 50 prior installed contracts remain unchanged: 51 total plus 2 outer tests,
+zero skips. No count target drove this test; one scenario supplies R01-R30
+integration evidence together with existing targeted contracts and source audit.
+See reports/v0.2.5-entity-integration-closure.md for the full mapping and CI.

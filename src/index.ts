@@ -32,3 +32,20 @@ export type {
   GameplayClock, GameplayRandom, GameplayIdProvider, GameplayExecutionDependencies,
   GameplayExecutionContext,
 } from './foundation/execution/index.js';
+export {
+  createEntity, createEntityCollection, addEntity, getEntity, hasEntity,
+  listEntities, removeEntity, replaceEntity,
+  createEntityAttributeState, getEntityBaseAttributes, setEntityBaseAttribute, calculateEntityStats,
+  createEntityResourceState, getEntityResourceCurrent, normalizeEntityResource,
+  transitionEntityResource, regenerateEntityResource,
+  createEntityLifeState, resolveEntityDefeat, reviveEntity,
+} from './modules/entity/index.js';
+export type {
+  EntityDefinition, EntitySnapshot, EntityCollection,
+  EntityAttributeState, EntityStatConfiguration, EntityStatSnapshot,
+  EntityResourceState, EntityResourceDefinition, EntityResourceBounds,
+  EntityResourceTransitionInput, EntityResourceRegenerationInput,
+  EntityResourceNormalizationResult, EntityResourceTransitionResult,
+  EntityLifeStatus, EntityLifeState, EntityLifeResourcePolicy,
+  EntityLifeTransitionOutcome, EntityLifeTransitionResult,
+} from './modules/entity/index.js';
