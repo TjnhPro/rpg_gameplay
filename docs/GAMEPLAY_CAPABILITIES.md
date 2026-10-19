@@ -67,3 +67,9 @@ canonical Entity allocation/Kernel recalculation and rank upgrade integrate with
 caller Foundation commands/events. No new production capability/module. Other
 candidate groups remain unimplemented; Skill execution/catalog/effects are not
 implied by Skill Rank bookkeeping. Progression phase REVIEW_PENDING.
+
+F-001 pre-merge remediation makes the approved AP/SP independence explicit in
+public snapshots: required readonly pointKind attribute/skill, own-data runtime
+guards and strict TypeScript isolation. No new capability/API/module, formula or
+engine; package0.3.5 and phase REVIEW_PENDING. Structural kind is not a trusted
+credential. Untagged old snapshots reject; no implicit migration/conversion.

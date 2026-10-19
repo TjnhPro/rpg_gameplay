@@ -177,7 +177,7 @@ function session() {
   assert.equal(failedCommand.status, 'failed'); assert.equal(failedCommand.failure.moduleId, 'progression');
   assert.equal(current.experience, 260);
   const zero = g.grantSkillPointRewards(sp, level, {pointsByLevel: {2: 0, 3: 0}});
-  assert.deepEqual(zero.state, {entityId: 'player-1', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 3});
+  assert.deepEqual(zero.state, {entityId: 'player-1', pointKind: 'skill', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 3});
   rejects('zero-replay', () => g.grantSkillPointRewards(zero.state, level, {pointsByLevel: {2: 0, 3: 0}}));
   const nextRank = g.upgradeSkillRank(level.state, upgrade.ranks, upgrade.points, {...request, expectedRank: 1, pointCost: 1});
   assert.equal(nextRank.ranks.ranks.sword_mastery, 2); assert.equal(nextRank.points.unspentPoints, 0);
@@ -233,10 +233,10 @@ function session() {
 // Independent task oracle; never generated from implementation output.
 const finalOracle = {
   entity: {id: 'player-1', kind: 'player'}, progression: {entityId: 'player-1', level: 3, experience: 260},
-  attributePoints: {entityId: 'player-1', unspentPoints: 7, spentPoints: 3, rewardedThroughLevel: 3},
+  attributePoints: {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 7, spentPoints: 3, rewardedThroughLevel: 3},
   attributes: {entityId: 'player-1', baseAttributes: {strength: 23}},
   stats: {entityId: 'player-1', effectiveAttributes: {strength: 23}, stats: {power: 51}},
-  skillPoints: {entityId: 'player-1', unspentPoints: 1, spentPoints: 2, rewardedThroughLevel: 3},
+  skillPoints: {entityId: 'player-1', pointKind: 'skill', unspentPoints: 1, spentPoints: 2, rewardedThroughLevel: 3},
   ranks: {entityId: 'player-1', ranks: {sword_basic: 2, sword_mastery: 1}},
 };
 const expected = [
@@ -265,4 +265,85 @@ test('PG19: installed full Progression/Entity/Foundation flow, literal sessions 
     console.log('PROGRESSION_INTEGRATION_TRACE_PASS ' + JSON.stringify(first));
     console.log('PROGRESSION_INTEGRATION_SESSIONS_PASS sessions=2 literal_oracle; cumulative3/260 local3/10; AP7/3 SP1/2; strength23 power51 mastery1; failures15 blockers5');
   } finally { Date.now = now; Math.random = random; }
+});
+
+test('F001: installed point pools reject cross-domain and malformed kinds before spending or granting', () => {
+  const actor = g.createEntity({id: 'player-1', kind: 'player'});
+  const progression = g.createProgressionState(actor, {level: 1, experience: 100});
+  const initial = {unspentPoints: 5, spentPoints: 0, rewardedThroughLevel: 1};
+  const ap = g.createAttributePointState(progression, initial);
+  const sp = g.createSkillPointState(progression, initial);
+  assert.deepEqual(ap, {entityId: 'player-1', pointKind: 'attribute', ...initial});
+  assert.deepEqual(sp, {entityId: 'player-1', pointKind: 'skill', ...initial});
+  for (const create of [g.createAttributePointState, g.createSkillPointState]) {
+    for (const pointKind of ['attribute', 'skill']) {
+      assert.throws(() => create(progression, {...initial, pointKind}), TypeError);
+    }
+  }
+  const ranks = g.createSkillRankState(actor, {sword: 0});
+  const attributes = g.createEntityAttributeState(actor, {strength: 20});
+  const allocation = {attributeId: 'strength', pointCost: 3, newBaseValue: 23};
+  const requirement = {skillId: 'sword', expectedRank: 0, maxRank: 5, pointCost: 2,
+    requiredCharacterLevel: 1, prerequisites: [], eligible: true};
+  const advancement = g.advanceProgressionLevel(progression, {experienceMode: 'cumulative', maxLevel: 2, targetLevel: 2,
+    requirements: [{toLevel: 2, requiredExperience: 100, eligible: true}]});
+  const attributeOps = [points => g.allocateAttributePoints(points, attributes, allocation),
+    points => g.grantAttributePointRewards(points, advancement, {pointsByLevel: {2: 5}})];
+  const skillOps = [points => g.evaluateSkillUpgrade(progression, ranks, points, requirement),
+    points => g.upgradeSkillRank(progression, ranks, points, requirement),
+    points => g.grantSkillPointRewards(points, advancement, {pointsByLevel: {2: 1}})];
+  const saved = structuredClone({ap, sp, ranks, attributes, advancement, initial, allocation, requirement});
+  // F01-F05/F12-F14: otherwise-valid, matching actor and sufficient balances.
+  for (const [wrong, operations] of [[sp, attributeOps], [ap, skillOps]]) {
+    for (const operation of operations) {
+      assert.throws(() => operation(wrong), {name: 'TypeError', message: /pointKind/});
+      assert.throws(() => operation({...wrong, unspentPoints: 0}), {name: 'TypeError', message: /pointKind/});
+    }
+  }
+  let reads = 0;
+  for (const [valid, operations] of [[ap, attributeOps], [sp, skillOps]]) {
+    const {pointKind, ...untagged} = valid;
+    const getter = Object.defineProperty({...untagged}, 'pointKind', {enumerable: true,
+      get() { reads++; return pointKind; }});
+    const inherited = Object.assign(Object.create({pointKind}), untagged);
+    for (const invalid of [untagged, {...valid, pointKind: 'unknown'},
+      {...valid, pointKind: pointKind === 'skill' ? 'SKILL' : 'Attribute'},
+      {...valid, pointKind: null}, {...valid, pointKind: {toString() { reads++; return pointKind; }}},
+      getter, inherited, {...valid, extra: 1}]) {
+      for (const operation of operations) assert.throws(() => operation(invalid), TypeError);
+    }
+  }
+  assert.equal(reads, 0, 'no getter invocation, coercion or inherited fallback');
+  const attributeReward = g.grantAttributePointRewards(ap, advancement, {pointsByLevel: {2: 5}});
+  const skillReward = g.grantSkillPointRewards(sp, advancement, {pointsByLevel: {2: 1}});
+  assert.deepEqual(attributeReward.state, {entityId: 'player-1', pointKind: 'attribute',
+    unspentPoints: 10, spentPoints: 0, rewardedThroughLevel: 2});
+  assert.deepEqual(skillReward.state, {entityId: 'player-1', pointKind: 'skill',
+    unspentPoints: 6, spentPoints: 0, rewardedThroughLevel: 2});
+  const allocated = g.allocateAttributePoints(ap, attributes, allocation);
+  assert.deepEqual(allocated.points, {entityId: 'player-1', pointKind: 'attribute',
+    unspentPoints: 2, spentPoints: 3, rewardedThroughLevel: 1});
+  assert.deepEqual(allocated.attributes, {entityId: 'player-1', baseAttributes: {strength: 23}});
+  const three = g.createSkillPointState(progression, {...initial, unspentPoints: 3});
+  const upgraded = g.upgradeSkillRank(progression, ranks, three, requirement);
+  assert.deepEqual(upgraded.points, {entityId: 'player-1', pointKind: 'skill',
+    unspentPoints: 1, spentPoints: 2, rewardedThroughLevel: 1});
+  assert.deepEqual(upgraded.ranks, {entityId: 'player-1', ranks: {sword: 1}});
+  const blocked = g.upgradeSkillRank(progression, ranks, sp, {...requirement, eligible: false});
+  assert.deepEqual(blocked.points, sp); assert.equal(blocked.transition.reason, 'condition_not_met');
+  assert.deepEqual({ap, sp, ranks, attributes, advancement, initial, allocation, requirement}, saved);
+  const mutableAP = structuredClone(ap), mutableSP = structuredClone(three);
+  const detachedAP = g.allocateAttributePoints(mutableAP, attributes, allocation);
+  const detachedSP = g.upgradeSkillRank(progression, ranks, mutableSP, requirement);
+  assert.equal(Object.isFrozen(mutableAP), false); assert.equal(Object.isFrozen(mutableSP), false);
+  mutableAP.pointKind = 'skill'; mutableAP.unspentPoints = 999;
+  mutableSP.pointKind = 'attribute'; mutableSP.unspentPoints = 999;
+  assert.deepEqual(detachedAP, allocated); assert.deepEqual(detachedSP, upgraded);
+  function immutable(value) {
+    if (!value || typeof value !== 'object') return;
+    assert.ok(Object.isFrozen(value)); assert.equal(Reflect.set(value, 'pointKind', 'other'), false);
+    for (const child of Object.values(value)) immutable(child);
+  }
+  for (const result of [ap, sp, attributeReward, skillReward, allocated, upgraded, blocked, detachedAP, detachedSP]) immutable(result);
+  console.log('POINT_POOL_ISOLATION_PASS F01-F16; cross_pool5; own_data_kinds; factories_closed; preserved_frozen; numeric_oracles_unchanged');
 });

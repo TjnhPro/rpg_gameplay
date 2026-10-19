@@ -21,7 +21,7 @@ const request = () => ({attributeId: 'strength', pointCost: 3, newBaseValue: 23}
 
 test('PG11–PG12: explicit pool, actual completed-prefix grants, zero/no-level rewards and updated-cursor replay guard', () => {
   const input = initial(5, 3, 10), state = createAttributePointState(progression(10), input);
-  assert.deepEqual(state, {entityId: 'player-1', unspentPoints: 5, spentPoints: 3, rewardedThroughLevel: 10});
+  assert.deepEqual(state, {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 5, spentPoints: 3, rewardedThroughLevel: 10});
   assert.ok(Object.isFrozen(state));
   assert.equal(Object.isFrozen(input), false);
   input.unspentPoints = 99;
@@ -31,7 +31,7 @@ test('PG11–PG12: explicit pool, actual completed-prefix grants, zero/no-level 
   assert.equal(createAttributePointState(progression(10), initial(0, 0, 1)).rewardedThroughLevel, 1);
   const before = pool(), advancement = receipt(), policy = rewardPolicy();
   const saved = structuredClone({before, advancement, policy});
-  const expected = {state: {entityId: 'player-1', unspentPoints: 10, spentPoints: 0, rewardedThroughLevel: 3},
+  const expected = {state: {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 10, spentPoints: 0, rewardedThroughLevel: 3},
     transition: {entityId: 'player-1', rewardedLevels: [2, 3], pointsGranted: 10, beforeUnspent: 0, afterUnspent: 10}};
   const result = grantAttributePointRewards(before, advancement, policy);
   assert.deepEqual(result, expected);
@@ -47,7 +47,7 @@ test('PG11–PG12: explicit pool, actual completed-prefix grants, zero/no-level 
   assert.deepEqual(grantAttributePointRewards(before, advancement, policy), expected);
   const zeroReceipt = advanceProgressionLevel(progression(), rules(2));
   const zero = grantAttributePointRewards(pool(5, 3), zeroReceipt, {pointsByLevel: {2: 0}});
-  assert.deepEqual(zero, {state: {entityId: 'player-1', unspentPoints: 5, spentPoints: 3, rewardedThroughLevel: 2},
+  assert.deepEqual(zero, {state: {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 5, spentPoints: 3, rewardedThroughLevel: 2},
     transition: {entityId: 'player-1', rewardedLevels: [2], pointsGranted: 0, beforeUnspent: 5, afterUnspent: 5}});
   assert.throws(() => grantAttributePointRewards(zero.state, zeroReceipt, {pointsByLevel: {2: 0}}), TypeError);
   // Sequential correctly threaded receipts continue from the new cursor.
@@ -135,9 +135,9 @@ test('PG11–PG12: malformed states/receipts/reward maps, cursor/identity mismat
   assert.equal(grantAttributePointRewards(valid, levelResult, {pointsByLevel: {2: Number.MAX_SAFE_INTEGER, 3: 0}}).state.unspentPoints, Number.MAX_SAFE_INTEGER);
   assert.deepEqual(grantAttributePointRewards(Object.assign(Object.create(null), valid), levelResult,
     {pointsByLevel: Object.assign(Object.create(null), {2: 5, 3: 5})}).state,
-  {entityId: 'player-1', unspentPoints: 10, spentPoints: 0, rewardedThroughLevel: 3});
+  {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 10, spentPoints: 0, rewardedThroughLevel: 3});
   assert.equal(reads, 0);
-  assert.deepEqual(valid, {entityId: 'player-1', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 1});
+  assert.deepEqual(valid, {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 1});
   assert.deepEqual(levelResult, receipt());
   assert.deepEqual(policy, rewardPolicy());
 });
@@ -145,7 +145,7 @@ test('PG11–PG12: malformed states/receipts/reward maps, cursor/identity mismat
 test('PG13: canonical exact-key upgrades, closed allocation, positive affordable cost, identity and combined immutable result', () => {
   const points = pool(5), attributes = createEntityAttributeState(actor, {strength: 20, vitality: 7});
   const result = allocateAttributePoints(points, attributes, request());
-  const expected = {points: {entityId: 'player-1', unspentPoints: 2, spentPoints: 3, rewardedThroughLevel: 1},
+  const expected = {points: {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 2, spentPoints: 3, rewardedThroughLevel: 1},
     attributes: {entityId: 'player-1', baseAttributes: {strength: 23, vitality: 7}},
     transition: {entityId: 'player-1', attributeId: 'strength', beforeValue: 20, afterValue: 23,
       pointsSpent: 3, beforeUnspent: 5, afterUnspent: 2}};
@@ -155,7 +155,7 @@ test('PG13: canonical exact-key upgrades, closed allocation, positive affordable
   assert.throws(() => {result.attributes.baseAttributes.strength = 0;}, TypeError);
   assert.throws(() => {result.transition.pointsSpent = 0;}, TypeError);
   assert.throws(() => {result.attributes = attributes;}, TypeError);
-  assert.deepEqual(points, {entityId: 'player-1', unspentPoints: 5, spentPoints: 0, rewardedThroughLevel: 1});
+  assert.deepEqual(points, {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 5, spentPoints: 0, rewardedThroughLevel: 1});
   assert.deepEqual(attributes.baseAttributes, {strength: 20, vitality: 7});
   assert.throws(() => allocateAttributePoints(result.points, result.attributes, {...request(), newBaseValue: 26}), TypeError);
   assert.deepEqual(allocateAttributePoints(points, attributes, request()), expected, 'stale snapshot can branch');
@@ -224,7 +224,7 @@ test('PG11–PG13: installed flow, independent actors/domains, explicit real Ker
     const level = advanceProgressionLevel(earned, rules());
     const rewarded = grantAttributePointRewards(points, level, rewardPolicy());
     const allocated = allocateAttributePoints(rewarded.state, attributes, request());
-    assert.deepEqual(allocated, {points: {entityId: 'player-1', unspentPoints: 7, spentPoints: 3, rewardedThroughLevel: 3},
+    assert.deepEqual(allocated, {points: {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 7, spentPoints: 3, rewardedThroughLevel: 3},
       attributes: {entityId: 'player-1', baseAttributes: {strength: 23}},
       transition: {entityId: 'player-1', attributeId: 'strength', beforeValue: 20, afterValue: 23,
         pointsSpent: 3, beforeUnspent: 10, afterUnspent: 7}});
@@ -235,14 +235,14 @@ test('PG11–PG13: installed flow, independent actors/domains, explicit real Ker
     assert.deepEqual(base, {entityId: 'player-1', level: 1, experience: 0});
     assert.deepEqual(level.state, {entityId: 'player-1', level: 3, experience: 260});
     assert.deepEqual(attributes.baseAttributes, {strength: 20});
-    assert.deepEqual(points, {entityId: 'player-1', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 1});
+    assert.deepEqual(points, {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 1});
     assert.throws(() => grantAttributePointRewards(allocated.points, level, rewardPolicy()), TypeError);
     return allocated;
   };
   try {assert.deepEqual(session(), session());} finally {Date.now = now; Math.random = random;}
   assert.deepEqual({monsterProgression, monsterPoints, monsterAttributes, domains}, saved);
   assert.deepEqual(createAttributePointState(monsterProgression, initial(8, 2, 5)),
-    {entityId: 'monster-1', unspentPoints: 8, spentPoints: 2, rewardedThroughLevel: 5});
+    {entityId: 'monster-1', pointKind: 'attribute', unspentPoints: 8, spentPoints: 2, rewardedThroughLevel: 5});
   const exact = createProgressionState(createEntity({id: ' Exact / ID ', kind: 'custom'}), {level: 1, experience: 260});
   const exactPoints = createAttributePointState(exact, initial());
   const exactGrant = grantAttributePointRewards(exactPoints, advanceProgressionLevel(exact, rules()), rewardPolicy());

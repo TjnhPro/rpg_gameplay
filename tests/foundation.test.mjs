@@ -187,13 +187,13 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     fs.copyFileSync(path.join(root, 'tests/consumers/skill-progression.ts'), path.join(temp, 'skill-progression.ts'));
     fs.copyFileSync(path.join(root, 'tests/consumers/progression-integration.mjs'), path.join(temp, 'progression-integration.mjs'));
     const progressionIntegration = exec(['--test', '--test-reporter=tap', 'progression-integration.mjs'], temp);
-    assert.match(progressionIntegration, /# pass 1\b/);
+    assert.match(progressionIntegration, /# pass 2\b/);
     assert.match(progressionIntegration, /# skipped 0\b/);
-    for (const marker of ['PROGRESSION_INTEGRATION_TRACE_PASS', 'PROGRESSION_INTEGRATION_SESSIONS_PASS']) {
+    for (const marker of ['PROGRESSION_INTEGRATION_TRACE_PASS', 'PROGRESSION_INTEGRATION_SESSIONS_PASS', 'POINT_POOL_ISOLATION_PASS']) {
       assert.ok(progressionIntegration.includes(marker), `Missing ${marker}`);
       console.log(progressionIntegration.split(/\r?\n/).find(line => line.includes(marker)));
     }
-    console.log('INSTALLED_PROGRESSION_INTEGRATION_PASS PG19; consumer_tests=1 skipped=0; sessions=2 literal_oracle');
+    console.log('INSTALLED_PROGRESSION_INTEGRATION_PASS PG19 + F-001; consumer_tests=2 skipped=0; sessions=2 literal_oracle');
     fs.copyFileSync(path.join(root, 'tests/consumers/progression-integration.ts'), path.join(temp, 'progression-integration.ts'));
     const progressionDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/progression/index.d.ts'), 'utf8');
     assert.doesNotMatch(progressionDeclarations, /\b(?:Map|WeakMap|Set|WeakSet|ProgressionEngine|ProgressionManager|dataFields|finite|progressionValues|readState|positiveLevel|resolveLevelAdvancement|safePoints|pointValues|readPointState|readRewardAdvancement|createPointState|grantPointRewards|skillIdentifier|rankMap|readSkillRanks|resolveSkillUpgrade)\b/);

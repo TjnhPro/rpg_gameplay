@@ -896,7 +896,8 @@ allocateAttributePoints(points: EntityAttributePointState, attributes: EntityAtt
 - `AttributePointInitialState`: explicit `unspentPoints`, `spentPoints`,
   `rewardedThroughLevel`. Balances and their sum are nonnegative safe integers;
   cursor is a positive safe integer <= initial progression level.
-- `EntityAttributePointState`: initial fields plus exact `entityId`. Separate from
+- `EntityAttributePointState`: initial fields plus exact `entityId` and required
+  readonly `pointKind: 'attribute'`. Separate from
   ProgressionState. All creation/transition results are frozen detached snapshots.
 - `AttributePointRewardPolicy`: `pointsByLevel: Readonly<Record<number, number>>`,
   plain/null-prototype own-data map with exactly canonical completed-level keys.
@@ -939,7 +940,8 @@ upgradeSkillRank(progression: ProgressionState, ranks: EntitySkillRankState, poi
   registration/removal during upgrade. Ordinary/null-prototype data maps only,
   no getters/symbol keys/inherited ranks; `__proto__` is safe own data.
 - `SkillPointInitialState`: required `unspentPoints`, `spentPoints`,
-  `rewardedThroughLevel`. `EntitySkillPointState` adds exact `entityId`. Balances
+  `rewardedThroughLevel`. `EntitySkillPointState` adds exact `entityId` and required
+  readonly `pointKind: 'skill'`. Balances
   and total nonnegative safe integers; cursor positive safe integer <= supplied
   level at creation. Independent pool/cursor from Attribute Points.
 - `SkillPointRewardPolicy`: `{pointsByLevel: Readonly<Record<number, number>>}`.
@@ -971,8 +973,8 @@ unspent to spent. Other ranks, cursor, level/EXP/Attributes/Resources stay intac
 Evaluate equals actual transition by semantic deep equality, using one resolver.
 All results/nested maps/lists frozen and detached, including blocked results;
 caller inputs untouched. latest snapshots required for cursor/expectedRank guards.
-Stale snapshots can branch; structural pool types do not authenticate domains or
-receipt provenance. Caller jointly stores next snapshots; no persistent transaction
+Stale snapshots can branch; structural discriminants separate domains but do not
+authenticate data or receipt provenance. Caller jointly stores next snapshots; no persistent transaction
 or global exactly-once guarantee. No Skill execution/effects/catalog, respec,
 automatic reward/event/level change, time/RNG or generic prerequisite graph.
 
@@ -992,3 +994,22 @@ Updated cursors/expectedRank reject sequential replay; old immutable snapshots
 can branch. Structural receipts/pool types do not authenticate provenance/domain.
 No persistent exactly-once, global transaction, lock, automatic rewards/events,
 EXP mode conversion or Skill execution. Phase REVIEW_PENDING; acceptance PENDING.
+
+## F-001: Point Pool type isolation (pre-merge v0.3.5 correction)
+
+Attribute and Skill Point snapshots now require own data `pointKind` with the
+exact literal `attribute` and `skill`, respectively. Initial inputs remain the
+closed three-field balances/cursor records; factories attach the kind and reject
+caller-supplied initial pointKind. Both reward APIs, Attribute Allocation and
+Skill Evaluation/Upgrade validate the expected kind selected by their own code
+path before granting/spending or evaluating valid gameplay blockers. Missing,
+unknown, wrong-case, inherited/accessor kinds and extra state fields throw
+TypeError; getters are not invoked. All next states preserve their exact kind.
+
+TypeScript rejects cross-pool arguments/assignments and untagged snapshots. Public
+returns stay precise, not unions; no added public function/type export. The only
+approved snapshot delta is pointKind; numeric balances/cursors/results unchanged.
+Consumers constructing/exact-matching snapshots must include it. Untagged legacy
+objects are rejected with no inference, normalization or migration. pointKind is
+a structural domain discriminator, not authentication/provenance or an exactly-once
+authority; stale immutable snapshots can still branch. Package stays0.3.5.

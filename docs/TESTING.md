@@ -213,3 +213,17 @@ supply exhaustive numeric/shape edge coverage without duplicating those suites.
 External strict progression-integration.ts joins every old consumer. All69 prior
 contracts remain unchanged:70 installed contracts,2 outer tests,zero skips.
 R01-R36 and N01-N16 mappings are in the v0.3.5 report.
+
+## F-001 pool isolation regression
+
+One additional installed progression-integration.mjs test groups F01-F16:
+all five cross-pool API calls (valid matching actors, sufficient/insufficient
+points), malformed/missing/case/accessor/inherited kinds, closed initial/state
+shapes, correct-kind grant/allocation/upgrade/blocked preservation and immutable
+detachment. Getter/coercion calls remain0. Existing literal snapshots change only
+by pointKind; PG19 numeric oracle unchanged. progression-integration.ts adds strict
+negative calls/assignments/missing-kind assertions and exact literal return checks;
+unused @ts-expect-error fails compilation. No any/cast bypass or config change.
+Current total71 installed contracts +2 outer, zero skips; prior70 retained with
+only authorized snapshot additions. Focused evidence and before/after installed
+reproduction are in reports/v0.3.5-f001-point-pool-isolation-fix.md.

@@ -230,6 +230,7 @@ export interface AttributePointInitialState {
 /** Independent immutable pool; cursor tracks processed rewards, not live level. */
 export interface EntityAttributePointState extends AttributePointInitialState {
   readonly entityId: string;
+  readonly pointKind: 'attribute';
 }
 
 export interface AttributePointRewardPolicy {
@@ -280,22 +281,27 @@ function pointValues(input: Record<string, unknown>): AttributePointInitialState
   return {unspentPoints, spentPoints, rewardedThroughLevel: positiveLevel(input.rewardedThroughLevel)};
 }
 
-function readPointState(input: EntityAttributePointState): EntityAttributePointState {
-  const data = dataFields(input, ['entityId', 'unspentPoints', 'spentPoints', 'rewardedThroughLevel']);
+type PointKind = 'attribute' | 'skill';
+type PointState<K extends PointKind> = AttributePointInitialState & {readonly entityId: string; readonly pointKind: K};
+
+function readPointState<K extends PointKind>(input: PointState<K>, expectedKind: K): PointState<K> {
+  const data = dataFields(input, ['entityId', 'pointKind', 'unspentPoints', 'spentPoints', 'rewardedThroughLevel']);
+  if (data.pointKind !== expectedKind) throw new TypeError(`Expected ${expectedKind} pointKind`);
   const entityId = data.entityId;
   if (typeof entityId !== 'string' || !entityId.trim()) throw new TypeError('Point entityId must be a nonblank string');
-  return {entityId, ...pointValues(data)};
+  return {entityId, pointKind: expectedKind, ...pointValues(data)};
 }
 
 export function createAttributePointState(state: ProgressionState, initial: AttributePointInitialState): EntityAttributePointState {
-  return createPointState(state, initial);
+  return createPointState(state, initial, 'attribute');
 }
 
-function createPointState(state: ProgressionState, initial: AttributePointInitialState): EntityAttributePointState {
+function createPointState<K extends PointKind>(state: ProgressionState, initial: AttributePointInitialState,
+  pointKind: K): PointState<K> {
   const progression = readState(state);
   const values = pointValues(dataFields(initial, ['unspentPoints', 'spentPoints', 'rewardedThroughLevel']));
   if (values.rewardedThroughLevel > progression.level) throw new TypeError('Reward cursor cannot exceed current level');
-  return Object.freeze({entityId: progression.entityId, ...values});
+  return Object.freeze({entityId: progression.entityId, pointKind, ...values});
 }
 
 /** Validate receipt consistency; never rerun advancement or infer rewards from EXP. */
@@ -341,12 +347,12 @@ function readRewardAdvancement(input: LevelAdvancementResult) {
 /** Explicit per-level reward grant; replay guard requires the updated snapshot. */
 export function grantAttributePointRewards(points: EntityAttributePointState, advancement: LevelAdvancementResult,
   policy: AttributePointRewardPolicy): AttributePointRewardResult {
-  return grantPointRewards(points, advancement, policy);
+  return grantPointRewards(points, advancement, policy, 'attribute');
 }
 
-function grantPointRewards(points: EntityAttributePointState, advancement: LevelAdvancementResult,
-  policy: AttributePointRewardPolicy): AttributePointRewardResult {
-  const current = readPointState(points), receipt = readRewardAdvancement(advancement);
+function grantPointRewards<K extends PointKind>(points: PointState<K>, advancement: LevelAdvancementResult,
+  policy: AttributePointRewardPolicy, expectedKind: K) {
+  const current = readPointState(points, expectedKind), receipt = readRewardAdvancement(advancement);
   if (current.entityId !== receipt.state.entityId || current.rewardedThroughLevel !== receipt.beforeLevel) {
     throw new TypeError('Mismatched entity or stale reward cursor');
   }
@@ -371,7 +377,7 @@ function grantPointRewards(points: EntityAttributePointState, advancement: Level
 /** Spend caller-priced points via the canonical Entity attribute setter. */
 export function allocateAttributePoints(points: EntityAttributePointState, attributes: EntityAttributeState,
   allocation: AttributePointAllocation): AttributePointAllocationResult {
-  const current = readPointState(points);
+  const current = readPointState(points, 'attribute');
   const baseAttributes = getEntityBaseAttributes(attributes);
   // Canonical Entity validation above guarantees this own string data field.
   const entityId = Object.getOwnPropertyDescriptor(attributes, 'entityId')!.value as string;
@@ -405,6 +411,7 @@ export interface SkillPointInitialState {
 /** Independent from Attribute Points, including its reward cursor. */
 export interface EntitySkillPointState extends SkillPointInitialState {
   readonly entityId: string;
+  readonly pointKind: 'skill';
 }
 
 export interface SkillPointRewardPolicy {
@@ -493,18 +500,18 @@ export function getSkillRank(state: EntitySkillRankState, skillId: string): numb
 }
 
 export function createSkillPointState(state: ProgressionState, initial: SkillPointInitialState): EntitySkillPointState {
-  return createPointState(state, initial);
+  return createPointState(state, initial, 'skill');
 }
 
 export function grantSkillPointRewards(points: EntitySkillPointState, advancement: LevelAdvancementResult,
   policy: SkillPointRewardPolicy): SkillPointRewardResult {
-  return grantPointRewards(points, advancement, policy);
+  return grantPointRewards(points, advancement, policy, 'skill');
 }
 
 /** Complete validation before evaluating blockers; one resolver for both operations. */
 function resolveSkillUpgrade(progression: ProgressionState, ranks: EntitySkillRankState,
   points: EntitySkillPointState, requirement: SkillUpgradeRequirement) {
-  const character = readState(progression), current = readSkillRanks(ranks), pool = readPointState(points);
+  const character = readState(progression), current = readSkillRanks(ranks), pool = readPointState(points, 'skill');
   if (character.entityId !== current.entityId || character.entityId !== pool.entityId) {
     throw new TypeError('Progression, rank and point identities must match');
   }

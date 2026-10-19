@@ -73,13 +73,13 @@ test('PG14: exact registered ranks, zero versus unknown, special own keys, detac
 });
 
 test('PG15: explicit independent skill pool, real completed-prefix receipts, zero/no-level rewards, replay and safe rejection', () => {
-  assert.deepEqual(pool(), {entityId: 'player-1', unspentPoints: 3, spentPoints: 5, rewardedThroughLevel: 10});
+  assert.deepEqual(pool(), {entityId: 'player-1', pointKind: 'skill', unspentPoints: 3, spentPoints: 5, rewardedThroughLevel: 10});
   const input = initial(0, 0, 10), before = createSkillPointState(progression(10), input);
   input.unspentPoints = 99;
   assert.equal(before.unspentPoints, 0);
   assert.equal(Object.isFrozen(input), false);
   const level = receipt(), policy = rewards();
-  const expected = {state: {entityId: 'player-1', unspentPoints: 3, spentPoints: 0, rewardedThroughLevel: 12},
+  const expected = {state: {entityId: 'player-1', pointKind: 'skill', unspentPoints: 3, spentPoints: 0, rewardedThroughLevel: 12},
     transition: {entityId: 'player-1', rewardedLevels: [11, 12], pointsGranted: 3, beforeUnspent: 0, afterUnspent: 3}};
   const granted = grantSkillPointRewards(before, level, policy);
   assert.deepEqual(granted, expected);
@@ -88,14 +88,14 @@ test('PG15: explicit independent skill pool, real completed-prefix receipts, zer
   assert.throws(() => grantSkillPointRewards(granted.state, level, policy), TypeError);
   assert.deepEqual(grantSkillPointRewards(before, level, policy), expected, 'stale snapshot can branch');
   const zeroReceipt = receipt(11), zero = grantSkillPointRewards(before, zeroReceipt, {pointsByLevel: {11: 0}});
-  assert.deepEqual(zero.state, {entityId: 'player-1', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 11});
+  assert.deepEqual(zero.state, {entityId: 'player-1', pointKind: 'skill', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 11});
   assert.equal(zero.transition.pointsGranted, 0);
   assert.throws(() => grantSkillPointRewards(zero.state, zeroReceipt, {pointsByLevel: {11: 0}}), TypeError);
   const noLevels = advanceProgressionLevel(progression(10, 0), rules(11));
   assert.deepEqual(grantSkillPointRewards(before, noLevels, {pointsByLevel: {}}).state, before);
   const attributeBefore = createAttributePointState(progression(10), initial(0, 0, 10));
   const attributeReward = grantAttributePointRewards(attributeBefore, level, {pointsByLevel: {11: 5, 12: 5}});
-  assert.deepEqual(attributeReward.state, {entityId: 'player-1', unspentPoints: 10, spentPoints: 0, rewardedThroughLevel: 12});
+  assert.deepEqual(attributeReward.state, {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 10, spentPoints: 0, rewardedThroughLevel: 12});
   assert.equal(before.rewardedThroughLevel, 10, 'Attribute reward does not move Skill cursor');
   assert.equal(granted.state.unspentPoints, 3);
   assert.equal(attributeBefore.rewardedThroughLevel, 10);
@@ -133,14 +133,14 @@ test('PG15: explicit independent skill pool, real completed-prefix receipts, zer
   assert.throws(() => grantSkillPointRewards(before, level, {pointsByLevel: {11: Number.MAX_SAFE_INTEGER, 12: 1}}), TypeError);
   assert.throws(() => grantSkillPointRewards({...before, unspentPoints: Number.MAX_SAFE_INTEGER}, level, policy), TypeError);
   assert.throws(() => grantSkillPointRewards({...before, spentPoints: Number.MAX_SAFE_INTEGER}, level, policy), TypeError);
-  assert.deepEqual(before, {entityId: 'player-1', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 10});
+  assert.deepEqual(before, {entityId: 'player-1', pointKind: 'skill', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 10});
   assert.equal(reads, 0);
 });
 
 test('PG16–PG18: literal upgrade/learning, prerequisites and deterministic blocker priority, dry-run and stale request', () => {
   const character = progression(), beforeRanks = ranks(), beforePoints = pool(), policy = request();
   const expected = {ranks: {entityId: 'player-1', ranks: {sword_basic: 3, fireball: 0, sword_mastery: 0}},
-    points: {entityId: 'player-1', unspentPoints: 1, spentPoints: 7, rewardedThroughLevel: 10}, transition: assessment()};
+    points: {entityId: 'player-1', pointKind: 'skill', unspentPoints: 1, spentPoints: 7, rewardedThroughLevel: 10}, transition: assessment()};
   assert.deepEqual(evaluateSkillUpgrade(character, beforeRanks, beforePoints, policy), expected.transition);
   const result = upgradeSkillRank(character, beforeRanks, beforePoints, policy);
   assert.deepEqual(result, expected);
@@ -187,7 +187,7 @@ test('PG16–PG18: literal upgrade/learning, prerequisites and deterministic blo
   assert.throws(() => {result.points.spentPoints = 0;}, TypeError);
   assert.throws(() => {result.transition.reason = 'max_rank';}, TypeError);
   assert.deepEqual(beforeRanks.ranks, {sword_basic: 2, fireball: 0, sword_mastery: 0});
-  assert.deepEqual(beforePoints, {entityId: 'player-1', unspentPoints: 3, spentPoints: 5, rewardedThroughLevel: 10});
+  assert.deepEqual(beforePoints, {entityId: 'player-1', pointKind: 'skill', unspentPoints: 3, spentPoints: 5, rewardedThroughLevel: 10});
   const mutable = structuredClone({character, beforeRanks, beforePoints, policy});
   const detached = upgradeSkillRank(mutable.character, mutable.beforeRanks, mutable.beforePoints, mutable.policy);
   mutable.beforeRanks.ranks.fireball = 99; mutable.beforePoints.unspentPoints = 99; mutable.policy.pointCost = 99;
@@ -263,7 +263,7 @@ test('PG14–PG18: actual level/reward/upgrade handoff, independent domains/acto
     const skillRanks = createSkillRankState(actor, {sword_basic: 2, fireball: 0});
     const attributes = createAttributePointState(starting, initial(0, 0));
     const earned = gainExperience(starting, 260).state;
-    assert.deepEqual(points, {entityId: 'player-1', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 10}, 'EXP gain grants nothing');
+    assert.deepEqual(points, {entityId: 'player-1', pointKind: 'skill', unspentPoints: 0, spentPoints: 0, rewardedThroughLevel: 10}, 'EXP gain grants nothing');
     const level = advanceProgressionLevel(earned, rules());
     const attributeReward = grantAttributePointRewards(attributes, level, {pointsByLevel: {11: 5, 12: 5}});
     assert.equal(points.rewardedThroughLevel, 10);
@@ -272,9 +272,9 @@ test('PG14–PG18: actual level/reward/upgrade handoff, independent domains/acto
     assert.deepEqual(evaluateSkillUpgrade(level.state, skillRanks, rewarded.state, policy), assessment());
     const upgraded = upgradeSkillRank(level.state, skillRanks, rewarded.state, policy);
     assert.deepEqual(upgraded, {ranks: {entityId: 'player-1', ranks: {sword_basic: 3, fireball: 0}},
-      points: {entityId: 'player-1', unspentPoints: 1, spentPoints: 2, rewardedThroughLevel: 12}, transition: assessment()});
+      points: {entityId: 'player-1', pointKind: 'skill', unspentPoints: 1, spentPoints: 2, rewardedThroughLevel: 12}, transition: assessment()});
     assert.deepEqual(level.state, {entityId: 'player-1', level: 12, experience: 260});
-    assert.deepEqual(attributeReward.state, {entityId: 'player-1', unspentPoints: 10, spentPoints: 0, rewardedThroughLevel: 12});
+    assert.deepEqual(attributeReward.state, {entityId: 'player-1', pointKind: 'attribute', unspentPoints: 10, spentPoints: 0, rewardedThroughLevel: 12});
     assert.deepEqual(skillRanks.ranks, {sword_basic: 2, fireball: 0});
     assert.equal(rewarded.state.unspentPoints, 3);
     assert.throws(() => upgradeSkillRank(level.state, upgraded.ranks, upgraded.points, policy), TypeError);

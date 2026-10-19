@@ -170,3 +170,14 @@ Node22/24. Tracked closure report records pre-commit results with CI pending;
 ignored final review handoff records actual head/CI, without a follow-up commit.
 Phase REVIEW_PENDING; Developer acceptance PENDING. macOS NOT_RUN; concrete
 Text/2D/2.5D gameplay profiles NOT_EVALUATED.
+
+## F-001 remediation gate
+
+The installed integration fixture now requires two passing contracts (PG19 plus
+F-001), zero skips, and POINT_POOL_ISOLATION_PASS in addition to both prior PG19
+markers. Strict NodeNext verifies pointKind literals and negative pool boundaries.
+Full verify retains every existing gate:71 installed contracts +2 outer, zero
+skips. Both final-head CI matrices must be observed again after the fix; old
+41c3d3d results do not certify remediation. Package remains0.3.5; Core unchanged.
+Final fix SHA/CI are recorded in PR #8 and the same ignored single-file handoff.
+macOS NOT_RUN; gameplay profile behavior NOT_EVALUATED.

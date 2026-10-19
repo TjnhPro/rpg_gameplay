@@ -47,3 +47,37 @@ g.runCharacterProgression();
 // @ts-expect-error Root-only installed package exports.
 import {advanceProgressionLevel as deep} from '@rpg/gameplay/dist/modules/progression/index.js';
 void collection; void adjusted; void projection; void assessment; void rank; void published; void deep;
+
+// F-001: no casts or any; unused directives fail if pool isolation regresses.
+const attributeKind: 'attribute' = ap.state.pointKind;
+const allocatedKind: 'attribute' = allocation.points.pointKind;
+const skillKind: 'skill' = sp.state.pointKind;
+const upgradedKind: 'skill' = upgrade.points.pointKind;
+const attributeFactoryKind: 'attribute' = g.createAttributePointState(start, initial).pointKind;
+const skillFactoryKind: 'skill' = g.createSkillPointState(start, initial).pointKind;
+// @ts-expect-error Attribute Points cannot fund Skill Upgrade.
+g.upgradeSkillRank(level.state, ranks, ap.state, requirement);
+// @ts-expect-error Attribute Points cannot fund Skill Evaluation.
+g.evaluateSkillUpgrade(level.state, ranks, ap.state, requirement);
+// @ts-expect-error Skill Points cannot fund Attribute Allocation.
+g.allocateAttributePoints(sp.state, allocation.attributes, {attributeId: 'strength', pointCost: 1, newBaseValue: 24});
+// @ts-expect-error Wrong Attribute reward pool.
+g.grantAttributePointRewards(sp.state, level, {pointsByLevel: {2: 5, 3: 5}});
+// @ts-expect-error Wrong Skill reward pool.
+g.grantSkillPointRewards(ap.state, level, {pointsByLevel: {2: 1, 3: 2}});
+// @ts-expect-error Distinct literal discriminants prevent assignment.
+const wrongSkill: g.EntitySkillPointState = ap.state;
+// @ts-expect-error Distinct literal discriminants prevent assignment.
+const wrongAttribute: g.EntityAttributePointState = sp.state;
+// @ts-expect-error Attribute snapshots require pointKind.
+const untaggedAttribute: g.EntityAttributePointState = {entityId: 'player-1', ...initial};
+// @ts-expect-error Skill snapshots require pointKind.
+const untaggedSkill: g.EntitySkillPointState = {entityId: 'player-1', ...initial};
+// @ts-expect-error Initial shape stays closed; factories own the kind.
+g.createAttributePointState(start, {...initial, pointKind: 'attribute'});
+// @ts-expect-error Initial shape stays closed; factories own the kind.
+g.createSkillPointState(start, {...initial, pointKind: 'skill'});
+// @ts-expect-error Discriminants are readonly.
+upgrade.points.pointKind = 'skill';
+void attributeKind; void allocatedKind; void skillKind; void upgradedKind; void attributeFactoryKind; void skillFactoryKind;
+void wrongSkill; void wrongAttribute; void untaggedAttribute; void untaggedSkill;
