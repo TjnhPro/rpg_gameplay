@@ -98,7 +98,9 @@ Trả lời ngắn gọn theo cấu trúc:
 Owner: Harness scripts only; no module, Core, dependency or gameplay contract changes.
 Use direct Node subprocesses and the invoking npm CLI for production gates.
 Commit the authorized existing Harness Foundation and task record on `master`.
-Do not configure a remote or create a GitHub repository.
+Original task prohibited creating a remote/repository. Developer follow-up in
+this session explicitly authorized: "public lên github với repo rpg_gameplay".
+Create public `TjnhPro/rpg_gameplay` and publish the current `master` branch.
 
 ## Result
 
@@ -117,7 +119,8 @@ Do not configure a remote or create a GitHub repository.
   These are orchestration probes, not gameplay/typecheck evidence. Fixture removed.
 - Subprocess audit: `verify.mjs` is the only existing subprocess launcher.
 - Linux/macOS execution and remote CI: NOT_RUN in this Windows environment.
-- Git delivery: initial commit includes authorized existing Harness Foundation
-  and this task; push BLOCKED because no remote is configured. No remote created.
-- Status: BLOCKED_WITH_EVIDENCE for GitHub delivery; local Harness READY_FOR_REVIEW.
+- Git delivery: initial commit `753633248318da684147c868ac58bba599566c85`
+  includes authorized existing Harness Foundation and this task. Initially blocked
+  because no remote was configured; follow-up authorizes public GitHub publication.
+- Status: local Harness READY_FOR_REVIEW; publication authorized by follow-up.
 - Developer acceptance: PENDING.
