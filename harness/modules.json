@@ -1,0 +1,5 @@
+{
+  "schemaVersion": 1,
+  "notes": "Add one module entry only when its implementation task is approved. 14 gameplay groups are scope, not 14 precreated modules.",
+  "modules": []
+}
