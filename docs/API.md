@@ -1,8 +1,9 @@
-# Public API — v0.1.3 (GF01–GF09)
+# Public API — v0.1.4 (GF01–GF13)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05) and
-`src/foundation/runtime/index.ts` (GF06–GF09). No classes, Core numerical wrappers,
+`src/foundation/runtime/index.ts` (GF06–GF09), and
+`src/foundation/messaging/index.ts` (GF10–GF13). No classes, Core numerical wrappers,
 persistence or global gameplay state. Module contracts below remain unchanged.
 
 ## Contracts
@@ -213,3 +214,115 @@ services or gameplay state are exposed. Old snapshots and hook-context views
 stay stable. Callers deliberately sharing mutable closure resources across
 bindings retain responsibility for that sharing; lifecycle isolation does not
 clone external objects or undo their side effects.
+
+## Command and event coordination (GF10–GF13)
+
+One opt-in `GameplayMessaging` per validated selected composition. Creation checks
+exact unique ID/definition alignment and dependency-first input order using the
+canonical Module definition validator; it neither selects nor resolves a graph.
+Selected identities are detached from caller input. Only selected modules can
+own handlers/subscriptions; no default registrations or services are supplied.
+
+| Function | Result and semantics |
+| --- | --- |
+| `createGameplayMessaging(composition)` | Opaque frozen context; private per-context tables |
+| `registerCommandHandler(messaging, {moduleId, commandType, handler})` | void; one handler/type, duplicate/invalid registration throws without overwriting |
+| `dispatchCommand(messaging, {type, payload})` | Frozen `CommandResult`; exactly one matching handler, never auto-publishes |
+| `subscribeEvent(messaging, {moduleId, eventType, handler})` | Opaque frozen `EventSubscription` token; registration order |
+| `publishEvent(messaging, {type, payload})` | Frozen `EventPublishResult`; snapshot fan-out, fail-fast |
+| `unsubscribeEvent(messaging, token)` | true if removed, false if already removed; forged/foreign token throws |
+| `unsubscribeModuleEvents(messaging, moduleId)` | Count removed across all event types for that selected owner; repeat returns 0 |
+
+Eleven public types: `GameplayMessaging`, `GameplayCommand`, `CommandOutcome`,
+`CommandHandlerRegistration`, `CommandFailure`, `CommandResult`, `GameplayEvent`,
+`EventSubscription`, `EventSubscriptionRegistration`, `EventFailure`,
+`EventPublishResult`. Combined root inventory: 22 functions, 26 types. No deep
+exports, raw tables, execution guards or private helpers.
+
+```ts
+interface GameplayCommand { readonly type: string; readonly payload: unknown; }
+interface GameplayEvent { readonly type: string; readonly payload: unknown; }
+type CommandOutcome =
+  | { readonly status: 'success'; readonly value?: unknown }
+  | { readonly status: 'rejected'; readonly reason: string };
+interface CommandHandlerRegistration {
+  readonly moduleId: string;
+  readonly commandType: string;
+  readonly handler: (command: GameplayCommand) => CommandOutcome;
+}
+interface CommandFailure {
+  readonly commandType: string; readonly moduleId: string; readonly message: string;
+}
+type CommandResult =
+  | { readonly status: 'success'; readonly commandType: string; readonly moduleId: string; readonly value?: unknown }
+  | { readonly status: 'rejected'; readonly commandType: string; readonly moduleId: string; readonly reason: string }
+  | { readonly status: 'unhandled'; readonly commandType: string }
+  | { readonly status: 'failed'; readonly failure: CommandFailure };
+interface EventSubscriptionRegistration {
+  readonly moduleId: string;
+  readonly eventType: string;
+  readonly handler: (event: GameplayEvent) => void;
+}
+interface EventFailure {
+  readonly eventType: string; readonly moduleId: string;
+  readonly subscription: EventSubscription; readonly message: string;
+}
+type EventPublishResult =
+  | { readonly ok: true; readonly eventType: string; readonly completedDeliveries: number }
+  | { readonly ok: false; readonly eventType: string; readonly completedDeliveries: number; readonly failure: EventFailure };
+```
+
+Command/event types follow lowercase kebab-case `[a-z][a-z0-9]*(?:-[a-z0-9]+)*`;
+no normalization or implied owner routing. An envelope must supply `payload`
+(explicit undefined is valid). Malformed envelopes, owners, registrations,
+capabilities and tokens throw `TypeError`. Unknown valid command returns unhandled;
+zero event subscribers succeeds with 0 deliveries. Tables retain detached frozen
+registration metadata and original callbacks; caller replacements do not rewire them.
+Command registrations last for the context's lifetime; event cleanup does not
+unregister commands or dispose the context.
+
+Handlers return explicit success/value or rejected/nonempty reason. Foundation
+does not decide business rejection reasons. Throw, malformed outcome or unsupported
+async result produces failed with command type/owner/message. Event listeners
+must return undefined; throw, Promise/thenable or non-void return stops fan-out,
+reports the failing token/owner/type and only counts previously completed listeners.
+No later listener, retry or side-effect rollback. Native Promise rejections are
+observed without awaiting; arbitrary thenables are not executed. Callback work
+already started cannot be canceled. TypeScript permits value-returning callbacks
+in void positions, so listener return validation is enforced at runtime.
+
+Each publish snapshots matching active subscriptions in registration order at
+entry to fan-out. Subscribe/unsubscribe/owner cleanup during callbacks affect the
+next publish; even a removed listener still runs in the current snapshot unless
+an earlier failure stops it. New listeners never join that current iteration.
+Same-context nested dispatch/publish throws before executing anything. If uncaught
+inside the callback, it becomes the outer structured failure; a caller catching
+it has observed the rejection and may return normally. Other contexts can execute
+independently. The guard is always released after return/failure; no nested queue.
+
+Envelope and result/diagnostic metadata are detached/frozen. Payloads and success
+values are unknown business data passed by reference, never cloned, mutated or
+deep-frozen by Foundation. A listener/caller can mutate its business objects;
+later listeners see the same reference. Caller remains responsible for validation,
+sharing and external effects. Frozen opaque tokens/context expose no internal
+collections, callbacks or execution mutators through reflection.
+
+Lifecycle integration is **explicit caller wiring**, for example:
+
+```ts
+const messaging = createGameplayMessaging(composition);
+const runtime = createGameplayRuntime(composition, {
+  unit: {
+    initialize() {
+      subscribeEvent(messaging, {moduleId: 'unit', eventType: 'notice', handler() {}});
+    },
+    stop() { unsubscribeModuleEvents(messaging, 'unit'); },
+    dispose() { unsubscribeModuleEvents(messaging, 'unit'); },
+  },
+});
+```
+
+This does not change GF07 transitions or automatically gate messaging by Runtime
+status. A context can dispatch/publish before start or after disposal if the caller
+keeps registrations. Historical runtime inspection is not live authority. No
+clock/RNG, gameplay state, async bus, implicit dependencies or automatic events.

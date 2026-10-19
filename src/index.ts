@@ -16,3 +16,12 @@ export type {
   GameplayRuntimeSnapshot, LifecycleContext, ModuleLifecycleBindings,
   LifecycleBindings, GameplayRuntime, LifecycleTransitionResult,
 } from './foundation/runtime/index.js';
+export {
+  createGameplayMessaging, registerCommandHandler, dispatchCommand,
+  subscribeEvent, publishEvent, unsubscribeEvent, unsubscribeModuleEvents,
+} from './foundation/messaging/index.js';
+export type {
+  GameplayMessaging, GameplayCommand, CommandOutcome, CommandHandlerRegistration,
+  CommandFailure, CommandResult, GameplayEvent, EventSubscription,
+  EventSubscriptionRegistration, EventFailure, EventPublishResult,
+} from './foundation/messaging/index.js';

@@ -46,3 +46,13 @@ snapshot advances once; errors retain partial progress and require explicit
 cleanup. No shared mutable registry, implicit service, async orchestration,
 command/event system, clock/RNG, game loop or concrete gameplay implementation.
 GF10+ remains outside this task. Developer acceptance remains a separate gate.
+
+The approved v0.1.4 task adds GF10–GF13 at `src/foundation/messaging/`: an
+independent opt-in context, selected-module ownership, explicit command outcomes,
+registration-order event snapshots, fail-fast delivery progress and explicit
+unsubscribe/owner cleanup. One command handler per type; no implicit events.
+Caller wires cleanup into existing lifecycle hooks. Same-context nested
+dispatch/publish throws; other contexts remain independent. Private capability
+associations expose no tables/bindings through reflection. Coordination metadata
+is frozen; arbitrary business payload/value references remain caller-owned.
+No live Runtime gating, Core changes, GF14+ clock/RNG or async scheduler is decided.
