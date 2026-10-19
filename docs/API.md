@@ -1,4 +1,4 @@
-# Public API — v0.2.5 (GF01–GF16, EC01–EC18)
+# Public API — v0.3.5 (GF01–GF16, EC01–EC18, PG01–PG19)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -708,3 +708,308 @@ previous immutable state. Public inventory remains 46 functions / 49 types.
 No transaction, store, scheduler or implicit state synchronization is provided.
 See [phase evidence](reports/v0.2.5-entity-integration-closure.md).
 Three functions/five types added; current root inventory: 46 functions/49 types.
+
+## PG01–PG03 Progression Foundation
+
+Canonical owner: `src/modules/progression/index.ts`. Root-only exports add one
+function and two types (47 functions / 51 public types total).
+
+```ts
+interface ProgressionInitialState {
+  readonly level: number;
+  readonly experience: number;
+}
+interface ProgressionState {
+  readonly entityId: string;
+  readonly level: number;
+  readonly experience: number;
+}
+function createProgressionState(
+  entity: EntitySnapshot,
+  initialState: ProgressionInitialState,
+): ProgressionState;
+```
+
+Entity input passes canonical createEntity validation; exact id/kind strings are
+preserved without normalization. Initial input must have exactly own data fields
+level/experience. Null, arrays, wrong types, missing/extra fields (including symbol
+and nonenumerable extras), inherited required fields and accessors throw TypeError
+without invoking getters. Null-prototype data input is valid. Level is a positive
+safe integer, including MAX_SAFE_INTEGER; no game cap. EXP is finite nonnegative,
+including fractions and -0, preserved exactly as a JavaScript number. No coercion,
+clamping, defaults or relation between level and EXP is inferred. Creation alone
+does not select EXP semantics; advancement requires explicit mode policy.
+
+The result is a fresh frozen three-scalar object. Caller input/Entity is untouched;
+independent snapshots can share an Entity ID. No collection membership or authority
+is checked/updated, including after Entity removal. Existing attribute/resource/
+life snapshots remain independent. No clock/RNG/Kernel call, event or hook occurs.
+Progression is optional: explicit registry definitions and selection of both entity
+and progression compose dependency-first. Missing selected Entity fails using the
+existing resolver. Creation itself requires no registry/runtime. No transitions,
+EXP curves/caps, points/ranks or extra state bags are exposed at v0.3.0.
+
+## PG04–PG06 recorded Experience transitions
+
+Same canonical Progression owner. Additive root exports: gainExperience and
+adjustExperience; three readonly types. v0.3.1 inventory: 49 functions/54 types.
+No redundant EXP getter: read ProgressionState.experience.
+
+```ts
+interface ExperienceAdjustment {
+  readonly delta: number;
+  readonly maximumExperience?: number;
+}
+interface ExperienceTransition {
+  readonly entityId: string;
+  readonly before: number;
+  readonly after: number;
+  readonly requestedDelta: number;
+  readonly appliedDelta: number;
+  readonly limited: boolean;
+}
+interface ExperienceTransitionResult {
+  readonly state: ProgressionState;
+  readonly transition: ExperienceTransition;
+}
+function adjustExperience(state: ProgressionState,
+  adjustment: ExperienceAdjustment): ExperienceTransitionResult;
+function gainExperience(state: ProgressionState, amount: number,
+  policy?: Omit<ExperienceAdjustment, 'delta'>): ExperienceTransitionResult;
+```
+
+Both validate a closed own-data entityId/level/experience state on every call,
+including no-ops. Identity is a nonblank string preserved exactly; PG03 level/EXP
+numeric validation is shared unchanged. Structural data need not be pre-frozen or
+created by this package. Required inherited/accessor fields and any own unknown
+string/symbol/nonenumerable field reject without calling getters. Null-prototype
+data remains valid. Adjustment has exactly delta and optional maximumExperience;
+gain policy allows only maximumExperience. Inherited optional maximum rejects.
+An own maximum with value undefined is invalid; omit the property instead.
+
+Delta must be finite; gain additionally requires nonnegative amount, including 0.
+Optional maximum must be finite/nonnegative and at least current EXP, even if the
+requested change would reduce EXP. Invalid inputs and uncapped nonfinite results
+throw TypeError before returning anything; caller objects stay unchanged.
+One canonical update adds delta using JavaScript number semantics, floors below 0
+and caps above explicit maximum. A finite valid cap also handles intermediate
+positive overflow. No implicit MAX_SAFE_INTEGER bound or decimal/precision policy.
+
+Result, next state and diagnostic are frozen detached objects. entityId/level stay
+unchanged; maximum is not stored. appliedDelta is exactly after-before, signed;
+limited means floor/cap clipped the requested sum. Reaching a bound exactly or a
+zero-delta no-op is not limited. Native number rounding alone does not set limited:
+for example 1e20+1 remains 1e20, appliedDelta 0, limited false. No automatic advancement,
+EXP representation conversion, event, provider read or Entity-domain update.
+EXP remains a recorded scalar, not implicitly cumulative or level-local.
+
+## PG07–PG10 explicit Level & Advancement
+
+Root adds two functions and six readonly types (51 functions/60 types total):
+
+```ts
+type ExperienceMode = 'cumulative' | 'level-local';
+interface LevelRequirement {
+  readonly toLevel: number;
+  readonly requiredExperience: number;
+  readonly eligible: boolean;
+}
+interface LevelAdvancementPolicy {
+  readonly experienceMode: ExperienceMode;
+  readonly maxLevel: number;
+  readonly targetLevel: number;
+  readonly requirements: readonly LevelRequirement[];
+}
+type LevelAdvancementBlockReason = 'none' | 'target_reached' | 'max_level'
+  | 'insufficient_experience' | 'condition_not_met';
+interface LevelAdvancementAssessment {
+  readonly entityId: string;
+  readonly beforeLevel: number;
+  readonly projectedLevel: number;
+  readonly targetLevel: number;
+  readonly beforeExperience: number;
+  readonly projectedExperience: number;
+  readonly levelsGained: number;
+  readonly experienceConsumed: number;
+  readonly advancedLevels: readonly number[];
+  readonly blockedAtLevel?: number;
+  readonly reason: LevelAdvancementBlockReason;
+}
+interface LevelAdvancementResult {
+  readonly state: ProgressionState;
+  readonly transition: LevelAdvancementAssessment;
+}
+function evaluateLevelAdvancement(state: ProgressionState,
+  policy: LevelAdvancementPolicy): LevelAdvancementAssessment;
+function advanceProgressionLevel(state: ProgressionState,
+  policy: LevelAdvancementPolicy): LevelAdvancementResult;
+```
+
+Both use the same private resolver once per call. All state fields use existing
+PG02/PG06 closed own-data validation. Mode/max/target/requirements are mandatory
+own data; unknown string/symbol/nonenumerable properties, missing/inherited fields
+and accessors reject with TypeError without evaluating getters. Null-prototype
+records remain valid. All levels are positive safe integers and must satisfy
+current <= target <= max. No level-down or implicit default.
+
+Requirements must be a dense own-data array, without extras, with exactly one
+closed requirement per step current+1 through target in that order. No duplicate,
+missing, skipped, extra or reordered step; no sparse/accessor entry. requiredExperience
+is finite nonnegative (fractions and zero allowed); eligible is boolean, never a
+callback. Cumulative thresholds must be nondecreasing. Local costs may decrease.
+The entire policy/list validates before evaluation, including no-op, at-max and
+requests with an early blocker. Malformed input rejects the whole operation.
+
+Cumulative compares recorded EXP against absolute thresholds and retains EXP.
+Level-local compares remaining EXP to each cost then subtracts only successful
+costs. Eligibility false wins over insufficient EXP. A blocker stops at that step
+without skipping, preserving the successful prefix in the returned state.
+maxLevel never caps EXP. The target ends this call even if more EXP remains.
+
+Reason none means all requested steps completed (also when reaching max in this
+call). target_reached means target was already current; max_level takes precedence
+when current was already max. Blockers give condition_not_met or
+insufficient_experience and include blockedAtLevel; otherwise that property is
+absent. levelsGained = projectedLevel-beforeLevel; experienceConsumed =
+beforeExperience-projectedExperience, reflecting native JavaScript arithmetic.
+No epsilon/rounding/decimal policy. Invalid results reject rather than returning
+partial data; ordinary blocker results are valid partial advancements.
+
+Result, nested state, assessment and detached advancedLevels array are frozen.
+Evaluate is semantically equal to advance.transition for equivalent inputs.
+Exact entityId survives; caller state/policy/requirements and all other domains
+remain untouched. No callbacks, time/RNG, events, auto rewards or stored mode/cap.
+Caller maintains consistent EXP mode throughout a lifecycle; no mode conversion.
+PG05/PG06 retain their independent behavior, including unchanged level after gain
+or EXP loss. PG11–PG19 remain outside this checkpoint.
+
+## PG11–PG13 Attribute Points
+
+Root adds three functions and six readonly types (54 functions/66 types total):
+
+```ts
+createAttributePointState(state: ProgressionState, initial: AttributePointInitialState): EntityAttributePointState;
+grantAttributePointRewards(points: EntityAttributePointState, advancement: LevelAdvancementResult, policy: AttributePointRewardPolicy): AttributePointRewardResult;
+allocateAttributePoints(points: EntityAttributePointState, attributes: EntityAttributeState, allocation: AttributePointAllocation): AttributePointAllocationResult;
+```
+
+- `AttributePointInitialState`: explicit `unspentPoints`, `spentPoints`,
+  `rewardedThroughLevel`. Balances and their sum are nonnegative safe integers;
+  cursor is a positive safe integer <= initial progression level.
+- `EntityAttributePointState`: initial fields plus exact `entityId` and required
+  readonly `pointKind: 'attribute'`. Separate from
+  ProgressionState. All creation/transition results are frozen detached snapshots.
+- `AttributePointRewardPolicy`: `pointsByLevel: Readonly<Record<number, number>>`,
+  plain/null-prototype own-data map with exactly canonical completed-level keys.
+  No missing/extra keys, aliases, getters, negative/fractional/unsafe values.
+- `AttributePointRewardResult`: `{state, transition}`. Transition has `entityId`,
+  frozen `rewardedLevels`, `pointsGranted`, `beforeUnspent`, `afterUnspent`.
+- `AttributePointAllocation`: closed `{attributeId, pointCost, newBaseValue}`.
+  Cost positive safe integer within available balance; existing exact attribute
+  key; finite strictly increased value. No point-to-attribute conversion formula.
+- `AttributePointAllocationResult`: `{points, attributes, transition}`. Transition
+  has `entityId`, `attributeId`, `beforeValue`, `afterValue`, `pointsSpent`,
+  `beforeUnspent`, `afterUnspent`. Canonical Entity setter owns attribute updates.
+
+Reward input is the actual PG09 result, structurally validated for identity,
+state/diagnostic consistency, contiguous completed levels, consumption and blocker.
+Cursor must equal `beforeLevel`; only completed levels receive caller rewards.
+Zero rewards advance cursor; no-level receipts preserve cursor and balances.
+Updated cursor rejects repeated successful receipts. Stale snapshots can branch;
+structural receipts do not authenticate provenance. No global exactly-once ledger.
+Allocation builds both snapshots atomically in memory, not a database transaction.
+Caller owns economics/restrictions, joint persistence, events and explicit stat
+recalculation. No EXP/level/resource changes, respec or Skill Point/Rank system.
+
+## PG14–PG18 Skill Progression
+
+Root adds six functions and eleven readonly types (60 functions/77 types total):
+
+```ts
+createSkillRankState(entity: EntitySnapshot, ranks: Readonly<Record<string, number>>): EntitySkillRankState;
+getSkillRank(state: EntitySkillRankState, skillId: string): number | undefined;
+createSkillPointState(state: ProgressionState, initial: SkillPointInitialState): EntitySkillPointState;
+grantSkillPointRewards(points: EntitySkillPointState, advancement: LevelAdvancementResult, policy: SkillPointRewardPolicy): SkillPointRewardResult;
+evaluateSkillUpgrade(progression: ProgressionState, ranks: EntitySkillRankState, points: EntitySkillPointState, requirement: SkillUpgradeRequirement): SkillUpgradeAssessment;
+upgradeSkillRank(progression: ProgressionState, ranks: EntitySkillRankState, points: EntitySkillPointState, requirement: SkillUpgradeRequirement): SkillUpgradeResult;
+```
+
+- `EntitySkillRankState`: `{entityId, ranks: Readonly<Record<string, number>>}`.
+  Empty map allowed; nonblank exact own string keys and nonnegative safe integer
+  ranks. Rank0 means registered/unlearned; unknown keys stay unknown. No catalog
+  registration/removal during upgrade. Ordinary/null-prototype data maps only,
+  no getters/symbol keys/inherited ranks; `__proto__` is safe own data.
+- `SkillPointInitialState`: required `unspentPoints`, `spentPoints`,
+  `rewardedThroughLevel`. `EntitySkillPointState` adds exact `entityId` and required
+  readonly `pointKind: 'skill'`. Balances
+  and total nonnegative safe integers; cursor positive safe integer <= supplied
+  level at creation. Independent pool/cursor from Attribute Points.
+- `SkillPointRewardPolicy`: `{pointsByLevel: Readonly<Record<number, number>>}`.
+  Same complete actual-PG09 receipt consistency and exact completed-level reward
+  map rules as PG12. Partial rewards cover completed prefix only; zero advances
+  cursor; no-level preserves balances/cursor. Updated cursor rejects replay.
+- `SkillPointRewardResult`: `{state, transition}`; transition has `entityId`,
+  `rewardedLevels`, `pointsGranted`, `beforeUnspent`, `afterUnspent`.
+- `SkillRankPrerequisite`: closed `{skillId, minimumRank}`. Exact registered
+  nonblank ID, positive safe minimum; no duplicates or self-reference.
+- `SkillUpgradeRequirement`: closed `{skillId, expectedRank, maxRank, pointCost,
+  requiredCharacterLevel, prerequisites, eligible}`. Target must exist. Expected
+  rank is nonnegative safe and must equal actual; cap positive safe and >= actual.
+  Cost nonnegative safe (explicit0 valid); required level positive safe; boolean
+  eligibility only; complete dense own-data prerequisite list.
+- `SkillUpgradeOutcome`: `'upgraded' | 'blocked'`.
+- `SkillUpgradeBlockReason`: `'none' | 'max_rank' | 'character_level_too_low' |
+  'prerequisite_not_met' | 'condition_not_met' | 'insufficient_points'`.
+- `SkillUpgradeAssessment`: `{entityId, skillId, beforeRank, projectedRank,
+  beforeUnspent, projectedUnspent, pointsSpent, outcome, reason}`.
+- `SkillUpgradeResult`: `{ranks, points, transition: SkillUpgradeAssessment}`.
+
+Three state identities must match. Complete validation precedes blockers; invalid
+policy/state, unknown prerequisite, rank above cap or stale expectedRank throws
+TypeError. Valid blockers use priority max rank -> character level -> prerequisites
+-> eligibility -> points. Blocked result preserves rank/point values with zero
+spending; success increments only target by one and transfers exact cost from
+unspent to spent. Other ranks, cursor, level/EXP/Attributes/Resources stay intact.
+Evaluate equals actual transition by semantic deep equality, using one resolver.
+All results/nested maps/lists frozen and detached, including blocked results;
+caller inputs untouched. latest snapshots required for cursor/expectedRank guards.
+Stale snapshots can branch; structural discriminants separate domains but do not
+authenticate data or receipt provenance. Caller jointly stores next snapshots; no persistent transaction
+or global exactly-once guarantee. No Skill execution/effects/catalog, respec,
+automatic reward/event/level change, time/RNG or generic prerequisite graph.
+
+
+## PG19 installed integration (no new API)
+
+The root remains exactly 60 runtime functions / 77 public types, including the
+14 Progression functions / 28 types above. No integration facade or deep export.
+Existing strict consumers cover every Progression declaration; the additional
+progression-integration.ts proves cross-domain result assignability, readonly
+outputs, actual receipt requirements and closed root-only package exports.
+Caller sequences PG01-PG18 with Entity and opt-in GF10-GF13. Actual level results
+can feed both reward operations independently. Allocation returns points and
+attributes together; upgrade returns ranks and points together. Caller applies
+both next snapshots, recalculates stats and publishes events explicitly.
+Updated cursors/expectedRank reject sequential replay; old immutable snapshots
+can branch. Structural receipts/pool types do not authenticate provenance/domain.
+No persistent exactly-once, global transaction, lock, automatic rewards/events,
+EXP mode conversion or Skill execution. Phase REVIEW_PENDING; acceptance PENDING.
+
+## F-001: Point Pool type isolation (pre-merge v0.3.5 correction)
+
+Attribute and Skill Point snapshots now require own data `pointKind` with the
+exact literal `attribute` and `skill`, respectively. Initial inputs remain the
+closed three-field balances/cursor records; factories attach the kind and reject
+caller-supplied initial pointKind. Both reward APIs, Attribute Allocation and
+Skill Evaluation/Upgrade validate the expected kind selected by their own code
+path before granting/spending or evaluating valid gameplay blockers. Missing,
+unknown, wrong-case, inherited/accessor kinds and extra state fields throw
+TypeError; getters are not invoked. All next states preserve their exact kind.
+
+TypeScript rejects cross-pool arguments/assignments and untagged snapshots. Public
+returns stay precise, not unions; no added public function/type export. The only
+approved snapshot delta is pointKind; numeric balances/cursors/results unchanged.
+Consumers constructing/exact-matching snapshots must include it. Untagged legacy
+objects are rejected with no inference, normalization or migration. pointKind is
+a structural domain discriminator, not authentication/provenance or an exactly-once
+authority; stale immutable snapshots can still branch. Package stays0.3.5.

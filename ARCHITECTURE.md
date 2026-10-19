@@ -37,20 +37,20 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
 `src/index.ts` exports GF01–GF05 module, GF06–GF09 lifecycle, GF10–GF13 messaging
-and GF14–GF16 execution functions, plus EC01–EC18 Entity/collection/attribute/stat/resource/life contracts.
+and GF14–GF16 execution functions, plus EC01–EC18 Entity/collection/attribute/stat/resource/life contracts and PG01–PG18 Progression/points/skill rank transitions.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
 rejects other external runtime dependencies pending an approved task.
 Tests/tooling run outside production `src/`; no engine/adapters or global gameplay
-state are introduced. Architecture registry declares optional Entity. Root and sibling re-exports
+state are introduced. Architecture registry declares optional Entity and Progression. Root and sibling re-exports
 must use each module's public entrypoint.
 
 GF01–GF05 have one Foundation owner: `src/foundation/modules/`. Their public
 registry/configuration and resolved composition are immutable explicit consumer
 state, with no singleton or module execution. Composition uses the canonical
 dependency resolver; registration/configuration keep their original semantics. They are separate from the static
-architecture registry `harness/modules.json`, which now declares Entity only.
+architecture registry `harness/modules.json`, which declares Entity and dependent Progression.
 No Foundation placeholder is registered.
 
 GF06–GF09 have one separate Foundation owner: `src/foundation/runtime/`.
@@ -101,7 +101,7 @@ Kernel public types; one calculateEntityStats path through Kernel modifier
 preparation and ordered stat calculation. L2 validates/captures input and projects
 two frozen numeric maps. No numerical algorithm, global store/cache, schema policy
 or membership synchronization is added. Foundation and EC01–EC06 semantics stay
-unchanged. Entity phase acceptance is pending Developer review; EC18 evidence is below.
+unchanged. Entity v0.2.5 is the merged baseline; EC18 evidence is below.
 
 EC10–EC13 stays in the same Entity owner: separate immutable entityId/current
 resource snapshots with fixed caller-defined keys. Bounds and policies arrive at
@@ -113,7 +113,7 @@ there is no numerical fallback. Stats-to-maximum handoff is explicit caller work
 No global store, scheduler, life state, events or additional module is introduced.
 
 - Reusable module source: `src/modules/<module-id>/`.
-- Module register: `harness/modules.json`, currently optional Entity only.
+- Module register: `harness/modules.json`, optional Entity and Progression (depends on Entity).
 - Sibling imports must reference declared dependencies and sibling public entry point, not private implementation files.
 - `src/index.ts` được phép re-export public modules. `src/shared/`/`src/contracts/` không import runtime modules.
 - Ownership of each actual module declared in registry; do not add all 14 empty modules in advance.
@@ -154,4 +154,85 @@ normalizes it, depletes/recover resources, resolves life outcomes and publishes
 events. No production API, state owner, calculator or dependency is added.
 Two independent sessions match a literal semantic oracle, preserve prior actor
 snapshots and expose fail-fast listener progress without automatic rollback.
-Phase status is REVIEW_PENDING; Developer acceptance remains PENDING.
+This Entity checkpoint was merged through PR #7 before Progression implementation.
+
+## PG01–PG03 Progression Foundation
+
+One separate canonical owner, `src/modules/progression/index.ts`, imports only
+Entity's public entrypoint for canonical identity validation through createEntity.
+It captures explicit level/experience as detached frozen scalar data; no store,
+calculator, execution provider or runtime/messaging binding. The static optional
+progression entry depends on entity. GF04–GF05 still requires explicit selection
+of both; no automatic enablement or alternate resolver. Core pin and all existing
+Foundation/Entity contracts remain unchanged. L3 owns game curves and policies;
+Advancement now uses explicit caller-selected EXP modes; state stores neither mode nor cap.
+Progression phase REVIEW_PENDING; Developer acceptance PENDING.
+
+## PG04–PG06 Experience System
+
+Same Progression owner and unchanged optional dependency entity. PG02 experience
+is the sole recorded EXP state; direct readonly access suffices. adjustExperience
+owns one synchronous immutable scalar transition; gainExperience only validates
+nonnegative gain/options and delegates to it. Shared private PG03 own-data/numeric
+validation serves creation and transitions; state identity validation is a nonblank
+string check, without a fake Entity kind or collection lookup. No new public
+validator, global store, parallel engine, Foundation or Entity change.
+
+The approved v0.3.1 task explicitly permits scalar bookkeeping: signed addition,
+minimum 0, optional operation-local maximum, finite-result enforcement and signed
+after-before diagnostics. This is not an EXP formula. No suitable public Kernel
+EXP contract exists; no fabricated resource bound/policy or dummy Kernel call.
+All existing Entity numerical delegation and Core pin remain unchanged. Level,
+reward/point/event/lifecycle behavior is outside this transition.
+
+## PG07–PG10 Level & Advancement
+
+Same canonical Progression owner, optional dependency entity and three-scalar
+state. Existing PG02 level validator now also validates max/target/step levels.
+One private resolver validates/captures the whole closed policy and dense complete
+contiguous requirements, then resolves successful steps sequentially. Evaluate
+returns its frozen projection; advance returns that projection and a frozen next
+state, without resolving twice. Eligibility precedes EXP; first blocker retains
+the successful prefix. Cumulative thresholds do not consume EXP; local costs do.
+The caller selects mode/max/target/eligibility and maintains mode consistency.
+Only approved comparison/increment/subtraction/diagnostic bookkeeping is added;
+no curve, fake Kernel delegation, store, new module, engine, reward or event.
+Entity/Foundation/Core/registry and PG01–PG06 semantics remain unchanged.
+
+## PG11–PG13 Attribute Points
+
+The existing optional Progression owner holds a separate immutable point pool,
+not fields on ProgressionState. Its cursor requires the next actual advancement
+receipt to start at the last rewarded level; zero rewards still move the cursor.
+Complete receipt/policy validation precedes grants. Updated snapshots provide a
+local replay guard; no global authority or persistent exactly-once guarantee.
+Allocation uses public Entity get/set APIs, returns points and attributes together
+and never recalculates stats. Caller supplies cost/value and stores both snapshots.
+Entity/Foundation/Core and PG01–PG10 behavior remain unchanged.
+
+## PG14–PG18 Skill Progression
+
+Same optional Progression owner and entity dependency. Separate fixed-key rank
+snapshots and independent Skill Point balances/cursor; ProgressionState unchanged.
+Private point initialization/reward bookkeeping is shared with Attribute Points
+without changing their public contracts. No public generic wallet/point engine.
+Exact own-data skill keys preserve arbitrary identifiers and special names safely.
+One resolver validates all state/policy/prerequisites then evaluates deterministic
+cap/level/prerequisite/eligibility/point priority. Dry-run and upgrade share that
+resolution. Upgrade constructs frozen combined next rank/point data, one rank per
+request. expectedRank is a local optimistic precondition, not a global lock.
+L3 supplies definitions/caps/costs/eligibility; no Skill Engine/catalog, automatic
+execution/events, graph traversal or numerical formula. PG19 integration is consumer evidence only, described below.
+
+
+## PG19 integration and phase audit
+
+Existing Progression functions compose with public Entity and opt-in Foundation
+functions in an external installed consumer. PG19 adds no production source/API,
+orchestration facade or mutable authority. PG01-PG18 semantics stay unchanged.
+Entity owns Base Attributes/resources/life; Entity delegates stats to real pinned
+Kernel. L3/caller explicitly advances, grants both independent pools, allocates,
+recalculates, upgrades and publishes. No operation synchronizes another domain.
+Full PR diff from merged Entity baseline is classified in the closure report.
+Static registry remains optional entity and optional progression -> entity; no
+Skill/Reward placeholders. Phase REVIEW_PENDING; Developer alone accepts/closes.

@@ -1,0 +1,570 @@
+import {createEntity, getEntityBaseAttributes, setEntityBaseAttribute,
+  type EntitySnapshot, type EntityAttributeState} from '../entity/index.js';
+
+/** Explicit initial values; no starting level, EXP curve or cap is supplied. */
+export interface ProgressionInitialState {
+  readonly level: number;
+  readonly experience: number;
+}
+
+/** Recorded EXP only: cumulative vs level-local semantics are not defined here. */
+export interface ProgressionState {
+  readonly entityId: string;
+  readonly level: number;
+  readonly experience: number;
+}
+
+/** Explicit signed change; an optional cap belongs to this operation only. */
+export interface ExperienceAdjustment {
+  readonly delta: number;
+  readonly maximumExperience?: number;
+}
+
+export interface ExperienceTransition {
+  readonly entityId: string;
+  readonly before: number;
+  readonly after: number;
+  readonly requestedDelta: number;
+  readonly appliedDelta: number;
+  readonly limited: boolean;
+}
+
+export interface ExperienceTransitionResult {
+  readonly state: ProgressionState;
+  readonly transition: ExperienceTransition;
+}
+
+function dataFields(input: unknown, required: readonly string[], optional: readonly string[] = []): Record<string, unknown> {
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) {
+    throw new TypeError('Expected a closed own-data record');
+  }
+  const keys = Reflect.ownKeys(input);
+  if (required.some(key => !Object.hasOwn(input, key))
+    || keys.some(key => typeof key !== 'string' || (!required.includes(key) && !optional.includes(key)))
+    || optional.some(key => key in input && !Object.hasOwn(input, key))) {
+    throw new TypeError('Missing, inherited or unknown fields');
+  }
+  return Object.fromEntries(keys.map(key => {
+    const field = Object.getOwnPropertyDescriptor(input, key);
+    if (!field || !('value' in field)) throw new TypeError('Fields must be own data properties, not accessors');
+    return [key, field.value as unknown];
+  }));
+}
+
+function finite(input: unknown): number {
+  if (typeof input !== 'number' || !Number.isFinite(input)) throw new TypeError('Expected a finite number');
+  return input;
+}
+
+function positiveLevel(input: unknown): number {
+  if (typeof input !== 'number' || !Number.isSafeInteger(input) || input < 1) {
+    throw new TypeError('Progression level must be a positive safe integer');
+  }
+  return input;
+}
+
+// Shared PG03 numerical validation for creation and every transition boundary.
+function progressionValues(input: Record<string, unknown>): ProgressionInitialState {
+  const level = positiveLevel(input.level), experience = input.experience;
+  if (typeof experience !== 'number' || !Number.isFinite(experience) || experience < 0) {
+    throw new TypeError('Progression experience must be a finite nonnegative number');
+  }
+  return {level, experience};
+}
+
+function readState(input: ProgressionState): ProgressionState {
+  const data = dataFields(input, ['entityId', 'level', 'experience']);
+  const entityId = data.entityId;
+  if (typeof entityId !== 'string' || !entityId.trim()) throw new TypeError('Progression entityId must be a nonblank string');
+  return {entityId, ...progressionValues(data)};
+}
+
+/** Capture an independent immutable snapshot; no advancement or membership IO. */
+export function createProgressionState(entity: EntitySnapshot, initialState: ProgressionInitialState): ProgressionState {
+  const entityId = createEntity(entity).id;
+  return Object.freeze({entityId, ...progressionValues(dataFields(initialState, ['level', 'experience']))});
+}
+
+/** Canonical recorded-scalar transition; level and identity are preserved. */
+export function adjustExperience(state: ProgressionState, adjustment: ExperienceAdjustment): ExperienceTransitionResult {
+  const current = readState(state);
+  const input = dataFields(adjustment, ['delta'], ['maximumExperience']);
+  const delta = finite(input.delta);
+  const maximum = Object.hasOwn(input, 'maximumExperience') ? finite(input.maximumExperience) : undefined;
+  const before = current.experience;
+  if (maximum !== undefined && (maximum < 0 || maximum < before)) {
+    throw new TypeError('Maximum experience must be nonnegative and at least current experience');
+  }
+  const requested = before + delta;
+  const limited = requested < 0 || (maximum !== undefined && requested > maximum);
+  // A finite explicit cap also bounds intermediate positive addition overflow.
+  const after = requested < 0 ? 0 : maximum !== undefined && requested > maximum ? maximum : requested;
+  if (!Number.isFinite(after)) throw new TypeError('Experience adjustment overflow');
+  return Object.freeze({
+    state: Object.freeze({...current, experience: after}),
+    transition: Object.freeze({entityId: current.entityId, before, after,
+      requestedDelta: delta, appliedDelta: after - before, limited}),
+  });
+}
+
+/** Nonnegative convenience wrapper; all updates use adjustExperience. */
+export function gainExperience(state: ProgressionState, amount: number,
+  policy?: Omit<ExperienceAdjustment, 'delta'>): ExperienceTransitionResult {
+  const delta = finite(amount);
+  if (delta < 0) throw new TypeError('Experience gain must be nonnegative');
+  const options = policy === undefined ? {} : dataFields(policy, [], ['maximumExperience']);
+  return adjustExperience(state, {...options, delta});
+}
+
+/** Interpretation is explicit per call; caller maintains lifecycle consistency. */
+export type ExperienceMode = 'cumulative' | 'level-local';
+
+export interface LevelRequirement {
+  readonly toLevel: number;
+  readonly requiredExperience: number;
+  readonly eligible: boolean;
+}
+
+export interface LevelAdvancementPolicy {
+  readonly experienceMode: ExperienceMode;
+  readonly maxLevel: number;
+  readonly targetLevel: number;
+  readonly requirements: readonly LevelRequirement[];
+}
+
+export type LevelAdvancementBlockReason = 'none' | 'target_reached' | 'max_level'
+  | 'insufficient_experience' | 'condition_not_met';
+
+export interface LevelAdvancementAssessment {
+  readonly entityId: string;
+  readonly beforeLevel: number;
+  readonly projectedLevel: number;
+  readonly targetLevel: number;
+  readonly beforeExperience: number;
+  readonly projectedExperience: number;
+  readonly levelsGained: number;
+  readonly experienceConsumed: number;
+  readonly advancedLevels: readonly number[];
+  readonly blockedAtLevel?: number;
+  readonly reason: LevelAdvancementBlockReason;
+}
+
+export interface LevelAdvancementResult {
+  readonly state: ProgressionState;
+  readonly transition: LevelAdvancementAssessment;
+}
+
+/** Validate/capture the complete request before evaluating any successful prefix. */
+function resolveLevelAdvancement(state: ProgressionState, policy: LevelAdvancementPolicy): LevelAdvancementAssessment {
+  const current = readState(state);
+  const input = dataFields(policy, ['experienceMode', 'maxLevel', 'targetLevel', 'requirements']);
+  const mode = input.experienceMode;
+  if (mode !== 'cumulative' && mode !== 'level-local') throw new TypeError('Explicit experience mode required');
+  const maximum = positiveLevel(input.maxLevel), target = positiveLevel(input.targetLevel);
+  if (maximum < current.level || target < current.level || target > maximum) {
+    throw new TypeError('Advancement requires current level <= target level <= maximum level');
+  }
+  const list = input.requirements;
+  if (!Array.isArray(list) || list.length !== target - current.level
+    || Reflect.ownKeys(list).length !== list.length + 1) {
+    throw new TypeError('Requirements must be a dense complete array without extra fields');
+  }
+  const requirements: LevelRequirement[] = [];
+  let previousThreshold = 0;
+  for (let index = 0; index < list.length; index++) {
+    const field = Object.getOwnPropertyDescriptor(list, String(index));
+    if (!field || !('value' in field)) throw new TypeError('Requirements must be own data entries');
+    const item = dataFields(field.value, ['toLevel', 'requiredExperience', 'eligible']);
+    const toLevel = positiveLevel(item.toLevel), requiredExperience = finite(item.requiredExperience);
+    if (toLevel !== current.level + index + 1 || requiredExperience < 0
+      || (mode === 'cumulative' && requiredExperience < previousThreshold)
+      || typeof item.eligible !== 'boolean') {
+      throw new TypeError('Invalid ordered level requirement');
+    }
+    previousThreshold = requiredExperience;
+    requirements.push({toLevel, requiredExperience, eligible: item.eligible});
+  }
+
+  let level = current.level, experience = current.experience;
+  let reason: LevelAdvancementBlockReason = level === maximum ? 'max_level'
+    : level === target ? 'target_reached' : 'none';
+  let blockedAtLevel: number | undefined;
+  const advancedLevels: number[] = [];
+  for (const requirement of requirements) {
+    if (!requirement.eligible || experience < requirement.requiredExperience) {
+      reason = requirement.eligible ? 'insufficient_experience' : 'condition_not_met';
+      blockedAtLevel = requirement.toLevel;
+      break;
+    }
+    if (mode === 'level-local') experience -= requirement.requiredExperience;
+    if (!Number.isFinite(experience) || experience < 0) throw new TypeError('Invalid advancement experience');
+    level = requirement.toLevel;
+    advancedLevels.push(level);
+  }
+  return Object.freeze({entityId: current.entityId, beforeLevel: current.level,
+    projectedLevel: level, targetLevel: target, beforeExperience: current.experience,
+    projectedExperience: experience, levelsGained: level - current.level,
+    experienceConsumed: current.experience - experience,
+    advancedLevels: Object.freeze(advancedLevels),
+    ...(blockedAtLevel === undefined ? {} : {blockedAtLevel}), reason});
+}
+
+/** Dry-run projection through the same resolver used by explicit advancement. */
+export function evaluateLevelAdvancement(state: ProgressionState, policy: LevelAdvancementPolicy): LevelAdvancementAssessment {
+  return resolveLevelAdvancement(state, policy);
+}
+
+/** Return an independent immutable snapshot; no rewards, events or implicit IO. */
+export function advanceProgressionLevel(state: ProgressionState, policy: LevelAdvancementPolicy): LevelAdvancementResult {
+  const transition = resolveLevelAdvancement(state, policy);
+  return Object.freeze({state: Object.freeze({entityId: transition.entityId,
+    level: transition.projectedLevel, experience: transition.projectedExperience}), transition});
+}
+
+export interface AttributePointInitialState {
+  readonly unspentPoints: number;
+  readonly spentPoints: number;
+  readonly rewardedThroughLevel: number;
+}
+
+/** Independent immutable pool; cursor tracks processed rewards, not live level. */
+export interface EntityAttributePointState extends AttributePointInitialState {
+  readonly entityId: string;
+  readonly pointKind: 'attribute';
+}
+
+export interface AttributePointRewardPolicy {
+  readonly pointsByLevel: Readonly<Record<number, number>>;
+}
+
+export interface AttributePointRewardResult {
+  readonly state: EntityAttributePointState;
+  readonly transition: {
+    readonly entityId: string;
+    readonly rewardedLevels: readonly number[];
+    readonly pointsGranted: number;
+    readonly beforeUnspent: number;
+    readonly afterUnspent: number;
+  };
+}
+
+export interface AttributePointAllocation {
+  readonly attributeId: string;
+  readonly pointCost: number;
+  readonly newBaseValue: number;
+}
+
+export interface AttributePointAllocationResult {
+  readonly points: EntityAttributePointState;
+  readonly attributes: EntityAttributeState;
+  readonly transition: {
+    readonly entityId: string;
+    readonly attributeId: string;
+    readonly beforeValue: number;
+    readonly afterValue: number;
+    readonly pointsSpent: number;
+    readonly beforeUnspent: number;
+    readonly afterUnspent: number;
+  };
+}
+
+function safePoints(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0) {
+    throw new TypeError('Points must be nonnegative safe integers');
+  }
+  return value;
+}
+
+function pointValues(input: Record<string, unknown>): AttributePointInitialState {
+  const unspentPoints = safePoints(input.unspentPoints), spentPoints = safePoints(input.spentPoints);
+  safePoints(unspentPoints + spentPoints);
+  return {unspentPoints, spentPoints, rewardedThroughLevel: positiveLevel(input.rewardedThroughLevel)};
+}
+
+type PointKind = 'attribute' | 'skill';
+type PointState<K extends PointKind> = AttributePointInitialState & {readonly entityId: string; readonly pointKind: K};
+
+function readPointState<K extends PointKind>(input: PointState<K>, expectedKind: K): PointState<K> {
+  const data = dataFields(input, ['entityId', 'pointKind', 'unspentPoints', 'spentPoints', 'rewardedThroughLevel']);
+  if (data.pointKind !== expectedKind) throw new TypeError(`Expected ${expectedKind} pointKind`);
+  const entityId = data.entityId;
+  if (typeof entityId !== 'string' || !entityId.trim()) throw new TypeError('Point entityId must be a nonblank string');
+  return {entityId, pointKind: expectedKind, ...pointValues(data)};
+}
+
+export function createAttributePointState(state: ProgressionState, initial: AttributePointInitialState): EntityAttributePointState {
+  return createPointState(state, initial, 'attribute');
+}
+
+function createPointState<K extends PointKind>(state: ProgressionState, initial: AttributePointInitialState,
+  pointKind: K): PointState<K> {
+  const progression = readState(state);
+  const values = pointValues(dataFields(initial, ['unspentPoints', 'spentPoints', 'rewardedThroughLevel']));
+  if (values.rewardedThroughLevel > progression.level) throw new TypeError('Reward cursor cannot exceed current level');
+  return Object.freeze({entityId: progression.entityId, pointKind, ...values});
+}
+
+/** Validate receipt consistency; never rerun advancement or infer rewards from EXP. */
+function readRewardAdvancement(input: LevelAdvancementResult) {
+  const result = dataFields(input, ['state', 'transition']);
+  const state = readState(result.state as ProgressionState);
+  const receipt = dataFields(result.transition, ['entityId', 'beforeLevel', 'projectedLevel', 'targetLevel',
+    'beforeExperience', 'projectedExperience', 'levelsGained', 'experienceConsumed', 'advancedLevels', 'reason'], ['blockedAtLevel']);
+  const beforeLevel = positiveLevel(receipt.beforeLevel), projectedLevel = positiveLevel(receipt.projectedLevel);
+  const target = positiveLevel(receipt.targetLevel), gained = safePoints(receipt.levelsGained);
+  const beforeExperience = finite(receipt.beforeExperience), projectedExperience = finite(receipt.projectedExperience);
+  const consumed = finite(receipt.experienceConsumed);
+  if (receipt.entityId !== state.entityId || projectedLevel !== state.level || projectedExperience !== state.experience
+    || beforeLevel > projectedLevel || projectedLevel > target || gained !== projectedLevel - beforeLevel
+    || beforeExperience < projectedExperience || consumed < 0 || consumed !== beforeExperience - projectedExperience
+    || (gained === 0 && consumed !== 0)) {
+    throw new TypeError('Inconsistent advancement receipt');
+  }
+  const list = receipt.advancedLevels;
+  if (!Array.isArray(list) || list.length !== gained || Reflect.ownKeys(list).length !== list.length + 1) {
+    throw new TypeError('Completed levels must be a dense contiguous sequence');
+  }
+  const advancedLevels: number[] = [];
+  for (let index = 0; index < list.length; index++) {
+    const field = Object.getOwnPropertyDescriptor(list, String(index));
+    if (!field || !('value' in field) || field.value !== beforeLevel + index + 1) {
+      throw new TypeError('Invalid completed level entry');
+    }
+    advancedLevels.push(field.value as number);
+  }
+  const reason = receipt.reason, blocked = Object.hasOwn(receipt, 'blockedAtLevel');
+  if (reason === 'condition_not_met' || reason === 'insufficient_experience') {
+    if (!blocked || receipt.blockedAtLevel !== projectedLevel + 1 || projectedLevel >= target) {
+      throw new TypeError('Inconsistent advancement blocker');
+    }
+  } else if (blocked || (reason === 'none' ? gained === 0 || projectedLevel !== target
+    : (reason !== 'target_reached' && reason !== 'max_level') || gained !== 0 || beforeLevel !== target)) {
+    throw new TypeError('Invalid advancement completion reason');
+  }
+  return {state, beforeLevel, advancedLevels};
+}
+
+/** Explicit per-level reward grant; replay guard requires the updated snapshot. */
+export function grantAttributePointRewards(points: EntityAttributePointState, advancement: LevelAdvancementResult,
+  policy: AttributePointRewardPolicy): AttributePointRewardResult {
+  return grantPointRewards(points, advancement, policy, 'attribute');
+}
+
+function grantPointRewards<K extends PointKind>(points: PointState<K>, advancement: LevelAdvancementResult,
+  policy: AttributePointRewardPolicy, expectedKind: K) {
+  const current = readPointState(points, expectedKind), receipt = readRewardAdvancement(advancement);
+  if (current.entityId !== receipt.state.entityId || current.rewardedThroughLevel !== receipt.beforeLevel) {
+    throw new TypeError('Mismatched entity or stale reward cursor');
+  }
+  const rewards = dataFields(policy, ['pointsByLevel']).pointsByLevel;
+  if (typeof rewards !== 'object' || rewards === null || Array.isArray(rewards)
+    || ![Object.prototype, null].includes(Object.getPrototypeOf(rewards))) {
+    throw new TypeError('Rewards must be an own-data level map');
+  }
+  // Exact canonical decimal keys also reject aliases such as 02 or 2e0.
+  const keys = receipt.advancedLevels.map(String);
+  const captured = dataFields(rewards, keys);
+  let pointsGranted = 0;
+  for (const key of keys) pointsGranted = safePoints(pointsGranted + safePoints(captured[key]));
+  const unspentPoints = safePoints(current.unspentPoints + pointsGranted);
+  safePoints(unspentPoints + current.spentPoints);
+  return Object.freeze({state: Object.freeze({...current, unspentPoints,
+    rewardedThroughLevel: receipt.state.level}),
+  transition: Object.freeze({entityId: current.entityId, rewardedLevels: Object.freeze(receipt.advancedLevels),
+    pointsGranted, beforeUnspent: current.unspentPoints, afterUnspent: unspentPoints})});
+}
+
+/** Spend caller-priced points via the canonical Entity attribute setter. */
+export function allocateAttributePoints(points: EntityAttributePointState, attributes: EntityAttributeState,
+  allocation: AttributePointAllocation): AttributePointAllocationResult {
+  const current = readPointState(points, 'attribute');
+  const baseAttributes = getEntityBaseAttributes(attributes);
+  // Canonical Entity validation above guarantees this own string data field.
+  const entityId = Object.getOwnPropertyDescriptor(attributes, 'entityId')!.value as string;
+  if (entityId !== current.entityId) throw new TypeError('Point and attribute identities must match');
+  const input = dataFields(allocation, ['attributeId', 'pointCost', 'newBaseValue']);
+  const pointCost = positiveLevel(input.pointCost), newBaseValue = finite(input.newBaseValue);
+  if (pointCost > current.unspentPoints) throw new TypeError('Insufficient attribute points');
+  // The public setter owns key validation, existence and the detached update.
+  const nextAttributes = setEntityBaseAttribute({entityId, baseAttributes}, input.attributeId as string, newBaseValue);
+  const attributeId = input.attributeId as string, beforeValue = baseAttributes[attributeId]!;
+  if (newBaseValue <= beforeValue) throw new TypeError('Allocation must increase the base attribute');
+  const unspentPoints = current.unspentPoints - pointCost;
+  const spentPoints = safePoints(current.spentPoints + pointCost);
+  return Object.freeze({points: Object.freeze({...current, unspentPoints, spentPoints}), attributes: nextAttributes,
+    transition: Object.freeze({entityId, attributeId, beforeValue, afterValue: newBaseValue,
+      pointsSpent: pointCost, beforeUnspent: current.unspentPoints, afterUnspent: unspentPoints})});
+}
+
+/** Fixed registered key set; rank zero is registered but unlearned. */
+export interface EntitySkillRankState {
+  readonly entityId: string;
+  readonly ranks: Readonly<Record<string, number>>;
+}
+
+export interface SkillPointInitialState {
+  readonly unspentPoints: number;
+  readonly spentPoints: number;
+  readonly rewardedThroughLevel: number;
+}
+
+/** Independent from Attribute Points, including its reward cursor. */
+export interface EntitySkillPointState extends SkillPointInitialState {
+  readonly entityId: string;
+  readonly pointKind: 'skill';
+}
+
+export interface SkillPointRewardPolicy {
+  readonly pointsByLevel: Readonly<Record<number, number>>;
+}
+
+export interface SkillPointRewardResult {
+  readonly state: EntitySkillPointState;
+  readonly transition: {
+    readonly entityId: string;
+    readonly rewardedLevels: readonly number[];
+    readonly pointsGranted: number;
+    readonly beforeUnspent: number;
+    readonly afterUnspent: number;
+  };
+}
+
+export interface SkillRankPrerequisite {
+  readonly skillId: string;
+  readonly minimumRank: number;
+}
+
+export interface SkillUpgradeRequirement {
+  readonly skillId: string;
+  readonly expectedRank: number;
+  readonly maxRank: number;
+  readonly pointCost: number;
+  readonly requiredCharacterLevel: number;
+  readonly prerequisites: readonly SkillRankPrerequisite[];
+  readonly eligible: boolean;
+}
+
+export type SkillUpgradeOutcome = 'upgraded' | 'blocked';
+export type SkillUpgradeBlockReason = 'none' | 'max_rank' | 'character_level_too_low'
+  | 'prerequisite_not_met' | 'condition_not_met' | 'insufficient_points';
+
+export interface SkillUpgradeAssessment {
+  readonly entityId: string;
+  readonly skillId: string;
+  readonly beforeRank: number;
+  readonly projectedRank: number;
+  readonly beforeUnspent: number;
+  readonly projectedUnspent: number;
+  readonly pointsSpent: number;
+  readonly outcome: SkillUpgradeOutcome;
+  readonly reason: SkillUpgradeBlockReason;
+}
+
+export interface SkillUpgradeResult {
+  readonly ranks: EntitySkillRankState;
+  readonly points: EntitySkillPointState;
+  readonly transition: SkillUpgradeAssessment;
+}
+
+function skillIdentifier(input: unknown): string {
+  if (typeof input !== 'string' || !input.trim()) throw new TypeError('Expected a nonblank skill identifier');
+  return input;
+}
+
+function rankMap(input: unknown): Readonly<Record<string, number>> {
+  if (typeof input !== 'object' || input === null || Array.isArray(input)
+    || ![Object.prototype, null].includes(Object.getPrototypeOf(input))) {
+    throw new TypeError('Ranks must be an own-data skill map');
+  }
+  return Object.freeze(Object.fromEntries(Reflect.ownKeys(input).map(key => {
+    const field = Object.getOwnPropertyDescriptor(input, key);
+    if (!field || !('value' in field)) throw new TypeError('Ranks must be own data entries');
+    return [skillIdentifier(key), safePoints(field.value)];
+  })));
+}
+
+function readSkillRanks(input: EntitySkillRankState): EntitySkillRankState {
+  const data = dataFields(input, ['entityId', 'ranks']);
+  const entityId = data.entityId;
+  if (typeof entityId !== 'string' || !entityId.trim()) throw new TypeError('Rank entityId must be a nonblank string');
+  return Object.freeze({entityId, ranks: rankMap(data.ranks)});
+}
+
+export function createSkillRankState(entity: EntitySnapshot, ranks: Readonly<Record<string, number>>): EntitySkillRankState {
+  return Object.freeze({entityId: createEntity(entity).id, ranks: rankMap(ranks)});
+}
+
+export function getSkillRank(state: EntitySkillRankState, skillId: string): number | undefined {
+  const current = readSkillRanks(state), key = skillIdentifier(skillId);
+  return Object.hasOwn(current.ranks, key) ? current.ranks[key] : undefined;
+}
+
+export function createSkillPointState(state: ProgressionState, initial: SkillPointInitialState): EntitySkillPointState {
+  return createPointState(state, initial, 'skill');
+}
+
+export function grantSkillPointRewards(points: EntitySkillPointState, advancement: LevelAdvancementResult,
+  policy: SkillPointRewardPolicy): SkillPointRewardResult {
+  return grantPointRewards(points, advancement, policy, 'skill');
+}
+
+/** Complete validation before evaluating blockers; one resolver for both operations. */
+function resolveSkillUpgrade(progression: ProgressionState, ranks: EntitySkillRankState,
+  points: EntitySkillPointState, requirement: SkillUpgradeRequirement) {
+  const character = readState(progression), current = readSkillRanks(ranks), pool = readPointState(points, 'skill');
+  if (character.entityId !== current.entityId || character.entityId !== pool.entityId) {
+    throw new TypeError('Progression, rank and point identities must match');
+  }
+  const input = dataFields(requirement, ['skillId', 'expectedRank', 'maxRank', 'pointCost',
+    'requiredCharacterLevel', 'prerequisites', 'eligible']);
+  const skillId = skillIdentifier(input.skillId), expectedRank = safePoints(input.expectedRank);
+  const maxRank = positiveLevel(input.maxRank), pointCost = safePoints(input.pointCost);
+  const requiredLevel = positiveLevel(input.requiredCharacterLevel);
+  if (!Object.hasOwn(current.ranks, skillId)) throw new TypeError('Unknown target skill');
+  const beforeRank = current.ranks[skillId]!;
+  if (expectedRank !== beforeRank || beforeRank > maxRank) throw new TypeError('Stale rank or inconsistent rank cap');
+  if (typeof input.eligible !== 'boolean') throw new TypeError('Eligibility must be a boolean');
+  const list = input.prerequisites;
+  if (!Array.isArray(list) || Reflect.ownKeys(list).length !== list.length + 1) {
+    throw new TypeError('Prerequisites must be a dense own-data array');
+  }
+  const prerequisites = new Set<string>();
+  let prerequisitesMet = true;
+  for (let index = 0; index < list.length; index++) {
+    const field = Object.getOwnPropertyDescriptor(list, String(index));
+    if (!field || !('value' in field)) throw new TypeError('Prerequisites must be own data entries');
+    const item = dataFields(field.value, ['skillId', 'minimumRank']);
+    const key = skillIdentifier(item.skillId), minimumRank = positiveLevel(item.minimumRank);
+    if (key === skillId || prerequisites.has(key) || !Object.hasOwn(current.ranks, key)) {
+      throw new TypeError('Unknown, duplicate or self prerequisite');
+    }
+    prerequisites.add(key);
+    if (current.ranks[key]! < minimumRank) prerequisitesMet = false;
+  }
+  const reason: SkillUpgradeBlockReason = beforeRank === maxRank ? 'max_rank'
+    : character.level < requiredLevel ? 'character_level_too_low'
+    : !prerequisitesMet ? 'prerequisite_not_met'
+    : !input.eligible ? 'condition_not_met'
+    : pool.unspentPoints < pointCost ? 'insufficient_points' : 'none';
+  const upgraded = reason === 'none', pointsSpent = upgraded ? pointCost : 0;
+  const transition: SkillUpgradeAssessment = Object.freeze({entityId: character.entityId, skillId,
+    beforeRank, projectedRank: upgraded ? safePoints(beforeRank + 1) : beforeRank,
+    beforeUnspent: pool.unspentPoints, projectedUnspent: pool.unspentPoints - pointsSpent,
+    pointsSpent, outcome: upgraded ? 'upgraded' : 'blocked', reason});
+  return {current, pool, transition};
+}
+
+export function evaluateSkillUpgrade(progression: ProgressionState, ranks: EntitySkillRankState,
+  points: EntitySkillPointState, requirement: SkillUpgradeRequirement): SkillUpgradeAssessment {
+  return resolveSkillUpgrade(progression, ranks, points, requirement).transition;
+}
+
+/** One rank only; caller jointly applies returned snapshots, with no hidden IO. */
+export function upgradeSkillRank(progression: ProgressionState, ranks: EntitySkillRankState,
+  points: EntitySkillPointState, requirement: SkillUpgradeRequirement): SkillUpgradeResult {
+  const {current, pool, transition} = resolveSkillUpgrade(progression, ranks, points, requirement);
+  return Object.freeze({ranks: Object.freeze({entityId: current.entityId,
+    ranks: Object.freeze({...current.ranks, [transition.skillId]: transition.projectedRank})}),
+  points: Object.freeze({...pool, unspentPoints: transition.projectedUnspent,
+    spentPoints: safePoints(pool.spentPoints + transition.pointsSpent)}), transition});
+}

@@ -7,21 +7,23 @@ evidence, shared full-flow reproducibility and Foundation profile compatibility.
 v0.2.0 adds installed EC01–EC03 identity/creation/immutability and module evidence.
 v0.2.1 adds installed EC04–EC06 ordered immutable collection/update evidence.
 v0.2.2 adds installed EC07–EC09 immutable attributes/Kernel stats/recalculation evidence.
-Gameplay profile behavior remains NOT_EVALUATED; Entity phase acceptance is pending.
+v0.3.0 adds installed PG01–PG03 creation/validation/isolation evidence.
+v0.3.1 adds installed PG04–PG06 scalar transition/numeric-boundary evidence.
+Gameplay profile behavior remains NOT_EVALUATED; Progression phase is REVIEW_PENDING.
 
 | ID | Harness capability | Foundation status |
 | --- | --- | --- |
 | H01 | Agent Onboarding & Routing | Implemented: concise `AGENTS.md` map |
 | H02 | Repository Knowledge Base | Implemented: scoped docs, accepted decisions |
 | H03 | Architecture Boundary Guard | Partial automation: check static imports and paths |
-| H04 | Module Ownership & Dependency Registry | Implemented: `harness/modules.json` declares optional Entity |
+| H04 | Module Ownership & Dependency Registry | Implemented: optional Entity and dependent optional Progression |
 | H05 | RPG Core Integration Guard | Partial automation: forbid Core root/Legacy/internal imports |
 | H06 | Canonical Implementation Guard | Governance/manual review; no fake algorithmic duplicate detector |
 | H07 | Module Isolation & Optionality Guard | Partial automation: imports, explicit deps; selected-module lifecycle/isolation contracts tested; dynamic enable/disable excluded |
 | H08 | Capability Gap & Change Control | Policy + escalation/STOP workflow |
 | H09 | Three-Profile Functional Verification | Foundation action/opaque position/direction compatibility probes; no gameplay scenarios/apps |
 | H10 | Deterministic Functional Test Harness | Injected clock/RNG/IDs, independent scripted semantic/failure traces; lexical global-source checks + audit; no simulator/app |
-| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC18, full Foundation flow, payload profiles and gate controls |
+| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC18/PG01–PG19, full Foundation flow, payload profiles and gate controls |
 | H12 | Verification Gates & CI | Boundaries + build + typecheck + functional contracts; Windows/Linux, Node 22/24 |
 | H13 | Agent Task Execution Protocol | Implemented: approved-plan-first docs and task template |
 | H14 | Approval & Evidence Gates | Policy/report templates; Developer acceptance manual |
@@ -60,3 +62,36 @@ lookup and opaque profile event data, alongside prior Foundation probes.
 Concrete gameplay/profile behavior: NOT_EVALUATED (combat, movement, animation).
 H06 canonical numerical ownership is source-reviewed, not algorithmically proven
 by a regex checker. Final Developer acceptance remains PENDING.
+
+## v0.3.2 evidence extension
+
+Installed PG07–PG10 now covers explicit cumulative/local advancement, complete
+policy validation, frozen diagnostics, blockers/prefixes, dry-run and replay.
+60 installed contracts plus 2 outer tests; no gate bypass. Previous fixtures and
+Core pin unchanged. This is Progression evidence, not game-profile acceptance.
+
+## v0.3.3 evidence extension
+
+Installed PG11–PG13 covers separate point pools, validated actual advancement
+receipts, exact per-level rewards, updated-cursor replay protection and canonical
+Entity allocation.64 installed contracts plus2 outer tests,zero skips; prior
+fixtures and gates retained. No game profile or global authority claim.
+
+## v0.3.4 evidence extension
+
+Installed PG14–PG18 covers fixed exact-key Skill Ranks, independent Skill Point
+pools/cursors and actual advancement rewards, explicit requirements, one-rank
+upgrade, deterministic blockers, expectedRank guard and combined immutable result.
+69 installed contracts plus2 outer tests,zero skips. All prior consumers retained,
+real Core pin/integrity and verification failure controls unchanged. Gameplay
+profiles remain NOT_EVALUATED; Progression IN_PROGRESS until v0.3.5 review.
+
+
+## v0.3.5 closure evidence
+
+PG19 supplies installed cross-domain literal traces in two independent sessions,
+real Kernel stat handoff, explicit GF command/event integration and failure/cleanup
+boundaries.70 installed contracts +2 outer tests,zero skips; all69 old fixtures
+retained. Root60 functions/77 types unchanged. Harness checks remain lexical and
+semantic ownership still requires full phase source/diff review. No concrete
+gameplay profile claim; Developer acceptance PENDING, Progression REVIEW_PENDING.

@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.2.5 Entity Integration & Closure
+# RPG Gameplay — v0.3.5 Progression Integration & Closure
 
-> **Status: GF01–GF16 baseline accepted; EC01–EC18 implemented and verified. Phase v0.2.x REVIEW_PENDING; Developer acceptance PENDING.**
+> **Status: merged Entity v0.2.5 baseline; PG01–PG19 implemented and integration verified. Progression phase REVIEW_PENDING; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16 and EC01–EC18 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18 and PG01–PG19 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -129,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.2.5.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.3.5.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -257,7 +257,7 @@ task recorded under [task execution](docs/TASK_EXECUTION.md).
 | [docs/TASK_EXECUTION.md](docs/TASK_EXECUTION.md) | Approved plan, stop conditions, acceptance |
 | [docs/TESTING.md](docs/TESTING.md) | Function-only tests; evidence thay cho số lượng |
 | [docs/VERIFICATION.md](docs/VERIFICATION.md) | Commands và giới hạn từng gate |
-| [harness/modules.json](harness/modules.json) | Registry chỉ khai báo optional Entity |
+| [harness/modules.json](harness/modules.json) | Optional Entity và Progression; Progression phụ thuộc Entity |
 
 ## Reference
 
@@ -284,3 +284,117 @@ bounds. Repeated operations on the new snapshot return unchanged. Caller may
 publish changed outcomes through GF12; no automatic event, global store or replay
 guard. Old snapshots remain usable. EC18 combines these public functions without
 new production APIs; final phase acceptance remains with Developer.
+
+## Progression Foundation (PG01–PG03)
+
+```ts
+import {createEntity, createProgressionState} from '@rpg/gameplay';
+const actor = createEntity({id: 'player-1', kind: 'player'});
+const progression = createProgressionState(actor, {level: 10, experience: 1500});
+// Frozen {entityId: 'player-1', level: 10, experience: 1500}
+```
+
+The same API accepts Monster/NPC/custom actors. Caller supplies a positive safe
+integer level and finite nonnegative EXP (fractions preserved). EXP is a recorded
+number only; advancement interprets it using an explicit caller-selected mode.
+Creation supplies no defaults, curves, caps, points or events. Optional Progression requires
+explicit Entity selection when composed; neither is automatically enabled.
+See [checkpoint report](docs/reports/v0.3.0-progression-foundation.md).
+
+## Experience System (PG04–PG06)
+
+```ts
+import {gainExperience, adjustExperience} from '@rpg/gameplay';
+const gained = gainExperience(progression, 250); // EXP1500 -> 1750; level10 unchanged
+const reduced = adjustExperience(gained.state, {delta: -100}); // EXP1650
+const capped = gainExperience(reduced.state, 100, {maximumExperience: 1700});
+// transition: before1650, after1700, requestedDelta100, appliedDelta50, limitedtrue
+```
+
+Read EXP directly from the readonly state. Operations return frozen state and
+transition diagnostics; old snapshots remain intact. Minimum is 0; optional finite
+nonnegative maximum belongs to the current operation and must not be below current
+EXP. Uncapped overflow throws TypeError; a valid cap bounds intermediate overflow.
+EXP stays a recorded scalar, with no cumulative/local conversion or automatic
+level-up. See [v0.3.1 evidence](docs/reports/v0.3.1-experience-system.md).
+
+## Level & Advancement (PG07–PG10)
+
+```ts
+import {evaluateLevelAdvancement, advanceProgressionLevel} from '@rpg/gameplay';
+const policy = {experienceMode: 'level-local' as const, maxLevel: 100, targetLevel: 4,
+  requirements: [
+    {toLevel: 2, requiredExperience: 100, eligible: true},
+    {toLevel: 3, requiredExperience: 150, eligible: true},
+    {toLevel: 4, requiredExperience: 200, eligible: true},
+  ]};
+const state = {entityId: 'player-1', level: 1, experience: 260};
+evaluateLevelAdvancement(state, policy); // dry-run: level3, EXP10, blocked at4
+advanceProgressionLevel(state, policy); // frozen state + identical transition
+```
+
+Every request supplies mode, max, target and all contiguous steps to that target.
+Cumulative mode uses nondecreasing absolute thresholds without consuming EXP;
+level-local subtracts successful per-step costs and preserves the remainder.
+Caller evaluates external eligibility first. The first blocker stops advancement
+and retains the successful prefix. Entire malformed policies throw before any
+projection, even for no-op/max-level. No automatic level-up, rewards, points,
+events or mode conversion. Caller maintains mode consistency across a lifecycle.
+See [API](docs/API.md) and [v0.3.2 report](docs/reports/v0.3.2-level-advancement.md).
+
+## Attribute Points (PG11–PG13)
+
+`createAttributePointState(progression, initial)` captures explicit unspent/spent
+safe integer balances and a reward cursor. `grantAttributePointRewards(points,
+advancement, {pointsByLevel})` consumes the actual level advancement result and
+caller rewards for exactly its completed levels. `allocateAttributePoints(points,
+attributes, {attributeId, pointCost, newBaseValue})` spends points through the
+canonical Entity setter, returning combined immutable snapshots.
+
+Updated cursors reject receipt replay; stale snapshots can branch. Caller owns
+upgrade economics, storage and explicit stat recalculation. No automatic rewards,
+events or global ledger. See [API](docs/API.md) and
+[v0.3.3 evidence](docs/reports/v0.3.3-attribute-points.md).
+
+## Skill Progression (PG14–PG18)
+
+```ts
+import {createSkillRankState, createSkillPointState, grantSkillPointRewards,
+  evaluateSkillUpgrade, upgradeSkillRank} from '@rpg/gameplay';
+
+const ranks = createSkillRankState(entity, {sword_basic: 2, fireball: 0});
+const points = createSkillPointState(progression, {
+  unspentPoints: 3, spentPoints: 5, rewardedThroughLevel: 10,
+});
+const requirement = {skillId: 'sword_basic', expectedRank: 2, maxRank: 10,
+  pointCost: 2, requiredCharacterLevel: 15, prerequisites: [], eligible: true};
+// Given progression.level >= 15: rank2->3, unspent3->1, spent5->7.
+const projection = evaluateSkillUpgrade(progression, ranks, points, requirement);
+const next = upgradeSkillRank(progression, ranks, points, requirement);
+```
+
+Use `getSkillRank` for validated inspection: rank0 is registered but unlearned;
+unknown key returns undefined. `grantSkillPointRewards` explicitly consumes PG09
+results and caller per-level rewards, with its own cursor. Pools stay independent.
+Policy fully validates before blockers: max rank, character level, prerequisites,
+eligibility, points. Stale expectedRank throws; valid blockers return diagnostics
+and unchanged frozen values. Each success adds exactly one rank, including free
+upgrades. No Skill execution/effects or automatic events. See
+[v0.3.4 evidence](docs/reports/v0.3.4-skill-progression.md).
+
+
+## v0.3.5 Progression integration and review
+
+PG19 uses existing public functions only: explicit EXP/level operations, separate
+Attribute/Skill rewards from the same actual advancement receipt, canonical Entity
+allocation and Kernel stat recalculation, one-rank upgrade and caller GF12 events.
+Two independent installed sessions each match the task's literal oracle:
+level3/EXP260, Attribute Points7/3, strength23/power51, Skill Points1/2, mastery1.
+Local EXP separately ends at level3/EXP10. Replay/blocked/invalid paths, actor
+isolation, lifecycle cleanup and immutable snapshots are included.
+70 installed contracts (all69 prior retained), strict external NodeNext and full
+verify run without skips. No production API/engine/dependency added by PG19.
+Phase REVIEW_PENDING, not accepted/closed; no merge/tag/publish. See the
+[closure report](docs/reports/v0.3.5-progression-integration-closure.md). Exact final
+SHA/CI and self-contained review handoff live in ignored
+`.artifacts/progression-v0.3-final-review.md` after final push/CI.

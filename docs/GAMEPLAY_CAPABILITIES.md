@@ -37,3 +37,39 @@ candidate scope, not implemented capabilities. Text/2D/2.5D Foundation/Entity
 data compatibility is EVALUATED; concrete gameplay behavior is NOT_EVALUATED.
 Entity phase is REVIEW_PENDING with Developer acceptance PENDING; see the
 v0.2.5 phase report. No global registry, persistent storage or gameplay engine.
+
+## v0.3.0 Progression checkpoint
+
+Entity v0.2.5 EC01–EC18 is the merged PR #7 baseline. PG01–PG03 now provides
+optional Progression identity, explicit level/EXP contracts and immutable validated
+creation through one shared actor API. PG04–PG06 adds explicit scalar gain/adjustment;
+PG07–PG10 adds caller-configured cumulative/local level advancement and immutable
+diagnostics. No default curves. Phase
+IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.
+
+PG11–PG13 adds explicit separate Attribute Point snapshots, completed-level
+rewards with immutable cursor and caller-priced canonical Entity allocation.
+No automatic stat/resource/EXP/event changes or global reward authority. Progression remains IN_PROGRESS pending
+final v0.3.5 Developer review; game profiles remain NOT_EVALUATED.
+
+PG14–PG18 adds registered exact-key Skill Ranks, independent Skill Point pools/
+cursors, explicit per-level rewards and caller-configured one-rank upgrades with
+prerequisites, blockers and expectedRank guards. No Skill execution/catalog/effects
+or generic talent graph. PG19 installed integration is now verified; phase
+REVIEW_PENDING and Developer acceptance PENDING.
+
+
+## v0.3.5 Progression integration
+
+Group03 PG01-PG19 implementation and installed integration evidence are complete
+for Developer review, not acceptance. Explicit EXP/levels, independent AP/SP,
+canonical Entity allocation/Kernel recalculation and rank upgrade integrate with
+caller Foundation commands/events. No new production capability/module. Other
+candidate groups remain unimplemented; Skill execution/catalog/effects are not
+implied by Skill Rank bookkeeping. Progression phase REVIEW_PENDING.
+
+F-001 pre-merge remediation makes the approved AP/SP independence explicit in
+public snapshots: required readonly pointKind attribute/skill, own-data runtime
+guards and strict TypeScript isolation. No new capability/API/module, formula or
+engine; package0.3.5 and phase REVIEW_PENDING. Structural kind is not a trusted
+credential. Untagged old snapshots reject; no implicit migration/conversion.

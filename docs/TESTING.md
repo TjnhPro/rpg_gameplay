@@ -130,3 +130,100 @@ All 50 prior installed contracts remain unchanged: 51 total plus 2 outer tests,
 zero skips. No count target drove this test; one scenario supplies R01-R30
 integration evidence together with existing targeted contracts and source audit.
 See reports/v0.2.5-entity-integration-closure.md for the full mapping and CI.
+
+## PG01–PG03 installed creation evidence
+
+The external tarball runner executes `progression.mjs` with three grouped contracts:
+shared actors/exact numeric values/immutable detachment; closed validation and
+canonical malformed Entity rejection without getters; collection/domain isolation,
+determinism and explicit optional-module dependency composition. Literal states
+are independent expected values. Fractional EXP, numeric extrema, -0 preservation,
+unsafe levels, symbol/nonenumerable extras and reflection mutation are covered.
+`progression.ts` verifies readonly types, closed input, root-only imports and strict
+NodeNext usage. No simulator or additional gameplay behavior is introduced.
+All 51 old GF/EC contracts remain unchanged; total 54 installed contracts plus
+2 outer tests, zero skips. R01–R24 mapping is in the v0.3.0 checkpoint report.
+
+## PG04–PG06 installed transition evidence
+
+experience.mjs adds three grouped external installed-package contracts: literal
+signed numeric/zero/floor/cap/fraction/overflow outcomes and frozen results; closed
+state/options validation including no-op boundaries and getter non-evaluation,
+atomic failure and detachment; actor/domain isolation, unchanged level and two
+independent sessions matching the literal 100->350->250->300 oracle with implicit
+time/RNG disabled. Each group proves distinct behavior; no profile duplication.
+experience.ts checks root-only strict NodeNext exports and readonly result/input/
+diagnostic contracts. Existing GF/EC/PG01–PG03 consumer bodies remain unchanged.
+Total 57 installed contracts, 2 outer tests, zero skips; R01–R24 mapping in v0.3.1 report.
+Source review supplements no-automatic-effects and single-update-path evidence.
+
+## PG07–PG10 installed advancement evidence
+
+advancement.mjs executes three grouped contracts in the fresh installed tarball
+consumer: literal numeric/reason projections, whole-request fail-closed validation,
+and immutable isolation/replay. Task scenarios A-L cover cumulative 3/260 and local
+3/10/consumed250, partial prefix/eligibility/target/max, native fractions/zero/finite
+boundaries, no auto-level-down, no implicit clock/RNG and independent actors/domains.
+Each replay separately matches a literal oracle before the sessions are compared.
+advancement.ts checks all six types, readonly structures, mandatory policy and
+closed root-only exports under external strict NodeNext. No old fixture changed.
+60 installed contracts total (29 GF, 22 EC, 9 PG), 2 outer tests, zero skips.
+See v0.3.2 report for R01-R28 mapping. Game-profile behavior remains NOT_EVALUATED.
+
+## PG11–PG13 installed point evidence
+
+`tests/consumers/attribute-points.mjs` runs four grouped contracts through the real
+packed/installed package: explicit state/actual receipts/rewards/cursor; malformed
+inputs and overflow; canonical allocation and atomic rejection; independent
+actors/domains plus literal deterministic replay and real Kernel integration.
+Two sessions independently expect rewards5+5=10, spend3, final7/3/cursor3,
+base20->23 and explicitly recalculated power45->51. Zero rewards, partial/no-level
+advancement, updated-cursor replay, stale snapshot branching, frozen detachment,
+exact unusual attribute keys and getter-free rejection are covered.
+`attribute-points.ts` compiles strict external NodeNext root-only readonly types.
+All 60 previous installed contracts retained:64 total (29GF+22EC+13PG),2 outer,
+zero skips. R01–R30 mapping is in the v0.3.3 report. Game profiles NOT_EVALUATED.
+
+## PG14–PG18 installed Skill evidence
+
+Five grouped `skill-progression.mjs` contracts cover rank keys/zero/unknown/shape/
+immutability; explicit pool/real receipts/rewards/independent cursors; upgrade/
+learning/free/prerequisites/all blocker priorities/stale requests; malformed
+state/policy rejection before blockers and safe integer boundaries; two independent
+literal handoff sessions with other domains/actors unchanged and implicit clock/RNG
+disabled. Expected level12,rank3,unspent1,spent2,cursor12 comes directly from task
+scenario O (rewards1+2,cost2). Scenario D separately expects3/5->1/7,rank2->3.
+Strict external NodeNext `skill-progression.ts` proves eleven public types,
+readonly/required/closed shapes, optional lookup and root-only imports.
+All64 previous installed contracts unchanged:69 total (29GF+22EC+18PG),2 outer,
+zero skips. R01–R35 mapping in v0.3.4 report. No fake Skill Engine/game simulator.
+
+
+## PG19 full Progression integration
+
+progression-integration.mjs adds one cross-domain contract, not a second engine.
+Both independent sessions create all snapshots/policies/contexts anew and each
+matches literal final state/trace before comparing sessions. Actual PG09 receipts
+feed AP and SP separately; real Entity/Kernel calculates45 ->51. Cumulative/local
+projections, valid blockers, malformed later requirements, reward/upgrade replay,
+unknown IDs, failed command/listener, immutable detachment, actor/resource/life
+isolation and explicit GF12 publication/cleanup are observed. Date.now/Math.random
+throw throughout sessions. GF providers remain unread. Existing milestone tests
+supply exhaustive numeric/shape edge coverage without duplicating those suites.
+External strict progression-integration.ts joins every old consumer. All69 prior
+contracts remain unchanged:70 installed contracts,2 outer tests,zero skips.
+R01-R36 and N01-N16 mappings are in the v0.3.5 report.
+
+## F-001 pool isolation regression
+
+One additional installed progression-integration.mjs test groups F01-F16:
+all five cross-pool API calls (valid matching actors, sufficient/insufficient
+points), malformed/missing/case/accessor/inherited kinds, closed initial/state
+shapes, correct-kind grant/allocation/upgrade/blocked preservation and immutable
+detachment. Getter/coercion calls remain0. Existing literal snapshots change only
+by pointKind; PG19 numeric oracle unchanged. progression-integration.ts adds strict
+negative calls/assignments/missing-kind assertions and exact literal return checks;
+unused @ts-expect-error fails compilation. No any/cast bypass or config change.
+Current total71 installed contracts +2 outer, zero skips; prior70 retained with
+only authorized snapshot additions. Focused evidence and before/after installed
+reproduction are in reports/v0.3.5-f001-point-pool-isolation-fix.md.

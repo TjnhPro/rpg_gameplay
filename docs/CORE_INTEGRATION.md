@@ -122,3 +122,39 @@ Literal oracle: max-life 25/29/32, normalization 30 to 25, resource decreases
 25 to 20 to 0, explicit regeneration 0 to 10. All arithmetic remains in the
 five existing Kernel functions; life only evaluates caller-selected bounds.
 No source, Core pin, dependency, integrity or numerical implementation changed.
+
+## PG07–PG10 approved bookkeeping boundary
+
+The v0.3.2 task permits explicit requirement comparison, ordered level increment,
+local EXP cost subtraction and before/after diagnostics in Progression. Cumulative
+EXP is preserved. Core 2.0.0 has no Level/EXP-specific calculator; no synthetic
+resource policy, dummy Kernel call, curve or parallel numerical engine is added.
+The pin/reconstruction/dependencies remain unchanged; installed real Kernel and
+all Entity delegation regressions continue to run. PG05/PG06 arithmetic is unchanged.
+
+## PG11–PG13 approved point bookkeeping
+
+Safe integer point grants/spending and reward cursor checks are L2 bookkeeping.
+Caller provides per-level rewards and allocation cost/new base value. Canonical
+Entity setter updates Base Attributes; later explicit Entity stat calculation
+still invokes real pinned Kernel. No Progression stat formula/calculator, Core
+change or dependency change. Installed trace independently expects strength20 ->
+power45, then strength23 -> power51 only after explicit recalculation.
+
+## PG14–PG18 approved rank/point bookkeeping
+
+Skill point grants/spending, one-rank increment, cap/character-level/prerequisite
+comparisons and immutable diagnostics are task-approved L2 bookkeeping. Caller
+supplies per-level rewards, rank caps, per-request cost and eligibility. No Skill
+damage/cost/cooldown/effect/scaling calculator or dummy Kernel call. Core pin,
+lock integrity and real installed Kernel/Entity numerical regression remain intact.
+
+
+## PG19 installed integration
+
+The v0.3.5 external consumer installs actual gameplay/Core tarballs and asserts
+strength20 -> power45, then explicit canonical allocation to23 -> power51 through
+calculateEntityStats. A caller transform counter proves allocation never invokes
+stat calculation. No Progression formula/Kernel mock or numerical fallback.
+Pin, peer/dev dependencies and tarball SHA-512 remain unchanged across the whole
+Progression phase; the installed runner verifies artifact bytes against the lock.

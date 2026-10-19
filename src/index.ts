@@ -40,6 +40,19 @@ export {
   transitionEntityResource, regenerateEntityResource,
   createEntityLifeState, resolveEntityDefeat, reviveEntity,
 } from './modules/entity/index.js';
+export {createProgressionState, gainExperience, adjustExperience,
+  evaluateLevelAdvancement, advanceProgressionLevel,
+  createAttributePointState, grantAttributePointRewards, allocateAttributePoints,
+  createSkillRankState, getSkillRank, createSkillPointState, grantSkillPointRewards,
+  evaluateSkillUpgrade, upgradeSkillRank} from './modules/progression/index.js';
+export type {ProgressionInitialState, ProgressionState, ExperienceAdjustment, ExperienceTransition, ExperienceTransitionResult,
+  ExperienceMode, LevelRequirement, LevelAdvancementPolicy, LevelAdvancementBlockReason,
+  LevelAdvancementAssessment, LevelAdvancementResult,
+  EntityAttributePointState, AttributePointInitialState, AttributePointRewardPolicy,
+  AttributePointRewardResult, AttributePointAllocation, AttributePointAllocationResult,
+  EntitySkillRankState, SkillPointInitialState, EntitySkillPointState, SkillPointRewardPolicy,
+  SkillPointRewardResult, SkillRankPrerequisite, SkillUpgradeRequirement, SkillUpgradeOutcome,
+  SkillUpgradeBlockReason, SkillUpgradeAssessment, SkillUpgradeResult} from './modules/progression/index.js';
 export type {
   EntityDefinition, EntitySnapshot, EntityCollection,
   EntityAttributeState, EntityStatConfiguration, EntityStatSnapshot,

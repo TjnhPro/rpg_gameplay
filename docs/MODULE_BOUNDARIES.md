@@ -1,6 +1,6 @@
 # Module Registry Contract
 
-`harness/modules.json` starts empty. Add entries **only with an approved implementation task**. Default convention is `src/modules/<id>`; changing conventions requires reviewing architecture checks.
+`harness/modules.json` declares optional Entity and optional Progression (dependent on Entity). Add entries **only with an approved implementation task**. Default convention is `src/modules/<id>`; changing conventions requires reviewing architecture checks.
 
 Example (documentation only, **not an implemented module**):
 
@@ -22,7 +22,7 @@ Rules:
 - Production `src/` is headless; no UI/renderers/engine package or Node built-ins for gameplay.
 - Core numerical computation is delegated to `@rpg/core/kernel` only.
 - No module added to registry simply to satisfy catalog count; no empty placeholders.
-- The architecture registry declares only optional entity in v0.2.0. GF01–GF05 infrastructure has
+- The architecture registry declares optional entity and progression in v0.3.0. GF01–GF05 infrastructure has
   one owner at `src/foundation/modules/`; root exports its public functions/types.
   GF06–GF09 lifecycle coordination has a separate canonical owner at
   `src/foundation/runtime/`, consuming the Module public entrypoint. GF10–GF13
@@ -66,3 +66,59 @@ Entity remains optional, dependencies [], under src/modules/entity/index.ts.
 The root surface remains 46 functions and 49 types; deep imports stay blocked.
 Foundation sources are byte-for-byte unchanged from the accepted phase baseline.
 Caller wiring, including event publication and cleanup, lives in test consumers.
+
+## PG01–PG03 ownership
+
+Optional progression has one owner `src/modules/progression/index.ts` and one
+static dependency, entity. Its only sibling import is `../entity/index.js` for
+createEntity/EntitySnapshot, with no private helpers or duplicate EC03 validator.
+Root re-exports only the public entrypoint. Both modules must be explicitly
+selected for composition; Foundation resolver behavior remains unchanged.
+No new Foundation owner, numerical calculator, runtime package or global store.
+
+## PG04–PG06 same canonical transition owner
+
+Experience remains in progression/index.ts, with no new registry/module/dependency.
+Shared private PG03 shape/numeric helpers validate creation and transitions;
+adjustExperience owns the only EXP update path, gainExperience delegates. No second
+EXP store, Foundation dependency or Entity private import. Only task-approved
+scalar addition/floor/cap/after-before diagnostics are performed at L2; no curve,
+modifier, rounding algorithm or fabricated Kernel resource policy is introduced.
+Core and Entity ownership/delegation are unchanged.
+
+## PG07–PG10 advancement ownership
+
+Level stays in ProgressionState; no Level owner/store/module is added.
+src/modules/progression/index.ts owns one shared dry-run/advance resolver and
+reuses existing state/level validation. Static optional progression -> entity is
+unchanged; there is no Foundation/runtime/messaging import or execution binding.
+Caller supplies complete policy, external eligibility and EXP mode consistency.
+No Entity/Foundation/Core changes, hidden event, formula or second engine.
+
+## PG11–PG13 point ownership
+
+Progression owns only its separate point pool/cursor/reward/allocation bookkeeping.
+It consumes PG09 results and public Entity `getEntityBaseAttributes` /
+`setEntityBaseAttribute`; no copied attribute validation, new owner or calculator.
+Optional progression -> entity dependency and static registry remain unchanged.
+No Foundation/Core changes, global store or automatic events.
+
+## PG14–PG18 Skill ownership
+
+Skill ranks/point pool/rewards/upgrade requirements belong to Progression, not a
+Skill Engine or second point authority. Small private point helpers shared with
+PG11–PG13 preserve semantics; independent public typed pools/cursors remain.
+One private resolver serves evaluate/upgrade. Only public Entity identity creation
+is needed; no new sibling/module/dependency or Core/Foundation/Entity changes.
+No graph/condition engine, runtime Skill catalog or module-global state.
+
+
+## PG19 closure audit
+
+No new module or production export. The full Progression phase adds only the
+canonical progression/index.ts owner and root exports. Entity/Foundation and CI
+sources are unchanged from the merged Entity baseline; the phase registry delta
+is only optional progression -> entity, introduced by v0.3.0 and unchanged since.
+PG19's consumer composes both explicitly; selecting progression alone still
+rejects. No copied Entity setter/validator, Kernel calculator, Skill Engine,
+Foundation event bus, hidden synchronization or global reward authority.
