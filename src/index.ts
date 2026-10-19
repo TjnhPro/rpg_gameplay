@@ -32,3 +32,5 @@ export type {
   GameplayClock, GameplayRandom, GameplayIdProvider, GameplayExecutionDependencies,
   GameplayExecutionContext,
 } from './foundation/execution/index.js';
+export {createEntity} from './modules/entity/index.js';
+export type {EntityDefinition, EntitySnapshot} from './modules/entity/index.js';

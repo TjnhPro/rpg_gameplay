@@ -22,14 +22,15 @@ Rules:
 - Production `src/` is headless; no UI/renderers/engine package or Node built-ins for gameplay.
 - Core numerical computation is delegated to `@rpg/core/kernel` only.
 - No module added to registry simply to satisfy catalog count; no empty placeholders.
-- The architecture registry stays empty in v0.1.5. GF01–GF05 infrastructure has
+- The architecture registry declares only optional entity in v0.2.0. GF01–GF05 infrastructure has
   one owner at `src/foundation/modules/`; root exports its public functions/types.
   GF06–GF09 lifecycle coordination has a separate canonical owner at
   `src/foundation/runtime/`, consuming the Module public entrypoint. GF10–GF13
   command/event coordination has one owner at `src/foundation/messaging/`, also
   consuming only Module's public entrypoint. GF14–GF16 execution dependencies
   have one independent owner at `src/foundation/execution/`. All four are
-  separate from the static registry; no concrete gameplay modules are registered.
+  separate from the static registry. EC01–EC03 has one canonical owner at
+  `src/modules/entity/index.ts`, optional with no module dependencies.
   Root re-exports follow the same public-entrypoint
   boundary as sibling imports. Core is the only approved runtime package;
   dependency declarations and external source imports are checked.

@@ -1,4 +1,4 @@
-# Public API — v0.1.5 (GF01–GF16)
+# Public API — v0.2.0 (GF01–GF16, EC01–EC03)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -237,7 +237,7 @@ own handlers/subscriptions; no default registrations or services are supplied.
 Eleven public types: `GameplayMessaging`, `GameplayCommand`, `CommandOutcome`,
 `CommandHandlerRegistration`, `CommandFailure`, `CommandResult`, `GameplayEvent`,
 `EventSubscription`, `EventSubscriptionRegistration`, `EventFailure`,
-`EventPublishResult`. Combined root inventory: 22 functions, 26 types. No deep
+`EventPublishResult`. Through GF13: 22 functions, 26 types. No deep
 exports, raw tables, execution guards or private helpers.
 
 ```ts
@@ -377,3 +377,43 @@ global gameplay store, rollback, persistence or replay service exists. Metadata
 has no implicit timestamps/IDs. Snapshot semantics of the other owners remain
 unchanged. Text/2D/2.5D evidence covers opaque data compatibility only; it does not
 implement coordinates, direction processing, movement, combat or rendering.
+
+## EC01–EC03: Entity identity and creation
+
+Canonical owner: `src/modules/entity/index.ts`. Root additions:
+
+```ts
+interface EntityDefinition {
+  readonly id: string;
+  readonly kind: string;
+}
+type EntitySnapshot = EntityDefinition;
+function createEntity(definition: EntityDefinition): EntitySnapshot;
+```
+
+Current root inventory: 27 functions / 33 public types. Existing Foundation APIs
+and root-only exports are preserved. Both fields must be nonblank strings, stored
+unchanged including whitespace/case/punctuation and arbitrary caller-defined kind.
+No enum, module-ID format, default, coercion or ID generation. Same ID represents
+the same logical identity under consumer rules; independent snapshots may share
+an ID. Object reference equality does not replace ID equality.
+
+The runtime definition is closed: exactly two own data properties id/kind on a
+non-null non-array object. Missing/inherited fields, accessors and extra string,
+symbol or nonenumerable keys throw TypeError. Accessors are not invoked.
+Null-prototype data objects are supported. TypeScript is structural: excess-field
+checks apply to fresh literals; runtime validation also rejects extra properties
+on structurally typed variables. No private validator is exported.
+
+Creation returns a fresh detached frozen scalar snapshot; input remains mutable
+and unfrozen. No deep-cloning machinery, writable record or global state. Invalid
+input creates no partial successful entity or framework side effect. Identical
+valid inputs yield equal semantic data with distinct snapshot references.
+
+Static ownership declares entity optional with no dependencies. Consumers register,
+enable, resolve and compose it through GF01–GF05 explicitly; default disabled,
+no actor auto-creation. Selection is composition intent and does not gate direct
+creation. The caller may explicitly call nextExecutionId before passing that ID;
+Entity constructs no context and calls no providers, hooks, events or Kernel
+calculation. Collection/state/updates, stats, resources, life-state and EC18
+integration require later approved tasks.

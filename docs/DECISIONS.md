@@ -64,4 +64,11 @@ framework counters or scheduling. Invalid boundaries/output throw TypeError;
 provider throws propagate unchanged. Existing callbacks integrate by closures.
 GF16 is conditional on equivalent explicit inputs/order and starting provider/
 callback state. Installed integration and opaque Text/2D/2.5D payload probes
-support Foundation closure review; Developer acceptance remains PENDING.
+supported Foundation closure review, accepted as the v0.2.0 baseline after PR #6 merge.
+
+The approved v0.2.0 task starts one Entity / Character phase branch and Draft PR
+through v0.2.5, with verified checkpoint commits and final phase acceptance only.
+EC01–EC03 has one owner at `src/modules/entity/`: caller-defined nonblank id/kind,
+closed two-field creation, detached immutable snapshots, no implicit identity or
+collection authority. Entity is optional with no dependencies. EC04+ remains
+outside this checkpoint and requires separately approved tasks.

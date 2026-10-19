@@ -29,3 +29,21 @@ Do not let an agent create a replacement plan that changes scope on its own. A c
 Agent may choose local implementation details, names of internal helpers, test input fixtures and refactors **within the approved scope** without seeking micro-approvals. Ask only if an important boundary/requirement cannot be decided from the approved plan.
 
 See [Task Template](tasks/TASK_TEMPLATE.md).
+
+## Phase workflow from v0.2.x
+
+Developer approved **one phase = one branch = one PR**. Entity / Character uses
+`feat/v0.2-entity-character` and one Draft PR to main for v0.2.0–v0.2.5. Only
+v0.2.0 creates the branch/PR. Each later milestone needs its own approved task,
+separate checkpoint commit/report and progress update on the same branch/PR.
+Do not create milestone branches/PRs, merge/rebase to main between milestones,
+rewrite checkpoint history, tag or publish intermediate versions.
+
+Each checkpoint runs targeted evidence, full verify, self-review, commit/push
+and observes checkpoint CI. Status is CHECKPOINT_COMPLETE when gates pass, not
+ACCEPTED. Intermediate checkpoints do not require final phase PR review; phase
+remains IN_PROGRESS and PR DRAFT. Report architecture/Core/breaking-semantic
+blockers immediately. Only v0.2.5 performs full phase closure/regression and moves
+the PR to Ready for Review after required gates. Developer decides final phase
+acceptance and merge. Existing scope/authority rules remain in force; checkpoint
+completion does not authorize the next milestone without its approved task.

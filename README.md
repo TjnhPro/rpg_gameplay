@@ -1,12 +1,12 @@
-# RPG Gameplay — v0.1.5 Clock, Determinism & Foundation Closure
+# RPG Gameplay — v0.2.0 Entity Foundation checkpoint
 
-> **Status: GF01–GF16 implemented; Foundation closure PENDING Developer acceptance.**
+> **Status: GF01–GF16 baseline accepted; EC01–EC03 checkpoint implemented. Phase v0.2.x IN_PROGRESS; acceptance PENDING final v0.2.5 review.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
 > coordination, explicit command routing, synchronous event pub/sub and injected
 > clock/RNG/ID execution dependencies are available.
-> **No concrete gameplay modules or game loop.**
+> **Entity identity/classification is the first optional gameplay module; no collection, stats, resources, life state or game loop.**
 
 ## Mục tiêu
 
@@ -38,8 +38,26 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16 through an installed-package consumer. Text/2D/2.5D probes
-prove Foundation data-shape compatibility; gameplay behavior is NOT_EVALUATED.
+including GF01–GF16 and EC01–EC03 through an installed-package consumer. Text/2D/2.5D probes
+prove Foundation data-shape compatibility; gameplay profile behavior is NOT_EVALUATED.
+
+## Entity identity and classification
+
+```ts
+import {createEntity} from '@rpg/gameplay';
+const player = createEntity({id: 'player-1', kind: 'player'});
+const monster = createEntity({id: 'monster-1', kind: 'monster'});
+const npc = createEntity({id: 'npc-1', kind: 'npc'});
+```
+
+One function supports arbitrary nonblank kinds/IDs preserved exactly. Definitions
+contain exactly own data fields id/kind; extras, accessors and inherited fields
+throw TypeError. Snapshots are detached/frozen; input stays caller-owned.
+Independent snapshots can share an ID; collection uniqueness is deferred to EC04.
+Module ID entity is distinct from actor identity. Explicit GF01–GF05 registration/
+selection/composition creates no actor and does not gate direct createEntity calls.
+See [API](docs/API.md), [checkpoint report](docs/reports/v0.2.0-entity-foundation.md)
+and [single-PR phase workflow](docs/TASK_EXECUTION.md).
 
 ## External package consumption (local artifacts, no publication)
 
@@ -48,7 +66,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.1.5.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.2.0.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency

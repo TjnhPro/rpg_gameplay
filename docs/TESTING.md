@@ -46,6 +46,15 @@ compatibility evidence; gameplay behavior remains NOT_EVALUATED.
 Build before running `npm run test:functional` directly; `verify` builds
 first. Expected values and requirement mapping are in the implementation report.
 
+EC01–EC03 uses `tests/consumers/entity.mjs` and `entity.ts` through that same
+external tarball installation. Three scenarios prove shared actor types/exact
+strings/immutable detached snapshots, closed malformed-input rejection without
+accessor invocation or partial state, and optional module composition with an
+explicit caller ID provider. Strict declarations prove readonly/string-only
+fields and reject premature state. No game runtime or duplicate profile matrix.
+Expected data is specified from the task contract; old Foundation fixtures remain
+unchanged. See the v0.2.0 report for R01–R15 evidence and limits.
+
 - **Unit/function**: public function, success/rejection, result and ownership.
 - **Contract**: boundary, adapter interface, valid/invalid data, invariants.
 - **Integration at function level**: composition of multiple exported functions with direct inputs/outputs; still no game loop/app.
