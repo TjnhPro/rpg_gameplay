@@ -41,4 +41,4 @@ if (!npmCli || !fs.existsSync(npmCli)) {
 run(process.execPath,[npmCli,'run','build']);
 run(process.execPath,[npmCli,'run','typecheck']);
 run(process.execPath,[npmCli,'run','test:functional']);
-console.log(`VERIFY_PASS harness + build + typecheck + functional package contracts; source_files=${source.length}. GF01–GF16 and EC01–EC17 contracts verified; Text/2D/2.5D Foundation data compatibility only. Gameplay profile behavior is NOT_EVALUATED; Entity phase acceptance is PENDING final v0.2.5 review.`);
+console.log(`VERIFY_PASS harness + build + typecheck + functional package contracts; source_files=${source.length}. GF01–GF16 and EC01–EC18 contracts verified; Text/2D/2.5D Foundation/Entity data compatibility only. Gameplay profile behavior is NOT_EVALUATED; Entity phase acceptance is PENDING Developer review.`);

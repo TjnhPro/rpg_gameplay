@@ -108,3 +108,14 @@ already-alive revival return unchanged; above-max is allowed for defeat evaluati
 but rejected for revival. No global authority/replay protection or automatic events.
 Caller may publish transition outcomes using unchanged GF12/GF13. Core, old contracts,
 registry/deps and EC18 scope remain intact; phase acceptance is deferred to v0.2.5.
+
+## v0.2.5 approved integration and review readiness
+
+The approved task authorizes EC18 installed consumer evidence, full phase audit,
+version 0.2.5, report and existing PR #7 readiness after exact-head gates.
+No new production APIs or owners are needed. EC01-EC17 and GF01-GF16 semantics,
+Core revision/integrity, optional Entity registry and dependency pins stay intact.
+Two independent literal-oracle sessions exercise explicit cross-domain handoff,
+immutable state, commands/events and cleanup/failures. Agent may mark the same
+PR Ready for Review only after final CI; Developer acceptance/closure remains
+PENDING. No merge, tag, release, publish or task archival is authorized here.

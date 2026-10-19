@@ -21,7 +21,7 @@ Gameplay profile behavior remains NOT_EVALUATED; Entity phase acceptance is pend
 | H08 | Capability Gap & Change Control | Policy + escalation/STOP workflow |
 | H09 | Three-Profile Functional Verification | Foundation action/opaque position/direction compatibility probes; no gameplay scenarios/apps |
 | H10 | Deterministic Functional Test Harness | Injected clock/RNG/IDs, independent scripted semantic/failure traces; lexical global-source checks + audit; no simulator/app |
-| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC17, full Foundation flow, payload profiles and gate controls |
+| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC18, full Foundation flow, payload profiles and gate controls |
 | H12 | Verification Gates & CI | Boundaries + build + typecheck + functional contracts; Windows/Linux, Node 22/24 |
 | H13 | Agent Task Execution Protocol | Implemented: approved-plan-first docs and task template |
 | H14 | Approval & Evidence Gates | Policy/report templates; Developer acceptance manual |
@@ -32,7 +32,7 @@ Gameplay profile behavior remains NOT_EVALUATED; Entity phase acceptance is pend
 
 Static regex import guard catches conventional literal import/export and some obvious dynamic imports; it is **not** a full TypeScript AST security analyzer. Refine via compiler API once TypeScript is installed in an approved module task. Some invariants are semantic/manual, particularly no duplicate implementation and meaningfully proven reuse.
 
-`npm run verify` proves package infrastructure, GF01–GF16, EC01–EC17 and Foundation profile
+`npm run verify` proves package infrastructure, GF01–GF16, EC01–EC18 and Foundation profile
 data compatibility. Gameplay behavior remains NOT_EVALUATED. It does not prove
 the framework's future gameplay capabilities.
 
@@ -44,7 +44,19 @@ still requires source review; no scheduler/life state/gameplay profile claim.
 
 v0.2.4 adds installed EC14–EC17 immutable life state, explicit defeat/revival,
 association/validation/repeat/isolation and caller GF12/GF13 event evidence.
-All 50 installed contracts retain old evidence, strict root-only types and actual
+At the v0.2.4 checkpoint, all 50 installed contracts retained old evidence, strict root-only types and actual
 Kernel integration. Life operations perform no resource arithmetic or implicit
-event publication; H06 still requires source review. Phase stays IN_PROGRESS,
-PR DRAFT and acceptance PENDING v0.2.5; profiles remain NOT_EVALUATED.
+event publication; H06 still requires source review. The checkpoint kept phase IN_PROGRESS and PR DRAFT; v0.2.5 review readiness is
+recorded below. Concrete gameplay profiles remain NOT_EVALUATED.
+
+## v0.2.5 Entity integration
+
+EC18 adds installed public-API integration with literal expected numerical and
+semantic trace, independent sessions, invalid ID/revival/command input and
+fail-fast listener evidence. All 51 installed contracts plus 2 outer tests run,
+with zero skips. No production API or second engine is added.
+Text/2D/2.5D Foundation/Entity compatibility: EVALUATED through shared entity
+lookup and opaque profile event data, alongside prior Foundation probes.
+Concrete gameplay/profile behavior: NOT_EVALUATED (combat, movement, animation).
+H06 canonical numerical ownership is source-reviewed, not algorithmically proven
+by a regex checker. Final Developer acceptance remains PENDING.

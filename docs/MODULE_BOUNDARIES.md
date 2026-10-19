@@ -29,7 +29,7 @@ Rules:
   command/event coordination has one owner at `src/foundation/messaging/`, also
   consuming only Module's public entrypoint. GF14–GF16 execution dependencies
   have one independent owner at `src/foundation/execution/`. All four are
-  separate from the static registry. EC01–EC17 has one canonical owner at
+  separate from the static registry. EC01–EC18 has one canonical owner at
   `src/modules/entity/index.ts`, optional with no module dependencies.
   Root re-exports follow the same public-entrypoint
   boundary as sibling imports. Core is the only approved runtime package;
@@ -58,3 +58,11 @@ associate by exact entityId, not collection membership. Private shared resource
 validation is reused; no new module/dependency, resource calculator or engine.
 Caller may wire returned life outcomes into GF12; Entity imports no Foundation
 messaging/runtime owner and performs no implicit publication or lifecycle work.
+
+## v0.2.5 phase review
+
+EC18 adds installed consumer fixtures only, no production owner/API or module.
+Entity remains optional, dependencies [], under src/modules/entity/index.ts.
+The root surface remains 46 functions and 49 types; deep imports stay blocked.
+Foundation sources are byte-for-byte unchanged from the accepted phase baseline.
+Caller wiring, including event publication and cleanup, lives in test consumers.

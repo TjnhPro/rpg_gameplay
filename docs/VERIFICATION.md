@@ -1,15 +1,15 @@
-# Verification gates — v0.2.4
+# Verification gates — v0.2.5
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
 
 | Command | Evidence | Limits |
 | --- | --- | --- |
-| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16 and EC01–EC17 only; no game loop |
+| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16 and EC01–EC18 only; no game loop |
 | `npm run typecheck` | Strict source typecheck, no emit | No gameplay semantics |
 | `npm run harness:check` | Registry, literal import/dependency direction, runtime package policy, obvious hidden RNG/time | Lexical, not full TS AST/semantic analysis |
 | `npm run harness:selftest` | Positive/negative boundary controls | No runtime module enable/disable |
-| `npm run test:functional` | External installed GF01–GF16/EC01–EC17, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
+| `npm run test:functional` | External installed GF01–GF16/EC01–EC18, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
 | `npm run verify` | Boundaries, self-tests, required build, typecheck and functional contracts, in that order | Automated evidence is not Developer acceptance |
 
 `verify` checks that all three production scripts exist before running any of
@@ -86,3 +86,15 @@ EC10 validation, no new numerical Kernel call, automatic event, time/RNG/global
 store, Core/registry/dependency or old body change. CI verifies this same package
 on Windows/Linux Node22/24 for push and PR events at the exact delivered head.
 See reports/v0.2.4-life-state-death.md for checkpoint evidence and limitations.
+
+## EC18 final phase gate
+
+The installed runner additionally requires entity-integration.mjs/.ts, one
+successful integration contract, zero skips, ENTITY_INTEGRATION_TRACE_PASS and
+ENTITY_PROFILE_DATA_PASS. Missing files, test failure or type errors fail the
+gate. Total installed contracts: 51, with 2 outer tests; prior 50 retained.
+Two sessions independently match a literal trace with real Kernel diagnostics,
+explicit dependencies/lifecycle/commands/events, negative paths and cleanup.
+Foundation/Entity profile compatibility is EVALUATED; concrete gameplay profile
+behavior is NOT_EVALUATED. See reports/v0.2.5-entity-integration-closure.md.
+Phase is REVIEW_PENDING; only Developer can accept/close it.

@@ -26,3 +26,14 @@
 Spatial/movement, skill delivery (melee/projectile/AoE), realtime controller, turn controller, quest, world/area/zone, NPC/interactions, party, trigger/condition, crafting, trading/economy, advanced itemization, character builds, dungeon, automation/idle.
 
 Build a capability later when needed; do not make the 14 groups a rigid global dependency chain. L3 can incubate a candidate before promoting reusable behavior to L2.
+
+## v0.2.x Entity implementation evidence
+
+Group 02 currently provides EC01-EC18 identity, immutable collection/attributes,
+explicit Kernel stats/resources and explicit life evaluation/revival. The single
+owner remains src/modules/entity/index.ts; EC18 adds installed integration only.
+Group 01 GF01-GF16 remains the accepted baseline. Other groups above remain
+candidate scope, not implemented capabilities. Text/2D/2.5D Foundation/Entity
+data compatibility is EVALUATED; concrete gameplay behavior is NOT_EVALUATED.
+Entity phase is REVIEW_PENDING with Developer acceptance PENDING; see the
+v0.2.5 phase report. No global registry, persistent storage or gameplay engine.

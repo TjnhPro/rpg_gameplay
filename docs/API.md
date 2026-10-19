@@ -1,4 +1,4 @@
-# Public API — v0.2.4 (GF01–GF16, EC01–EC17)
+# Public API — v0.2.5 (GF01–GF16, EC01–EC18)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -416,7 +416,7 @@ no actor auto-creation. Selection is composition intent and does not gate direct
 creation. The caller may explicitly call nextExecutionId before passing that ID;
 Entity constructs no context and calls no providers, hooks, events or Kernel
 calculation. Attributes/stats/resources/life use separate states below;
-EC18 integration requires a later approved task.
+EC18 integration uses these unchanged public APIs; see the final section below.
 
 ## EC04–EC06: Entity collection and snapshot updates
 
@@ -693,5 +693,18 @@ Caller may publish a changed result via GF12 using caller-defined event names an
 payloads. Entity neither registers listeners nor publishes events. GF13 preserves
 subscription order/snapshot fan-out/fail-fast delivery, without a queue. A listener
 failure after transition does not roll back the life result or retry publication.
-No resource synchronization, respawn, kill/reward/loot policy or EC18 is added.
+No resource synchronization, respawn or kill/reward/loot policy is added.
+
+## EC18: integration evidence, no additional public API
+
+`tests/consumers/entity-integration.mjs` runs the root-only installed package.
+Caller configuration yields max-life 25, explicit attribute update yields 29,
+and explicit flat modifier yields 32. Caller selects maximum 25, normalizes
+health 30 to 25, decreases to 20 then 0, resolves defeat, explicitly regenerates
+to 10 and revives. GF10/GF12 command/event publication and lifecycle cleanup are
+explicit caller wiring. Two isolated sessions match the independent literal
+trace; invalid association/revival/transition and listener failure preserve
+previous immutable state. Public inventory remains 46 functions / 49 types.
+No transaction, store, scheduler or implicit state synchronization is provided.
+See [phase evidence](reports/v0.2.5-entity-integration-closure.md).
 Three functions/five types added; current root inventory: 46 functions/49 types.

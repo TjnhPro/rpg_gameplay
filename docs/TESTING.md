@@ -114,3 +114,19 @@ oracles. Full R01–R29 mapping is in the v0.2.4 report. Strict NodeNext verifie
 five public types, readonly nested state/result/policy and closed inputs.
 Old consumer fixtures remain unchanged. All 50 installed contracts and both outer
 tests must run with zero skips. No gameplay profile/application evidence is claimed.
+
+## EC18 installed integration and phase closure evidence
+
+entity-integration.mjs adds one end-to-end contract, executed explicitly from an
+external installed @rpg/gameplay@0.2.5 tarball with the real pinned Core. Two
+sessions create separate providers, callbacks, messaging and immutable states;
+each matches a literal expected trace before comparison with the other session.
+The scenario covers shared actors/collection, stats 25/29/32, selected maximum,
+health 30 to 25 to 20 to 0 to 10, explicit defeat/revival/publication, command and
+listener failures, identity rejection, previous snapshots and actor isolation.
+Runtime cleanup removes eight subscriptions; later delivery count is zero.
+The new .ts consumer checks cross-domain typed wiring and readonly projections.
+All 50 prior installed contracts remain unchanged: 51 total plus 2 outer tests,
+zero skips. No count target drove this test; one scenario supplies R01-R30
+integration evidence together with existing targeted contracts and source audit.
+See reports/v0.2.5-entity-integration-closure.md for the full mapping and CI.

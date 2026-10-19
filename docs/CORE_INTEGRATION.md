@@ -114,3 +114,11 @@ diagnostic alone. EC12 recovery0→30 and EC11 reset/normalization are separate
 caller operations before life-only revival. No arithmetic, refill, rounding or
 applied reconstruction is added. Core revision/integrity and installed real
 Kernel regression evidence are unchanged.
+
+## EC18 integration audit
+
+v0.2.5 adds installed consumer evidence with the unchanged actual Core artifact.
+Literal oracle: max-life 25/29/32, normalization 30 to 25, resource decreases
+25 to 20 to 0, explicit regeneration 0 to 10. All arithmetic remains in the
+five existing Kernel functions; life only evaluates caller-selected bounds.
+No source, Core pin, dependency, integrity or numerical implementation changed.

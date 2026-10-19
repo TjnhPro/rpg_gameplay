@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.2.4 Life State & Death checkpoint
+# RPG Gameplay — v0.2.5 Entity Integration & Closure
 
-> **Status: GF01–GF16 baseline accepted; EC01–EC17 checkpoints implemented. Phase v0.2.x IN_PROGRESS; acceptance PENDING final v0.2.5 review.**
+> **Status: GF01–GF16 baseline accepted; EC01–EC18 implemented and verified. Phase v0.2.x REVIEW_PENDING; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,8 +38,8 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16 and EC01–EC17 through an installed-package consumer. Text/2D/2.5D probes
-prove Foundation data-shape compatibility; gameplay profile behavior is NOT_EVALUATED.
+including GF01–GF16 and EC01–EC18 through an installed-package consumer. Text/2D/2.5D probes
+prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
 
@@ -57,7 +57,7 @@ Independent snapshots and collections can share an ID; IDs must be unique within
 each collection. Collection operations preserve exact IDs and insertion order.
 Module ID entity is distinct from actor identity. Explicit GF01–GF05 registration/
 selection/composition creates no actor and does not gate direct createEntity calls.
-See [API](docs/API.md), [checkpoint report](docs/reports/v0.2.4-life-state-death.md)
+See [API](docs/API.md), [phase report](docs/reports/v0.2.5-entity-integration-closure.md)
 and [single-PR phase workflow](docs/TASK_EXECUTION.md).
 
 ```ts
@@ -129,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.2.3.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.2.5.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -282,4 +282,5 @@ never causes death, and recovery never causes revival. Caller explicitly evaluat
 minimum defeat and performs life-only revival after recovery above minimum within
 bounds. Repeated operations on the new snapshot return unchanged. Caller may
 publish changed outcomes through GF12; no automatic event, global store or replay
-guard. Old snapshots remain usable. EC18 and final phase review await v0.2.5.
+guard. Old snapshots remain usable. EC18 combines these public functions without
+new production APIs; final phase acceptance remains with Developer.
