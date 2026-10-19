@@ -1,10 +1,11 @@
-# RPG Gameplay — v0.1.3 Runtime Context & Lifecycle
+# RPG Gameplay — v0.1.4 Command & Event System
 
-> **Status: GF01–GF09 implemented; Developer acceptance PENDING.**
+> **Status: GF01–GF13 implemented; v0.1.4 Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
-> coordination are available. **No concrete gameplay modules or game loop.**
+> coordination, explicit command routing and synchronous event pub/sub are available.
+> **No concrete gameplay modules or game loop.**
 
 ## Mục tiêu
 
@@ -36,7 +37,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF09 through an installed-package consumer.
+including GF01–GF13 through an installed-package consumer.
 It does **not** prove gameplay execution or Text/2D/2.5D profiles.
 
 ## External package consumption (local artifacts, no publication)
@@ -46,7 +47,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.1.3.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.1.4.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -106,6 +107,36 @@ inspectable but cannot advance twice. Hook errors return `ok:false` with the
 failed runtime and module/stage diagnostic. Initialize/start follow composition
 order; stop/dispose reverse it. See [API](docs/API.md) for transitions, cleanup,
 composition validation and synchronous callback limits.
+
+## Commands and events
+
+```ts
+import {
+  createGameplayMessaging, registerCommandHandler, dispatchCommand,
+  subscribeEvent, publishEvent, unsubscribeModuleEvents,
+} from '@rpg/gameplay';
+
+const messaging = createGameplayMessaging(composition);
+registerCommandHandler(messaging, {
+  moduleId: 'optional-capability', commandType: 'request',
+  handler: command => ({status: 'success', value: command.payload}),
+});
+dispatchCommand(messaging, {type: 'request', payload: undefined});
+subscribeEvent(messaging, {
+  moduleId: 'optional-capability', eventType: 'notice',
+  handler: event => { void event.payload; },
+});
+publishEvent(messaging, {type: 'notice', payload: undefined});
+unsubscribeModuleEvents(messaging, 'optional-capability');
+```
+
+Messaging is opt-in and independent of Runtime status. Caller wires subscription
+registration/cleanup into initialize/stop/dispose hooks as needed. One handler per
+command type; results distinguish success/rejected/unhandled/failed. Events use a
+registration-order snapshot and stop at the first failure, reporting completed
+deliveries. Same-context nested dispatch/publish throws; no queue or automatic
+command-to-event publication. Foundation metadata is frozen; arbitrary business
+payloads/values remain caller-owned. See [API](docs/API.md) for full contracts.
 
 Read [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md) and
 [accepted decisions](docs/DECISIONS.md). Future implementation needs an approved
