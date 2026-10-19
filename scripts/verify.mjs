@@ -15,15 +15,15 @@ function run(command,args){
 }
 run(process.execPath,['scripts/check-boundaries.mjs']);
 run(process.execPath,['scripts/harness-selftest.mjs']);
+if (!fs.existsSync(path.join(root,'src/index.ts')) || !fs.statSync(path.join(root,'src/index.ts')).isFile()) {
+  console.error('VERIFY_FAIL: required production entrypoint src/index.ts is missing. Build, typecheck and functional verification cannot be skipped.');
+  process.exit(1);
+}
 function listFiles(dir){
   if(!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir,{withFileTypes:true}).flatMap(x=>x.isDirectory()?listFiles(path.join(dir,x.name)):x.isFile()?[path.join(dir,x.name)]:[]);
 }
 const source=listFiles(path.join(root,'src')).filter(x=>/\.(?:[cm]?[jt]s|tsx|jsx)$/.test(x)&&!x.endsWith('.d.ts'));
-if (source.length===0) {
-  console.log('HARNESS_VERIFIED; GAMEPLAY_NOT_EVALUATED (no production src; no functional tests to run)');
-  process.exit(0);
-}
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
 for (const name of ['build','typecheck','test:functional']) {
   if (typeof pkg.scripts?.[name]!=='string' || pkg.scripts[name].trim()==='') {

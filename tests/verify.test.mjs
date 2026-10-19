@@ -7,7 +7,7 @@ import {spawnSync} from 'node:child_process';
 import test from 'node:test';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-test('verification executes every required gate, propagates failures, handles spaced Node paths', () => {
+test('verification requires source, executes every gate, propagates failures, handles spaced Node paths', () => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg verify gates '));
   try {
     for (const folder of ['scripts', 'src', 'harness', 'docs']) fs.mkdirSync(path.join(temp, folder));
@@ -60,6 +60,21 @@ if(process.env.FAIL_GATE===process.argv[2]) process.exit(7);
       assert.match(result.stderr, new RegExp(`missing '${gate}' script`));
       assert.deepEqual(trace(), []);
       pkg.scripts[gate] = saved;
+    }
+    writePkg();
+    fs.renameSync(path.join(temp, 'src/index.ts'), path.join(temp, 'index.saved'));
+    fs.writeFileSync(path.join(temp, 'src/other.ts'), 'export {};');
+    // v0.1.0 requires its entrypoint even if other source or stale build output exists.
+    fs.mkdirSync(path.join(temp, 'dist'));
+    fs.writeFileSync(path.join(temp, 'dist/index.js'), 'export {};');
+    for (const state of ['missing entrypoint', 'empty src', 'missing src']) {
+      if (state === 'empty src') fs.rmSync(path.join(temp, 'src/other.ts'));
+      if (state === 'missing src') fs.rmdirSync(path.join(temp, 'src'));
+      result = run();
+      assert.equal(result.status, 1, `${state}: ${result.stdout}${result.stderr}`);
+      assert.match(result.stderr, /VERIFY_FAIL: required production entrypoint src\/index\.ts is missing/);
+      assert.doesNotMatch(result.stdout, /VERIFY_PASS|HARNESS_VERIFIED/);
+      assert.deepEqual(trace(), []);
     }
   } finally {
     const resolved = fs.realpathSync(temp);
