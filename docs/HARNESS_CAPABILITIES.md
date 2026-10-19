@@ -2,7 +2,7 @@
 
 **Important:** A feature listed here is NOT proof of gameplay implementation.
 v0.1.0 adds real package/Kernel integration contracts and strict build tooling;
-v0.1.2 adds installed-package GF01–GF05 registration/configuration/dependency/composition evidence.
+v0.1.3 adds installed-package GF01–GF09 registration/configuration/dependency/composition and lifecycle evidence.
 Gameplay execution and profile coverage remain absent.
 
 | ID | Harness capability | Foundation status |
@@ -13,11 +13,11 @@ Gameplay execution and profile coverage remain absent.
 | H04 | Module Ownership & Dependency Registry | Implemented: initially empty `harness/modules.json` |
 | H05 | RPG Core Integration Guard | Partial automation: forbid Core root/Legacy/internal imports |
 | H06 | Canonical Implementation Guard | Governance/manual review; no fake algorithmic duplicate detector |
-| H07 | Module Isolation & Optionality Guard | Partial automation: imports, explicit deps; runtime enable/disable future work |
+| H07 | Module Isolation & Optionality Guard | Partial automation: imports, explicit deps; selected-module lifecycle/isolation contracts tested; dynamic enable/disable excluded |
 | H08 | Capability Gap & Change Control | Policy + escalation/STOP workflow |
 | H09 | Three-Profile Functional Verification | Defined contract: Text/2D/2.5D functional scenarios, not apps; no scenarios yet |
 | H10 | Deterministic Functional Test Harness | Design policy: injected RNG/clock; harness checks obvious violations; no simulator/app |
-| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF05 contracts and orchestration controls; no execution/profile tests |
+| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF09 contracts and orchestration controls; no execution/profile tests |
 | H12 | Verification Gates & CI | Boundaries + build + typecheck + functional contracts; Windows/Linux, Node 22/24 |
 | H13 | Agent Task Execution Protocol | Implemented: approved-plan-first docs and task template |
 | H14 | Approval & Evidence Gates | Policy/report templates; Developer acceptance manual |
@@ -28,5 +28,5 @@ Gameplay execution and profile coverage remain absent.
 
 Static regex import guard catches conventional literal import/export and some obvious dynamic imports; it is **not** a full TypeScript AST security analyzer. Refine via compiler API once TypeScript is installed in an approved module task. Some invariants are semantic/manual, particularly no duplicate implementation and meaningfully proven reuse.
 
-`npm run verify` proves package infrastructure and GF01–GF05 contracts; gameplay profiles remain
+`npm run verify` proves package infrastructure and GF01–GF09 contracts; gameplay profiles remain
 NOT_EVALUATED. It does not prove the framework's future gameplay capabilities.
