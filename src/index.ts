@@ -1,2 +1,7 @@
-/** v0.1.0 package foundation. Gameplay contracts arrive in approved milestones. */
-export {};
+export {
+  validateModuleDefinition, createModuleRegistry, registerModule,
+  getModule, listModules, configureModules, isModuleEnabled,
+} from './foundation/modules/index.js';
+export type {
+  GameplayModuleDefinition, ModuleRegistry, ModuleSelection, ModuleConfiguration,
+} from './foundation/modules/index.js';

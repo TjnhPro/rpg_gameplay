@@ -1,8 +1,9 @@
-# Core Kernel integration — v0.1.0
+# Core Kernel integration
 
 Only production import: `@rpg/core/kernel`. Core root, Legacy entrypoints, source
 checkout paths and `dist` deep imports remain forbidden. No numerical code is
-copied or implemented in L2; the v0.1.0 root exports no gameplay API.
+copied or implemented in L2. GF01–GF03 registry/configuration functions require no
+numerical calls; the accepted Core pin and package integration remain unchanged.
 
 ## Pin and reconstruction
 
