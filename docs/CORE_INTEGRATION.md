@@ -57,3 +57,24 @@ The external consumer test installs both tarballs, executes public
 `calculateResourceTransition` with independently specified expected output, and
 checks strict NodeNext Kernel types. No re-export/wrapper is introduced in L2.
 Any pin change is a separate approved task with new audit and integrity evidence.
+
+## EC07–EC09 numerical delegation
+
+Entity's only production numerical path calls `prepareNumericalModifiers()` for
+each explicit modifier list, then `calculateStats()` with captured ordered input.
+Empty modifiers use the same path. Public EntityStatConfiguration composes
+PreparedStatCalculationInput/NumericalModifier; no incompatible rule types or
+second scalar/stat/modifier calculator are maintained in L2. Entity validates
+shapes/finite values/references and captures configuration before execution;
+Kernel owns canonical selection/conflicts, modifier arithmetic, effective
+attributes, baselines/scaling, defaults, transforms, bounds/precision and ordering.
+L2 projects only frozen detached attributes/values maps, with no recomputation.
+Caller transforms must return finite numbers synchronously; invalid returns fail
+instead of entering the snapshot. Callback closure policy remains caller-owned.
+
+Installed @rpg/gameplay@0.2.2 evidence uses the actual pinned Kernel, not mocks:
+25/29/32 independent oracle, attribute clamping, baseline offsets, all modifier
+operations, identical-instance dedup/conflict, rounding/reclamping, disabled rules,
+stat order and callback capture. Source review confirms no parallel arithmetic.
+Core revision/lock integrity, peer/development dependency and reconstruction are
+unchanged; Entity state creation/update/collection operations need no calculation.

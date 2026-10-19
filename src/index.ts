@@ -35,5 +35,9 @@ export type {
 export {
   createEntity, createEntityCollection, addEntity, getEntity, hasEntity,
   listEntities, removeEntity, replaceEntity,
+  createEntityAttributeState, getEntityBaseAttributes, setEntityBaseAttribute, calculateEntityStats,
 } from './modules/entity/index.js';
-export type {EntityDefinition, EntitySnapshot, EntityCollection} from './modules/entity/index.js';
+export type {
+  EntityDefinition, EntitySnapshot, EntityCollection,
+  EntityAttributeState, EntityStatConfiguration, EntityStatSnapshot,
+} from './modules/entity/index.js';

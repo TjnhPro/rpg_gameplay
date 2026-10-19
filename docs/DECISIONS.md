@@ -79,3 +79,11 @@ lookup/list/remove and full same-ID replacement. Updates branch without mutation
 missing remove/replace and malformed/duplicate data throw TypeError. EC03 remains
 the sole entity validator. No global store, arbitrary state bag, Foundation/Core
 change or EC07+ implementation. Continue the same branch/Draft PR #7.
+
+The approved v0.2.2 task adds EC07–EC09 in that same Entity owner: separate
+entityId-bound immutable base attributes, explicit caller configuration composed
+from Kernel types, validation/capture and detached calculated snapshots. Numerical
+operations use public prepareNumericalModifiers/calculateStats exclusively,
+including empty modifiers. Recalculation is an explicit repeat call, with no
+global state/cache, game schema, modifier lifecycle or collection synchronization.
+EC01–EC06 and Foundation remain unchanged; EC10+ is outside this checkpoint.

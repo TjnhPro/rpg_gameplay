@@ -37,7 +37,7 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
 `src/index.ts` exports GF01–GF05 module, GF06–GF09 lifecycle, GF10–GF13 messaging
-and GF14–GF16 execution functions, plus EC01–EC06 Entity creation/collection contracts.
+and GF14–GF16 execution functions, plus EC01–EC09 Entity/collection/attribute/stat contracts.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
@@ -94,8 +94,14 @@ operations. EC04–EC06 extends this same owner with explicit immutable collecti
 membership, exact collection-local uniqueness and ordered full-snapshot updates.
 Collections are frozen data, not capabilities backed by a global store. Structural
 inputs are validated/detached through EC03 before use; no mutable caller data is
-returned. No hooks, Foundation changes or Kernel calls. Entity phase acceptance
-is pending final v0.2.5 review; EC07+ is deferred.
+returned. Identity/collection operations invoke no hooks or Kernel calculations.
+EC07–EC09 stays in the same owner: separate immutable EntityAttributeState bound
+by exact entityId; explicit caller-owned EntityStatConfiguration composed from
+Kernel public types; one calculateEntityStats path through Kernel modifier
+preparation and ordered stat calculation. L2 validates/captures input and projects
+two frozen numeric maps. No numerical algorithm, global store/cache, schema policy
+or membership synchronization is added. Foundation and EC01–EC06 semantics stay
+unchanged. Entity phase acceptance is pending final v0.2.5 review; EC10+ is deferred.
 
 - Reusable module source: `src/modules/<module-id>/`.
 - Module register: `harness/modules.json`, currently optional Entity only.

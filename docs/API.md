@@ -1,4 +1,4 @@
-# Public API — v0.2.1 (GF01–GF16, EC01–EC06)
+# Public API — v0.2.2 (GF01–GF16, EC01–EC09)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -391,7 +391,7 @@ type EntitySnapshot = EntityDefinition;
 function createEntity(definition: EntityDefinition): EntitySnapshot;
 ```
 
-Current root inventory: 34 functions / 34 public types. Existing Foundation APIs
+Current root inventory: 38 functions / 37 public types. Existing Foundation APIs
 and root-only exports are preserved. Both fields must be nonblank strings, stored
 unchanged including whitespace/case/punctuation and arbitrary caller-defined kind.
 No enum, module-ID format, default, coercion or ID generation. Same ID represents
@@ -459,7 +459,93 @@ each operation, including lookup/list. Snapshot reference reuse is not promised.
 Boundary validation/copying is linear in collection size; no performance or
 collection-size limit is imposed. Ordinary Proxy traps remain caller code.
 
-There is no backing mutable map, singleton, implicit clock/RNG/ID, runtime,
-event/hook, Kernel calculation or separate module. The optional Entity registry
-entry/dependencies and GF01–GF16 contracts remain unchanged. No generic state bag,
-stats/resources/life state or future-milestone placeholder is exposed.
+Collection operations have no backing mutable map, singleton, implicit clock/RNG/
+ID, runtime, event/hook or Kernel calculation. Entity's optional registry entry
+and dependencies and GF01–GF16 contracts remain unchanged.
+
+## EC07–EC09: Attributes and Kernel stats
+
+Root-only exports, owned by `src/modules/entity/index.ts`:
+
+```ts
+import type {PreparedStatCalculationInput, NumericalModifier} from '@rpg/core/kernel';
+interface EntityAttributeState {
+  readonly entityId: string;
+  readonly baseAttributes: Readonly<Record<string, number>>;
+}
+type EntityStatConfiguration = Omit<PreparedStatCalculationInput, 'attributeBases'> & {
+  readonly modifiers: readonly NumericalModifier[];
+};
+interface EntityStatSnapshot {
+  readonly entityId: string;
+  readonly effectiveAttributes: Readonly<Record<string, number>>;
+  readonly stats: Readonly<Record<string, number>>;
+}
+function createEntityAttributeState(entity: EntitySnapshot, baseAttributes: Readonly<Record<string, number>>): EntityAttributeState;
+function getEntityBaseAttributes(state: EntityAttributeState): Readonly<Record<string, number>>;
+function setEntityBaseAttribute(state: EntityAttributeState, attributeId: string, value: number): EntityAttributeState;
+function calculateEntityStats(state: EntityAttributeState, configuration: EntityStatConfiguration): EntityStatSnapshot;
+```
+
+State is separate from closed Entity/collection data, with exact entityId association.
+Creation reuses createEntity validation. State reads/updates validate structural
+own entityId/baseAttributes data and detach it. Records accept ordinary or null
+prototypes; custom inherited records, symbols, accessors, arrays and callable data
+are rejected. Attribute keys are exact nonblank strings, including constructor and
+__proto__; finite negatives/fractions and empty maps are valid. No normalization,
+clamping or schema defaults. Keyed update rejects unknown keys and preserves the
+identity/other values in a new frozen state. No calculation is triggered.
+
+```ts
+import {createEntity, createEntityAttributeState, setEntityBaseAttribute, calculateEntityStats} from '@rpg/gameplay';
+const attributes = createEntityAttributeState(createEntity({id: 'actor-1', kind: 'any'}), {strength: 10});
+const configuration = {
+  attributeOrder: ['strength'], statOrder: ['power'],
+  attributeRules: {strength: {default: 0, enabled: true, bounds: {}}},
+  attributeBaselines: {strength: 0}, baseStats: {power: 5},
+  rules: {power: {default: 5, enabled: true, bounds: {}, training: 0,
+    scaling: [{attribute: 'strength', coefficient: 2, enabled: true}]}},
+  flatContributions: {}, modifiers: [],
+};
+calculateEntityStats(attributes, configuration).stats.power; // 25
+calculateEntityStats(setEntityBaseAttribute(attributes, 'strength', 12), configuration).stats.power; // 29
+```
+
+Configuration is captured before Kernel/callback execution, without freezing or
+mutating caller-owned rules, modifiers, arrays or callbacks. All required maps and
+orders must be supplied explicitly, including empty modifiers. Order arrays must
+be dense own data, with unique nonblank IDs. Attribute maps/base state must match
+attributeOrder exactly; rules match statOrder exactly. Attribute/stat targets must
+not collide. baseStats/flatContributions/transforms can omit ordered stat keys,
+but cannot introduce unordered keys. Scaling references must name ordered
+attributes, including disabled terms. Rule defaults, bounds, coefficients,
+training, baselines, contributions and modifiers are finite; enabled is boolean.
+Bounds are optional finite min/max with min <= max; optional precision requires
+integer decimalPlaces 0–100, the Kernel's JS rounding domain. Explicit undefined,
+unknown fields and incomplete rules are rejected, never silently filled.
+
+Modifiers require own identity source/sourceInstanceId/id, ordered target,
+enabled, finite value and one Kernel operation: add_flat, add_percent or
+add_percentage_points. L2 validates/copies them; Kernel alone performs canonical
+deduplication, conflict detection, aggregation and arithmetic. No-modifier calls
+use the same resolver/stat path. Kernel owns attribute/stat order, baselines,
+default stat bases, scaling, disabled rules, bounds and precision. training is
+passed through, with no extra training arithmetic in L2.
+
+Optional transforms are captured functions called by Kernel once per ordered
+stat, including disabled rules. They must synchronously return a finite number;
+invalid return types/nonfinite values throw TypeError, without coercion/repair.
+Caller throws and Kernel errors propagate. Valid values are projected verbatim
+from Kernel attributes/values into frozen detached numeric maps; mutable diagnostic
+details/modifier references are not exposed. No arithmetic runs while projecting.
+
+Recalculation explicitly calls calculateEntityStats again with new state/modifiers/
+configuration. No live binding, cache, events, provider injection or automatic
+resource synchronization. Old snapshots remain intact, even if caller inputs
+later change. Collection removal/replacement neither deletes nor rewrites attribute
+states; membership checks remain caller responsibility. Determinism requires equal
+inputs/order and deterministic caller callbacks. Ordinary JS Proxy traps and
+callback closure state remain caller code; no runtime/IO isolation is promised.
+
+No generic arbitrary state bag, resources, life state or future-milestone
+placeholder is exposed.

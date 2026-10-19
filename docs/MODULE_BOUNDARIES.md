@@ -29,7 +29,7 @@ Rules:
   command/event coordination has one owner at `src/foundation/messaging/`, also
   consuming only Module's public entrypoint. GF14–GF16 execution dependencies
   have one independent owner at `src/foundation/execution/`. All four are
-  separate from the static registry. EC01–EC06 has one canonical owner at
+  separate from the static registry. EC01–EC09 has one canonical owner at
   `src/modules/entity/index.ts`, optional with no module dependencies.
   Root re-exports follow the same public-entrypoint
   boundary as sibling imports. Core is the only approved runtime package;
@@ -39,5 +39,10 @@ EC04–EC06 collection membership/ordered snapshots remain inside Entity, not a 
 module/store. Collection operations call canonical EC03 creation/validation and
 return frozen detached data. No Foundation dependency, implicit provider or
 numerical Kernel call is needed; the static Entity entry remains unchanged.
+
+EC07–EC09 extends Entity with separate typed immutable base state and explicit
+Kernel-stat orchestration. Entity imports only `@rpg/core/kernel` for numerical
+work. No attributes/stats module, dependency entry, Foundation coupling, numerical
+fallback or duplicate owner is introduced. Entity remains optional/dependencies[].
 
 The script is a **minimum static enforcement**. Semantic independence, registration/disable behavior and duplicate implementations require tests/review once modules exist.

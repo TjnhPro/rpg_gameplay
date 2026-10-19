@@ -1,12 +1,12 @@
-# RPG Gameplay — v0.2.1 Entity State & Collection checkpoint
+# RPG Gameplay — v0.2.2 Attributes & Stats checkpoint
 
-> **Status: GF01–GF16 baseline accepted; EC01–EC06 checkpoints implemented. Phase v0.2.x IN_PROGRESS; acceptance PENDING final v0.2.5 review.**
+> **Status: GF01–GF16 baseline accepted; EC01–EC09 checkpoints implemented. Phase v0.2.x IN_PROGRESS; acceptance PENDING final v0.2.5 review.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
 > coordination, explicit command routing, synchronous event pub/sub and injected
 > clock/RNG/ID execution dependencies are available.
-> **Optional Entity supports identity/classification and immutable collections; no stats, resources, life state or game loop.**
+> **Optional Entity supports identity, immutable collections/base attributes and caller-configured Kernel stats; resources and life state are deferred.**
 
 ## Mục tiêu
 
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16 and EC01–EC06 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16 and EC01–EC09 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation data-shape compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -57,7 +57,7 @@ Independent snapshots and collections can share an ID; IDs must be unique within
 each collection. Collection operations preserve exact IDs and insertion order.
 Module ID entity is distinct from actor identity. Explicit GF01–GF05 registration/
 selection/composition creates no actor and does not gate direct createEntity calls.
-See [API](docs/API.md), [checkpoint report](docs/reports/v0.2.1-entity-state-collection.md)
+See [API](docs/API.md), [checkpoint report](docs/reports/v0.2.2-attributes-stats.md)
 and [single-PR phase workflow](docs/TASK_EXECUTION.md).
 
 ```ts
@@ -74,6 +74,24 @@ duplicate add and unknown remove/replace throw TypeError. Every change returns a
 new frozen collection; enumeration and contained snapshots are frozen/detached.
 Replace is full same-ID replacement at the old position, not upsert/partial patch.
 
+## Attributes and Kernel stats
+
+`createEntityAttributeState(entity, baseAttributes)` captures arbitrary finite
+numeric keys in a separate immutable state associated by entityId. Empty maps,
+negative/fractional values and special property names are supported.
+`getEntityBaseAttributes(state)` returns frozen detached data;
+`setEntityBaseAttribute(state, existingKey, value)` returns a new state without
+calculating stats. Entity and collection schemas remain unchanged.
+
+`calculateEntityStats(state, configuration)` validates explicit attribute/stat
+orders, Kernel-compatible rules, baselines, baseStats, flatContributions and
+modifiers, then delegates to `prepareNumericalModifiers()` and `calculateStats()`.
+Optional synchronous numeric transforms belong to the caller. The result holds
+only frozen detached entityId/effectiveAttributes/stats. Call the same function
+again with changed inputs to recalculate; old snapshots remain intact. L3 owns
+schema and balancing; there is no implicit collection synchronization or cache.
+See [configuration example and validation contract](docs/API.md#ec07ec09-attributes-and-kernel-stats).
+
 ## External package consumption (local artifacts, no publication)
 
 `npm pack --pack-destination .artifacts` builds a private gameplay tarball. In an
@@ -81,7 +99,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.2.1.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.2.2.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency

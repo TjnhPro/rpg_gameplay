@@ -64,6 +64,17 @@ optional lookup and complete replacements, with no generic state/numerical field
 Existing Entity/Foundation fixtures stay unchanged. The v0.2.1 report maps R01–R18
 to independent literal expectations, installed evidence and source review.
 
+EC07–EC09 adds `entity-stats.mjs`/`.ts` to that external @rpg/gameplay@0.2.2
+installation. Five behavior scenarios cover immutable arbitrary base state and
+collection-independent identity; malformed boundaries and no getter execution;
+the independent 25/29/32 stat oracle plus explicit recalculation; real Kernel
+modifier/ordering/bounds/precision semantics; and empty/special-key schemas plus
+captured callback inputs and invalid callback returns. Strict declarations reuse
+public Kernel types and enforce readonly maps, separate Entity state and no
+attributeBases override. Old Foundation/Entity/Collection fixtures stay intact.
+Source review supplements runtime evidence for canonical numerical ownership;
+the v0.2.2 report maps R01–R23 without a test-count quota.
+
 - **Unit/function**: public function, success/rejection, result and ownership.
 - **Contract**: boundary, adapter interface, valid/invalid data, invariants.
 - **Integration at function level**: composition of multiple exported functions with direct inputs/outputs; still no game loop/app.

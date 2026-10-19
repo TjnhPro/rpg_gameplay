@@ -1,15 +1,15 @@
-# Verification gates — v0.2.1
+# Verification gates — v0.2.2
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
 
 | Command | Evidence | Limits |
 | --- | --- | --- |
-| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16 and EC01–EC06 only; no game loop |
+| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16 and EC01–EC09 only; no game loop |
 | `npm run typecheck` | Strict source typecheck, no emit | No gameplay semantics |
 | `npm run harness:check` | Registry, literal import/dependency direction, runtime package policy, obvious hidden RNG/time | Lexical, not full TS AST/semantic analysis |
 | `npm run harness:selftest` | Positive/negative boundary controls | No runtime module enable/disable |
-| `npm run test:functional` | External installed GF01–GF16/EC01–EC06, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
+| `npm run test:functional` | External installed GF01–GF16/EC01–EC09, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
 | `npm run verify` | Boundaries, self-tests, required build, typecheck and functional contracts, in that order | Automated evidence is not Developer acceptance |
 
 `verify` checks that all three production scripts exist before running any of
@@ -51,6 +51,13 @@ identity, lookup and full replacement/removal, isolated old versions/branches an
 malformed/duplicate/unknown rejection. EC03 validation remains canonical. Root
 inventory/declarations include seven new functions and EntityCollection, with
 deep exports closed and private helpers absent from public declarations.
+
+EC07–EC09 adds installed typed immutable attributes, explicit Kernel stats and
+recalculation, malformed input rejection, independent 25/29/32 oracle, canonical
+modifier/precision/order edge cases and input/snapshot isolation. Root inventory
+is 38 functions/37 types. Four new functions and three types remain root-only;
+no new registry module, Core pin change or numerical duplicate implementation.
+Source audit and old unchanged GF/EC fixtures supplement these contract tests.
 
 `src/index.ts` remains mandatory. If it is absent, verification fails with
 `VERIFY_FAIL` and exit code 1; there is no scaffold-success fallback. Build,

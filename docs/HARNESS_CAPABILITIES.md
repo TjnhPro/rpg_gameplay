@@ -6,6 +6,7 @@ v0.1.5 adds installed-package GF01–GF16 module/lifecycle/messaging/execution
 evidence, shared full-flow reproducibility and Foundation profile compatibility.
 v0.2.0 adds installed EC01–EC03 identity/creation/immutability and module evidence.
 v0.2.1 adds installed EC04–EC06 ordered immutable collection/update evidence.
+v0.2.2 adds installed EC07–EC09 immutable attributes/Kernel stats/recalculation evidence.
 Gameplay profile behavior remains NOT_EVALUATED; Entity phase acceptance is pending.
 
 | ID | Harness capability | Foundation status |
@@ -20,7 +21,7 @@ Gameplay profile behavior remains NOT_EVALUATED; Entity phase acceptance is pend
 | H08 | Capability Gap & Change Control | Policy + escalation/STOP workflow |
 | H09 | Three-Profile Functional Verification | Foundation action/opaque position/direction compatibility probes; no gameplay scenarios/apps |
 | H10 | Deterministic Functional Test Harness | Injected clock/RNG/IDs, independent scripted semantic/failure traces; lexical global-source checks + audit; no simulator/app |
-| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC06, full Foundation flow, payload profiles and gate controls |
+| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC09, full Foundation flow, payload profiles and gate controls |
 | H12 | Verification Gates & CI | Boundaries + build + typecheck + functional contracts; Windows/Linux, Node 22/24 |
 | H13 | Agent Task Execution Protocol | Implemented: approved-plan-first docs and task template |
 | H14 | Approval & Evidence Gates | Policy/report templates; Developer acceptance manual |
@@ -31,6 +32,6 @@ Gameplay profile behavior remains NOT_EVALUATED; Entity phase acceptance is pend
 
 Static regex import guard catches conventional literal import/export and some obvious dynamic imports; it is **not** a full TypeScript AST security analyzer. Refine via compiler API once TypeScript is installed in an approved module task. Some invariants are semantic/manual, particularly no duplicate implementation and meaningfully proven reuse.
 
-`npm run verify` proves package infrastructure, GF01–GF16, EC01–EC06 and Foundation profile
+`npm run verify` proves package infrastructure, GF01–GF16, EC01–EC09 and Foundation profile
 data compatibility. Gameplay behavior remains NOT_EVALUATED. It does not prove
 the framework's future gameplay capabilities.
