@@ -26,3 +26,7 @@ adapters, persistence schema, gameplay mechanics, turn/realtime scheduler — de
 **per approved task** with evidence. The approved v0.1.0 task establishes one
 private native ESM package, strict TypeScript 6.0.3, and Node's built-in contract
 test runner; it does not decide any gameplay contract or runtime.
+
+The approved v0.1.1 task adds GF01–GF03: one Foundation owner for immutable
+module declarations/registration/selection. It does not decide dependency
+resolution, composition, lifecycle or concrete gameplay feature contracts.

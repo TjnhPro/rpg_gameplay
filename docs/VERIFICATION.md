@@ -1,15 +1,15 @@
-# Verification gates — v0.1.0 package foundation
+# Verification gates — v0.1.1
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
 
 | Command | Evidence | Limits |
 | --- | --- | --- |
-| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | Root has no gameplay API |
+| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF03 only; no execution API |
 | `npm run typecheck` | Strict source typecheck, no emit | No gameplay semantics |
 | `npm run harness:check` | Registry, literal import/dependency direction, runtime package policy, obvious hidden RNG/time | Lexical, not full TS AST/semantic analysis |
 | `npm run harness:selftest` | Positive/negative boundary controls | No runtime module enable/disable |
-| `npm run test:functional` | External installed-artifact ESM/declarations/closed exports/real Kernel; gate orchestration failures | Build first; no gameplay profiles |
+| `npm run test:functional` | External installed-artifact GF01–GF03, ESM/declarations/closed exports/real Kernel; gate orchestration failures | Build first; no gameplay execution/profiles |
 | `npm run verify` | Boundaries, self-tests, required build, typecheck and functional contracts, in that order | Automated evidence is not Developer acceptance |
 
 `verify` checks that all three production scripts exist before running any of
@@ -27,12 +27,15 @@ matrix. The implementation report records actual commands/results.
 
 ## Honest scope
 
-v0.1.0 has an empty public gameplay entrypoint, not an empty verification gate:
-functional tests exercise packaging, types, dependency integration and failure
-propagation. Gameplay behavior, GF01–GF16, and Text/2D/2.5D profiles are
+GF01–GF03 tests execute from an external installed tarball, with independent
+expected values for registration, validation, selection and state isolation.
+Strict NodeNext consumer checks public types/readonly contracts. Missing consumer
+fixtures fail on file copy; missing required test files fail the explicit Node
+test command. Existing packaging, Kernel and fail-closed gate controls remain.
+Gameplay execution, GF04–GF16, and Text/2D/2.5D profiles are
 **NOT_EVALUATED**. No placeholder gameplay functions or fake passing scripts.
 
-`src/index.ts` is mandatory in v0.1.0. If it is absent, verification fails with
+`src/index.ts` remains mandatory. If it is absent, verification fails with
 `VERIFY_FAIL` and exit code 1; there is no scaffold-success fallback. Build,
 typecheck and functional gates are mandatory for successful verification.
 Later approved gameplay tasks must

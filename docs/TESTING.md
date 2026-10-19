@@ -26,9 +26,11 @@ Avoid forcing Inventory/Item/Progression through three duplicate fixtures unless
 
 ## Layers of tests
 
-v0.1.0 uses Node's built-in test runner (`tests/*.test.mjs`). The functional gate
+The package uses Node's built-in test runner (`tests/*.test.mjs`). The functional gate
 proves installed package/declaration/Kernel integration contracts and verification
-failure propagation. It contains no gameplay implementation or gameplay profile
+failure propagation plus installed-package GF01–GF03 contracts. The consumer
+fixtures under `tests/consumers/` are copied into the external installation and
+run there; they never import repository source. They contain no game or gameplay profile
 evidence. Build before running `npm run test:functional` directly; `verify` builds
 first. Expected values and requirement mapping are in the implementation report.
 

@@ -1,9 +1,10 @@
-# RPG Gameplay — v0.1.0 Package Foundation
+# RPG Gameplay — v0.1.1 Module Registry & Configuration
 
-> **Status: Foundation implemented; Developer acceptance PENDING.**
+> **Status: GF01–GF03 implemented; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
-> verification and pinned Core Kernel integration. **No gameplay runtime, modules
-> or gameplay behavior yet.** Root exports are intentionally empty.
+> verification and pinned Core Kernel integration. Module declarations, immutable
+> registry and module selection are available. **No gameplay execution, concrete
+> gameplay modules, dependency resolution or lifecycle.**
 
 ## Mục tiêu
 
@@ -34,8 +35,9 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 `npm run build` emits `dist/index.js` and `dist/index.d.ts`. `npm run typecheck`
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
-`npm run verify` runs boundaries, self-tests, build, typecheck and these contracts.
-It does **not** prove gameplay behavior or Text/2D/2.5D profiles.
+`npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
+including GF01–GF03 through an installed-package consumer.
+It does **not** prove gameplay execution or Text/2D/2.5D profiles.
 
 ## External package consumption (local artifacts, no publication)
 
@@ -44,7 +46,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.1.0.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.1.1.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -52,7 +54,27 @@ path. Use the pinned artifact, not an assumed registry package. The repository's
 dev dependency/lockfile pins the local artifact for development and CI. The
 consumer is responsible for supplying that same Core artifact. Only import
 `@rpg/gameplay` and `@rpg/core/kernel`; gameplay deep exports are closed. No game
-API is available yet. [Core integration](docs/CORE_INTEGRATION.md) explains the pin.
+execution API is available. [Core integration](docs/CORE_INTEGRATION.md) explains the pin.
+
+## Module declarations and selection
+
+```ts
+import {createModuleRegistry, registerModule, configureModules, isModuleEnabled} from '@rpg/gameplay';
+
+const original = createModuleRegistry();
+const registry = registerModule(original, {
+  id: 'optional-capability', optional: true, dependencies: [],
+});
+const defaults = configureModules(registry); // optional is disabled
+const selected = configureModules(registry, {enable: ['optional-capability']});
+isModuleEnabled(selected, 'optional-capability'); // true; nothing is executed
+```
+
+Each call returns frozen explicit state; `original` and `defaults` stay unchanged.
+Required modules default enabled and cannot be disabled. Unknown, duplicate or
+conflicting selections throw `TypeError`. Dependencies are stored declarations;
+no graph checking, dependency auto-enablement or initialization occurs.
+See [public API](docs/API.md) for types, validation, errors and ownership.
 
 Read [AGENTS.md](AGENTS.md), [ARCHITECTURE.md](ARCHITECTURE.md) and
 [accepted decisions](docs/DECISIONS.md). Future implementation needs an approved
