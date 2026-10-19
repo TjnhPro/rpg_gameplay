@@ -37,7 +37,7 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
 `src/index.ts` exports GF01–GF05 module, GF06–GF09 lifecycle, GF10–GF13 messaging
-and GF14–GF16 execution functions, plus EC01–EC09 Entity/collection/attribute/stat contracts.
+and GF14–GF16 execution functions, plus EC01–EC13 Entity/collection/attribute/stat/resource contracts.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
@@ -101,7 +101,16 @@ Kernel public types; one calculateEntityStats path through Kernel modifier
 preparation and ordered stat calculation. L2 validates/captures input and projects
 two frozen numeric maps. No numerical algorithm, global store/cache, schema policy
 or membership synchronization is added. Foundation and EC01–EC06 semantics stay
-unchanged. Entity phase acceptance is pending final v0.2.5 review; EC10+ is deferred.
+unchanged. Entity phase acceptance is pending final v0.2.5 review; EC14+ is deferred.
+
+EC10–EC13 stays in the same Entity owner: separate immutable entityId/current
+resource snapshots with fixed caller-defined keys. Bounds and policies arrive at
+operation boundaries. Initialization/normalization, increase/decrease and explicit
+regeneration delegate respectively to normalizeResource, calculateResourceTransition
+and calculateResourceRegeneration from the pinned public Kernel. L2 validates,
+captures inputs, replaces one current value and freezes diagnostics verbatim;
+there is no numerical fallback. Stats-to-maximum handoff is explicit caller work.
+No global store, scheduler, life state, events or additional module is introduced.
 
 - Reusable module source: `src/modules/<module-id>/`.
 - Module register: `harness/modules.json`, currently optional Entity only.

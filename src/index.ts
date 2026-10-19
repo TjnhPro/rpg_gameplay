@@ -36,8 +36,13 @@ export {
   createEntity, createEntityCollection, addEntity, getEntity, hasEntity,
   listEntities, removeEntity, replaceEntity,
   createEntityAttributeState, getEntityBaseAttributes, setEntityBaseAttribute, calculateEntityStats,
+  createEntityResourceState, getEntityResourceCurrent, normalizeEntityResource,
+  transitionEntityResource, regenerateEntityResource,
 } from './modules/entity/index.js';
 export type {
   EntityDefinition, EntitySnapshot, EntityCollection,
   EntityAttributeState, EntityStatConfiguration, EntityStatSnapshot,
+  EntityResourceState, EntityResourceDefinition, EntityResourceBounds,
+  EntityResourceTransitionInput, EntityResourceRegenerationInput,
+  EntityResourceNormalizationResult, EntityResourceTransitionResult,
 } from './modules/entity/index.js';

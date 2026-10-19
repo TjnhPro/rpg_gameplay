@@ -29,7 +29,7 @@ Rules:
   command/event coordination has one owner at `src/foundation/messaging/`, also
   consuming only Module's public entrypoint. GF14–GF16 execution dependencies
   have one independent owner at `src/foundation/execution/`. All four are
-  separate from the static registry. EC01–EC09 has one canonical owner at
+  separate from the static registry. EC01–EC13 has one canonical owner at
   `src/modules/entity/index.ts`, optional with no module dependencies.
   Root re-exports follow the same public-entrypoint
   boundary as sibling imports. Core is the only approved runtime package;
@@ -46,3 +46,9 @@ work. No attributes/stats module, dependency entry, Foundation coupling, numeric
 fallback or duplicate owner is introduced. Entity remains optional/dependencies[].
 
 The script is a **minimum static enforcement**. Semantic independence, registration/disable behavior and duplicate implementations require tests/review once modules exist.
+
+EC10–EC13 adds current-only frozen Resource State to that same owner. Only public
+Kernel normalization/transition/regeneration owns resource arithmetic. Explicit
+caller bounds/policy/time and stat maximum handoff create no Foundation/module
+dependency, global store, scheduler or new registry entry. EC01–EC09 and GF01–GF16
+owners/contracts stay intact; life state remains EC14+.

@@ -55,12 +55,12 @@ this repository's producer/CI workflow and artifact integrity supply that eviden
 
 The external consumer test installs both tarballs, executes public
 `calculateResourceTransition` with independently specified expected output, and
-checks strict NodeNext Kernel types. No re-export/wrapper is introduced in L2.
+checks strict NodeNext Kernel types. Kernel types stay canonical; approved Entity wrappers orchestrate them below.
 Any pin change is a separate approved task with new audit and integrity evidence.
 
 ## EC07–EC09 numerical delegation
 
-Entity's only production numerical path calls `prepareNumericalModifiers()` for
+Entity's stat calculation path calls `prepareNumericalModifiers()` for
 each explicit modifier list, then `calculateStats()` with captured ordered input.
 Empty modifiers use the same path. Public EntityStatConfiguration composes
 PreparedStatCalculationInput/NumericalModifier; no incompatible rule types or
@@ -72,9 +72,35 @@ L2 projects only frozen detached attributes/values maps, with no recomputation.
 Caller transforms must return finite numbers synchronously; invalid returns fail
 instead of entering the snapshot. Callback closure policy remains caller-owned.
 
-Installed @rpg/gameplay@0.2.2 evidence uses the actual pinned Kernel, not mocks:
+Installed package evidence uses the actual pinned Kernel, not mocks:
 25/29/32 independent oracle, attribute clamping, baseline offsets, all modifier
 operations, identical-instance dedup/conflict, rounding/reclamping, disabled rules,
 stat order and callback capture. Source review confirms no parallel arithmetic.
 Core revision/lock integrity, peer/development dependency and reconstruction are
-unchanged; Entity state creation/update/collection operations need no calculation.
+unchanged; Entity identity/attribute creation/update and collection operations need no calculation.
+
+## EC10–EC13 resource delegation
+
+The same Entity owner calls normalizeResource once per initialization definition
+and once per explicit normalization; calculateResourceTransition once per explicit
+increase/decrease; calculateResourceRegeneration once per explicit regeneration.
+Public options/results compose ResourceNormalizationInput/Result,
+ResourceTransitionInput/Rule/Result and ResourceRegenerationInput (including its
+DecimalPrecision). No duplicate clamping, regeneration formula, rounding or applied
+magnitude reconstruction exists in L2. Frozen diagnostics copy Kernel scalars verbatim.
+
+L2 owns exact identity/current snapshots, finite scalar/shape validation, fixed keys
+and explicit next-state orchestration. Caller owns bounds, recovery/above-max
+policy, eligibility, rate, elapsed seconds and precision. Eligible regeneration
+requires normalized current. Ineligible regeneration preserves Kernel's early no-op
+without reading ignored numeric/accessor fields or synthesizing them. The internal
+partial-input cast exists only for that pinned public Kernel early return; the
+public consumer type retains the full Kernel-shaped options contract.
+
+Independent installed-package oracles include omitted-current mana50, health80,
+normalization100→80, decrease80→55/increase55→70, above-max increase120→100 with
+applied-20 and decrease120→100 with applied10, minimum recovery and regeneration
+30→35/applied5. Eligible=false returns120 unchanged with unreadable ignored fields.
+The EC08 integration explicitly passes a calculated stat100 then80 as maximum;
+no auto sync occurs. All old numerical/Foundation/Entity fixtures remain unchanged.
+Core pin, integrity, dependencies and static module registry are unchanged.

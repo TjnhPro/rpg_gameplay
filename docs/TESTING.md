@@ -64,7 +64,7 @@ optional lookup and complete replacements, with no generic state/numerical field
 Existing Entity/Foundation fixtures stay unchanged. The v0.2.1 report maps R01–R18
 to independent literal expectations, installed evidence and source review.
 
-EC07–EC09 adds `entity-stats.mjs`/`.ts` to that external @rpg/gameplay@0.2.2
+EC07–EC09 adds `entity-stats.mjs`/`.ts` to that external package
 installation. Five behavior scenarios cover immutable arbitrary base state and
 collection-independent identity; malformed boundaries and no getter execution;
 the independent 25/29/32 stat oracle plus explicit recalculation; real Kernel
@@ -88,3 +88,15 @@ No UI tests, rendering, asset pipelines, Godot, network server, browser E2E or t
 Use table in [task template](tasks/TASK_TEMPLATE.md). Give exact command, files, pass/fail, expected behavior source, limitations. State `NOT_EVALUATED` for missing tests, not `PASS`.
 
 A useful test should fail if the behavior is broken: avoid asserting only 'does not throw', blind snapshots or rewriting goldens to make tests green. Mutation/negative tests only where they prove a meaningful edge.
+
+EC10–EC13 adds entity-resources.mjs/.ts through the same installed package.
+Five scenarios group distinct contracts: arbitrary/empty/special-key initialization
+and normalization; authoritative transitions/above-max/minimum recovery; explicit
+regeneration and ignored-field no-op; atomic validation and accessor boundaries;
+and deterministic actor isolation with EC08 explicit maximum handoff. Literal
+oracles80/50/55/70,100→80,applied-20/10 and regen35 are independent of L2/Kernel
+calls. Fractional applied retains the IEEE-754 difference of independently specified
+before/after literals. Strict declarations prove composed Kernel compatibility,
+readonly state/diagnostics, complete options and absence of implicit life state.
+Old GF01–GF16/EC01–EC09 fixtures are unchanged. The v0.2.3 report maps R01–R25;
+source review confirms canonical resource ownership, without a game/scheduler.

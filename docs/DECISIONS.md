@@ -87,3 +87,13 @@ operations use public prepareNumericalModifiers/calculateStats exclusively,
 including empty modifiers. Recalculation is an explicit repeat call, with no
 global state/cache, game schema, modifier lifecycle or collection synchronization.
 EC01–EC06 and Foundation remain unchanged; EC10+ is outside this checkpoint.
+
+## v0.2.3 approved resource checkpoint
+
+The approved task adds EC10–EC13 to the existing optional Entity owner, with
+separate current-only immutable snapshots and fixed arbitrary resource keys.
+Caller supplies bounds/policy/rate/time/precision; all resource arithmetic and
+diagnostics belong to the pinned public Kernel. No automatic Stats synchronization,
+life-state inference, scheduler, global resource store or new module is introduced.
+GF01–GF16 and EC01–EC09 contracts/pin remain unchanged. Continue phase branch and
+Draft PR #7; EC14+ and final v0.2.5 Developer acceptance remain pending.

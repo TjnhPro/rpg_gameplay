@@ -1,12 +1,12 @@
-# RPG Gameplay — v0.2.2 Attributes & Stats checkpoint
+# RPG Gameplay — v0.2.3 Resources & Transitions checkpoint
 
-> **Status: GF01–GF16 baseline accepted; EC01–EC09 checkpoints implemented. Phase v0.2.x IN_PROGRESS; acceptance PENDING final v0.2.5 review.**
+> **Status: GF01–GF16 baseline accepted; EC01–EC13 checkpoints implemented. Phase v0.2.x IN_PROGRESS; acceptance PENDING final v0.2.5 review.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
 > coordination, explicit command routing, synchronous event pub/sub and injected
 > clock/RNG/ID execution dependencies are available.
-> **Optional Entity supports identity, immutable collections/base attributes and caller-configured Kernel stats; resources and life state are deferred.**
+> **Optional Entity supports identity, immutable collections/base attributes and caller-configured Kernel stats/resources; life state is deferred.**
 
 ## Mục tiêu
 
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16 and EC01–EC09 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16 and EC01–EC13 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation data-shape compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -57,7 +57,7 @@ Independent snapshots and collections can share an ID; IDs must be unique within
 each collection. Collection operations preserve exact IDs and insertion order.
 Module ID entity is distinct from actor identity. Explicit GF01–GF05 registration/
 selection/composition creates no actor and does not gate direct createEntity calls.
-See [API](docs/API.md), [checkpoint report](docs/reports/v0.2.2-attributes-stats.md)
+See [API](docs/API.md), [checkpoint report](docs/reports/v0.2.3-resources-transitions.md)
 and [single-PR phase workflow](docs/TASK_EXECUTION.md).
 
 ```ts
@@ -92,6 +92,36 @@ again with changed inputs to recalculate; old snapshots remain intact. L3 owns
 schema and balancing; there is no implicit collection synchronization or cache.
 See [configuration example and validation contract](docs/API.md#ec07ec09-attributes-and-kernel-stats).
 
+## Resources and explicit Kernel transitions
+
+`createEntityResourceState(entity, definitions)` creates frozen current values
+associated by entityId. Each caller-defined resource supplies minimum/maximum and
+optional current; Kernel initializes omitted current at maximum. Empty sets are
+valid. Bounds are supplied at every operation and are never cached in state.
+
+```ts
+import {createEntityResourceState, transitionEntityResource, regenerateEntityResource} from '@rpg/gameplay';
+const resources = createEntityResourceState(player, {
+  health: {minimum: 0, maximum: 100, current: 80},
+  mana: {minimum: 0, maximum: 50},
+});
+const decreased = transitionEntityResource(resources, 'health', {
+  operation: 'decrease', amount: 25, maximum: 100,
+  rule: {minimum: 0, currentAboveMaximum: 'reject', allowIncreaseFromMinimum: true},
+}); // decreased.state.current.health=55; transition.applied=25
+regenerateEntityResource(decreased.state, 'health', {
+  minimum: 0, maximum: 100, ratePerSecond: 2, elapsedSeconds: 2.5,
+  eligible: true, precision: {decimalPlaces: 2},
+}); // current=60; caller supplies time, eligibility and all policy
+```
+
+`getEntityResourceCurrent` returns current or undefined for a valid unknown key.
+`normalizeEntityResource(state, key, {minimum, maximum})` explicitly normalizes a
+stored current when bounds change. Every numerical operation delegates to Kernel
+and returns frozen diagnostics with next state, leaving old versions unchanged.
+Stats maxima are handed over explicitly; no refill, automatic synchronization,
+scheduler, life-state interpretation or Combat/Skill behavior is introduced.
+
 ## External package consumption (local artifacts, no publication)
 
 `npm pack --pack-destination .artifacts` builds a private gameplay tarball. In an
@@ -99,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.2.2.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.2.3.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency

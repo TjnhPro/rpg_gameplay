@@ -1,4 +1,4 @@
-# Public API — v0.2.2 (GF01–GF16, EC01–EC09)
+# Public API — v0.2.3 (GF01–GF16, EC01–EC13)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -391,7 +391,7 @@ type EntitySnapshot = EntityDefinition;
 function createEntity(definition: EntityDefinition): EntitySnapshot;
 ```
 
-Current root inventory: 38 functions / 37 public types. Existing Foundation APIs
+Current root inventory: 43 functions / 44 public types. Existing Foundation APIs
 and root-only exports are preserved. Both fields must be nonblank strings, stored
 unchanged including whitespace/case/punctuation and arbitrary caller-defined kind.
 No enum, module-ID format, default, coercion or ID generation. Same ID represents
@@ -415,8 +415,8 @@ enable, resolve and compose it through GF01–GF05 explicitly; default disabled,
 no actor auto-creation. Selection is composition intent and does not gate direct
 creation. The caller may explicitly call nextExecutionId before passing that ID;
 Entity constructs no context and calls no providers, hooks, events or Kernel
-calculation. Stats, resources, life-state and EC18 integration require later
-approved tasks.
+calculation. Attributes/stats/resources use separate states below; life-state
+and EC18 integration require later approved tasks.
 
 ## EC04–EC06: Entity collection and snapshot updates
 
@@ -547,5 +547,82 @@ states; membership checks remain caller responsibility. Determinism requires equ
 inputs/order and deterministic caller callbacks. Ordinary JS Proxy traps and
 callback closure state remain caller code; no runtime/IO isolation is promised.
 
-No generic arbitrary state bag, resources, life state or future-milestone
+No generic arbitrary state bag, life state or future-milestone
 placeholder is exposed.
+
+## EC10–EC13: Resources and transitions
+
+Same Entity owner and root-only exports. Kernel types are imported from
+`@rpg/core/kernel`; public options compose them without resource/current overrides.
+
+```ts
+interface EntityResourceState {
+  readonly entityId: string;
+  readonly current: Readonly<Record<string, number>>;
+}
+type EntityResourceDefinition = Omit<ResourceNormalizationInput, 'resource'>;
+type EntityResourceBounds = Omit<ResourceNormalizationInput, 'resource' | 'current'>;
+type EntityResourceTransitionInput = Omit<ResourceTransitionInput, 'resource' | 'current'>;
+type EntityResourceRegenerationInput = Omit<ResourceRegenerationInput, 'resource' | 'current'>;
+interface EntityResourceNormalizationResult {
+  readonly state: EntityResourceState;
+  readonly calculation: Readonly<ResourceNormalizationResult>;
+}
+interface EntityResourceTransitionResult {
+  readonly state: EntityResourceState;
+  readonly transition: Readonly<ResourceTransitionResult>;
+}
+function createEntityResourceState(entity: EntitySnapshot, definitions: Readonly<Record<string, EntityResourceDefinition>>): EntityResourceState;
+function getEntityResourceCurrent(state: EntityResourceState, resourceId: string): number | undefined;
+function normalizeEntityResource(state: EntityResourceState, resourceId: string, bounds: EntityResourceBounds): EntityResourceNormalizationResult;
+function transitionEntityResource(state: EntityResourceState, resourceId: string, options: EntityResourceTransitionInput): EntityResourceTransitionResult;
+function regenerateEntityResource(state: EntityResourceState, resourceId: string, options: EntityResourceRegenerationInput): EntityResourceTransitionResult;
+```
+
+Creation validates Entity using EC03 and captures the entire definition map before
+normalization. Definitions require finite minimum/maximum with minimum <= maximum;
+optional current must be finite if present (explicit undefined is rejected).
+Out-of-bounds normalization inputs are valid. Each value comes from Kernel
+normalizeResource, including omitted-current initialization; L2 supplies no fallback.
+Empty maps are valid. Resource IDs are exact nonblank strings, including whitespace,
+case, constructor and __proto__, without a fixed vocabulary. The key set is fixed
+at creation; mutation operations require an existing key. Valid unknown inspection
+returns undefined and invokes no Kernel; malformed IDs throw TypeError.
+
+Resource state is separate from Entity, collections, attributes and stats. Runtime
+structural input must contain exactly own entityId/current data; numeric maps and
+active configuration accept plain/null prototypes, own string data fields, no
+accessors, symbols, custom inherited records, extras or coercion. State current
+values must be finite. Old states and caller objects remain unchanged/unfrozen;
+all returned state/maps/envelopes/diagnostics are detached and frozen. TypeError
+rejects malformed inputs, and Kernel errors propagate without partial publication.
+Proxy traps remain caller code; no IO isolation is promised.
+
+Explicit normalization supplies finite ordered bounds and returns the authoritative
+resource/before/after/initialized calculation. Maximum changes never trigger an
+implicit update: current100 with new maximum80 becomes80 only on explicit request.
+Increasing maximum never automatically refills current.
+
+Transition requires operation increase/decrease, finite nonnegative amount, finite
+ordered rule.minimum/maximum, current >= minimum, complete rule with
+currentAboveMaximum allow/reject and boolean allowIncreaseFromMinimum. Kernel owns
+above-maximum rejection/clamping, recovery and all arithmetic. Diagnostics preserve
+resource/before/after/applied/reachedMinimum exactly: with current120/max100 and
+allow, increase10 returns after100/applied-20; decrease10 returns after100/applied10.
+Applied is not reconstructed from state delta. ReachedMinimum is not a life state.
+
+Eligible regeneration requires finite ordered bounds, current within those bounds,
+finite nonnegative ratePerSecond/elapsedSeconds and integer precision.decimalPlaces
+0–100. Caller explicitly supplies eligibility and time; no hidden clock read or
+precision/rate default. The entire active input is captured before Kernel execution.
+With eligible=false, only state/ID, options shape/known keys and own boolean eligible
+are checked: ignored bounds/rate/time/precision are never read, normalized or
+validated, including accessors. Kernel receives its early no-op input and returns
+unchanged current/applied0/reachedMinimum false even if current is outside new bounds.
+The TypeScript signature still requires the complete canonical options contract.
+No fabricated numeric defaults or retry are used in that no-op path.
+
+Caller may pass an EC08 stat as maximum explicitly. Resource state stores no bound,
+stat snapshot or live binding. No policy infers HP/death/revive, performs schema
+updates, emits events, accesses Runtime/Messaging, or schedules automatic recovery.
+Five functions/seven types added; root inventory: 43 functions/44 public types.

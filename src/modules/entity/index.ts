@@ -1,7 +1,10 @@
 import {
-  calculateStats, prepareNumericalModifiers,
+  calculateStats, prepareNumericalModifiers, normalizeResource,
+  calculateResourceTransition, calculateResourceRegeneration,
   type NumericRule, type DerivedStatRule, type NumericalModifier,
   type PreparedStatCalculationInput,
+  type ResourceNormalizationInput, type ResourceNormalizationResult,
+  type ResourceTransitionInput, type ResourceTransitionResult, type ResourceRegenerationInput,
 } from '@rpg/core/kernel';
 
 /** Caller-supplied identity and classification, without game state or policy. */
@@ -298,4 +301,130 @@ export function calculateEntityStats(state: EntityAttributeState, configuration:
   // Copy Kernel values verbatim; no arithmetic, fallback, rounding or repair.
   return Object.freeze({entityId: captured.entityId,
     effectiveAttributes: Object.freeze({...result.attributes}), stats: Object.freeze({...result.values})});
+}
+
+/** Current values only; bounds and policy are supplied at each operation. */
+export interface EntityResourceState {
+  readonly entityId: string;
+  readonly current: Readonly<Record<string, number>>;
+}
+export type EntityResourceDefinition = Omit<ResourceNormalizationInput, 'resource'>;
+export type EntityResourceBounds = Omit<ResourceNormalizationInput, 'resource' | 'current'>;
+export type EntityResourceTransitionInput = Omit<ResourceTransitionInput, 'resource' | 'current'>;
+export type EntityResourceRegenerationInput = Omit<ResourceRegenerationInput, 'resource' | 'current'>;
+export interface EntityResourceNormalizationResult {
+  readonly state: EntityResourceState;
+  readonly calculation: Readonly<ResourceNormalizationResult>;
+}
+export interface EntityResourceTransitionResult {
+  readonly state: EntityResourceState;
+  readonly transition: Readonly<ResourceTransitionResult>;
+}
+
+function resourceState(input: EntityResourceState): EntityResourceState {
+  const state = fields(input, ['entityId', 'current']);
+  return Object.freeze({entityId: identifier(state.entityId), current: numericMap(state.current)});
+}
+
+function resourceBounds(input: Record<string, unknown>): EntityResourceBounds {
+  const minimum = finite(input.minimum), maximum = finite(input.maximum);
+  if (minimum > maximum) throw new TypeError('Inverted resource bounds');
+  return {minimum, maximum};
+}
+
+function resourceCurrent(state: EntityResourceState, key: string): number {
+  if (!Object.hasOwn(state.current, key)) throw new TypeError(`Unknown resource '${key}'`);
+  return state.current[key]!; // Validated finite map and own-key check above.
+}
+
+function nextResource(state: EntityResourceState, key: string, after: number): EntityResourceState {
+  return Object.freeze({entityId: state.entityId, current: Object.freeze({...state.current, [key]: after})});
+}
+
+/** Capture the complete definition set before publishing any normalized state. */
+export function createEntityResourceState(entity: EntitySnapshot,
+  definitions: Readonly<Record<string, EntityResourceDefinition>>): EntityResourceState {
+  const entityId = createEntity(entity).id;
+  const captured = Object.entries(dataRecord(definitions)).map(([key, value]) => {
+    const resource = identifier(key);
+    const definition = fields(value, ['minimum', 'maximum'], ['current']);
+    const bounds = resourceBounds(definition);
+    return {resource, ...bounds,
+      ...(Object.hasOwn(definition, 'current') ? {current: finite(definition.current)} : {})};
+  });
+  return Object.freeze({entityId, current: Object.freeze(Object.fromEntries(captured.map(input =>
+    [input.resource, normalizeResource(input).after])))});
+}
+
+/** Unknown valid IDs are absent, never inherited or implicitly initialized. */
+export function getEntityResourceCurrent(state: EntityResourceState, resourceId: string): number | undefined {
+  const key = identifier(resourceId), captured = resourceState(state);
+  return Object.hasOwn(captured.current, key) ? captured.current[key] : undefined;
+}
+
+export function normalizeEntityResource(state: EntityResourceState, resourceId: string,
+  bounds: EntityResourceBounds): EntityResourceNormalizationResult {
+  const captured = resourceState(state), resource = identifier(resourceId);
+  const current = resourceCurrent(captured, resource);
+  const input = resourceBounds(fields(bounds, ['minimum', 'maximum']));
+  const calculation = Object.freeze({...normalizeResource({resource, current, ...input})});
+  return Object.freeze({state: nextResource(captured, resource, calculation.after), calculation});
+}
+
+export function transitionEntityResource(state: EntityResourceState, resourceId: string,
+  options: EntityResourceTransitionInput): EntityResourceTransitionResult {
+  const captured = resourceState(state), resource = identifier(resourceId);
+  const current = resourceCurrent(captured, resource);
+  const input = fields(options, ['maximum', 'amount', 'operation', 'rule']);
+  const rule = fields(input.rule, ['minimum', 'currentAboveMaximum', 'allowIncreaseFromMinimum']);
+  const bounds = resourceBounds({minimum: rule.minimum, maximum: input.maximum});
+  const amount = finite(input.amount), operation = input.operation;
+  if (amount < 0 || current < bounds.minimum) throw new TypeError('Invalid resource transition preconditions');
+  if (operation !== 'increase' && operation !== 'decrease') throw new TypeError('Invalid resource operation');
+  const policy = rule.currentAboveMaximum;
+  if (policy !== 'allow' && policy !== 'reject') throw new TypeError('Invalid above-maximum policy');
+  const transition = Object.freeze({...calculateResourceTransition({resource, current, maximum: bounds.maximum,
+    amount, operation, rule: {minimum: bounds.minimum, currentAboveMaximum: policy,
+      allowIncreaseFromMinimum: flag(rule.allowIncreaseFromMinimum)}})});
+  return Object.freeze({state: nextResource(captured, resource, transition.after), transition});
+}
+
+export function regenerateEntityResource(state: EntityResourceState, resourceId: string,
+  options: EntityResourceRegenerationInput): EntityResourceTransitionResult {
+  const captured = resourceState(state), resource = identifier(resourceId);
+  const current = resourceCurrent(captured, resource);
+  // Inspect only eligibility before Kernel's early no-op. Ignored numeric fields
+  // need not be valid (or even readable); never normalize an ineligible resource.
+  if (typeof options !== 'object' || options === null || Array.isArray(options)
+    || ![Object.prototype, null].includes(Object.getPrototypeOf(options))) {
+    throw new TypeError('Expected regeneration options');
+  }
+  const keys = ['minimum', 'maximum', 'ratePerSecond', 'elapsedSeconds', 'eligible', 'precision'];
+  if (Reflect.ownKeys(options).some(key => typeof key !== 'string' || !keys.includes(key))) {
+    throw new TypeError('Unknown regeneration fields');
+  }
+  const descriptor = Object.getOwnPropertyDescriptor(options, 'eligible');
+  if (!descriptor || !('value' in descriptor)) throw new TypeError('Eligibility must be own data');
+  const eligible = flag(descriptor.value);
+  let input: ResourceRegenerationInput;
+  if (!eligible) {
+    // Kernel returns before reading the remaining required fields. The public
+    // type retains its canonical contract; this deliberate partial input avoids
+    // fabricated bounds/rate/time/precision in the no-op branch.
+    input = {resource, current, eligible} as ResourceRegenerationInput;
+  } else {
+    const config = fields(options, keys);
+    const bounds = resourceBounds(config);
+    const ratePerSecond = finite(config.ratePerSecond), elapsedSeconds = finite(config.elapsedSeconds);
+    const decimalPlaces = fields(config.precision, ['decimalPlaces']).decimalPlaces;
+    if (ratePerSecond < 0 || elapsedSeconds < 0 || current < bounds.minimum || current > bounds.maximum) {
+      throw new TypeError('Invalid regeneration preconditions');
+    }
+    if (typeof decimalPlaces !== 'number' || !Number.isInteger(decimalPlaces) || decimalPlaces < 0 || decimalPlaces > 100) {
+      throw new TypeError('Precision decimalPlaces must be an integer from 0 to 100');
+    }
+    input = {resource, current, ...bounds, ratePerSecond, elapsedSeconds, eligible, precision: {decimalPlaces}};
+  }
+  const transition = Object.freeze({...calculateResourceRegeneration(input)});
+  return Object.freeze({state: nextResource(captured, resource, transition.after), transition});
 }
