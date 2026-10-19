@@ -101,4 +101,13 @@ Progression owns only its separate point pool/cursor/reward/allocation bookkeepi
 It consumes PG09 results and public Entity `getEntityBaseAttributes` /
 `setEntityBaseAttribute`; no copied attribute validation, new owner or calculator.
 Optional progression -> entity dependency and static registry remain unchanged.
-No Foundation/Core changes, global store, automatic events or PG14+ implementation.
+No Foundation/Core changes, global store or automatic events.
+
+## PG14–PG18 Skill ownership
+
+Skill ranks/point pool/rewards/upgrade requirements belong to Progression, not a
+Skill Engine or second point authority. Small private point helpers shared with
+PG11–PG13 preserve semantics; independent public typed pools/cursors remain.
+One private resolver serves evaluate/upgrade. Only public Entity identity creation
+is needed; no new sibling/module/dependency or Core/Foundation/Entity changes.
+No graph/condition engine, runtime Skill catalog or module-global state.

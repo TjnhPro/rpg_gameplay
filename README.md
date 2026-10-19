@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.3.3 Attribute Points
+# RPG Gameplay — v0.3.4 Skill Progression
 
-> **Status: merged Entity v0.2.5 baseline; PG01–PG13 implemented. Progression phase IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.**
+> **Status: merged Entity v0.2.5 baseline; PG01–PG18 implemented. Progression phase IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18 and PG01–PG13 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18 and PG01–PG18 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -129,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.3.3.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.3.4.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -355,3 +355,29 @@ Updated cursors reject receipt replay; stale snapshots can branch. Caller owns
 upgrade economics, storage and explicit stat recalculation. No automatic rewards,
 events or global ledger. See [API](docs/API.md) and
 [v0.3.3 evidence](docs/reports/v0.3.3-attribute-points.md).
+
+## Skill Progression (PG14–PG18)
+
+```ts
+import {createSkillRankState, createSkillPointState, grantSkillPointRewards,
+  evaluateSkillUpgrade, upgradeSkillRank} from '@rpg/gameplay';
+
+const ranks = createSkillRankState(entity, {sword_basic: 2, fireball: 0});
+const points = createSkillPointState(progression, {
+  unspentPoints: 3, spentPoints: 5, rewardedThroughLevel: 10,
+});
+const requirement = {skillId: 'sword_basic', expectedRank: 2, maxRank: 10,
+  pointCost: 2, requiredCharacterLevel: 15, prerequisites: [], eligible: true};
+// Given progression.level >= 15: rank2->3, unspent3->1, spent5->7.
+const projection = evaluateSkillUpgrade(progression, ranks, points, requirement);
+const next = upgradeSkillRank(progression, ranks, points, requirement);
+```
+
+Use `getSkillRank` for validated inspection: rank0 is registered but unlearned;
+unknown key returns undefined. `grantSkillPointRewards` explicitly consumes PG09
+results and caller per-level rewards, with its own cursor. Pools stay independent.
+Policy fully validates before blockers: max rank, character level, prerequisites,
+eligibility, points. Stale expectedRank throws; valid blockers return diagnostics
+and unchanged frozen values. Each success adds exactly one rank, including free
+upgrades. No Skill execution/effects or automatic events. See
+[v0.3.4 evidence](docs/reports/v0.3.4-skill-progression.md).

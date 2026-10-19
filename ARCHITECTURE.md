@@ -37,7 +37,7 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 `@rpg/gameplay` is a private native ESM package with strict NodeNext compilation.
 Only the root export is exposed, with JS and declarations in `dist/`. Its current
 `src/index.ts` exports GF01–GF05 module, GF06–GF09 lifecycle, GF10–GF13 messaging
-and GF14–GF16 execution functions, plus EC01–EC18 Entity/collection/attribute/stat/resource/life contracts and PG01–PG13 Progression snapshots/experience/advancement transitions.
+and GF14–GF16 execution functions, plus EC01–EC18 Entity/collection/attribute/stat/resource/life contracts and PG01–PG18 Progression/points/skill rank transitions.
 Core 2.0.0 is an exact peer; development
 and CI reconstruct the pinned installed artifact (see `docs/CORE_INTEGRATION.md`).
 Only Core is currently approved as a runtime package. The import/dependency guard
@@ -209,3 +209,17 @@ local replay guard; no global authority or persistent exactly-once guarantee.
 Allocation uses public Entity get/set APIs, returns points and attributes together
 and never recalculates stats. Caller supplies cost/value and stores both snapshots.
 Entity/Foundation/Core and PG01–PG10 behavior remain unchanged.
+
+## PG14–PG18 Skill Progression
+
+Same optional Progression owner and entity dependency. Separate fixed-key rank
+snapshots and independent Skill Point balances/cursor; ProgressionState unchanged.
+Private point initialization/reward bookkeeping is shared with Attribute Points
+without changing their public contracts. No public generic wallet/point engine.
+Exact own-data skill keys preserve arbitrary identifiers and special names safely.
+One resolver validates all state/policy/prerequisites then evaluates deterministic
+cap/level/prerequisite/eligibility/point priority. Dry-run and upgrade share that
+resolution. Upgrade constructs frozen combined next rank/point data, one rank per
+request. expectedRank is a local optimistic precondition, not a global lock.
+L3 supplies definitions/caps/costs/eligibility; no Skill Engine/catalog, automatic
+execution/events, graph traversal or numerical formula. PG19 remains NOT_STARTED.

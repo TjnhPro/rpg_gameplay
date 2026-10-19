@@ -288,6 +288,10 @@ function readPointState(input: EntityAttributePointState): EntityAttributePointS
 }
 
 export function createAttributePointState(state: ProgressionState, initial: AttributePointInitialState): EntityAttributePointState {
+  return createPointState(state, initial);
+}
+
+function createPointState(state: ProgressionState, initial: AttributePointInitialState): EntityAttributePointState {
   const progression = readState(state);
   const values = pointValues(dataFields(initial, ['unspentPoints', 'spentPoints', 'rewardedThroughLevel']));
   if (values.rewardedThroughLevel > progression.level) throw new TypeError('Reward cursor cannot exceed current level');
@@ -337,6 +341,11 @@ function readRewardAdvancement(input: LevelAdvancementResult) {
 /** Explicit per-level reward grant; replay guard requires the updated snapshot. */
 export function grantAttributePointRewards(points: EntityAttributePointState, advancement: LevelAdvancementResult,
   policy: AttributePointRewardPolicy): AttributePointRewardResult {
+  return grantPointRewards(points, advancement, policy);
+}
+
+function grantPointRewards(points: EntityAttributePointState, advancement: LevelAdvancementResult,
+  policy: AttributePointRewardPolicy): AttributePointRewardResult {
   const current = readPointState(points), receipt = readRewardAdvancement(advancement);
   if (current.entityId !== receipt.state.entityId || current.rewardedThroughLevel !== receipt.beforeLevel) {
     throw new TypeError('Mismatched entity or stale reward cursor');
@@ -379,4 +388,176 @@ export function allocateAttributePoints(points: EntityAttributePointState, attri
   return Object.freeze({points: Object.freeze({...current, unspentPoints, spentPoints}), attributes: nextAttributes,
     transition: Object.freeze({entityId, attributeId, beforeValue, afterValue: newBaseValue,
       pointsSpent: pointCost, beforeUnspent: current.unspentPoints, afterUnspent: unspentPoints})});
+}
+
+/** Fixed registered key set; rank zero is registered but unlearned. */
+export interface EntitySkillRankState {
+  readonly entityId: string;
+  readonly ranks: Readonly<Record<string, number>>;
+}
+
+export interface SkillPointInitialState {
+  readonly unspentPoints: number;
+  readonly spentPoints: number;
+  readonly rewardedThroughLevel: number;
+}
+
+/** Independent from Attribute Points, including its reward cursor. */
+export interface EntitySkillPointState extends SkillPointInitialState {
+  readonly entityId: string;
+}
+
+export interface SkillPointRewardPolicy {
+  readonly pointsByLevel: Readonly<Record<number, number>>;
+}
+
+export interface SkillPointRewardResult {
+  readonly state: EntitySkillPointState;
+  readonly transition: {
+    readonly entityId: string;
+    readonly rewardedLevels: readonly number[];
+    readonly pointsGranted: number;
+    readonly beforeUnspent: number;
+    readonly afterUnspent: number;
+  };
+}
+
+export interface SkillRankPrerequisite {
+  readonly skillId: string;
+  readonly minimumRank: number;
+}
+
+export interface SkillUpgradeRequirement {
+  readonly skillId: string;
+  readonly expectedRank: number;
+  readonly maxRank: number;
+  readonly pointCost: number;
+  readonly requiredCharacterLevel: number;
+  readonly prerequisites: readonly SkillRankPrerequisite[];
+  readonly eligible: boolean;
+}
+
+export type SkillUpgradeOutcome = 'upgraded' | 'blocked';
+export type SkillUpgradeBlockReason = 'none' | 'max_rank' | 'character_level_too_low'
+  | 'prerequisite_not_met' | 'condition_not_met' | 'insufficient_points';
+
+export interface SkillUpgradeAssessment {
+  readonly entityId: string;
+  readonly skillId: string;
+  readonly beforeRank: number;
+  readonly projectedRank: number;
+  readonly beforeUnspent: number;
+  readonly projectedUnspent: number;
+  readonly pointsSpent: number;
+  readonly outcome: SkillUpgradeOutcome;
+  readonly reason: SkillUpgradeBlockReason;
+}
+
+export interface SkillUpgradeResult {
+  readonly ranks: EntitySkillRankState;
+  readonly points: EntitySkillPointState;
+  readonly transition: SkillUpgradeAssessment;
+}
+
+function skillIdentifier(input: unknown): string {
+  if (typeof input !== 'string' || !input.trim()) throw new TypeError('Expected a nonblank skill identifier');
+  return input;
+}
+
+function rankMap(input: unknown): Readonly<Record<string, number>> {
+  if (typeof input !== 'object' || input === null || Array.isArray(input)
+    || ![Object.prototype, null].includes(Object.getPrototypeOf(input))) {
+    throw new TypeError('Ranks must be an own-data skill map');
+  }
+  return Object.freeze(Object.fromEntries(Reflect.ownKeys(input).map(key => {
+    const field = Object.getOwnPropertyDescriptor(input, key);
+    if (!field || !('value' in field)) throw new TypeError('Ranks must be own data entries');
+    return [skillIdentifier(key), safePoints(field.value)];
+  })));
+}
+
+function readSkillRanks(input: EntitySkillRankState): EntitySkillRankState {
+  const data = dataFields(input, ['entityId', 'ranks']);
+  const entityId = data.entityId;
+  if (typeof entityId !== 'string' || !entityId.trim()) throw new TypeError('Rank entityId must be a nonblank string');
+  return Object.freeze({entityId, ranks: rankMap(data.ranks)});
+}
+
+export function createSkillRankState(entity: EntitySnapshot, ranks: Readonly<Record<string, number>>): EntitySkillRankState {
+  return Object.freeze({entityId: createEntity(entity).id, ranks: rankMap(ranks)});
+}
+
+export function getSkillRank(state: EntitySkillRankState, skillId: string): number | undefined {
+  const current = readSkillRanks(state), key = skillIdentifier(skillId);
+  return Object.hasOwn(current.ranks, key) ? current.ranks[key] : undefined;
+}
+
+export function createSkillPointState(state: ProgressionState, initial: SkillPointInitialState): EntitySkillPointState {
+  return createPointState(state, initial);
+}
+
+export function grantSkillPointRewards(points: EntitySkillPointState, advancement: LevelAdvancementResult,
+  policy: SkillPointRewardPolicy): SkillPointRewardResult {
+  return grantPointRewards(points, advancement, policy);
+}
+
+/** Complete validation before evaluating blockers; one resolver for both operations. */
+function resolveSkillUpgrade(progression: ProgressionState, ranks: EntitySkillRankState,
+  points: EntitySkillPointState, requirement: SkillUpgradeRequirement) {
+  const character = readState(progression), current = readSkillRanks(ranks), pool = readPointState(points);
+  if (character.entityId !== current.entityId || character.entityId !== pool.entityId) {
+    throw new TypeError('Progression, rank and point identities must match');
+  }
+  const input = dataFields(requirement, ['skillId', 'expectedRank', 'maxRank', 'pointCost',
+    'requiredCharacterLevel', 'prerequisites', 'eligible']);
+  const skillId = skillIdentifier(input.skillId), expectedRank = safePoints(input.expectedRank);
+  const maxRank = positiveLevel(input.maxRank), pointCost = safePoints(input.pointCost);
+  const requiredLevel = positiveLevel(input.requiredCharacterLevel);
+  if (!Object.hasOwn(current.ranks, skillId)) throw new TypeError('Unknown target skill');
+  const beforeRank = current.ranks[skillId]!;
+  if (expectedRank !== beforeRank || beforeRank > maxRank) throw new TypeError('Stale rank or inconsistent rank cap');
+  if (typeof input.eligible !== 'boolean') throw new TypeError('Eligibility must be a boolean');
+  const list = input.prerequisites;
+  if (!Array.isArray(list) || Reflect.ownKeys(list).length !== list.length + 1) {
+    throw new TypeError('Prerequisites must be a dense own-data array');
+  }
+  const prerequisites = new Set<string>();
+  let prerequisitesMet = true;
+  for (let index = 0; index < list.length; index++) {
+    const field = Object.getOwnPropertyDescriptor(list, String(index));
+    if (!field || !('value' in field)) throw new TypeError('Prerequisites must be own data entries');
+    const item = dataFields(field.value, ['skillId', 'minimumRank']);
+    const key = skillIdentifier(item.skillId), minimumRank = positiveLevel(item.minimumRank);
+    if (key === skillId || prerequisites.has(key) || !Object.hasOwn(current.ranks, key)) {
+      throw new TypeError('Unknown, duplicate or self prerequisite');
+    }
+    prerequisites.add(key);
+    if (current.ranks[key]! < minimumRank) prerequisitesMet = false;
+  }
+  const reason: SkillUpgradeBlockReason = beforeRank === maxRank ? 'max_rank'
+    : character.level < requiredLevel ? 'character_level_too_low'
+    : !prerequisitesMet ? 'prerequisite_not_met'
+    : !input.eligible ? 'condition_not_met'
+    : pool.unspentPoints < pointCost ? 'insufficient_points' : 'none';
+  const upgraded = reason === 'none', pointsSpent = upgraded ? pointCost : 0;
+  const transition: SkillUpgradeAssessment = Object.freeze({entityId: character.entityId, skillId,
+    beforeRank, projectedRank: upgraded ? safePoints(beforeRank + 1) : beforeRank,
+    beforeUnspent: pool.unspentPoints, projectedUnspent: pool.unspentPoints - pointsSpent,
+    pointsSpent, outcome: upgraded ? 'upgraded' : 'blocked', reason});
+  return {current, pool, transition};
+}
+
+export function evaluateSkillUpgrade(progression: ProgressionState, ranks: EntitySkillRankState,
+  points: EntitySkillPointState, requirement: SkillUpgradeRequirement): SkillUpgradeAssessment {
+  return resolveSkillUpgrade(progression, ranks, points, requirement).transition;
+}
+
+/** One rank only; caller jointly applies returned snapshots, with no hidden IO. */
+export function upgradeSkillRank(progression: ProgressionState, ranks: EntitySkillRankState,
+  points: EntitySkillPointState, requirement: SkillUpgradeRequirement): SkillUpgradeResult {
+  const {current, pool, transition} = resolveSkillUpgrade(progression, ranks, points, requirement);
+  return Object.freeze({ranks: Object.freeze({entityId: current.entityId,
+    ranks: Object.freeze({...current.ranks, [transition.skillId]: transition.projectedRank})}),
+  points: Object.freeze({...pool, unspentPoints: transition.projectedUnspent,
+    spentPoints: safePoints(pool.spentPoints + transition.pointsSpent)}), transition});
 }

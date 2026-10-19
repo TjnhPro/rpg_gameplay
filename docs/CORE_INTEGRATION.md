@@ -140,3 +140,11 @@ Entity setter updates Base Attributes; later explicit Entity stat calculation
 still invokes real pinned Kernel. No Progression stat formula/calculator, Core
 change or dependency change. Installed trace independently expects strength20 ->
 power45, then strength23 -> power51 only after explicit recalculation.
+
+## PG14–PG18 approved rank/point bookkeeping
+
+Skill point grants/spending, one-rank increment, cap/character-level/prerequisite
+comparisons and immutable diagnostics are task-approved L2 bookkeeping. Caller
+supplies per-level rewards, rank caps, per-request cost and eligibility. No Skill
+damage/cost/cooldown/effect/scaling calculator or dummy Kernel call. Core pin,
+lock integrity and real installed Kernel/Entity numerical regression remain intact.

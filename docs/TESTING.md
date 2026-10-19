@@ -183,3 +183,17 @@ exact unusual attribute keys and getter-free rejection are covered.
 `attribute-points.ts` compiles strict external NodeNext root-only readonly types.
 All 60 previous installed contracts retained:64 total (29GF+22EC+13PG),2 outer,
 zero skips. R01–R30 mapping is in the v0.3.3 report. Game profiles NOT_EVALUATED.
+
+## PG14–PG18 installed Skill evidence
+
+Five grouped `skill-progression.mjs` contracts cover rank keys/zero/unknown/shape/
+immutability; explicit pool/real receipts/rewards/independent cursors; upgrade/
+learning/free/prerequisites/all blocker priorities/stale requests; malformed
+state/policy rejection before blockers and safe integer boundaries; two independent
+literal handoff sessions with other domains/actors unchanged and implicit clock/RNG
+disabled. Expected level12,rank3,unspent1,spent2,cursor12 comes directly from task
+scenario O (rewards1+2,cost2). Scenario D separately expects3/5->1/7,rank2->3.
+Strict external NodeNext `skill-progression.ts` proves eleven public types,
+readonly/required/closed shapes, optional lookup and root-only imports.
+All64 previous installed contracts unchanged:69 total (29GF+22EC+18PG),2 outer,
+zero skips. R01–R35 mapping in v0.3.4 report. No fake Skill Engine/game simulator.

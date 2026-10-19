@@ -1,4 +1,4 @@
-# Public API — v0.3.3 (GF01–GF16, EC01–EC18, PG01–PG13)
+# Public API — v0.3.4 (GF01–GF16, EC01–EC18, PG01–PG18)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -919,3 +919,59 @@ structural receipts do not authenticate provenance. No global exactly-once ledge
 Allocation builds both snapshots atomically in memory, not a database transaction.
 Caller owns economics/restrictions, joint persistence, events and explicit stat
 recalculation. No EXP/level/resource changes, respec or Skill Point/Rank system.
+
+## PG14–PG18 Skill Progression
+
+Root adds six functions and eleven readonly types (60 functions/77 types total):
+
+```ts
+createSkillRankState(entity: EntitySnapshot, ranks: Readonly<Record<string, number>>): EntitySkillRankState;
+getSkillRank(state: EntitySkillRankState, skillId: string): number | undefined;
+createSkillPointState(state: ProgressionState, initial: SkillPointInitialState): EntitySkillPointState;
+grantSkillPointRewards(points: EntitySkillPointState, advancement: LevelAdvancementResult, policy: SkillPointRewardPolicy): SkillPointRewardResult;
+evaluateSkillUpgrade(progression: ProgressionState, ranks: EntitySkillRankState, points: EntitySkillPointState, requirement: SkillUpgradeRequirement): SkillUpgradeAssessment;
+upgradeSkillRank(progression: ProgressionState, ranks: EntitySkillRankState, points: EntitySkillPointState, requirement: SkillUpgradeRequirement): SkillUpgradeResult;
+```
+
+- `EntitySkillRankState`: `{entityId, ranks: Readonly<Record<string, number>>}`.
+  Empty map allowed; nonblank exact own string keys and nonnegative safe integer
+  ranks. Rank0 means registered/unlearned; unknown keys stay unknown. No catalog
+  registration/removal during upgrade. Ordinary/null-prototype data maps only,
+  no getters/symbol keys/inherited ranks; `__proto__` is safe own data.
+- `SkillPointInitialState`: required `unspentPoints`, `spentPoints`,
+  `rewardedThroughLevel`. `EntitySkillPointState` adds exact `entityId`. Balances
+  and total nonnegative safe integers; cursor positive safe integer <= supplied
+  level at creation. Independent pool/cursor from Attribute Points.
+- `SkillPointRewardPolicy`: `{pointsByLevel: Readonly<Record<number, number>>}`.
+  Same complete actual-PG09 receipt consistency and exact completed-level reward
+  map rules as PG12. Partial rewards cover completed prefix only; zero advances
+  cursor; no-level preserves balances/cursor. Updated cursor rejects replay.
+- `SkillPointRewardResult`: `{state, transition}`; transition has `entityId`,
+  `rewardedLevels`, `pointsGranted`, `beforeUnspent`, `afterUnspent`.
+- `SkillRankPrerequisite`: closed `{skillId, minimumRank}`. Exact registered
+  nonblank ID, positive safe minimum; no duplicates or self-reference.
+- `SkillUpgradeRequirement`: closed `{skillId, expectedRank, maxRank, pointCost,
+  requiredCharacterLevel, prerequisites, eligible}`. Target must exist. Expected
+  rank is nonnegative safe and must equal actual; cap positive safe and >= actual.
+  Cost nonnegative safe (explicit0 valid); required level positive safe; boolean
+  eligibility only; complete dense own-data prerequisite list.
+- `SkillUpgradeOutcome`: `'upgraded' | 'blocked'`.
+- `SkillUpgradeBlockReason`: `'none' | 'max_rank' | 'character_level_too_low' |
+  'prerequisite_not_met' | 'condition_not_met' | 'insufficient_points'`.
+- `SkillUpgradeAssessment`: `{entityId, skillId, beforeRank, projectedRank,
+  beforeUnspent, projectedUnspent, pointsSpent, outcome, reason}`.
+- `SkillUpgradeResult`: `{ranks, points, transition: SkillUpgradeAssessment}`.
+
+Three state identities must match. Complete validation precedes blockers; invalid
+policy/state, unknown prerequisite, rank above cap or stale expectedRank throws
+TypeError. Valid blockers use priority max rank -> character level -> prerequisites
+-> eligibility -> points. Blocked result preserves rank/point values with zero
+spending; success increments only target by one and transfers exact cost from
+unspent to spent. Other ranks, cursor, level/EXP/Attributes/Resources stay intact.
+Evaluate equals actual transition by semantic deep equality, using one resolver.
+All results/nested maps/lists frozen and detached, including blocked results;
+caller inputs untouched. latest snapshots required for cursor/expectedRank guards.
+Stale snapshots can branch; structural pool types do not authenticate domains or
+receipt provenance. Caller jointly stores next snapshots; no persistent transaction
+or global exactly-once guarantee. No Skill execution/effects/catalog, respec,
+automatic reward/event/level change, time/RNG or generic prerequisite graph.

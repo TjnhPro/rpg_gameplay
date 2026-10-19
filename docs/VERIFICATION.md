@@ -1,15 +1,15 @@
-# Verification gates — v0.3.3
+# Verification gates — v0.3.4
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
 
 | Command | Evidence | Limits |
 | --- | --- | --- |
-| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16, EC01–EC18, PG01–PG13; no game loop |
+| `npm run build` | Clean JS/declaration emit from strict native ESM/NodeNext source | GF01–GF16, EC01–EC18, PG01–PG18; no game loop |
 | `npm run typecheck` | Strict source typecheck, no emit | No gameplay semantics |
 | `npm run harness:check` | Registry, literal import/dependency direction, runtime package policy, obvious hidden RNG/time | Lexical, not full TS AST/semantic analysis |
 | `npm run harness:selftest` | Positive/negative boundary controls | No runtime module enable/disable |
-| `npm run test:functional` | External installed GF01–GF16/EC01–EC18/PG01–PG13, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
+| `npm run test:functional` | External installed GF01–GF16/EC01–EC18/PG01–PG18, full Foundation flow and payloads, ESM/declarations/closed exports/real Kernel; gate failures | Build first; no gameplay profile behavior evidence |
 | `npm run verify` | Boundaries, self-tests, required build, typecheck and functional contracts, in that order | Automated evidence is not Developer acceptance |
 
 `verify` checks that all three production scripts exist before running any of
@@ -144,3 +144,13 @@ remain mandatory. All60 old contracts retained:64 installed,2 outer,zero skips.
 Full verify runs harness checks/self-tests, clean build,typecheck and installed
 functional tests; missing source or selected failures fail closed. Exact-head
 push and PR Ubuntu/Windows Node22/24 evidence belongs in the checkpoint report.
+
+## PG14–PG18 current milestone gate
+
+Actual packed/installed @rpg/gameplay0.3.4 must execute skill-progression.mjs:5 PASS,
+zero skips, INSTALLED_SKILL_PROGRESSION_CONTRACTS_PASS and SKILL_PROGRESSION_TRACE_PASS.
+External strict NodeNext skill-progression.ts, exact root surface and private
+helper/deep-export closure stay mandatory. All64 old contracts unchanged:69 total,
+2 outer tests,zero skips. Full verify still runs every harness/build/typecheck/
+functional gate, including fail-closed missing source/spaced Node path controls.
+Exact-head push+PR Ubuntu/Windows Node22/24 must pass; macOS NOT_RUN.

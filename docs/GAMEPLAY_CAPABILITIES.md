@@ -44,11 +44,16 @@ Entity v0.2.5 EC01–EC18 is the merged PR #7 baseline. PG01–PG03 now provides
 optional Progression identity, explicit level/EXP contracts and immutable validated
 creation through one shared actor API. PG04–PG06 adds explicit scalar gain/adjustment;
 PG07–PG10 adds caller-configured cumulative/local level advancement and immutable
-diagnostics. PG11–PG19 remain NOT_STARTED; no curves, points or skill upgrades. Phase
+diagnostics. No default curves. Phase
 IN_PROGRESS; Developer acceptance PENDING until final v0.3.5 review.
 
 PG11–PG13 adds explicit separate Attribute Point snapshots, completed-level
 rewards with immutable cursor and caller-priced canonical Entity allocation.
-No automatic stat/resource/EXP/event changes, global reward authority, Skill
-Points/Ranks or PG14+ implementation. Progression remains IN_PROGRESS pending
+No automatic stat/resource/EXP/event changes or global reward authority. Progression remains IN_PROGRESS pending
 final v0.3.5 Developer review; game profiles remain NOT_EVALUATED.
+
+PG14–PG18 adds registered exact-key Skill Ranks, independent Skill Point pools/
+cursors, explicit per-level rewards and caller-configured one-rank upgrades with
+prerequisites, blockers and expectedRank guards. No Skill execution/catalog/effects
+or generic talent graph. PG19 remains NOT_STARTED; phase IN_PROGRESS and Developer
+acceptance PENDING final v0.3.5 review.

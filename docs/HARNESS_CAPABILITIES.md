@@ -23,7 +23,7 @@ Gameplay profile behavior remains NOT_EVALUATED; Progression phase is IN_PROGRES
 | H08 | Capability Gap & Change Control | Policy + escalation/STOP workflow |
 | H09 | Three-Profile Functional Verification | Foundation action/opaque position/direction compatibility probes; no gameplay scenarios/apps |
 | H10 | Deterministic Functional Test Harness | Injected clock/RNG/IDs, independent scripted semantic/failure traces; lexical global-source checks + audit; no simulator/app |
-| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC18/PG01–PG13, full Foundation flow, payload profiles and gate controls |
+| H11 | Contract & Integration Test Harness | Installed package/Kernel/GF01–GF16/EC01–EC18/PG01–PG18, full Foundation flow, payload profiles and gate controls |
 | H12 | Verification Gates & CI | Boundaries + build + typecheck + functional contracts; Windows/Linux, Node 22/24 |
 | H13 | Agent Task Execution Protocol | Implemented: approved-plan-first docs and task template |
 | H14 | Approval & Evidence Gates | Policy/report templates; Developer acceptance manual |
@@ -76,3 +76,12 @@ Installed PG11–PG13 covers separate point pools, validated actual advancement
 receipts, exact per-level rewards, updated-cursor replay protection and canonical
 Entity allocation.64 installed contracts plus2 outer tests,zero skips; prior
 fixtures and gates retained. No game profile or global authority claim.
+
+## v0.3.4 evidence extension
+
+Installed PG14–PG18 covers fixed exact-key Skill Ranks, independent Skill Point
+pools/cursors and actual advancement rewards, explicit requirements, one-rank
+upgrade, deterministic blockers, expectedRank guard and combined immutable result.
+69 installed contracts plus2 outer tests,zero skips. All prior consumers retained,
+real Core pin/integrity and verification failure controls unchanged. Gameplay
+profiles remain NOT_EVALUATED; Progression IN_PROGRESS until v0.3.5 review.
