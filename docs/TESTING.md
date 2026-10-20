@@ -278,3 +278,20 @@ combat-target.ts checks exact unions, mandatory inputs, canonical Life, readonly
 arrays/result/context, no any/callback/deep import. Existing79 contracts remain
 unchanged; total83 plus2 outer gates, zero skips. Actual installed0.4.2/Core tarballs
 and strict NodeNext skipLibCheck:false are used. R01-R30 mapping is in the report.
+
+## CB16–CB20 installed attack evidence (v0.4.3)
+
+combat-attack.mjs adds seven cohesive groups: literal full oracle/public Kernel
+agreement; ordered scaling/rank/flat/bonuses; lazy RNG/dodge short-circuit; stage
+preconditions/identity; malformed numerical own-data contracts before RNG;
+invalid RNG/nonfinite outputs; immutable independent replay and actor parity.
+Actual installed gameplay/Core artifacts run in an external temporary consumer,
+without mocks. Literal oracle: B0=100, B1=150, mitigation reduction0.5, final75;
+critical without defense=150, never225. Scaling90, rank120 and ordered flat129
+are independent expectations. HP80/Life alive remain unchanged.
+
+combat-attack.ts proves Kernel type composition, discriminated outcomes, deeply
+readonly diagnostics, mandatory stage/execution inputs, no any and closed deep
+exports with strict NodeNext/skipLibCheck:false. Existing83 contracts/oracles stay
+unchanged; current total90 installed contracts plus2 outer gates, zero skips.
+See v0.4.3 report for A–T/R01–R33 evidence and CI delivery references.

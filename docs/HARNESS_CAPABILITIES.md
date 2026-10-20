@@ -127,3 +127,14 @@ Actual package0.4.2 + pinned Core artifact; 83 installed contracts (79 retained 
 2 outer gates, zero skips. Source/diff audit supplements tests for no numerical
 execution/event/store/duplicate owner and unchanged registry/Core/Group A. Mode
 profiles remain NOT_EVALUATED. Exact-head push/PR evidence is on existing Draft PR.
+
+## v0.4.3 current evidence
+
+CB16–CB20 adds seven installed numerical/stage/RNG/immutability/replay groups and
+strict public-type checks. Current90 installed contracts (83 retained +7),2 outer
+gates, zero skips. Literal B0=100/B1=150/final75 and RNG traces complement direct
+public Kernel diagnostic comparisons. Actual package0.4.3/Core tarballs, lockfile
+integrity and closed exports are mandatory. Source/diff audit proves no new state,
+events, formulas or Group A/Core/registry changes. Exact-head Windows/Ubuntu
+Node22/24 push+PR jobs remain the checkpoint delivery gate. Profile gameplay
+behavior NOT_EVALUATED; phase IN_PROGRESS; Developer acceptance PENDING.

@@ -1154,3 +1154,54 @@ fresh context/target are frozen/detached. No mutable policy aliases survive.
 No attack/range/Skill check, numerical call, execution token, state mutation,
 global relationship/target store, event or time/RNG. Caller supplies current
 snapshots and sequences stages; structural accepted results are replayable data.
+
+## CB16–CB20 Combat Attack Resolution
+
+Package0.4.3 adds one root function and three types (64 functions/92 types total).
+
+```ts
+function resolveCombatAttack(
+  admission: CombatAdmissionResult,
+  targetValidation: CombatTargetValidationResult,
+  attackInput: CombatAttackInput,
+  executionContext: GameplayExecutionContext,
+): CombatAttackResolutionResult;
+type CombatAttackOutcome = 'dodged' | 'landed';
+```
+
+CombatAttackInput composes public Kernel types, with no callbacks/RNG in numerical
+data: hit requires dodgeChance/eligible/rule; critical requires chance/bonus/
+eligible/rule. damage requires base/rank/perRank, explicit ordered scaling entries
+{source,value,coefficient}, flat {definition,additional,resolved} and explicit
+already-effective ResolvedDamageBonus[] bonuses (id/source/eligible/reason/value/
+contributions). mitigation requires ruleKey/rating/rule; optional sourceLevel and
+targetLevel follow Kernel. Rule requires enabled/bounds/levelScalingEnabled;
+baseK/levelPenalty can be omitted while disabled. Enabled mitigation requires
+positive baseK and nonnegative levelPenalty, plus levels when scaling is enabled.
+
+All records are closed own-data; arrays are dense own-data without extra fields.
+Finite numeric fields, positive safe-integer rank, nonblank IDs, unique scaling
+source IDs and finite non-inverted bounds are mandatory. No defaults/coercion or
+inherited/accessor fields; explicit undefined is invalid. All stage/numerical
+validation precedes RNG. Receipts require admitted/none and accepted/none, exact
+actionId/actionType/sourceEntityId/target.kind/target.entityId agreement and
+targetEntityId/self-relation/Life consistency. They are structural, not fresh or
+authenticated authority. Admission/existence/policies are never rerun.
+
+Hit -> Critical -> B0 -> B1 -> Mitigation delegates actual public Kernel calls.
+Lazy Foundation nextExecutionRandom supplies rolls: zero/disabled/ineligible
+dodge draws0; enabled eligible critical draws1 even at chance0. Dodge draws at
+most1, never Critical. Invalid/missing/throwing RNG propagates without retries or
+rollback. Already-effective bonus eligibility is not resolved again. Actual
+critical.bonus is added once in B1; multiplier is diagnostic only. Missing enabled
+mitigation config and nonfinite Kernel diagnostics throw TypeError.
+
+Result is a deeply frozen detached discriminated union. Both outcomes include
+context, outcome, actual hit diagnostics and finalDamage. dodged has finalDamage0
+and no critical/b0/b1/mitigation properties. landed includes actual critical, b0
+(including ordered scaling), b1 and mitigation (including missing diagnostics);
+finalDamage is mitigation.finalDamage. Disabled mitigation preserves status and
+missing fields. Original inputs/Kernel results are never frozen or mutated.
+No HP/Life writes, automatic events, clock access, global store, Skill/Effect
+execution or supported-action catalog. Caller explicitly invokes resolution and
+owns current state, numerical snapshots and execution dependencies.

@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.4.1 Combat Action Admission
+# RPG Gameplay — v0.4.3 Combat Attack Resolution
 
-> **Status: Group A baseline merged through PR #8; CB01–CB10 implemented. Combat phase IN_PROGRESS; Draft PR; Developer acceptance PENDING.**
+> **Status: Group A baseline merged through PR #8; CB01–CB20 implemented. Combat phase IN_PROGRESS; Draft PR; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB10 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB20 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -461,3 +461,17 @@ ordering. Package0.4.2 has 83 installed contracts (79 retained +4 target), 2 out
 gate tests and strict external NodeNext evidence. See [API](docs/API.md#cb11cb15-combat-target-validation)
 and [report](docs/reports/v0.4.2-combat-target-validation.md).
 Phase IN_PROGRESS, PR #9 DRAFT, Developer acceptance PENDING; v0.4.3+ NOT_STARTED.
+
+## v0.4.3 Attack Resolution
+
+`resolveCombatAttack(admission, targetValidation, attackInput, executionContext)`
+requires matching admitted/accepted results and explicit caller numerical policy.
+Public Kernel owns Hit/Critical/B0/B1/Mitigation; Foundation supplies lazy caller
+RNG. Results are detached/frozen: `dodged` omits all later diagnostics; `landed`
+retains actual Kernel stages and final damage. No HP/Life changes or hidden events.
+See [API](docs/API.md#cb16cb20-combat-attack-resolution) and
+[checkpoint report](docs/reports/v0.4.3-combat-attack-resolution.md).
+Installed90 contracts and2 outer gates cover existing and new behavior. Combat
+phase IN_PROGRESS; PR #9 DRAFT; Developer acceptance PENDING. Damage application
+and death (v0.4.4), phase closure (v0.4.5) are NOT_STARTED. Earlier milestone
+sections describe their own historical scopes. Gameplay profiles NOT_EVALUATED.

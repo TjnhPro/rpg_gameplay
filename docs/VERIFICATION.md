@@ -225,3 +225,17 @@ NodeNext remain mandatory. Target evaluation only; no gameplay execution/profile
 PASS claim. Exact-head push and PR jobs must each pass Windows/Ubuntu Node22/24;
 prior CI is not current evidence. See v0.4.2 report and PR #9 delivery evidence.
 macOS NOT_RUN; gameplay profiles NOT_EVALUATED; Developer acceptance PENDING.
+
+## v0.4.3 current verification scope
+
+Artifact0.4.3: GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB20. Registry3 modules,
+8 source files unchanged; root64 functions/92 types. Installed90 contracts
+(83 retained +7 attack) and2 outer gates, zero skips. Required commands remain
+harness:check, harness:selftest, build, typecheck, test:functional and full verify.
+Real tarball installation, pinned Core SHA-512 and strict external NodeNext remain
+mandatory. CB16–CB20 proves numerical resolution, not damage application or death.
+Exact-head push and PR CI each require Windows/Ubuntu Node22/24. Final evidence
+is attached to PR #9; the tracked report records its pre-push snapshot.
+macOS NOT_RUN; gameplay profiles NOT_EVALUATED. Phase IN_PROGRESS, PR DRAFT,
+Developer acceptance PENDING. v0.4.4/v0.4.5 NOT_STARTED. Historical scopes above
+remain records of their own checkpoints, not current feature limitations.

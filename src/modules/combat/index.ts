@@ -1,4 +1,10 @@
 import {getEntity, type EntityCollection, type EntityLifeState, type EntityLifeStatus} from '../entity/index.js';
+import {nextExecutionRandom, type GameplayExecutionContext} from '../../foundation/execution/index.js';
+import {calculateHit, calculateCritical, calculateDamageB0, calculateDamageB1, calculateMitigation,
+  type HitCalculationInput, type HitCalculationResult, type CriticalCalculationInput,
+  type CriticalCalculationResult, type DamageB0Input, type DamageB0Result,
+  type DamageScaling, type ResolvedDamageBonus, type MitigationCalculationInput,
+  type MitigationCalculationResult, type NumericBounds, type ProbabilityRule} from '@rpg/core/kernel';
 
 /** Exact caller-owned actor reference; existence and targeting policy are external. */
 export interface CombatEntityTarget {
@@ -17,13 +23,14 @@ export interface CombatActionRequest {
 /** Detached frozen intent, not an admission decision or execution receipt. */
 export type CombatActionContext = CombatActionRequest;
 
-function dataFields(input: unknown, required: readonly string[]): Record<string, unknown> {
+function dataFields(input: unknown, required: readonly string[], optional: readonly string[] = []): Record<string, unknown> {
   if (typeof input !== 'object' || input === null || Array.isArray(input)) {
     throw new TypeError('Expected a closed own-data record');
   }
   const keys = Reflect.ownKeys(input);
   if (required.some(key => !Object.hasOwn(input, key))
-    || keys.some(key => typeof key !== 'string' || !required.includes(key))) {
+    || keys.some(key => typeof key !== 'string' || (!required.includes(key) && !optional.includes(key)))
+    || optional.some(key => key in input && !Object.hasOwn(input, key))) {
     throw new TypeError('Missing, inherited or unknown Combat fields');
   }
   return Object.fromEntries(keys.map(key => {
@@ -166,4 +173,167 @@ export function evaluateCombatTargetValidation(
       : !statuses.includes(targetLifeStatus) ? 'target_life_not_allowed' : 'none';
   return Object.freeze({context, targetEntityId, relation, targetLifeStatus,
     status: reason === 'none' ? 'accepted' : 'rejected', reason});
+}
+
+/** Captured numerical data only; caller maps game stats/ranks to Kernel inputs. */
+export interface CombatAttackInput {
+  readonly hit: Required<Omit<HitCalculationInput, 'roll'>>;
+  readonly critical: Omit<CriticalCalculationInput, 'roll'>;
+  readonly damage: Pick<DamageB0Input, 'base' | 'rank' | 'perRank'> & {
+    readonly scaling: readonly DamageScaling[];
+    readonly flat: ReturnType<DamageB0Input['resolveFlat']>;
+    readonly bonuses: readonly ResolvedDamageBonus[];
+  };
+  readonly mitigation: Omit<MitigationCalculationInput, 'damage'>;
+}
+
+export type CombatAttackOutcome = 'dodged' | 'landed';
+
+/** Unrun stages are absent; landed damage is calculated, never applied. */
+export type CombatAttackResolutionResult = {
+  readonly context: CombatActionContext;
+  readonly outcome: 'dodged';
+  readonly hit: Readonly<HitCalculationResult>;
+  readonly finalDamage: 0;
+} | {
+  readonly context: CombatActionContext;
+  readonly outcome: 'landed';
+  readonly hit: Readonly<HitCalculationResult>;
+  readonly critical: Readonly<CriticalCalculationResult>;
+  readonly b0: Readonly<Omit<DamageB0Result, 'scaling'>> & {
+    readonly scaling: readonly Readonly<DamageB0Result['scaling'][number]>[];
+  };
+  readonly b1: Readonly<ReturnType<typeof calculateDamageB1>>;
+  readonly mitigation: Readonly<MitigationCalculationResult>;
+  readonly finalDamage: number;
+};
+
+function finite(input: unknown): number {
+  if (typeof input !== 'number' || !Number.isFinite(input)) throw new TypeError('Expected finite attack value');
+  return input;
+}
+
+function flag(input: unknown): boolean {
+  if (typeof input !== 'boolean') throw new TypeError('Expected explicit attack boolean');
+  return input;
+}
+
+function attackArray(input: unknown): readonly unknown[] {
+  if (!Array.isArray(input)) throw new TypeError('Expected dense own-data attack array');
+  const length = Object.getOwnPropertyDescriptor(input, 'length')!.value as number;
+  if (Reflect.ownKeys(input).length !== length + 1) throw new TypeError('Unknown attack array fields');
+  return Array.from({length}, (_, index) => {
+    const entry = Object.getOwnPropertyDescriptor(input, String(index));
+    if (!entry || !('value' in entry)) throw new TypeError('Attack entries must be own data');
+    return entry.value as unknown;
+  });
+}
+
+function attackBounds(input: unknown): NumericBounds {
+  const data = dataFields(input, [], ['min', 'max']);
+  const min = Object.hasOwn(data, 'min') ? finite(data.min) : undefined;
+  const max = Object.hasOwn(data, 'max') ? finite(data.max) : undefined;
+  if (min !== undefined && max !== undefined && min > max) throw new TypeError('Inverted attack bounds');
+  return {...(min === undefined ? {} : {min}), ...(max === undefined ? {} : {max})};
+}
+
+function probability(input: unknown): ProbabilityRule {
+  const data = dataFields(input, ['enabled', 'bounds']);
+  return {enabled: flag(data.enabled), bounds: attackBounds(data.bounds)};
+}
+
+function captureAttack(input: CombatAttackInput): CombatAttackInput {
+  const data = dataFields(input, ['hit', 'critical', 'damage', 'mitigation']);
+  const hit = dataFields(data.hit, ['dodgeChance', 'eligible', 'rule']);
+  const critical = dataFields(data.critical, ['chance', 'bonus', 'eligible', 'rule']);
+  const damage = dataFields(data.damage, ['base', 'rank', 'perRank', 'scaling', 'flat', 'bonuses']);
+  const rank = finite(damage.rank);
+  if (!Number.isSafeInteger(rank) || rank < 1) throw new TypeError('Attack rank must be a positive safe integer');
+  const scaling = attackArray(damage.scaling).map(value => {
+    const term = dataFields(value, ['source', 'value', 'coefficient']);
+    return {source: identifier(term.source), value: finite(term.value), coefficient: finite(term.coefficient)};
+  });
+  if (new Set(scaling.map(term => term.source)).size !== scaling.length) throw new TypeError('Duplicate scaling source');
+  const flat = dataFields(damage.flat, ['definition', 'additional', 'resolved']);
+  const bonuses = attackArray(damage.bonuses).map(value => {
+    const bonus = dataFields(value, ['id', 'source', 'eligible', 'reason', 'value', 'contributions']);
+    if (typeof bonus.reason !== 'string') throw new TypeError('Bonus reason must be a string');
+    return {id: identifier(bonus.id), source: identifier(bonus.source), eligible: flag(bonus.eligible),
+      reason: bonus.reason, value: finite(bonus.value), contributions: attackArray(bonus.contributions).map(value => {
+        const term = dataFields(value, ['id', 'value']);
+        return {id: identifier(term.id), value: finite(term.value)};
+      })};
+  });
+  const mitigation = dataFields(data.mitigation, ['ruleKey', 'rating', 'rule'], ['sourceLevel', 'targetLevel']);
+  const rule = dataFields(mitigation.rule, ['enabled', 'bounds', 'levelScalingEnabled'], ['baseK', 'levelPenalty']);
+  const enabled = flag(rule.enabled), levelScalingEnabled = flag(rule.levelScalingEnabled);
+  const baseK = Object.hasOwn(rule, 'baseK') ? finite(rule.baseK) : undefined;
+  const levelPenalty = Object.hasOwn(rule, 'levelPenalty') ? finite(rule.levelPenalty) : undefined;
+  const sourceLevel = Object.hasOwn(mitigation, 'sourceLevel') ? finite(mitigation.sourceLevel) : undefined;
+  const targetLevel = Object.hasOwn(mitigation, 'targetLevel') ? finite(mitigation.targetLevel) : undefined;
+  if ((baseK !== undefined && baseK <= 0) || (levelPenalty !== undefined && levelPenalty < 0)
+    || (enabled && (baseK === undefined || levelPenalty === undefined
+      || (levelScalingEnabled && (sourceLevel === undefined || targetLevel === undefined))))) {
+    throw new TypeError('Incomplete or invalid mitigation configuration');
+  }
+  return {
+    hit: {dodgeChance: finite(hit.dodgeChance), eligible: flag(hit.eligible), rule: probability(hit.rule)},
+    critical: {chance: finite(critical.chance), bonus: finite(critical.bonus),
+      eligible: flag(critical.eligible), rule: probability(critical.rule)},
+    damage: {base: finite(damage.base), rank, perRank: finite(damage.perRank), scaling,
+      flat: {definition: finite(flat.definition), additional: finite(flat.additional), resolved: finite(flat.resolved)}, bonuses},
+    mitigation: {ruleKey: identifier(mitigation.ruleKey), rating: finite(mitigation.rating),
+      ...(sourceLevel === undefined ? {} : {sourceLevel}), ...(targetLevel === undefined ? {} : {targetLevel}),
+      rule: {enabled, bounds: attackBounds(rule.bounds), levelScalingEnabled,
+        ...(baseK === undefined ? {} : {baseK}), ...(levelPenalty === undefined ? {} : {levelPenalty})}},
+  };
+}
+
+// Kernel diagnostics contain only records/arrays/scalars. Copy values verbatim,
+// reject nonfinite output, and freeze new objects without mutating Kernel results.
+function diagnosticSnapshot<T>(value: T): T {
+  if (typeof value === 'number') finite(value);
+  if (Array.isArray(value)) return Object.freeze(value.map(item => diagnosticSnapshot(item))) as T;
+  if (typeof value === 'object' && value !== null) {
+    return Object.freeze(Object.fromEntries(Object.entries(value).map(([key, item]) =>
+      [key, diagnosticSnapshot(item)]))) as T;
+  }
+  return value;
+}
+
+/** Validate/capture first, then let Kernel own numerical work and lazy draw order. */
+export function resolveCombatAttack(
+  admission: CombatAdmissionResult,
+  targetValidation: CombatTargetValidationResult,
+  attackInput: CombatAttackInput,
+  executionContext: GameplayExecutionContext,
+): CombatAttackResolutionResult {
+  const actor = dataFields(admission, ['context', 'status', 'reason']);
+  if (actor.status !== 'admitted' || actor.reason !== 'none') throw new TypeError('Attack requires admitted/none');
+  const context = createCombatActionContext(actor.context as CombatActionContext);
+  const target = dataFields(targetValidation, ['context', 'targetEntityId', 'relation', 'targetLifeStatus', 'status', 'reason']);
+  if (target.status !== 'accepted' || target.reason !== 'none') throw new TypeError('Attack requires accepted/none target');
+  const targetContext = createCombatActionContext(target.context as CombatActionContext);
+  if (context.actionId !== targetContext.actionId || context.actionType !== targetContext.actionType
+    || context.sourceEntityId !== targetContext.sourceEntityId || context.target.kind !== targetContext.target.kind
+    || context.target.entityId !== targetContext.target.entityId
+    || identifier(target.targetEntityId) !== context.target.entityId) throw new TypeError('Attack stage identity mismatch');
+  const relation = relationValue(target.relation);
+  if ((context.sourceEntityId === context.target.entityId) !== (relation === 'self')) throw new TypeError('Inconsistent target relation');
+  if (target.targetLifeStatus !== 'alive' && target.targetLifeStatus !== 'dead') throw new TypeError('Invalid target life status');
+  const input = captureAttack(attackInput);
+  const roll = () => nextExecutionRandom(executionContext);
+  const hit = diagnosticSnapshot(calculateHit({...input.hit, roll}));
+  if (!hit.hit) return Object.freeze({context, outcome: 'dodged', hit, finalDamage: 0});
+  const critical = diagnosticSnapshot(calculateCritical({...input.critical, roll}));
+  const terms = input.damage.scaling;
+  const b0 = diagnosticSnapshot(calculateDamageB0({base: input.damage.base, rank: input.damage.rank,
+    perRank: input.damage.perRank, sourceOrder: terms.map(term => term.source),
+    sourceValue: source => terms.find(term => term.source === source)!.value,
+    coefficient: source => terms.find(term => term.source === source)!.coefficient,
+    resolveFlat: () => input.damage.flat}));
+  const b1 = diagnosticSnapshot(calculateDamageB1(b0.raw, input.damage.bonuses, critical.bonus));
+  const mitigation = diagnosticSnapshot(calculateMitigation({...input.mitigation, damage: b1.beforeDefense}));
+  if (mitigation.status === 'missing_config') throw new TypeError(`Mitigation missing_config: ${mitigation.missing.join(', ')}`);
+  return Object.freeze({context, outcome: 'landed', hit, critical, b0, b1, mitigation, finalDamage: mitigation.finalDamage});
 }

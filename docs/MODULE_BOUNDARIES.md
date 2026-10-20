@@ -159,3 +159,15 @@ production, Core, static registry or dependency delta. Root adds only
 CombatTargetValidationStatus/CombatTargetRejectionReason/CombatTargetValidationResult
 (63 functions/89 types). No deep exports or private helpers escape. No Faction,
 Target Store, targeting engine, Skill owner, numerical work or source re-admission.
+
+## CB16–CB20 attack boundary (v0.4.3)
+
+Combat imports only the public @rpg/core/kernel numerical entry point and existing
+Foundation execution nextExecutionRandom. It reuses actual admission/target
+result types; neither admission nor target existence/policy is rerun. Full action
+identity must match. Structural receipts are not authenticated reservations.
+No production delta in Foundation/Entity/Progression, Core, registry or dependencies.
+Root adds resolveCombatAttack and CombatAttackInput/CombatAttackOutcome/
+CombatAttackResolutionResult (64 functions/92 types). No deep exports or helper
+exports. Combat never writes resource/Life state or publishes events. Kernel
+owns Hit, Critical, B0, B1 and Mitigation; caller owns numerical snapshots/policy.

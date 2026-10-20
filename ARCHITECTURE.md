@@ -284,3 +284,19 @@ permit alive or dead targets. Entire input contracts validate before target
 missing > relation denied > life denied priority. Diagnostics retain only frozen
 context and validated scalars, no authoritative target store or execution ticket.
 No numerical work, second engine, Skill/Effect dependency, state write or event.
+
+## CB16–CB20 Attack resolution (v0.4.3)
+
+Combat sequences validated actor/target receipts, Hit -> Critical -> B0 -> B1 ->
+Mitigation. Numerical ownership stays entirely in public @rpg/core/kernel.
+Caller supplies explicit finite numerical snapshots and policy, including scaling
+source order, already-effective bonuses, flat terms and mitigation configuration.
+Combat only validates/captures data and adapts callbacks; it contains no damage,
+probability or defense formulas. Critical bonus enters B1 once; multiplier is
+only diagnostic. Dodge returns before all later calculations.
+
+Foundation nextExecutionRandom supplies lazy caller RNG. No new provider/store,
+clock access, engine, event, HP/Life mutation or Skill/Effect implementation.
+All result diagnostics are newly detached and recursively frozen. Stage receipts
+are structural data, not provenance/freshness/concurrency authority. Registry and
+Group A owners remain unchanged; no persistent Combat state is introduced.

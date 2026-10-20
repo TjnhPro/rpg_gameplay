@@ -110,3 +110,14 @@ Frozen detached result with accepted/rejected diagnostics. No faction authority,
 spatial targeting, execution/damage/death/revival/Skill feature. Earlier milestone
 sections above describe their historical checkpoints. Phase IN_PROGRESS, PR #9
 DRAFT; Developer acceptance PENDING. v0.4.3-v0.4.5 NOT_STARTED.
+
+## v0.4.3 current checkpoint: Attack Resolution
+
+Group04 CB16–CB20 sequences structurally admitted/accepted matching stage results,
+Kernel Hit/Dodge, Critical, B0, B1 and Mitigation using explicit caller numerical
+snapshots/policy and lazy Foundation RNG. Frozen detached discriminated outcomes
+omit unrun diagnostics after dodge. Critical is additive once; final damage is
+calculated only. No HP/death/events/Skill/Effect implementation or persistent
+Combat state. GF/EC/PG and CB01–CB15 remain intact. Phase IN_PROGRESS, PR #9 DRAFT,
+Developer acceptance PENDING; v0.4.4/v0.4.5 NOT_STARTED. Gameplay profile behavior
+remains NOT_EVALUATED. Earlier sections are historical checkpoint descriptions.

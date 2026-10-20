@@ -158,3 +158,20 @@ calculateEntityStats. A caller transform counter proves allocation never invokes
 stat calculation. No Progression formula/Kernel mock or numerical fallback.
 Pin, peer/dev dependencies and tarball SHA-512 remain unchanged across the whole
 Progression phase; the installed runner verifies artifact bytes against the lock.
+
+## CB16–CB20 numerical delegation (v0.4.3)
+
+resolveCombatAttack delegates calculateHit, calculateCritical, calculateDamageB0,
+calculateDamageB1 and calculateMitigation to the pinned public Kernel. Input types
+compose its public contracts. Ordered scaling snapshots adapt sourceOrder,
+sourceValue/coefficient callbacks; explicit flat data adapts resolveFlat. No L2
+numerical formulas, clamps or fallback engine. Already-effective bonus values go
+to B1 unchanged; actual critical.bonus enters once, never multiplier a second time.
+
+Lazy roll closures call Foundation nextExecutionRandom only when Kernel requests
+it. Zero/disabled/ineligible dodge consumes zero; eligible enabled critical still
+draws at chance zero. Dodge skips Critical/B0/B1/Mitigation. Invalid RNG propagates
+without retry/default/rollback. Enabled mitigation requires complete valid config;
+missing_config never succeeds. Every numerical diagnostic must be finite, copied
+and frozen without mutating Kernel results. Disabled mitigation preserves actual
+missing diagnostics. Core2.0.0 pin/revision/artifact integrity remain unchanged.
