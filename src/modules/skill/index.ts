@@ -207,14 +207,7 @@ function costNumber(value: unknown): number {
   return value;
 }
 
-function resolveResourceCosts(admission: SkillAdmissionResult, resources: EntityResourceState,
-  request: SkillResourceCostRequest): SkillResourceCostApplicationResult {
-  const receipt = admissionFields(admission, ['instanceId', 'skillId', 'actorEntityId', 'status', 'reason']);
-  const instanceId = admissionId(receipt.instanceId), skillId = admissionId(receipt.skillId);
-  const entityId = admissionId(receipt.actorEntityId);
-  if (receipt.status !== 'admitted' || receipt.reason !== 'none') {
-    throw new TypeError('Resource costs require an admitted Skill assessment');
-  }
+function captureResourceCosts(resources: EntityResourceState, request: SkillResourceCostRequest, entityId: string) {
   const input = admissionFields(request, ['costs', 'bounds']);
   const costs = costArray(input.costs).map(value => {
     const data = admissionFields(value, ['resourceId', 'amount']);
@@ -239,6 +232,18 @@ function resolveResourceCosts(admission: SkillAdmissionResult, resources: Entity
   // The fallback is only a lookup key, never a default resource or numerical operation.
   getEntityResourceCurrent(resources, costs[0]?.resourceId ?? entityId);
   if (resources.entityId !== entityId) throw new TypeError('Admission and Resource Entity IDs must match');
+  return {costs, bounds};
+}
+
+function resolveResourceCosts(admission: SkillAdmissionResult, resources: EntityResourceState,
+  request: SkillResourceCostRequest): SkillResourceCostApplicationResult {
+  const receipt = admissionFields(admission, ['instanceId', 'skillId', 'actorEntityId', 'status', 'reason']);
+  const instanceId = admissionId(receipt.instanceId), skillId = admissionId(receipt.skillId);
+  const entityId = admissionId(receipt.actorEntityId);
+  if (receipt.status !== 'admitted' || receipt.reason !== 'none') {
+    throw new TypeError('Resource costs require an admitted Skill assessment');
+  }
+  const {costs, bounds} = captureResourceCosts(resources, request, entityId);
   // Copy already Entity-validated own data, including nonenumerable resource keys.
   // No second Resource validator, normalization or mutation of caller-owned objects.
   let state: EntityResourceState = Object.freeze({entityId, current: Object.freeze(Object.fromEntries(
@@ -351,13 +356,18 @@ export function evaluateSkillCooldownReady(instance: SkillInstanceState, state: 
   return cooldownAssessment(snapshot, readExecutionTime(context));
 }
 
+function cooldownConfiguration(config: SkillCooldownConfiguration): SkillCooldownConfiguration {
+  const data = admissionFields(config, ['baseDurationMs', 'effectiveCdr']);
+  const baseDurationMs = cooldownTime(data.baseDurationMs), effectiveCdr = cooldownTime(data.effectiveCdr);
+  if (effectiveCdr > 1) throw new TypeError('Effective cooldown reduction must be in [0,1]');
+  return {baseDurationMs, effectiveCdr};
+}
+
 /** Return a candidate only; active reuse never refreshes, pays costs or activates. */
 export function startSkillCooldown(instance: SkillInstanceState, state: SkillCooldownState,
   context: GameplayExecutionContext, config: SkillCooldownConfiguration): SkillCooldownStartResult {
   const snapshot = cooldownSnapshot(instance, state);
-  const data = admissionFields(config, ['baseDurationMs', 'effectiveCdr']);
-  const baseDurationMs = cooldownTime(data.baseDurationMs), effectiveCdr = cooldownTime(data.effectiveCdr);
-  if (effectiveCdr > 1) throw new TypeError('Effective cooldown reduction must be in [0,1]');
+  const {baseDurationMs, effectiveCdr} = cooldownConfiguration(config);
   // Validate every supplied record before consulting the provider or rejecting active reuse.
   const now = readExecutionTime(context), assessment = cooldownAssessment(snapshot, now);
   if (assessment.status === 'active') return Object.freeze({status: 'rejected', reason: 'cooldown_active',
@@ -370,4 +380,128 @@ export function startSkillCooldown(instance: SkillInstanceState, state: SkillCoo
   return Object.freeze({status: 'started', reason: 'none', assessment, durationMs,
     state: Object.freeze({instanceId: snapshot.instanceId, skillId: snapshot.skillId, entityId: snapshot.entityId,
       startedAtMs: now, readyAtMs})});
+}
+
+/** Caller-supplied dispatch references, never a Combat context or authorization. */
+export interface SkillExecutionIntent {
+  readonly attemptId: string;
+  readonly dispatch:
+    | {readonly kind: 'combat'; readonly actionId: string; readonly actionType: string; readonly targetEntityId: string}
+    | {readonly kind: 'caller'};
+}
+/** Explicit caller assertion; canonical Combat preflight remains caller-mediated. */
+export type SkillExecutionPreflight =
+  | {readonly kind: 'combat'; readonly status: 'accepted' | 'rejected'}
+  | {readonly kind: 'caller'; readonly status: 'accepted' | 'rejected'};
+export interface SkillActivationInput {
+  readonly instance: SkillInstanceState;
+  readonly admission: SkillAdmissionResult;
+  readonly resourceState: EntityResourceState;
+  readonly resourceCosts: SkillResourceCostRequest;
+  readonly cooldownState: SkillCooldownState;
+  readonly cooldownConfig: SkillCooldownConfiguration;
+  readonly executionContext: GameplayExecutionContext;
+  readonly intent: SkillExecutionIntent;
+  readonly executionPreflight: SkillExecutionPreflight;
+}
+export type SkillActivationRejectionReason = 'skill_admission_rejected' | 'execution_preflight_rejected'
+  | 'resource_cost_rejected' | 'cooldown_active';
+export interface SkillExecutionRequest {
+  readonly attemptId: string;
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly actorEntityId: string;
+  readonly dispatch: SkillExecutionIntent['dispatch'];
+}
+export type SkillActivationResult =
+  | {readonly status: 'accepted'; readonly reason: 'none'; readonly request: SkillExecutionRequest;
+      readonly resources: EntityResourceState; readonly cooldown: SkillCooldownState}
+  | {readonly status: 'rejected'; readonly reason: SkillActivationRejectionReason;
+      readonly request: null; readonly resources: null; readonly cooldown: null};
+export type SkillExecutionStatus = 'completed' | 'failed';
+export interface SkillExecutionReport {readonly status: SkillExecutionStatus}
+export interface SkillExecutionOutcome {
+  readonly attemptId: string;
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly actorEntityId: string;
+  readonly dispatchKind: 'combat' | 'caller';
+  readonly status: SkillExecutionStatus;
+}
+
+function executionDispatch(input: unknown): SkillExecutionIntent['dispatch'] {
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) throw new TypeError('Expected Skill dispatch');
+  const kind = Object.getOwnPropertyDescriptor(input, 'kind');
+  if (!kind || !('value' in kind)) throw new TypeError('Dispatch kind must be own data');
+  if (kind.value === 'caller') {
+    admissionFields(input, ['kind']);
+    return Object.freeze({kind: 'caller'});
+  }
+  if (kind.value !== 'combat') throw new TypeError('Unsupported Skill dispatch kind');
+  const data = admissionFields(input, ['kind', 'actionId', 'actionType', 'targetEntityId']);
+  return Object.freeze({kind: 'combat', actionId: admissionId(data.actionId),
+    actionType: admissionId(data.actionType), targetEntityId: admissionId(data.targetEntityId)});
+}
+
+function executionIntent(input: unknown): SkillExecutionIntent {
+  const data = admissionFields(input, ['attemptId', 'dispatch']);
+  return Object.freeze({attemptId: admissionId(data.attemptId), dispatch: executionDispatch(data.dispatch)});
+}
+
+function activationAdmission(input: unknown, instance: SkillInstanceState): SkillAdmissionResult {
+  const data = admissionFields(input, ['instanceId', 'skillId', 'actorEntityId', 'status', 'reason']);
+  const instanceId = admissionId(data.instanceId), skillId = admissionId(data.skillId), actorEntityId = admissionId(data.actorEntityId);
+  if (instanceId !== instance.instanceId || skillId !== instance.skillId || actorEntityId !== instance.entityId) {
+    throw new TypeError('Activation identities must match');
+  }
+  const reason = data.reason;
+  if (data.status === 'admitted' && reason === 'none') return {instanceId, skillId, actorEntityId, status: 'admitted', reason};
+  if (data.status !== 'rejected' || (reason !== 'actor_not_found' && reason !== 'actor_dead' && reason !== 'skill_not_owned'
+    && reason !== 'skill_rank_unregistered' && reason !== 'skill_rank_too_low' && reason !== 'actor_ineligible')) {
+    throw new TypeError('Malformed Skill admission assessment');
+  }
+  return {instanceId, skillId, actorEntityId, status: 'rejected', reason};
+}
+
+/** Pure gate orchestration. Accepted candidates still require caller commit and dispatch. */
+export function activateSkill(input: SkillActivationInput): SkillActivationResult {
+  const data = admissionFields(input, ['instance', 'admission', 'resourceState', 'resourceCosts', 'cooldownState',
+    'cooldownConfig', 'executionContext', 'intent', 'executionPreflight']);
+  const instance = cooldownIdentity(data.instance as SkillInstanceState);
+  const admission = activationAdmission(data.admission, instance);
+  const intent = executionIntent(data.intent);
+  const preflight = admissionFields(data.executionPreflight, ['kind', 'status']);
+  if (preflight.kind !== intent.dispatch.kind || (preflight.status !== 'accepted' && preflight.status !== 'rejected')) {
+    throw new TypeError('Preflight kind/status must match Skill dispatch');
+  }
+  const resources = data.resourceState as EntityResourceState, costs = data.resourceCosts as SkillResourceCostRequest;
+  // Shared structural validation only: no numerical transitions or candidate generation before early gates.
+  captureResourceCosts(resources, costs, instance.entityId);
+  const cooldown = cooldownSnapshot(instance, data.cooldownState as SkillCooldownState);
+  const config = cooldownConfiguration(data.cooldownConfig as SkillCooldownConfiguration);
+  // An opaque Foundation capability is passed through; canonical identity/provider validation occurs at the cooldown gate.
+  const context = data.executionContext;
+  if (typeof context !== 'object' || context === null || Array.isArray(context)) throw new TypeError('Expected execution context');
+  const reject = (reason: SkillActivationRejectionReason): SkillActivationResult =>
+    Object.freeze({status: 'rejected', reason, request: null, resources: null, cooldown: null});
+  if (admission.status === 'rejected') return reject('skill_admission_rejected');
+  if (preflight.status === 'rejected') return reject('execution_preflight_rejected');
+  const payment = applySkillResourceCosts(admission, resources, costs);
+  if (payment.status === 'rejected') return reject('resource_cost_rejected');
+  const started = startSkillCooldown(instance, cooldown, context as GameplayExecutionContext, config);
+  if (started.status === 'rejected') return reject('cooldown_active');
+  return Object.freeze({status: 'accepted', reason: 'none',
+    request: Object.freeze({attemptId: intent.attemptId, instanceId: instance.instanceId, skillId: instance.skillId,
+      actorEntityId: instance.entityId, dispatch: intent.dispatch}), resources: payment.state, cooldown: started.state});
+}
+
+/** Capture caller-reported completion/failure only; no executor, provenance check, refund or retry. */
+export function reportSkillExecutionOutcome(request: SkillExecutionRequest, report: SkillExecutionReport): SkillExecutionOutcome {
+  const data = admissionFields(request, ['attemptId', 'instanceId', 'skillId', 'actorEntityId', 'dispatch']);
+  const attemptId = admissionId(data.attemptId), instanceId = admissionId(data.instanceId);
+  const skillId = admissionId(data.skillId), actorEntityId = admissionId(data.actorEntityId);
+  const dispatch = executionDispatch(data.dispatch);
+  const result = admissionFields(report, ['status']);
+  if (result.status !== 'completed' && result.status !== 'failed') throw new TypeError('Invalid execution report status');
+  return Object.freeze({attemptId, instanceId, skillId, actorEntityId, dispatchKind: dispatch.kind, status: result.status});
 }

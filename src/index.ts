@@ -1,13 +1,15 @@
 export {createSkillDefinition, createSkillInstance, evaluateSkillActivationAdmission,
   evaluateSkillResourceCosts, applySkillResourceCosts, createSkillCooldownState,
-  evaluateSkillCooldownReady, startSkillCooldown} from './modules/skill/index.js';
+  evaluateSkillCooldownReady, startSkillCooldown, activateSkill, reportSkillExecutionOutcome} from './modules/skill/index.js';
 export type {SkillDefinition, SkillInstanceInitialState, SkillInstanceState,
   SkillRankAdmissionPolicy, SkillAdmissionPolicy, SkillAdmissionStatus,
   SkillAdmissionReason, SkillAdmissionResult, SkillResourceCost, SkillResourceCostBounds,
   SkillResourceCostRequest, SkillResourceCostStatus, SkillResourceCostRejectionReason,
   SkillResourceCostAssessment, SkillResourceCostApplicationResult, SkillCooldownState,
   SkillCooldownConfiguration, SkillCooldownStatus, SkillCooldownReason,
-  SkillCooldownAssessment, SkillCooldownStartResult} from './modules/skill/index.js';
+  SkillCooldownAssessment, SkillCooldownStartResult, SkillExecutionIntent, SkillExecutionPreflight,
+  SkillActivationInput, SkillActivationRejectionReason, SkillActivationResult, SkillExecutionRequest,
+  SkillExecutionStatus, SkillExecutionReport, SkillExecutionOutcome} from './modules/skill/index.js';
 export {
   validateModuleDefinition, createModuleRegistry, registerModule,
   getModule, listModules, configureModules, isModuleEnabled,

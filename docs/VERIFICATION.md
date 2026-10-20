@@ -325,3 +325,17 @@ delivered SHA must also pass push and PR Windows/Ubuntu Node22/24 matrices (8 jo
 Final SHA/CI evidence is attached to Draft PR #10 without changing the tested SHA.
 Phase IN_PROGRESS; Developer acceptance PENDING. macOS NOT_RUN; game profiles
 NOT_EVALUATED. No activation/timer runtime/merge/tag/publish or v0.5.4 implied.
+
+## v0.5.4 current Skill activation gates
+
+Actual installed0.5.4 root-only tarball/real pinned Core exercises SK01–SK25 plus
+unchanged GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30. Observed125 runtime contracts
+(118 unchanged +7 activation/handoff) and2 outer gates pass without skips.
+Strict external NodeNext, closed75 runtime exports/125 types, Core SHA-512 and
+private declaration checks remain. Existing missing-source, spaced-Node and
+failure-propagation controls remain active. Four registry modules/nine production
+source files unchanged. Local harness check/selftest/build/typecheck/functional/
+full verify and diff audit must pass; push+PR exact delivered SHA requires8/8
+Windows/Ubuntu Node22/24 jobs. Final links attach to existing Draft PR #10 without
+changing tested SHA. Phase IN_PROGRESS, acceptance PENDING; v0.5.5 NOT_STARTED.
+macOS NOT_RUN; concrete game profiles NOT_EVALUATED.

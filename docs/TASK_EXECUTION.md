@@ -125,3 +125,14 @@ same-head Windows/Linux Node22/24 push+PR CI. No protected owner/Core/pin/depend
 edits, timer/global runtime or activation. CHECKPOINT_COMPLETE requires every
 gate PASS. Phase IN_PROGRESS, acceptance PENDING, PR DRAFT; v0.5.4 NOT_STARTED.
 No Ready transition, merge, tag or publish authorized.
+
+## Active Skill activation checkpoint (v0.5.4)
+
+Approved submitted task tasks/active/v0.5.4-skill-activation-execution.md authorizes
+SK21–SK25 on feat/v0.5-skill/existing Draft PR #10 from20f64a735239168c980fcd29a8c0a8853228236f.
+Two functions/nine types, reuse existing private validators and canonical
+Resource/Cooldown operations, installed actual caller-mediated Combat handoff,
+minimal contract evidence, local gates and exact-head push+PR CI. No protected
+owner/Core/pin/dependency/registry changes. CHECKPOINT_COMPLETE requires all gates;
+phase IN_PROGRESS, Developer acceptance PENDING and PR remains DRAFT.
+No merge/tag/publish/Ready or v0.5.5 implementation authorization.

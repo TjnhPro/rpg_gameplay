@@ -1,4 +1,4 @@
-# Public API — v0.5.3 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK20)
+# Public API — v0.5.4 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK25)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -1500,3 +1500,97 @@ duration. L4 owns clock origin/monotonic policy, snapshot freshness, authoritati
 commit and coordinating later activation. No cross-call rewind history, timer,
 scheduler, store, events, refunds or implicit global state. Optional skill->[entity]
 unchanged; shared Foundation execution is not an optional-module dependency.
+
+## SK21–SK25 Skill activation and execution (v0.5.4)
+
+Root-only additions:2 functions/9 types; total75 functions/125 types.
+
+```ts
+export interface SkillExecutionIntent {
+  readonly attemptId: string;
+  readonly dispatch:
+    | {readonly kind: 'combat'; readonly actionId: string; readonly actionType: string; readonly targetEntityId: string}
+    | {readonly kind: 'caller'};
+}
+/** Explicit caller assertion; canonical Combat preflight remains caller-mediated. */
+export type SkillExecutionPreflight =
+  | {readonly kind: 'combat'; readonly status: 'accepted' | 'rejected'}
+  | {readonly kind: 'caller'; readonly status: 'accepted' | 'rejected'};
+export interface SkillActivationInput {
+  readonly instance: SkillInstanceState;
+  readonly admission: SkillAdmissionResult;
+  readonly resourceState: EntityResourceState;
+  readonly resourceCosts: SkillResourceCostRequest;
+  readonly cooldownState: SkillCooldownState;
+  readonly cooldownConfig: SkillCooldownConfiguration;
+  readonly executionContext: GameplayExecutionContext;
+  readonly intent: SkillExecutionIntent;
+  readonly executionPreflight: SkillExecutionPreflight;
+}
+export type SkillActivationRejectionReason = 'skill_admission_rejected' | 'execution_preflight_rejected'
+  | 'resource_cost_rejected' | 'cooldown_active';
+export interface SkillExecutionRequest {
+  readonly attemptId: string;
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly actorEntityId: string;
+  readonly dispatch: SkillExecutionIntent['dispatch'];
+}
+export type SkillActivationResult =
+  | {readonly status: 'accepted'; readonly reason: 'none'; readonly request: SkillExecutionRequest;
+      readonly resources: EntityResourceState; readonly cooldown: SkillCooldownState}
+  | {readonly status: 'rejected'; readonly reason: SkillActivationRejectionReason;
+      readonly request: null; readonly resources: null; readonly cooldown: null};
+export type SkillExecutionStatus = 'completed' | 'failed';
+export interface SkillExecutionReport {readonly status: SkillExecutionStatus}
+export interface SkillExecutionOutcome {
+  readonly attemptId: string;
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly actorEntityId: string;
+  readonly dispatchKind: 'combat' | 'caller';
+  readonly status: SkillExecutionStatus;
+}
+function activateSkill(input: SkillActivationInput): SkillActivationResult;
+function reportSkillExecutionOutcome(request: SkillExecutionRequest,
+  report: SkillExecutionReport): SkillExecutionOutcome;
+```
+
+Every supplied Skill data record is closed own-data: no missing/unknown/symbol/
+accessor/inherited required fields. IDs are nonblank, exact strings. Instance,
+admission, Resource and Cooldown identities must match; preflight kind must match
+dispatch. Shared private validation captures complete configuration before
+ordinary rejection; Resource state validation remains canonical Entity. No
+transitions or time observation during admission/preflight rejection.
+Opaque Foundation executionContext is passed unchanged: nonobject/array inputs
+fail structurally; capability identity and provider validation occur canonically
+when startSkillCooldown is reached. Skill does not inspect its bindings or invent
+a second validator. Invalid supplied data throws TypeError; canonical numerical
+and provider errors propagate without conversion to ordinary rejection.
+
+Gate priority: skill_admission_rejected > execution_preflight_rejected >
+resource_cost_rejected > cooldown_active > accepted. Resource application reuses
+applySkillResourceCosts; a failed payment never reads time. Cooldown start reuses
+startSkillCooldown once after successful payment, reads exactly once, and returns
+its canonical candidate unchanged. A cooldown rejection discards the payment
+candidate. Every ordinary rejection exposes exactly status/reason and three null
+request/resources/cooldown fields. Acceptance exposes one immutable request,
+one detached Resource candidate and one immutable Cooldown candidate. No input
+is mutated or frozen. Literal example: mana100/cost25 ->75, now1000,
+base1000/CDR.25 -> ready1750. Free/zero-duration activation remains explicit.
+
+Preflight is a caller assertion, not authorization/provenance or a Combat receipt.
+For combat, L4 creates the canonical context from actor+intent, runs actual Combat
+admission/target validation, and derives preflight before activation. After
+acceptance L4 decides whether/how to commit candidates and reconstructs Combat
+context from request.actorEntityId + dispatch.actionId/actionType/targetEntityId,
+then calls canonical Combat attack/application. Skill never imports Combat.
+L3 owns policy/configuration and eligibility. No request generation implies
+execution, hit, damage, life transition or events.
+
+Outcome reporting captures caller assertions only: completed includes a finished
+dodge, failed records external execution failure. It does not execute, refund,
+rollback, retry or prove success. Reports are detached scalar immutable snapshots;
+caller reports/requests remain untouched. Duplicate attemptId is accepted: no
+exactly-once ledger, reservation, concurrency protection or authoritative runtime
+commit. These remain L4 concerns. No Effect System or complete game runtime.

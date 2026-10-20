@@ -186,3 +186,15 @@ supported; malformed, rewound and unrepresentable time fails closed. No implicit
 refresh/activation/cost commit, timer/scheduler/global store. L3 config and L4
 time origin/commit remain caller-owned. Supersedes historical cooldown exclusions;
 phase IN_PROGRESS, PR #10 DRAFT, acceptance PENDING; v0.5.4 NOT_STARTED.
+
+## v0.5.4 current Skill checkpoint
+
+Group05 implements SK01–SK25. Activation returns immutable all-or-nothing
+Resource/Cooldown candidates plus execution references after admission, caller
+preflight, cost and cooldown gates. Caller-mediated actual Combat handoff covers
+rejection/dodge/landed; outcome reports only caller completion/failure. No Skill
+Combat executor, authoritative commit, reservation, rollback/refund/exactly-once,
+Effect System or complete game runtime. This supersedes historical activation
+exclusions above. L3 policy and L4 commit/dispatch remain external.
+Phase IN_PROGRESS, PR #10 DRAFT, Developer acceptance PENDING;
+v0.5.5 slots/loadout NOT_STARTED; game profiles NOT_EVALUATED.

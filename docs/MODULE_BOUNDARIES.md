@@ -241,3 +241,16 @@ Progression, Combat, Core/pin or registry changes. skill->[entity] unchanged;
 Foundation is shared infrastructure, not a declared optional-module dependency.
 Root adds3 functions/6 types:73/116 total. No global state, second engine,
 activation, automatic timers/events or authoritative commit.
+
+## SK21–SK25 activation boundary (v0.5.4)
+
+Skill orchestrates its existing admission/cost/cooldown contracts; private shared
+cost/config validators preserve prior public semantics and avoid transitions
+before early gates. Canonical Entity validates Resource state; Entity->Core owns
+payment, Core owns duration, Foundation owns opaque execution bindings/time.
+Combat remains independent and unmodified: L4 preflights and hands accepted
+request references to actual public Combat APIs. No Combat import, second
+executor, global state, transaction engine, timers or automatic events/refunds.
+Registry skill->[entity] and four modules/nine source files unchanged. L3 policies
+and L4 authoritative commits/concurrency remain external. Root75 functions/125
+types; only Skill/root production files changed.

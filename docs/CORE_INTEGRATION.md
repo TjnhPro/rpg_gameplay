@@ -219,3 +219,14 @@ no copied formula/double reduction/round/clamp/epsilon. Literal installed oracle
 observed Foundation timestamp and checks finite/later representability. Active
 reuse does not invoke duration calculation. Kernel errors propagate; Core pin,
 revision, lock integrity and dependencies remain unchanged.
+
+## SK21–SK25 activation reuse (v0.5.4)
+
+Activation introduces no numerical implementation: applySkillResourceCosts owns
+all-or-nothing payment via canonical Entity/Core and startSkillCooldown owns
+canonical duration via the unchanged pinned public Kernel. Earlier rejected
+gates perform structural Entity lookup only; no numerical transition/time read.
+Canonical errors propagate. Actual installed handoff exercises Combat->Kernel
+attack/damage and Entity Resource/Life application; Skill imports no Combat.
+Core2.0.0 revision04b7239f998c3c688a0dfa3202f11811a9acd775, artifact integrity,
+registry, dependencies and protected owners remain unchanged.

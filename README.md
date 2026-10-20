@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.5.3 Skill Cooldown
+# RPG Gameplay — v0.5.4 Skill Activation & Execution
 
-> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK20 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
+> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK25 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK20 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK25 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Skill identity foundation
@@ -565,3 +565,16 @@ commit. No activation, scheduler or global cooldown state.
 See [API](docs/API.md#sk16sk20-skill-cooldown-v053) and
 [report](docs/reports/v0.5.3-skill-cooldown.md). Supersedes historical exclusions
 above: phase IN_PROGRESS, PR #10 DRAFT, Developer acceptance PENDING; v0.5.4 NOT_STARTED.
+
+## Skill activation checkpoint (v0.5.4)
+
+SK21–SK25 adds activateSkill and reportSkillExecutionOutcome. Activation validates
+complete supplied data, then gates admission, explicit execution preflight,
+canonical Resource payment and canonical Cooldown start. Accepted results contain
+immutable request/Resource/Cooldown candidates; rejected results contain three
+null candidates. L4 owns preflight, authoritative commit and execution. Combat
+handoff is demonstrated through installed public APIs; completed can include dodge.
+No refund/retry/exactly-once guarantee or implicit execution. See [API](docs/API.md)
+and [checkpoint report](docs/reports/v0.5.4-skill-activation-execution.md).
+Skill phase IN_PROGRESS; Draft PR #10; Developer acceptance PENDING.
+v0.5.5 slots/loadout NOT_STARTED. Game profiles NOT_EVALUATED.

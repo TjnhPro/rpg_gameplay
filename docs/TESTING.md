@@ -390,3 +390,22 @@ exports without any. Runner packs actual0.5.3 and independently installs with
 real pinned Core, checks5 pass/0 fail/0 skips and all5 markers; strict NodeNext
 uses skipLibCheck:false. S25 retains all113 prior runtime tests:118 installed
 runtime contracts +2 outer tests. Count is observed evidence, not a test KPI.
+
+## v0.5.4 installed activation evidence
+
+skill-activation.mjs has5 contract groups: literal candidates/multi-cost/free
+caller-only composition; ordered rejection/no partial exposure/no downstream
+clock reads; complete malformed contracts/identity binding/getter avoidance;
+immutable completed/failed assertions without refund; two independent literal
+replay sessions with hidden time/RNG disabled, duplicate IDs and snapshot isolation.
+skill-combat-handoff.mjs adds2 groups using actual installed Combat context,
+admission, target validation, attack and damage APIs. Enemy preflight passes,
+ally fails relation_not_allowed; dodge is completed, landed damage75 leaves HP25.
+Both retain paid mana75/cooldown1750. No mock numerical owners or simulator.
+
+skill-activation.ts checks all9 types,2 signatures, result narrowing, readonly
+nested data, invalid/missing/extra contracts and blocked deep imports. Installed
+strict NodeNext uses skipLibCheck:false with no any. Runner requires exact5+2
+passes, zero fail/cancel/skip/todo and all7 markers. All118 prior runtime tests
+remain: observed125 installed runtime tests +2 outer tests. Tests prove framework
+contracts; game profile behavior remains NOT_EVALUATED.

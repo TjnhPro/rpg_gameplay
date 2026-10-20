@@ -181,3 +181,13 @@ NodeNext adds policy/result contracts; all104 earlier installed contracts retain
 108 installed runtime contracts +2 outer gate tests, zero failures/skips. Existing
 Core integrity/root-only package/gate controls remain mandatory. Source review
 confirms unchanged dependencies/accepted owners; no game-profile PASS is claimed.
+
+## v0.5.4 activation evidence extension
+
+Installed SK21–SK25 adds5 activation/report/replay groups and2 actual Combat
+handoff groups with explicit markers, exact counts and zero skips. Strict
+external NodeNext adds9 types/2 function signatures. All118 earlier runtime tests
+remain:125 installed runtime contracts +2 outer gates. Private validator reuse,
+unchanged canonical owners, no direct Combat dependency/global runtime and
+candidate-only authority require source audit alongside tests. Exact-head
+Windows/Ubuntu Node22/24 push+PR gates remain required. Game profiles NOT_EVALUATED.
