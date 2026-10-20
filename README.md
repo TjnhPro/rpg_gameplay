@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.5.2 Skill Resource Costs
+# RPG Gameplay — v0.5.3 Skill Cooldown
 
-> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK15 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
+> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK20 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK15 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK20 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Skill identity foundation
@@ -552,3 +552,16 @@ reservation, life mutation, activation or runtime commit occurs.
 See [API](docs/API.md#sk11sk15-skill-resource-costs-v052) and
 [report](docs/reports/v0.5.2-skill-resource-costs.md). This checkpoint supersedes
 historical scope statements above; phase IN_PROGRESS, PR #10 DRAFT, acceptance PENDING.
+
+## Skill cooldown (v0.5.3)
+
+SK16–SK20 adds createSkillCooldownState, evaluateSkillCooldownReady and
+startSkillCooldown. State is separate from the instance and immutable; each
+observation/start reads injected Foundation time once. Core Kernel owns duration
+calculation. Active reuse returns no candidate; exact deadline is ready, zero and
+fractional durations are valid, rewind/invalid/unrepresentable timestamps throw.
+L3 supplies base duration/effective CDR; L4 owns time origin and authoritative
+commit. No activation, scheduler or global cooldown state.
+See [API](docs/API.md#sk16sk20-skill-cooldown-v053) and
+[report](docs/reports/v0.5.3-skill-cooldown.md). Supersedes historical exclusions
+above: phase IN_PROGRESS, PR #10 DRAFT, Developer acceptance PENDING; v0.5.4 NOT_STARTED.

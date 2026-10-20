@@ -208,3 +208,14 @@ Core140->100 for cost20 preserves applied20/delta40. Above-max reject and other
 canonical errors propagate without fallback. Zero/free performs no numerical
 operation; full-state validation still uses Entity lookup. Installed package
 literal oracles and unchanged artifact SHA-512 prove real pinned Core integration.
+
+## SK17 canonical cooldown duration (v0.5.3)
+
+Skill calls the actual pinned public Kernel calculateCooldownDurationMs(baseMs,
+effectiveCdr) only for ready starts. L2 validates closed configuration: finite
+base>=0 and finite effectiveCdr in [0,1]. Core's returned duration is used unchanged;
+no copied formula/double reduction/round/clamp/epsilon. Literal installed oracles:
+1000/.25 ->750; 1000/0 ->1000; 1000/1 ->0; 1001/.5 ->500.5. L2 only adds the
+observed Foundation timestamp and checks finite/later representability. Active
+reuse does not invoke duration calculation. Kernel errors propagate; Core pin,
+revision, lock integrity and dependencies remain unchanged.

@@ -176,3 +176,13 @@ all-or-nothing candidate; no activation/execution, reservation, cooldown or stor
 L3 owns cost/bounds policy; L4 owns runtime commit/concurrency. This supersedes
 historical Skill scope above. Phase IN_PROGRESS, PR #10 DRAFT, acceptance PENDING;
 v0.5.3+ requires separately submitted tasks. Gameplay profiles NOT_EVALUATED.
+
+## v0.5.3 current Skill checkpoint
+
+Group05 implements SK01–SK20, adding independent immutable cooldown state,
+canonical Core duration, injected Foundation time and explicit ready/reuse
+assessments/candidate starts. Zero/fractional durations and exact boundaries are
+supported; malformed, rewound and unrepresentable time fails closed. No implicit
+refresh/activation/cost commit, timer/scheduler/global store. L3 config and L4
+time origin/commit remain caller-owned. Supersedes historical cooldown exclusions;
+phase IN_PROGRESS, PR #10 DRAFT, acceptance PENDING; v0.5.4 NOT_STARTED.

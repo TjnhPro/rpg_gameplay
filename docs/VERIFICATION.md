@@ -1,4 +1,4 @@
-# Verification gates — v0.5.2
+# Verification gates — v0.5.3
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
@@ -311,3 +311,17 @@ verification. Exact delivered SHA must pass both push/PR Windows+Ubuntu Node22/2
 matrix (8 jobs). Local PASS does not imply remote PASS. Final SHA/CI evidence is
 recorded on Draft PR #10 without changing tested commit. macOS NOT_RUN; gameplay
 profiles NOT_EVALUATED; phase IN_PROGRESS and Developer acceptance PENDING.
+
+## v0.5.3 current Skill cooldown gates
+
+Unchanged GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30/SK01–SK15 plus SK16–SK20
+run via actual installed0.5.3 root-only package and strict external NodeNext.
+Runner requires5 cooldown tests/5 markers with zero skips, retains all113 old
+runtime tests and fail-closed source/spaced-Node/failure-propagation regressions.
+Observed total118 installed runtime contracts +2 outer gates. Core artifact
+integrity/root export closure and protected-owner audits remain mandatory.
+Harness, selftests, build, typecheck, functional and full verify must PASS locally;
+delivered SHA must also pass push and PR Windows/Ubuntu Node22/24 matrices (8 jobs).
+Final SHA/CI evidence is attached to Draft PR #10 without changing the tested SHA.
+Phase IN_PROGRESS; Developer acceptance PENDING. macOS NOT_RUN; game profiles
+NOT_EVALUATED. No activation/timer runtime/merge/tag/publish or v0.5.4 implied.

@@ -375,3 +375,18 @@ skill-resource-costs.ts checks seven types, signatures/readonly/canonical diagno
 integration, discriminated outcomes and invalid/missing/deep imports. Runner packs
 actual0.5.2, installs independently with real pinned Core, requires5 pass/0 skips,
 and compiles strict NodeNext/skipLibCheck:false. No simulator or count KPI.
+
+## v0.5.3 installed cooldown evidence
+
+Five skill-cooldown.mjs groups cover approved S01–S24: state/literal real-Kernel
+duration oracles; boundary/reuse/exactly-one-read; full closed malformed records
+before providers, invalid/error/rewound/unrepresentable time; immutable instance/
+actor isolation and selected entity+skill composition; two independent literal
+replay sessions with Date.now/Math.random disabled. Expected constants come from
+the approved contract, not the implementation or session A. No Core mocks.
+skill-cooldown.ts proves all6 types/3 signatures, readonly snapshots, discriminated
+result narrowing, opaque Foundation context, required configuration and root-only
+exports without any. Runner packs actual0.5.3 and independently installs with
+real pinned Core, checks5 pass/0 fail/0 skips and all5 markers; strict NodeNext
+uses skipLibCheck:false. S25 retains all113 prior runtime tests:118 installed
+runtime contracts +2 outer tests. Count is observed evidence, not a test KPI.

@@ -1,4 +1,4 @@
-# Public API — v0.5.2 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK15)
+# Public API — v0.5.3 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK20)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -1429,3 +1429,74 @@ or reservation; application resolves again against supplied current state. Bound
 amounts and policies belong to L3; authoritative commits/concurrency belong to L4.
 HP reaching minimum never changes Life or emits events. No activation/cooldown/
 execution or new store/engine. skill->[entity] only; root70 functions/110 types.
+
+## SK16–SK20 Skill cooldown (v0.5.3)
+
+Root-only additions (73 functions/116 types total):
+
+```ts
+interface SkillCooldownState {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly entityId: string;
+  readonly startedAtMs: number | null;
+  readonly readyAtMs: number | null;
+}
+interface SkillCooldownConfiguration {
+  readonly baseDurationMs: number;
+  readonly effectiveCdr: number;
+}
+type SkillCooldownStatus = 'ready' | 'active';
+type SkillCooldownReason = 'none' | 'cooldown_active';
+interface SkillCooldownAssessment {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly entityId: string;
+  readonly observedAtMs: number;
+  readonly readyAtMs: number | null;
+  readonly remainingMs: number;
+  readonly status: SkillCooldownStatus;
+  readonly reason: SkillCooldownReason;
+}
+type SkillCooldownStartResult =
+  | {readonly status: 'started'; readonly reason: 'none'; readonly assessment: SkillCooldownAssessment;
+      readonly durationMs: number; readonly state: SkillCooldownState}
+  | {readonly status: 'rejected'; readonly reason: 'cooldown_active'; readonly assessment: SkillCooldownAssessment;
+      readonly durationMs: null; readonly state: null};
+function createSkillCooldownState(instance: SkillInstanceState): SkillCooldownState;
+function evaluateSkillCooldownReady(instance: SkillInstanceState, state: SkillCooldownState,
+  context: GameplayExecutionContext): SkillCooldownAssessment;
+function startSkillCooldown(instance: SkillInstanceState, state: SkillCooldownState,
+  context: GameplayExecutionContext, config: SkillCooldownConfiguration): SkillCooldownStartResult;
+```
+
+Instance/state/config are closed own-data records: reject missing/unknown/symbol/
+accessor/inherited required fields without invoking accessors. IDs are exact
+nonblank strings and all three state identities must match the instance. State
+timestamps are both null or finite >=0 with readyAtMs>=startedAtMs. Factory captures
+identity as null/null without time, RNG or IDs. Configuration requires finite
+baseDurationMs>=0 and finite effectiveCdr in [0,1]; no defaults/coercion/clamping.
+Malformed records throw TypeError before provider access or ordinary rejection.
+
+Readiness/start each read readExecutionTime(context) exactly once after validation.
+Foundation rejects invalid/nonfinite/negative clock values; provider errors
+propagate. now<startedAtMs throws TypeError. Never-started and now>=readyAtMs are
+ready/none/remaining0. Otherwise active/cooldown_active with remaining=readyAtMs-now.
+Readiness does not mutate expired timestamps. Start's assessment describes the
+preattempt snapshot. Active reuse returns rejected, durationMs:null/state:null,
+without calculating duration, refreshing or applying changed configuration.
+
+Ready start delegates to pinned calculateCooldownDurationMs(baseDurationMs,
+effectiveCdr) from @rpg/core/kernel and uses the returned duration unchanged.
+readyAtMs=now+durationMs must be finite and strictly later for positive duration,
+otherwise TypeError; no epsilon/rounding/double reduction. Zero duration permits
+same-time repeated starts. Successful state captures the current observation,
+not the old deadline. All output objects/nested assessments are detached/frozen;
+caller-owned data/providers are neither frozen nor mutated.
+
+Cooldown is independent of cost/admission/Combat/rank. Readiness or a successful
+candidate is not activation or authority. L3 supplies resolved effective CDR/base
+duration. L4 owns clock origin/monotonic policy, snapshot freshness, authoritative
+commit and coordinating later activation. No cross-call rewind history, timer,
+scheduler, store, events, refunds or implicit global state. Optional skill->[entity]
+unchanged; shared Foundation execution is not an optional-module dependency.

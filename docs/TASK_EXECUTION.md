@@ -114,3 +114,14 @@ owner/Core/dependency/architecture changes or activation/cooldown/execution.
 Required fresh baseline/local gates, self-review and exact-head push+PR CI precede
 CHECKPOINT_COMPLETE. Phase IN_PROGRESS, acceptance PENDING, PR remains DRAFT;
 no v0.5.3/merge/tag/publish/Ready authorization.
+
+## Active Skill cooldown checkpoint (v0.5.3)
+
+Submitted task tasks/active/v0.5.3-skill-cooldown.md authorizes SK16–SK20 on
+feat/v0.5-skill/existing Draft PR #10 from ef74bb8b8474adc2f77179c4d1eca527325658ae.
+Three functions/six proposed types, independent immutable cooldown state,
+canonical Core duration and Foundation time, installed contract evidence and
+same-head Windows/Linux Node22/24 push+PR CI. No protected owner/Core/pin/dependency
+edits, timer/global runtime or activation. CHECKPOINT_COMPLETE requires every
+gate PASS. Phase IN_PROGRESS, acceptance PENDING, PR DRAFT; v0.5.4 NOT_STARTED.
+No Ready transition, merge, tag or publish authorized.

@@ -1,3 +1,5 @@
+import {calculateCooldownDurationMs} from '@rpg/core/kernel';
+import {readExecutionTime, type GameplayExecutionContext} from '../../foundation/execution/index.js';
 import {createEntity, getEntity, getEntityResourceCurrent, transitionEntityResource,
   type EntitySnapshot, type EntityCollection, type EntityLifeState,
   type EntityResourceState, type EntityResourceTransitionResult} from '../entity/index.js';
@@ -273,4 +275,99 @@ export function evaluateSkillResourceCosts(admission: SkillAdmissionResult, reso
 export function applySkillResourceCosts(admission: SkillAdmissionResult, resources: EntityResourceState,
   request: SkillResourceCostRequest): SkillResourceCostApplicationResult {
   return resolveResourceCosts(admission, resources, request);
+}
+
+/** Independent candidate snapshot; the caller owns authoritative commit and time origin. */
+export interface SkillCooldownState {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly entityId: string;
+  readonly startedAtMs: number | null;
+  readonly readyAtMs: number | null;
+}
+export interface SkillCooldownConfiguration {
+  readonly baseDurationMs: number;
+  readonly effectiveCdr: number;
+}
+export type SkillCooldownStatus = 'ready' | 'active';
+export type SkillCooldownReason = 'none' | 'cooldown_active';
+export interface SkillCooldownAssessment {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly entityId: string;
+  readonly observedAtMs: number;
+  readonly readyAtMs: number | null;
+  readonly remainingMs: number;
+  readonly status: SkillCooldownStatus;
+  readonly reason: SkillCooldownReason;
+}
+export type SkillCooldownStartResult =
+  | {readonly status: 'started'; readonly reason: 'none'; readonly assessment: SkillCooldownAssessment;
+      readonly durationMs: number; readonly state: SkillCooldownState}
+  | {readonly status: 'rejected'; readonly reason: 'cooldown_active'; readonly assessment: SkillCooldownAssessment;
+      readonly durationMs: null; readonly state: null};
+
+function cooldownIdentity(instance: SkillInstanceState): SkillInstanceState {
+  const data = admissionFields(instance, ['instanceId', 'skillId', 'entityId']);
+  return {instanceId: admissionId(data.instanceId), skillId: admissionId(data.skillId), entityId: admissionId(data.entityId)};
+}
+
+function cooldownTime(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
+    throw new TypeError('Cooldown time must be finite and nonnegative');
+  }
+  return value;
+}
+
+function cooldownSnapshot(instance: SkillInstanceState, state: SkillCooldownState): SkillCooldownState {
+  const identity = cooldownIdentity(instance);
+  const data = admissionFields(state, ['instanceId', 'skillId', 'entityId', 'startedAtMs', 'readyAtMs']);
+  if (data.instanceId !== identity.instanceId || data.skillId !== identity.skillId || data.entityId !== identity.entityId) {
+    throw new TypeError('Cooldown and instance identities must match');
+  }
+  if (data.startedAtMs === null && data.readyAtMs === null) return {...identity, startedAtMs: null, readyAtMs: null};
+  const startedAtMs = cooldownTime(data.startedAtMs), readyAtMs = cooldownTime(data.readyAtMs);
+  if (readyAtMs < startedAtMs) throw new TypeError('Cooldown ready time precedes start');
+  return {...identity, startedAtMs, readyAtMs};
+}
+
+function cooldownAssessment(state: SkillCooldownState, now: number): SkillCooldownAssessment {
+  if (state.startedAtMs !== null && now < state.startedAtMs) throw new TypeError('Cooldown clock precedes start');
+  const active = state.readyAtMs !== null && now < state.readyAtMs;
+  return Object.freeze({instanceId: state.instanceId, skillId: state.skillId, entityId: state.entityId,
+    observedAtMs: now, readyAtMs: state.readyAtMs, remainingMs: active ? state.readyAtMs! - now : 0,
+    status: active ? 'active' : 'ready', reason: active ? 'cooldown_active' : 'none'});
+}
+
+/** Capture identity only; no provider reads, generated IDs or numerical calculation. */
+export function createSkillCooldownState(instance: SkillInstanceState): SkillCooldownState {
+  return Object.freeze({...cooldownIdentity(instance), startedAtMs: null, readyAtMs: null});
+}
+
+/** Observe once through Foundation; expiration never mutates stored timestamps. */
+export function evaluateSkillCooldownReady(instance: SkillInstanceState, state: SkillCooldownState,
+  context: GameplayExecutionContext): SkillCooldownAssessment {
+  const snapshot = cooldownSnapshot(instance, state);
+  return cooldownAssessment(snapshot, readExecutionTime(context));
+}
+
+/** Return a candidate only; active reuse never refreshes, pays costs or activates. */
+export function startSkillCooldown(instance: SkillInstanceState, state: SkillCooldownState,
+  context: GameplayExecutionContext, config: SkillCooldownConfiguration): SkillCooldownStartResult {
+  const snapshot = cooldownSnapshot(instance, state);
+  const data = admissionFields(config, ['baseDurationMs', 'effectiveCdr']);
+  const baseDurationMs = cooldownTime(data.baseDurationMs), effectiveCdr = cooldownTime(data.effectiveCdr);
+  if (effectiveCdr > 1) throw new TypeError('Effective cooldown reduction must be in [0,1]');
+  // Validate every supplied record before consulting the provider or rejecting active reuse.
+  const now = readExecutionTime(context), assessment = cooldownAssessment(snapshot, now);
+  if (assessment.status === 'active') return Object.freeze({status: 'rejected', reason: 'cooldown_active',
+    assessment, durationMs: null, state: null});
+  const durationMs = calculateCooldownDurationMs(baseDurationMs, effectiveCdr);
+  const readyAtMs = now + durationMs;
+  if (!Number.isFinite(readyAtMs) || (durationMs > 0 && readyAtMs <= now)) {
+    throw new TypeError('Cooldown ready time cannot be represented');
+  }
+  return Object.freeze({status: 'started', reason: 'none', assessment, durationMs,
+    state: Object.freeze({instanceId: snapshot.instanceId, skillId: snapshot.skillId, entityId: snapshot.entityId,
+      startedAtMs: now, readyAtMs})});
 }

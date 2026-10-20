@@ -229,3 +229,15 @@ amounts delegate to Entity->Core; Skill only compares canonical applied to cost.
 No resource arithmetic, direct Core import, interim state authority or new store.
 Optional skill->[entity] unchanged. Protected owners/registry/Core pin/deps remain
 unchanged. Root adds two functions/seven types:70 functions/110 types total.
+
+## SK16–SK20 cooldown boundary (v0.5.3)
+
+Skill imports only calculateCooldownDurationMs from @rpg/core/kernel for duration,
+and readExecutionTime/GameplayExecutionContext from shared Foundation execution.
+No provider access or copied CDR math. Private validation, identity matching,
+timestamp bookkeeping and immutable ready/start candidate orchestration stay in
+Skill; Foundation owns execution bindings/clock validation. No Foundation, Entity,
+Progression, Combat, Core/pin or registry changes. skill->[entity] unchanged;
+Foundation is shared infrastructure, not a declared optional-module dependency.
+Root adds3 functions/6 types:73/116 total. No global state, second engine,
+activation, automatic timers/events or authoritative commit.
