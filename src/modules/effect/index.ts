@@ -1,6 +1,7 @@
 import {createEntity, getEntity, type EntitySnapshot, type EntityCollection,
   type EntityLifeState, type EntityLifeStatus} from '../entity/index.js';
 import {readExecutionTime, type GameplayExecutionContext} from '../../foundation/execution/index.js';
+import type {ModifierOperation, NumericalModifier} from '@rpg/core/kernel';
 
 /** Caller-resolved origin identity; neither existence nor application permission. */
 export type EffectSourceReference =
@@ -610,4 +611,232 @@ export function removeEffectStackGroup(lifecycle: EffectLifecycleState, group: E
     events.push(...removed.events);
   }
   return Object.freeze({status: 'applied', reason: 'none', action: 'group_removed', state, events: Object.freeze(events)});
+}
+
+/** L3 metadata only; classification never changes numerical semantics. */
+export type EffectClassification = 'buff' | 'debuff' | 'neutral';
+export interface EffectModifierSpec {
+  readonly modifierId: string;
+  readonly target: string;
+  readonly operation: ModifierOperation;
+  readonly value: number;
+  readonly enabled: boolean;
+}
+export interface EffectModifierCapture {
+  readonly classification: EffectClassification;
+  readonly modifiers: readonly EffectModifierSpec[];
+}
+export interface EffectModifierSnapshot extends EffectModifierCapture {
+  readonly effectInstanceId: string;
+}
+/** Payload companion; lifecycle remains the only active instance authority. */
+export interface EffectModifierState {
+  readonly lifecycle: EffectLifecycleState;
+  readonly snapshots: readonly EffectModifierSnapshot[];
+}
+export type EffectModifierTransitionResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly state: EffectModifierState}
+  | {readonly status: 'rejected'; readonly reason: 'transition_rejected' | 'stale_transition' | 'capture_required';
+      readonly state: null};
+
+function modifierCapture(input: unknown): EffectModifierCapture {
+  const fields = effectFields(input, ['classification', 'modifiers']);
+  const classification = fields.classification;
+  if (classification !== 'buff' && classification !== 'debuff' && classification !== 'neutral') {
+    throw new TypeError('Invalid Effect classification');
+  }
+  const ids = new Set<string>();
+  const modifiers = lifecycleArray(fields.modifiers).map((entry): EffectModifierSpec => {
+    const data = effectFields(entry, ['modifierId', 'target', 'operation', 'value', 'enabled']);
+    const modifierId = effectId(data.modifierId), target = effectId(data.target), operation = data.operation;
+    if (ids.has(modifierId)) throw new TypeError('Duplicate Effect modifier ID');
+    ids.add(modifierId);
+    if (operation !== 'add_flat' && operation !== 'add_percent' && operation !== 'add_percentage_points') {
+      throw new TypeError('Unsupported Core modifier operation');
+    }
+    if (typeof data.value !== 'number' || !Number.isFinite(data.value) || typeof data.enabled !== 'boolean') {
+      throw new TypeError('Expected finite modifier value and explicit enabled flag');
+    }
+    return Object.freeze({modifierId, target, operation, value: data.value, enabled: data.enabled});
+  });
+  return Object.freeze({classification, modifiers: Object.freeze(modifiers)});
+}
+
+function modifierState(input: EffectModifierState): EffectModifierState {
+  const fields = effectFields(input, ['lifecycle', 'snapshots']);
+  // Pending expiry is structurally valid for synchronization; projection is strict.
+  const lifecycle = lifecycleSnapshot(fields.lifecycle as EffectLifecycleState, true);
+  const entries = lifecycleArray(fields.snapshots);
+  if (entries.length !== lifecycle.effectState.instances.length) throw new TypeError('Modifier snapshot membership mismatch');
+  const snapshots = entries.map((entry, index): EffectModifierSnapshot => {
+    const data = effectFields(entry, ['effectInstanceId', 'classification', 'modifiers']);
+    const effectInstanceId = effectId(data.effectInstanceId);
+    if (effectInstanceId !== lifecycle.effectState.instances[index]!.effectInstanceId) {
+      throw new TypeError('Modifier snapshot identity/order mismatch');
+    }
+    return Object.freeze({effectInstanceId, ...modifierCapture({classification: data.classification, modifiers: data.modifiers})});
+  });
+  return Object.freeze({lifecycle, snapshots: Object.freeze(snapshots)});
+}
+
+/** Never fabricate payload history for already-active instances. */
+export function createEffectModifierState(lifecycle: EffectLifecycleState): EffectModifierState {
+  const current = lifecycleSnapshot(lifecycle);
+  if (current.effectState.instances.length) throw new TypeError('Modifier initialization requires empty lifecycle');
+  return modifierState({lifecycle: current, snapshots: []});
+}
+
+function modifierEvent(input: unknown): EffectStackEvent {
+  if (typeof input !== 'object' || input === null) throw new TypeError('Expected canonical Effect event');
+  const discriminator = Object.getOwnPropertyDescriptor(input, 'type');
+  if (!discriminator || !('value' in discriminator)) throw new TypeError('Expected own-data event type');
+  const type: unknown = discriminator.value;
+  if (type === 'stack-consumed') {
+    const fields = effectFields(input, ['type', 'group', 'consumedInstanceIds', 'remainingStacks', 'atMs']);
+    const consumedInstanceIds = lifecycleArray(fields.consumedInstanceIds).map(effectId);
+    if (!consumedInstanceIds.length || new Set(consumedInstanceIds).size !== consumedInstanceIds.length
+      || typeof fields.remainingStacks !== 'number' || !Number.isSafeInteger(fields.remainingStacks) || fields.remainingStacks < 0) {
+      throw new TypeError('Invalid consumption event');
+    }
+    return Object.freeze({type, group: stackKey(fields.group), consumedInstanceIds: Object.freeze(consumedInstanceIds),
+      remainingStacks: fields.remainingStacks, atMs: lifecycleTime(fields.atMs)});
+  }
+  if (type !== 'started' && type !== 'expired' && type !== 'removed' && type !== 'refreshed') {
+    throw new TypeError('Invalid canonical Effect event type');
+  }
+  const fields = effectFields(input, ['type', 'effectInstanceId', 'effectId', 'targetEntityId', 'atMs',
+    ...(type === 'removed' ? ['reason'] : type === 'refreshed' ? ['expiresAtMs'] : [])]);
+  const event = {effectInstanceId: effectId(fields.effectInstanceId), effectId: effectId(fields.effectId),
+    targetEntityId: effectId(fields.targetEntityId), atMs: lifecycleTime(fields.atMs)};
+  if (type === 'removed') {
+    const reason = fields.reason as EffectRemovalReason;
+    if (!(['explicit', 'dispel', 'target_defeated', 'source_removed', 'session_cleanup'] as readonly unknown[]).includes(reason)) {
+      throw new TypeError('Invalid canonical removal reason');
+    }
+    return Object.freeze({type, ...event, reason});
+  }
+  if (type === 'refreshed') return Object.freeze({type, ...event, expiresAtMs: lifecycleTime(fields.expiresAtMs)});
+  return Object.freeze({type, ...event});
+}
+
+function sameLifetime(left: EffectLifetimeState, right: EffectLifetimeState): boolean {
+  return left.effectInstanceId === right.effectInstanceId && left.mode === right.mode
+    && left.startedAtMs === right.startedAtMs && left.expiresAtMs === right.expiresAtMs;
+}
+
+/** Associate payloads with validated canonical deltas; never execute lifecycle/stack policy here.
+ * Structural receipts are not authorization tokens. L4 owns freshness and commit.
+ * Capture on an existing-instance transition is malformed and throws TypeError.
+ */
+export function applyEffectModifierTransition(current: EffectModifierState,
+  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult,
+  capture?: EffectModifierCapture): EffectModifierTransitionResult {
+  const previous = modifierState(current), payload = capture === undefined ? undefined : modifierCapture(capture);
+  const hasAction = typeof transition === 'object' && transition !== null && Object.hasOwn(transition, 'action');
+  const fields = effectFields(transition, ['status', 'reason', 'state', 'events', ...(hasAction ? ['action'] : [])]);
+  const events = lifecycleArray(fields.events).map(modifierEvent);
+  const reject = (reason: 'transition_rejected' | 'stale_transition' | 'capture_required'): EffectModifierTransitionResult =>
+    Object.freeze({status: 'rejected', reason, state: null});
+  if (fields.status === 'rejected') {
+    const reasons: readonly EffectStackRejectionReason[] = ['application_rejected', 'stale_application', 'lifecycle_not_advanced',
+      'time_regressed', 'pending_expiry', 'source_identity_conflict', 'group_policy_conflict', 'max_stacks_reached',
+      'duration_mode_conflict', 'persistent_already_present', 'effect_not_found', 'not_timed', 'group_not_found', 'insufficient_stacks'];
+    if (hasAction || fields.state !== null || events.length || !reasons.includes(fields.reason as EffectStackRejectionReason)) {
+      throw new TypeError('Invalid rejected canonical transition');
+    }
+    return reject('transition_rejected');
+  }
+  if ((fields.status !== 'started' && fields.status !== 'applied') || fields.reason !== 'none'
+    || (fields.status === 'started' && hasAction)
+    || (hasAction && !(['added', 'refreshed', 'consumed', 'group_removed'] as readonly unknown[]).includes(fields.action))) {
+    throw new TypeError('Invalid canonical transition result');
+  }
+  const next = lifecycleSnapshot(fields.state as EffectLifecycleState);
+  const before = previous.lifecycle, oldInstances = before.effectState.instances, newInstances = next.effectState.instances;
+  if (next.effectState.entityId !== before.effectState.entityId || next.observedAtMs < before.observedAtMs) return reject('stale_transition');
+  const added = newInstances.filter(instance => !oldInstances.some(old => old.effectInstanceId === instance.effectInstanceId));
+  const removed = oldInstances.filter(instance => !newInstances.some(item => item.effectInstanceId === instance.effectInstanceId));
+  const survivors = oldInstances.filter(instance => !removed.includes(instance));
+  if (newInstances.filter(instance => !added.includes(instance)).some((instance, index) => !sameEffectInstance(instance, survivors[index]!))) {
+    return reject('stale_transition');
+  }
+  const action = hasAction ? fields.action : fields.status === 'started' ? 'added'
+    : events.some(event => event.type === 'removed') ? 'removed' : 'advanced';
+  if (action !== 'advanced' && before.lifetimes.some(lifetime => lifetime.expiresAtMs !== null
+    && lifetime.expiresAtMs <= before.observedAtMs)) throw new TypeError('Canonical lifecycle expiry must be advanced first');
+  const changed = newInstances.filter(instance => {
+    const old = before.lifetimes.find(lifetime => lifetime.effectInstanceId === instance.effectInstanceId);
+    const lifetime = next.lifetimes.find(entry => entry.effectInstanceId === instance.effectInstanceId)!;
+    return old && !sameLifetime(old, lifetime);
+  });
+  if (action !== 'advanced' && next.observedAtMs !== before.observedAtMs) return reject('stale_transition');
+  if (action === 'added') {
+    if (added.length !== 1 || removed.length || changed.length || newInstances[newInstances.length - 1] !== added[0]
+      || events.length !== 1 || events[0]!.type !== 'started'
+      || events[0]!.effectInstanceId !== added[0]!.effectInstanceId) throw new TypeError('Invalid canonical addition delta');
+    const lifetime = next.lifetimes[next.lifetimes.length - 1]!;
+    if (lifetime.startedAtMs !== next.observedAtMs) throw new TypeError('Addition start/time mismatch');
+  } else {
+    if (added.length) throw new TypeError('Unexpected canonical addition');
+    if (payload !== undefined) throw new TypeError('Capture is allowed only for a new Effect instance');
+    if (action === 'refreshed') {
+      if (removed.length || events.length !== 1 || events[0]!.type !== 'refreshed' || changed.length > 1) {
+        throw new TypeError('Invalid canonical refresh delta');
+      }
+      const event = events[0]!;
+      const old = before.lifetimes.find(lifetime => lifetime.effectInstanceId === event.effectInstanceId);
+      const lifetime = next.lifetimes.find(entry => entry.effectInstanceId === event.effectInstanceId);
+      if (!old || !lifetime || old.mode !== 'timed' || lifetime.mode !== 'timed' || old.startedAtMs !== lifetime.startedAtMs
+        || lifetime.expiresAtMs! < old.expiresAtMs! || event.expiresAtMs !== lifetime.expiresAtMs
+        || changed.some(instance => instance.effectInstanceId !== event.effectInstanceId)) throw new TypeError('Refresh lifetime mismatch');
+    } else {
+      if (changed.length) throw new TypeError('Unaffected lifetime changed');
+      if (action === 'consumed') {
+        const event = events[0];
+        if (events.length !== 1 || event?.type !== 'stack-consumed' || removed.length !== event.consumedInstanceIds.length
+          || removed.some(instance => !event.consumedInstanceIds.includes(instance.effectInstanceId) || !sameGroup(instanceGroup(instance), event.group))
+          || newInstances.filter(instance => sameGroup(instanceGroup(instance), event.group)).length !== event.remainingStacks
+          || event.atMs !== next.observedAtMs) throw new TypeError('Consumption membership/event mismatch');
+      } else {
+        if ((action === 'removed' && removed.length !== 1) || (action === 'group_removed' && !removed.length)
+          || removed.length !== events.length) throw new TypeError('Removal membership/event mismatch');
+        if (action === 'group_removed' && (removed.some(instance => !sameGroup(instanceGroup(instance), instanceGroup(removed[0]!)))
+          || newInstances.some(instance => sameGroup(instanceGroup(instance), instanceGroup(removed[0]!))))) {
+          throw new TypeError('Incomplete canonical group removal');
+        }
+        const eventIds = new Set<string>();
+        for (const event of events) {
+          if (event.type !== (action === 'advanced' ? 'expired' : 'removed') || eventIds.has(event.effectInstanceId)
+            || !removed.some(instance => instance.effectInstanceId === event.effectInstanceId)) throw new TypeError('Invalid canonical removal event');
+          eventIds.add(event.effectInstanceId);
+          if (event.type === 'expired') {
+            const lifetime = before.lifetimes.find(entry => entry.effectInstanceId === event.effectInstanceId)!;
+            if (lifetime.expiresAtMs === null || event.atMs !== lifetime.expiresAtMs || event.atMs > next.observedAtMs) {
+              throw new TypeError('Expiration lifetime/event mismatch');
+            }
+          }
+        }
+      }
+    }
+  }
+  for (const event of events) {
+    if (event.type === 'stack-consumed') continue;
+    const instance = [...oldInstances, ...added].find(item => item.effectInstanceId === event.effectInstanceId);
+    if (!instance || event.effectId !== instance.effectId || event.targetEntityId !== instance.targetEntityId
+      || (event.type !== 'expired' && event.atMs !== next.observedAtMs)) throw new TypeError('Canonical event identity/time mismatch');
+  }
+  if (added.length && payload === undefined) return reject('capture_required');
+  const snapshots = newInstances.map(instance => previous.snapshots.find(snapshot => snapshot.effectInstanceId === instance.effectInstanceId)
+    ?? Object.freeze({effectInstanceId: instance.effectInstanceId, ...payload!}));
+  return Object.freeze({status: 'applied', reason: 'none', state: modifierState({lifecycle: next, snapshots})});
+}
+
+/** Structural projection only. Core owns enabled filtering, identity resolution and all math. */
+export function listActiveEffectModifiers(state: EffectModifierState): readonly NumericalModifier[] {
+  const current = modifierState(state);
+  lifecycleSnapshot(current.lifecycle); // Never emit contributions while expiry is unresolved.
+  return Object.freeze(current.snapshots.flatMap(snapshot => snapshot.modifiers.map((modifier): NumericalModifier => Object.freeze({
+    identity: Object.freeze({source: 'effect', sourceInstanceId: snapshot.effectInstanceId, id: modifier.modifierId}),
+    target: modifier.target, operation: modifier.operation, value: modifier.value, enabled: modifier.enabled,
+  }))));
 }

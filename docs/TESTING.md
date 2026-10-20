@@ -1,3 +1,19 @@
+## v0.6.4 modifier contract evidence
+
+Seven installed effect-modifiers.mjs contracts cover classification/snapshot/identity;
+actual Entity/Core math, attributes, disabled/points, collision and target ownership;
+stack/consume/refresh; expiry/removal/group/persistence/pending expiry; complete
+closed-data/membership/capture validation; forged transition/action/event deltas;
+and independent literal replays with implicit time/RNG/timers blocked and three
+source origins. Strict effect-modifiers.ts checks six types, three signatures,
+Core operation/output reuse, readonly nesting and result discrimination. Assertion
+counters fail empty contracts; emitted markers follow real assertions. All prior
+fixtures/oracles remain unchanged. New negative controls exercise wrong numerical
+expected, stale expiry, consumed contribution, overwritten refresh payload,
+unsupported-op acceptance, skipped test and no assertions. Existing missing fixture,
+export/version/Core-integrity/TS/TAP controls remain mandatory. No count quota or
+gameplay-profile acceptance is claimed.
+
 ## v0.6.3 stacking contract evidence
 
 Seven installed tests cover distinct contracts: exact derived grouping/source

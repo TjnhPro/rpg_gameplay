@@ -1,3 +1,87 @@
+## EF21–EF25 Buff / Debuff & Stat Modifiers (v0.6.4)
+
+`createEffectModifierState(lifecycle)` initializes an empty canonical lifecycle
+only. `applyEffectModifierTransition(current, transition, capture?)` consumes
+EF12–EF20 result values, validates entity/survivor/order/lifetime/event/membership
+deltas and returns a frozen candidate. Exactly one newly appended instance needs
+an explicit capture, including zero modifiers; refresh/advance/remove/consume
+cannot receive a new capture (TypeError). Rejected canonical result maps to
+transition_rejected/null; mismatched baseline to stale_transition/null; missing
+new-instance capture to capture_required/null. Malformed structures throw
+TypeError. The proposed capture_not_allowed result reason is finalized as TypeError
+for every non-addition capture, preserving the approved refresh rule. These are
+structural values, not authorization tokens; L4 supplies current authority/commit.
+
+Snapshot classification is metadata: buff/debuff/neutral do not infer signs or
+change calculation. Specs use actual Core ModifierOperation, finite values and
+explicit enabled; modifierId is unique within an instance. Closed own-data records
+and dense arrays reject extra/missing/inherited/accessor fields without invoking
+getters. Values/order/IDs are exact, detached and deeply frozen. Lifecycle stays
+the single instance owner; one ordered snapshot must match every active instance.
+No backfill of unknown history, cached stats or implicit synchronization.
+
+`listActiveEffectModifiers(state)` projects frozen detached Core NumericalModifier[]
+in canonical instance/spec order with identity `effect / effectInstanceId / modifierId`.
+Disabled entries remain disabled; Core owns filtering, conflicts and equivalent
+dedup. Due-but-unresolved lifetimes reject projection; advance canonical lifecycle
+first. Refresh preserves captures; expire/remove/consume/group cleanup prune them.
+Entity owns target catalogs and stat calculation. No new stat helper or math.
+
+```ts
+import {listActiveEffectModifiers, calculateEntityStats} from '@rpg/gameplay';
+// L4: one canonical modifier input, never also inject into flatContributions.
+const modifiers = [...equipmentModifiers, ...listActiveEffectModifiers(effectState)];
+const effective = calculateEntityStats(attributes, {...statConfiguration, modifiers});
+```
+
+Public additions (Core types imported from @rpg/core/kernel):
+
+```ts
+/** L3 metadata only; classification never changes numerical semantics. */
+export type EffectClassification = 'buff' | 'debuff' | 'neutral';
+export interface EffectModifierSpec {
+    readonly modifierId: string;
+    readonly target: string;
+    readonly operation: ModifierOperation;
+    readonly value: number;
+    readonly enabled: boolean;
+}
+export interface EffectModifierCapture {
+    readonly classification: EffectClassification;
+    readonly modifiers: readonly EffectModifierSpec[];
+}
+export interface EffectModifierSnapshot extends EffectModifierCapture {
+    readonly effectInstanceId: string;
+}
+/** Payload companion; lifecycle remains the only active instance authority. */
+export interface EffectModifierState {
+    readonly lifecycle: EffectLifecycleState;
+    readonly snapshots: readonly EffectModifierSnapshot[];
+}
+export type EffectModifierTransitionResult = {
+    readonly status: 'applied';
+    readonly reason: 'none';
+    readonly state: EffectModifierState;
+} | {
+    readonly status: 'rejected';
+    readonly reason: 'transition_rejected' | 'stale_transition' | 'capture_required';
+    readonly state: null;
+};
+/** Never fabricate payload history for already-active instances. */
+export declare function createEffectModifierState(lifecycle: EffectLifecycleState): EffectModifierState;
+/** Associate payloads with validated canonical deltas; never execute lifecycle/stack policy here.
+ * Structural receipts are not authorization tokens. L4 owns freshness and commit.
+ * Capture on an existing-instance transition is malformed and throws TypeError.
+ */
+export declare function applyEffectModifierTransition(current: EffectModifierState, transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult, capture?: EffectModifierCapture): EffectModifierTransitionResult;
+/** Structural projection only. Core owns enabled filtering, identity resolution and all math. */
+export declare function listActiveEffectModifiers(state: EffectModifierState): readonly NumericalModifier[];
+```
+
+Prior EF01–EF20 APIs and root-only package boundary remain unchanged. Root inventory:
+99 runtime functions /166 types. Restrictions/DoT/HoT remain deferred; phase
+IN_PROGRESS, Developer acceptance PENDING. Earlier API sections are historical.
+
 ## v0.6.3 Effect Stacking & Refresh (EF16–EF20)
 
 Six root functions in the same optional Effect owner; EF01–EF15 schemas/signatures

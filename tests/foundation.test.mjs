@@ -21,7 +21,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF20, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF25, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -66,7 +66,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.6.3');
+    assertVersion(packageJson.version, '0.6.4');
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
@@ -84,7 +84,7 @@ assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModu
  'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId', 'createEntity',
  'createEntityCollection', 'addEntity', 'getEntity', 'hasEntity', 'listEntities', 'removeEntity', 'replaceEntity',
  'createEntityAttributeState', 'getEntityBaseAttributes', 'setEntityBaseAttribute', 'calculateEntityStats',
- 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup'].sort());
+ 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
@@ -97,7 +97,7 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     // A missing packaged root export must fail the very same runtime consumer.
     const installedRoot = path.join(installed, 'dist/index.js');
     const rootSource = fs.readFileSync(installedRoot, 'utf8');
-    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup']) {
+    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers']) {
       const pattern = new RegExp(`\\b${requiredExport}\\b`);
       assert.match(rootSource, pattern);
       try {
@@ -441,6 +441,58 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     }
     assertPackedFiles();
     console.log('INSTALLED_EFFECT_STACKING_RUNNER_NEGATIVE_PASS all_six_exports; overflow; partial_consumption; replaced_identity');
+    copyRequiredConsumer(path.join(root, 'tests/consumers/effect-modifiers.mjs'), path.join(temp, 'effect-modifiers.mjs'));
+    const modifierEvidence = exec(['--test', '--test-reporter=tap', 'effect-modifiers.mjs'], temp);
+    const modifierMarkers = ['EFFECT_MODIFIER_CAPTURE_PASS', 'EFFECT_MODIFIER_NUMERICAL_PASS', 'EFFECT_MODIFIER_STACK_PASS',
+      'EFFECT_MODIFIER_CLEANUP_PASS', 'EFFECT_MODIFIER_VALIDATION_PASS', 'EFFECT_MODIFIER_TRANSITION_PASS', 'EFFECT_MODIFIER_REPLAY_PASS'];
+    assertTapEvidence(modifierEvidence, 7, modifierMarkers);
+    for (const marker of modifierMarkers) console.log(modifierEvidence.split(/\r?\n/).find(line => line.includes(marker)));
+    console.log('INSTALLED_EFFECT_MODIFIERS_PASS EF21-EF25; consumer_tests=7 skipped=0; actual_Entity_Core');
+    copyRequiredConsumer(path.join(root, 'tests/consumers/effect-modifiers.ts'), path.join(temp, 'effect-modifiers.ts'));
+    const modifierFile = path.join(temp, 'effect-modifiers.mjs');
+    const modifierSource = fs.readFileSync(modifierFile, 'utf8');
+    for (const [expected, faulty] of [
+      ['assert.equal(stats(f.state, [equipment]), 114)', 'assert.equal(stats(f.state, [equipment]), 999)'],
+      ['assert.equal(stats(f.state), 100); assert.deepEqual(f.state.snapshots, [])',
+        'assert.equal(stats(f.state), 120); assert.deepEqual(f.state.snapshots, [])'],
+      ["['A']); assert.equal(stats(f.state), 110)", "['A']); assert.equal(stats(f.state), 120)"],
+      ['assert.deepEqual(f.state.snapshots[0], previous.snapshots[0]); assert.equal(f.state.lifecycle.lifetimes[0].expiresAtMs, 10000)',
+        'assert.equal(f.state.snapshots[0].modifiers[0].value, 0.9); assert.equal(f.state.lifecycle.lifetimes[0].expiresAtMs, 10000)'],
+      ["{operation: 'multiply'}", "{operation: 'add_flat'}"],
+      ["contract('EF21/22:", "test.skip('EF21/22:"],
+      ['assert.', 'unchecked.'],
+    ]) {
+      assert.ok(modifierSource.includes(expected), `required modifier negative control: ${expected}`);
+      try {
+        const faultySource = expected === 'assert.'
+          ? "const unchecked = new Proxy(() => {}, {get: () => () => {}});\n" + modifierSource.replaceAll('assert.', 'unchecked.')
+            .replace("unchecked.ok(assertions > 0, 'contract must execute real assertions')", "assert.ok(assertions > 0, 'contract must execute real assertions')")
+          : modifierSource.replace(expected, faulty);
+        fs.writeFileSync(modifierFile, faultySource);
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'effect-modifiers.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(modifierFile, modifierSource);}
+    }
+    const modifierRuntime = fs.readFileSync(effectFile, 'utf8');
+    for (const [expected, faulty] of [
+      ["if (operation !== 'add_flat' && operation !== 'add_percent' && operation !== 'add_percentage_points')",
+        'if (false)'],
+      ['state: modifierState({ lifecycle: next, snapshots })',
+        "state: action === 'advanced' && removed.length ? previous : modifierState({ lifecycle: next, snapshots })"],
+      ['state: modifierState({ lifecycle: next, snapshots })',
+        "state: action === 'consumed' ? previous : modifierState({ lifecycle: next, snapshots })"],
+      ['return Object.freeze({ status: \'applied\', reason: \'none\', state: modifierState({ lifecycle: next, snapshots }) });',
+        "if (action === 'refreshed') snapshots[0] = {...snapshots[0], modifiers: snapshots[0].modifiers.map(m => ({...m, value: 0.9}))}; return Object.freeze({ status: 'applied', reason: 'none', state: modifierState({ lifecycle: next, snapshots }) });"],
+    ]) {
+      assert.ok(modifierRuntime.includes(expected), `required installed modifier fault: ${expected}`);
+      try {
+        // Target the new capture validator, leaving earlier Entity/lifecycle contracts intact.
+        const position = modifierRuntime.indexOf('function modifierCapture(');
+        fs.writeFileSync(effectFile, modifierRuntime.slice(0, position) + modifierRuntime.slice(position).replace(expected, faulty));
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'effect-modifiers.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(effectFile, modifierRuntime);}
+    }
+    assertPackedFiles();
+    console.log('INSTALLED_EFFECT_MODIFIERS_RUNNER_NEGATIVE_PASS wrong_math; stale_expiry; consumed_contribution; refresh_payload; unsupported_operation; skipped; no_assertions; installed_runtime_faults4');
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+effectId\b/);
 
@@ -475,7 +527,7 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
     fs.writeFileSync(path.join(temp, 'broken.ts'), "import type {SkillActivationInput} from '@rpg/gameplay';const invalid: SkillActivationInput = {};void invalid;");
     fs.writeFileSync(path.join(temp, 'negative-tsconfig.json'), JSON.stringify({extends: './tsconfig.json', files: ['broken.ts']}));

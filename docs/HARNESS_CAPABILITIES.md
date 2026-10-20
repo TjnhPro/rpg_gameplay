@@ -1,3 +1,12 @@
+## v0.6.4 installed numerical modifier evidence
+
+The mandatory packed-package consumer now includes EF21–EF25 beside prior
+GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30/SK01–SK35/EF01–EF20. Real package/Core bytes,
+root-only ESM, strict NodeNext declarations and negative controls are verified.
+Effect captures and projects; unchanged Entity/Core calculate. This proves shared
+function contracts, not a game runtime or full Text/2D/2.5D gameplay profile.
+Phase IN_PROGRESS, Developer acceptance PENDING; v0.6.5 NOT_STARTED.
+
 ## v0.6.3 installed stacking evidence
 
 Mandatory effect-stacking.mjs/.ts use actual installed0.6.3 tarball and pinned

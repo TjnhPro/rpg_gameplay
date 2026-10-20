@@ -100,3 +100,6 @@ export type {
   EntityLifeStatus, EntityLifeState, EntityLifeResourcePolicy,
   EntityLifeTransitionOutcome, EntityLifeTransitionResult,
 } from './modules/entity/index.js';
+export {createEffectModifierState, applyEffectModifierTransition, listActiveEffectModifiers} from './modules/effect/index.js';
+export type {EffectClassification, EffectModifierSpec, EffectModifierCapture, EffectModifierSnapshot,
+  EffectModifierState, EffectModifierTransitionResult} from './modules/effect/index.js';

@@ -1,3 +1,15 @@
+## v0.6.4 modifier ownership
+
+Effect adds type-only ModifierOperation/NumericalModifier imports from the public
+Kernel. Its three companion functions validate/capture/project only; Entity's
+unchanged calculateEntityStats remains the numerical boundary and Core owns
+selection/conflicts/filtering/arithmetic. Existing lifecycle/stack APIs alone
+create membership/time transitions; companion synchronization consumes their
+structural result values. L3 supplies classification/concrete values, L4 composes
+sources and owns freshness, namespaces and commit. Graph unchanged: entity[];
+progression/combat/skill/effect[entity]. No sibling dependency, second instance
+store, effective-stat cache, global gameplay state or new module.
+
 ## v0.6.3 stack ownership
 
 The existing optional Effect owner still imports only public Entity/Foundation

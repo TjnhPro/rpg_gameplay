@@ -1,3 +1,19 @@
+## EF21–EF25 numerical contract audit — v0.6.4
+
+Read-only inspection of pinned src/kernel/index.ts, contracts/modifiers.ts,
+modifiers/modifier-resolution.ts and stats/stat-calculation.ts confirmed public
+ModifierOperation/NumericalModifier and selectCanonicalModifiers,
+prepareNumericalModifiers, calculateEffectiveValue, calculateStats. Effect reuses
+the actual types; only add_flat/add_percent/add_percentage_points are accepted.
+Projection binds effect / effectInstanceId / modifierId without arithmetic or
+filtering. Entity validates configured targets and delegates to Core. Core selects
+enabled entries, deduplicates equivalent identity tuples, rejects conflicts and
+calculates (base + flat) * (1 + percent) + points. This formula is an oracle only;
+none is copied into Effect. Installed consumer oracles include120,90,108,114,
+110,115 and source-isolated103, using explicit caller precision8 through Core.
+Core2.0.0 revision04b7239f998c3c688a0dfa3202f11811a9acd775 and artifact/lock integrity
+are unchanged. No Core/Entity modification or unsupported operation is needed.
+
 ## Effect Foundation v0.6.0 capability audit
 
 Core stays 2.0.0 at 04b7239f998c3c688a0dfa3202f11811a9acd775, with unchanged

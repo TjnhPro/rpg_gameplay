@@ -1,3 +1,15 @@
+## Current authorized checkpoint: v0.6.4
+
+The Developer-approved [Buff/Debuff/modifier task](tasks/active/v0.6.4-buff-debuff-stat-modifiers.md)
+authorizes EF21–EF25 after v0.6.3 checkpoint102db5e (exact-head CI8/8 verified).
+Continue feat/v0.6-effect / Draft PR #11. Add three functions/six types inside
+Effect/root, installed evidence and version0.6.4; preserve EF01–EF20, protected
+owners, Core pin, graph and dependencies. Effect captures payloads; existing
+lifecycle owns membership/time; Entity/Core own stat calculation. Required local
+gates and exact-head push/PR Windows/Ubuntu Node22/24 precede CHECKPOINT_COMPLETE.
+Stop there; phase IN_PROGRESS, acceptance PENDING; v0.6.5 NOT_STARTED. No Ready,
+merge, tag or publish. Earlier authorization/status sections are historical.
+
 ## Current authorized checkpoint: v0.6.3
 
 The Developer-approved [stacking/refresh task](tasks/active/v0.6.3-effect-stacking-refresh.md)

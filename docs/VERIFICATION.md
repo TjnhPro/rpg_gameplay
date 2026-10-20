@@ -1,3 +1,15 @@
+## v0.6.4 checkpoint gates
+
+Fresh core:prepare and npm ci --ignore-scripts; harness:check, harness:selftest,
+build, typecheck, test:functional and full verify must pass. Installed EF01–EF25
+and all prior GF/EC/PG/CB/SK, strict NodeNext, byte provenance, required exports and
+negative controls run with zero skips. Audit exact three-function/six-type delta,
+unchanged EF01–EF20 declarations/helpers and protected owners/Core/graph/dependency
+pins, version-only package metadata and git diff --check. Both exact-head events
+require Windows/Ubuntu Node22/24 (eight jobs). Final SHA/CI supplements the committed
+pre-push report in existing Draft PR #11. Pending CI is not CHECKPOINT_COMPLETE.
+Stop at0.6.4; no Ready/merge/tag/publish/0.6.5. Earlier gates are historical.
+
 ## v0.6.3 checkpoint gates
 
 Fresh core:prepare and npm ci --ignore-scripts; harness:check, harness:selftest,

@@ -1,3 +1,14 @@
+## Current checkpoint: v0.6.4 Buff / Debuff & Stat Modifiers
+
+EF21–EF25 adds explicit buff/debuff/neutral metadata, immutable apply-time payload
+snapshots and canonical Core modifier projection. A companion embeds the existing
+lifecycle as its only instance authority and stores exactly one payload per active
+instance. L4 synchronizes accepted lifecycle results and composes numerical sources;
+Entity/Core calculate stats. Refresh retains payloads; consume/remove/expire prune
+them. No stat cache/rollback, new math, catalog, restriction or periodic runtime.
+Phase IN_PROGRESS, Developer acceptance PENDING; v0.6.5 NOT_STARTED. Gameplay
+profile behavior NOT_EVALUATED. Earlier milestone sections are historical.
+
 ## Current checkpoint: v0.6.3 Effect Stacking & Refresh
 
 EF16–EF20 add exact target/effect/sourceKey group views, source identity collision
