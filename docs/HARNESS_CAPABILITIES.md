@@ -1,3 +1,14 @@
+## v0.6.0 installed Effect evidence
+
+The actual packed @rpg/gameplay@0.6.0 plus pinned Core is independently installed.
+Five required runtime tests cover EF01–EF05/S01–S22; the strict NodeNext companion
+checks root signatures, readonly nested state, discriminated sources and private
+export denial. Existing GF/EC/PG/CB/SK consumers supply S23 regression coverage.
+The runner checks exact TAP totals/markers and rejects zero/skipped tests; missing
+consumer, wrong version, absent Effect root export, invalid artifact and compiler
+errors fail closed. No gameplay simulation/profile PASS is implied.
+See [checkpoint evidence](reports/v0.6.0-effect-foundation.md).
+
 # Harness Features H01–H16 — scope vs. implementation
 
 ## v0.5.6 installed integration and fail-closed evidence

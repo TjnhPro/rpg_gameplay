@@ -1,3 +1,13 @@
+## v0.6.0 Effect owner
+
+src/modules/effect/index.ts is the single optional Effect owner. Its only production
+import is the public Entity entry (createEntity and EntitySnapshot). Registry graph:
+entity []; progression [entity]; combat [entity]; skill [entity]; effect [entity].
+All remain optional. Effect does not auto-enable Entity; selecting Effect alone
+fails missing-dependency validation. Entity+Effect works with Skill, Combat and
+Progression disabled; Entity+Skill+Effect composes independently. No new dependency,
+Core/Legacy import, store, engine or future-module placeholder is introduced.
+
 # Module Registry Contract
 
 ## v0.5.6 closure audit boundary

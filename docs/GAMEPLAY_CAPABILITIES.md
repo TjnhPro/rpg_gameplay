@@ -1,3 +1,13 @@
+## Current checkpoint: v0.6.0 Effect Foundation
+
+EF01 identity, EF02 definition, EF03 instance, EF04 immutable structural state and
+EF05 optional module integration are implemented for review. Effect IDs are
+independent of Skill; entity/system source references preserve caller sourceKey.
+No gameplay profile is evaluated by this structural milestone. Application,
+active lifecycle, stack/refresh, modifiers, restrictions and DoT/HoT are
+NOT_IMPLEMENTED. v0.6.x IN_PROGRESS; v0.6.1 NOT_STARTED; acceptance PENDING.
+Skill PR #10 is the merged baseline. Earlier milestone status below is historical.
+
 # L2 Gameplay Foundation — 14 accepted capability groups
 
 ## Skill v0.5.6 closure candidate

@@ -1,3 +1,14 @@
+## Effect Foundation v0.6.0 capability audit
+
+Core stays 2.0.0 at 04b7239f998c3c688a0dfa3202f11811a9acd775, with unchanged
+lockfile integrity and harness/core-pin.json. Effect identity and immutable
+structural association require no numerical calculation. Public Kernel types
+cover numerical stats/modifiers/resources/damage/defense/cooldown; historical
+Core ./effects is outside the allowed Kernel surface and is neither imported nor
+copied. No Core implementation/pin/dependency change is needed. Future numerical
+work must inventory Kernel support first; unsupported capabilities are deferred
+from MVP, never reimplemented in L2.
+
 # Core Kernel integration
 
 ## v0.5.6 closure verification

@@ -1,3 +1,15 @@
+## v0.6.0 checkpoint gates
+
+Run core:prepare, npm ci --ignore-scripts, harness:check, harness:selftest, build,
+typecheck, test:functional, full verify and git diff --check. verify includes the
+required EF01–EF05 installed group plus all previous GF01–GF16, EC01–EC18,
+PG01–PG19, CB01–CB30 and SK01–SK35 consumers. Required TAP counts, markers,
+strict installed TypeScript and runner negative controls must pass without skips.
+The unchanged CI matrix must pass at the delivered SHA for both push and
+pull_request: Windows/Linux × Node22/24 (eight jobs). Pending CI is not completion.
+Draft PR only; no Ready/merge/tag/publish or next milestone. Delivery SHA and final
+CI links are recorded in the same PR after the report's pre-push snapshot.
+
 # Verification gates — v0.5.6
 
 ## Current release candidate — v0.5.6

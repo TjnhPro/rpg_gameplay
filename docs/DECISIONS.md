@@ -119,3 +119,40 @@ Two independent literal-oracle sessions exercise explicit cross-domain handoff,
 immutable state, commands/events and cleanup/failures. Agent may mark the same
 PR Ready for Review only after final CI; Developer acceptance/closure remains
 PENDING. No merge, tag, release, publish or task archival is authorized here.
+
+## Effect v0.6.x approved contract — D01–D18
+
+These identifiers belong to the Effect phase. The approved task is
+[tasks/active/v0.6.0-effect-foundation.md](tasks/active/v0.6.0-effect-foundation.md).
+D01–D03 structural identity/ownership are implemented at v0.6.0; subsequent
+semantics remain approved constraints for later milestones, without placeholders.
+
+| Decision | Approved contract |
+| --- | --- |
+| D01 | Effect độc lập, dùng chung cho nhiều gameplay systems |
+| D02 | L2 Effect sở hữu Effect Instance và lifecycle state |
+| D03 | Source hỗ trợ Entity và System/Environment, có stable sourceKey |
+| D04 | Duration hỗ trợ timed và persistent; instant deferred |
+| D05 | Foundation Clock, L4 advance simulation, no background timer |
+| D06 | Stack group theo targetId + effectId + sourceKey |
+| D07 | L3 chọn refresh/stack và maxStacks |
+| D08 | Independent expiration per stack |
+| D09 | Refresh duration không thay numerical snapshot cũ |
+| D10 | Stack overflow mặc định reject |
+| D11 | Remove instance/group và consume N stacks |
+| D12 | Modifier snapshot at apply; numerical resolution qua Kernel |
+| D13 | Buff/Debuff classification là metadata, không phải separate engines |
+| D14 | Effect xuất restrictions, L3 diễn giải, L4 đưa vào Skill/Combat |
+| D15 | First tick at appliedAt + interval; due ticks before expire at boundary |
+| D16 | Effect tạo tick intent; canonical owners thực hiện numerical/resource transitions |
+| D17 | Source death không tự hủy effect; target death theo cleanup policy |
+| D18 | Kernel-only; no Legacy import/copy; unsupported numerical features deferred |
+
+Core-first MVP: L1 public Kernel remains the sole numerical owner. Effect
+identity-only v0.6.0 needs no numerical operation. For future milestones, inventory
+public pinned Kernel capability first; unsupported numerical features are
+DEFERRED_UNSUPPORTED and excluded from MVP. Never import/copy Legacy effects or
+create an L2 calculator to fill the gap. L2 Effect owns structural identity/state;
+canonical Entity validates targets. L3 supplies content/policy; L4 supplies stable
+source identity, authoritative state and explicit orchestration. No global store,
+second runtime engine or coupling to Skill/Combat/Progression is authorized.

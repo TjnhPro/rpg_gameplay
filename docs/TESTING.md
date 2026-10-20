@@ -1,3 +1,16 @@
+## v0.6.0 Effect contract evidence
+
+Required installed consumers: effect-foundation.mjs (five substantive runtime
+tests) and effect-foundation.ts (strict NodeNext, skipLibCheck:false). They are
+registered in tests/foundation.test.mjs against the real npm tarball, never source
+imports or symlinks. Literal expected snapshots are independent of implementation.
+Tests cover exact identities/sourceKey, equipment/system origins, canonical target
+rejection, dense ordered closed state, duplicate IDs, mismatched binding, zero
+getter invocation, detached deep freeze, mutable caller inputs, two independent
+replays and actual registry composition. No hidden time/random/scheduler calls;
+Entity resource/life/attributes, Skill and Progression snapshots remain unchanged.
+Full suite retains every previous consumer/oracle. See report for observed totals.
+
 # Function-First Testing Policy — evidence over count
 
 ## v0.5.6 Skill integration evidence

@@ -1,3 +1,56 @@
+## v0.6.0 Effect Foundation (EF01–EF05)
+
+Root-only additions, with readonly public records:
+
+```ts
+type EffectSourceReference =
+  | {readonly kind: 'entity'; readonly sourceId: string; readonly sourceKey: string}
+  | {readonly kind: 'system'; readonly sourceId: string; readonly sourceKey: string};
+interface EffectDefinition {readonly effectId: string}
+interface EffectInstanceInitialState {
+  readonly effectInstanceId: string;
+  readonly source: EffectSourceReference;
+}
+interface EffectInstanceState extends EffectInstanceInitialState {
+  readonly effectId: string;
+  readonly targetEntityId: string;
+}
+interface EffectState {
+  readonly entityId: string;
+  readonly instances: readonly EffectInstanceState[];
+}
+function createEffectDefinition(definition: EffectDefinition): EffectDefinition;
+function createEffectInstance(definition: EffectDefinition, target: EntitySnapshot,
+  initial: EffectInstanceInitialState): EffectInstanceState;
+function createEffectState(target: EntitySnapshot): EffectState;
+function validateEffectState(state: EffectState): EffectState;
+```
+
+All outputs are detached and deeply frozen. IDs are caller-supplied, nonblank,
+opaque strings, preserved exactly. Closed own-data records reject missing/extra,
+symbol, accessor and inherited required fields with TypeError without invoking
+getters. Instance arrays must be dense own-data arrays without extra properties.
+State validation preserves order, requires unique effectInstanceId per state and
+exact targetEntityId === entityId; repeated effectId/sourceKey are allowed.
+Factories reuse public createEntity for target validation. Sources are structural
+references: entity/system only, with no lookup, life, authorization or ownership
+checks. Equipment can use entity sourceId plus equipment-instance sourceKey.
+
+```ts
+const definition = createEffectDefinition({effectId: 'poison'});
+const target = {id: 'monster-1', kind: 'monster'};
+const instance = createEffectInstance(definition, target, {
+  effectInstanceId: 'effect-instance-001',
+  source: {kind: 'entity', sourceId: 'player-1', sourceKey: 'equipment/sword-instance-001'},
+});
+const state = validateEffectState({entityId: target.id, instances: [instance]});
+```
+
+This is immutable structural state, without applied/active semantics, insertion,
+registry, duration, stacking, modifiers, restrictions or execution. L3 owns content;
+L4 allocates/resolves identities and retains authoritative state. Existing APIs
+remain unchanged. Historical milestone sections below retain their original scope.
+
 # Public API — v0.5.6 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK35)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.

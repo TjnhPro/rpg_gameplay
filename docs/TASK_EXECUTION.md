@@ -1,3 +1,16 @@
+## Active approved phase: v0.6.x Effect System
+
+The Developer-approved [v0.6.0 task](tasks/active/v0.6.0-effect-foundation.md)
+authorizes EF01–EF05 only, from merged Skill PR #10 main baseline. Execute on
+feat/v0.6-effect with one Draft phase PR to main. D01–D18 and Core-first MVP are
+fixed; no design reapproval is needed. Preserve protected owners, Core pin,
+dependency versions, existing fixtures/oracles and CI. Completion requires
+installed-package/strict NodeNext evidence, all local gates and exact-head eight
+CI jobs. Stop at CHECKPOINT_COMPLETE; phase IN_PROGRESS, Developer acceptance
+PENDING. Do not mark Ready, merge, publish, tag or implement v0.6.1.
+See [checkpoint report](reports/v0.6.0-effect-foundation.md).
+Earlier workflow sections below retain historical milestone scope.
+
 # Approved Task Execution — ChatGPT → Agent
 
 ## Current Skill closure handoff — v0.5.6

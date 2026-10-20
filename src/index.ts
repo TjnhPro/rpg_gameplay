@@ -1,3 +1,5 @@
+export {createEffectDefinition, createEffectInstance, createEffectState, validateEffectState} from './modules/effect/index.js';
+export type {EffectSourceReference, EffectDefinition, EffectInstanceInitialState, EffectInstanceState, EffectState} from './modules/effect/index.js';
 export {createSkillDefinition, createSkillInstance, evaluateSkillActivationAdmission,
   evaluateSkillResourceCosts, applySkillResourceCosts, createSkillCooldownState,
   evaluateSkillCooldownReady, startSkillCooldown, activateSkill, reportSkillExecutionOutcome,

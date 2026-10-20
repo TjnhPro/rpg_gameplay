@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.5.6 Skill Integration & Closure
+# RPG Gameplay — v0.6.0 Effect Foundation
 
-> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK30 implemented; SK31–SK35 closure evidence prepared for Developer review, acceptance PENDING.**
+> **Status: Skill baseline merged through PR #10. Effect EF01–EF05 structural foundation implemented; v0.6.x IN_PROGRESS, Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
