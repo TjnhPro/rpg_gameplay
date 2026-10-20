@@ -1,3 +1,14 @@
+## v0.6.1 installed application evidence
+
+Required effect-application.mjs/.ts consumers execute against actual independently
+installed @rpg/gameplay@0.6.1 plus pinned Core. Six runtime groups of behavior
+cover EF06–EF10/S01–S27; all previous consumers cover S28 regressions. The runner
+requires exact TAP execution/markers, strict NodeNext with skipLibCheck:false,
+both new root exports and exact installed JS/declaration bytes matching fresh dist.
+A deliberate installed Effect artifact change is rejected then restored. Existing
+missing fixture/export/version/Core integrity/compiler/zero/skipped controls remain
+required. See [checkpoint report](reports/v0.6.1-effect-application-admission.md).
+
 ## v0.6.0 installed Effect evidence
 
 The actual packed @rpg/gameplay@0.6.0 plus pinned Core is independently installed.

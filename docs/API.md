@@ -1,3 +1,56 @@
+## v0.6.1 Effect Application & Admission (EF06–EF10)
+
+Two root functions take the same complete, explicit context:
+
+```ts
+interface EffectApplyRequest {readonly instance: EffectInstanceState}
+interface EffectApplyPolicy {
+  readonly sourceEligible: boolean;
+  readonly targetEligible: boolean;
+  readonly allowedTargetLifeStatuses: readonly EntityLifeStatus[];
+}
+type EffectApplyAdmissionStatus = 'admitted' | 'rejected';
+type EffectApplyAdmissionReason = 'none' | 'source_not_found' | 'target_not_found'
+  | 'target_life_not_allowed' | 'source_ineligible' | 'target_ineligible'
+  | 'instance_already_present';
+interface EffectApplyAdmissionResult {
+  readonly request: EffectApplyRequest;
+  readonly status: EffectApplyAdmissionStatus;
+  readonly reason: EffectApplyAdmissionReason;
+}
+type EffectApplyResult =
+  | {readonly status: 'applied'; readonly reason: 'none';
+      readonly admission: EffectApplyAdmissionResult; readonly state: EffectState}
+  | {readonly status: 'rejected'; readonly reason: Exclude<EffectApplyAdmissionReason, 'none'>;
+      readonly admission: EffectApplyAdmissionResult; readonly state: null};
+function evaluateEffectApplyAdmission(definition: EffectDefinition, request: EffectApplyRequest,
+  state: EffectState, entities: EntityCollection, targetLife: EntityLifeState,
+  policy: EffectApplyPolicy): EffectApplyAdmissionResult;
+function applyEffect(definition: EffectDefinition, request: EffectApplyRequest,
+  state: EffectState, entities: EntityCollection, targetLife: EntityLifeState,
+  policy: EffectApplyPolicy): EffectApplyResult;
+```
+
+All records are closed own-data contracts. Full structural validation and exact
+Definition/Instance/State/Life identity binding precede ordinary rejection.
+allowedTargetLifeStatuses must be nonempty, dense, unique alive/dead values; there
+is no implicit alive policy. Malformed input throws TypeError without getters.
+Entity sources and targets use canonical getEntity; systems never require a fake
+Entity. Source life/permission and target relations remain caller eligibility.
+Reason priority is the order above, with none last; admitted iff reason=none.
+
+applyEffect reevaluates admission (no receipt input), appends an accepted instance
+in supplied state order and returns a detached deeply frozen candidate. Rejection
+always returns state=null; previous inputs stay unchanged/unfrozen. Duplicate IDs
+are checked only in the supplied target state, including retries with conflicting
+payloads. Different IDs for the same effect are allowed; no stacking is implied.
+
+L3 supplies policies. L4 resolves current authoritative context and decides commit,
+concurrency/freshness/retry semantics. Eligibility booleans and admission snapshots
+are assertions, not credentials. Applied means admitted into a structural candidate;
+it does not activate duration/modifiers/ticks, emit events or alter resources/life.
+EF01–EF05 signatures remain unchanged. Earlier milestone sections are historical.
+
 ## v0.6.0 Effect Foundation (EF01–EF05)
 
 Root-only additions, with readonly public records:

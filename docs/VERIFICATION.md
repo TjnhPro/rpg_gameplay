@@ -1,3 +1,17 @@
+## v0.6.1 checkpoint gates
+
+Fresh core:prepare and npm ci --ignore-scripts precede harness:check,
+harness:selftest, build, typecheck, test:functional and full verify. Required
+consumers now include EF01–EF10 alongside unchanged GF01–GF16/EC01–EC18/PG01–PG19/
+CB01–CB30/SK01–SK35. Installed source/declaration byte provenance, required exports,
+strict NodeNext and runner rejection controls must pass with zero skipped tests.
+Audit EF01–EF05 preservation, two-function/six-type delta, version-only metadata,
+unchanged graph/Core/protected owners, and git diff --check before commit/push.
+Existing Draft PR #11 requires exact-head Windows/Linux × Node22/24 for both push
+and pull_request (eight jobs). Final SHA/CI evidence supplements the pre-push
+[report](reports/v0.6.1-effect-application-admission.md) in that same PR body.
+Do not declare completion while CI is pending; no Ready/merge/tag/publish/0.6.2.
+
 ## v0.6.0 checkpoint gates
 
 Run core:prepare, npm ci --ignore-scripts, harness:check, harness:selftest, build,

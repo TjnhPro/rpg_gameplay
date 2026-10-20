@@ -1,3 +1,16 @@
+## v0.6.1 Effect application boundary
+
+Effect remains a single owner at src/modules/effect/index.ts, importing only public
+Entity createEntity/getEntity and canonical identity/collection/life types. Existing
+Effect validators serve admission and application; applyEffect calls admission
+rather than implementing another gate. Life shape/status/binding are checked at
+the Effect boundary using EntityLifeStatus; no new life enum, inference/transition,
+collection scan or Combat relation validator exists. Collection validation and
+lookup remain inside getEntity, including missing-target/system-source contexts.
+Registry/graph and protected owners are unchanged. Source/target eligibility are
+caller assertions; L4 retains authority/commit. No Skill/Combat/Progression import,
+Core numerical operation, Legacy usage, global store or lifecycle engine.
+
 ## v0.6.0 Effect owner
 
 src/modules/effect/index.ts is the single optional Effect owner. Its only production

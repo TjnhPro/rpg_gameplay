@@ -1,4 +1,5 @@
-import {createEntity, type EntitySnapshot} from '../entity/index.js';
+import {createEntity, getEntity, type EntitySnapshot, type EntityCollection,
+  type EntityLifeState, type EntityLifeStatus} from '../entity/index.js';
 
 /** Caller-resolved origin identity; neither existence nor application permission. */
 export type EffectSourceReference =
@@ -98,4 +99,91 @@ export function validateEffectState(state: EffectState): EffectState {
     instances.push(instance);
   }
   return Object.freeze({entityId, instances: Object.freeze(instances)});
+}
+
+/** Source-agnostic application boundary; identity is carried only by the instance. */
+export interface EffectApplyRequest {readonly instance: EffectInstanceState}
+/** Explicit caller assessments, not credentials or durable authorization. */
+export interface EffectApplyPolicy {
+  readonly sourceEligible: boolean;
+  readonly targetEligible: boolean;
+  readonly allowedTargetLifeStatuses: readonly EntityLifeStatus[];
+}
+export type EffectApplyAdmissionStatus = 'admitted' | 'rejected';
+export type EffectApplyAdmissionReason = 'none' | 'source_not_found' | 'target_not_found'
+  | 'target_life_not_allowed' | 'source_ineligible' | 'target_ineligible' | 'instance_already_present';
+export interface EffectApplyAdmissionResult {
+  readonly request: EffectApplyRequest;
+  readonly status: EffectApplyAdmissionStatus;
+  readonly reason: EffectApplyAdmissionReason;
+}
+/** Appended structural candidate only; caller retains freshness and commit authority. */
+export type EffectApplyResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly admission: EffectApplyAdmissionResult;
+      readonly state: EffectState}
+  | {readonly status: 'rejected'; readonly reason: Exclude<EffectApplyAdmissionReason, 'none'>;
+      readonly admission: EffectApplyAdmissionResult; readonly state: null};
+
+function applyPolicySnapshot(policy: EffectApplyPolicy): EffectApplyPolicy {
+  const data = effectFields(policy, ['sourceEligible', 'targetEligible', 'allowedTargetLifeStatuses']);
+  if (typeof data.sourceEligible !== 'boolean' || typeof data.targetEligible !== 'boolean') {
+    throw new TypeError('Effect eligibility requires explicit booleans');
+  }
+  const input = data.allowedTargetLifeStatuses;
+  if (!Array.isArray(input) || !input.length || input.length > 2
+    || Reflect.ownKeys(input).length !== input.length + 1) {
+    throw new TypeError('Expected nonempty unique own-data life statuses');
+  }
+  const statuses: EntityLifeStatus[] = [];
+  for (let index = 0; index < input.length; index++) {
+    const field = Object.getOwnPropertyDescriptor(input, String(index));
+    if (!field || !('value' in field) || (field.value !== 'alive' && field.value !== 'dead')
+      || statuses.includes(field.value)) throw new TypeError('Invalid or duplicate allowed life status');
+    statuses.push(field.value as EntityLifeStatus);
+  }
+  return Object.freeze({sourceEligible: data.sourceEligible, targetEligible: data.targetEligible,
+    allowedTargetLifeStatuses: Object.freeze(statuses)});
+}
+
+/** Validate the entire context before selecting an ordinary rejection; never apply. */
+export function evaluateEffectApplyAdmission(definition: EffectDefinition, request: EffectApplyRequest,
+  state: EffectState, entities: EntityCollection, targetLife: EntityLifeState,
+  policy: EffectApplyPolicy): EffectApplyAdmissionResult {
+  const identity = createEffectDefinition(definition);
+  const data = effectFields(request, ['instance']);
+  const instance = instanceSnapshot(data.instance);
+  const current = validateEffectState(state);
+  const life = effectFields(targetLife, ['entityId', 'status']);
+  const lifeEntityId = effectId(life.entityId);
+  if (life.status !== 'alive' && life.status !== 'dead') throw new TypeError('Invalid Entity life status');
+  const eligibility = applyPolicySnapshot(policy);
+  if (identity.effectId !== instance.effectId || current.entityId !== instance.targetEntityId
+    || lifeEntityId !== instance.targetEntityId) throw new TypeError('Effect application identity mismatch');
+  // getEntity validates the complete canonical collection, even when the target is missing.
+  const target = getEntity(entities, instance.targetEntityId);
+  // A system source is never looked up as an Entity or represented by a fake Entity.
+  const sourceMissing = instance.source.kind === 'entity'
+    && getEntity(entities, instance.source.sourceId) === undefined;
+  const reason: EffectApplyAdmissionReason = sourceMissing ? 'source_not_found'
+    : target === undefined ? 'target_not_found'
+      : !eligibility.allowedTargetLifeStatuses.includes(life.status) ? 'target_life_not_allowed'
+        : !eligibility.sourceEligible ? 'source_ineligible'
+          : !eligibility.targetEligible ? 'target_ineligible'
+            : current.instances.some(item => item.effectInstanceId === instance.effectInstanceId)
+              ? 'instance_already_present' : 'none';
+  return Object.freeze({request: Object.freeze({instance}), status: reason === 'none' ? 'admitted' : 'rejected', reason});
+}
+
+/** Reevaluate admission from current caller inputs; no receipt bypass or automatic commit. */
+export function applyEffect(definition: EffectDefinition, request: EffectApplyRequest,
+  state: EffectState, entities: EntityCollection, targetLife: EntityLifeState,
+  policy: EffectApplyPolicy): EffectApplyResult {
+  const admission = evaluateEffectApplyAdmission(definition, request, state, entities, targetLife, policy);
+  if (admission.reason !== 'none') {
+    return Object.freeze({status: 'rejected', reason: admission.reason, admission, state: null});
+  }
+  const current = validateEffectState(state);
+  const candidate = validateEffectState({entityId: current.entityId,
+    instances: [...current.instances, admission.request.instance]});
+  return Object.freeze({status: 'applied', reason: 'none', admission, state: candidate});
 }

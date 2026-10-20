@@ -1,3 +1,15 @@
+## Current authorized checkpoint: v0.6.1
+
+The Developer-approved [application/admission task](tasks/active/v0.6.1-effect-application-admission.md)
+authorizes EF06–EF10 after v0.6.0 CHECKPOINT_COMPLETE at4fc09f8. Continue existing
+feat/v0.6-effect and Draft PR #11 to main; no new branch/PR or baseline rewrite.
+D01–D18, Core-first ownership, EF01–EF05 signatures, protected owners and graph stay
+intact. Full installed evidence/local gates and exact-head eight-job CI are required.
+Stop at v0.6.1 CHECKPOINT_COMPLETE. Phase IN_PROGRESS; Developer acceptance PENDING.
+No Ready/merge/tag/publish or automatic v0.6.2. Earlier milestone authorization
+sections below are historical and do not limit this newly approved checkpoint.
+See [report](reports/v0.6.1-effect-application-admission.md).
+
 ## Active approved phase: v0.6.x Effect System
 
 The Developer-approved [v0.6.0 task](tasks/active/v0.6.0-effect-foundation.md)

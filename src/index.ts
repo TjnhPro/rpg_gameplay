@@ -1,3 +1,6 @@
+export {evaluateEffectApplyAdmission, applyEffect} from './modules/effect/index.js';
+export type {EffectApplyRequest, EffectApplyPolicy, EffectApplyAdmissionStatus, EffectApplyAdmissionReason,
+  EffectApplyAdmissionResult, EffectApplyResult} from './modules/effect/index.js';
 export {createEffectDefinition, createEffectInstance, createEffectState, validateEffectState} from './modules/effect/index.js';
 export type {EffectSourceReference, EffectDefinition, EffectInstanceInitialState, EffectInstanceState, EffectState} from './modules/effect/index.js';
 export {createSkillDefinition, createSkillInstance, evaluateSkillActivationAdmission,

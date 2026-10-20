@@ -1,3 +1,15 @@
+## Current checkpoint: v0.6.1 Effect Application & Admission
+
+EF06–EF10 add source-agnostic apply requests, canonical Entity lookup, explicit
+caller life/eligibility policy, deterministic admission and immutable appended
+EffectState candidates. Applied is structural acceptance, without active-timed
+semantics or authoritative commit. Entity/System/Skill/Equipment/Environment
+handoffs use the same API; no sibling module dependency is added.
+Duration, active lifecycle, stack/refresh, modifiers, restrictions and DoT/HoT
+remain NOT_IMPLEMENTED. v0.6.x IN_PROGRESS, v0.6.2 NOT_STARTED, Developer acceptance
+PENDING. Existing gameplay profile behavior remains NOT_EVALUATED. Earlier
+checkpoint sections below retain their historical scope.
+
 ## Current checkpoint: v0.6.0 Effect Foundation
 
 EF01 identity, EF02 definition, EF03 instance, EF04 immutable structural state and

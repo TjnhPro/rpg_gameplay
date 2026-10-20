@@ -1,3 +1,18 @@
+## v0.6.1 Effect application evidence
+
+Six installed runtime tests in effect-application.mjs prove literal source/life
+outcomes, overlapping rejection priority, ordered candidates/retry conflicts,
+complete closed/nested validation before rejection, replay/isolation with guarded
+time/RNG/timers, and actual accepted Skill execution plus equipment/environment
+handoffs. Entity HP/mana/stats/life, Progression ranks, Skill and Combat snapshots
+stay unchanged by Effect. Actual Entity+Effect composition excludes sibling modules.
+Strict effect-application.ts verifies all six new types, both function signatures,
+readonly nesting, explicit policies, result discrimination, null rejected state,
+reason narrowing and closed/private exports. Existing fixtures remain unchanged.
+The same installed runner requires this group and rejects missing exports and
+deliberately changed installed artifact bytes. Test totals are observed in the
+report; no simulator, test-count target or full gameplay-profile claim is added.
+
 ## v0.6.0 Effect contract evidence
 
 Required installed consumers: effect-foundation.mjs (five substantive runtime
