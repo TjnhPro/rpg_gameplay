@@ -1,3 +1,18 @@
+# RPG Gameplay — v0.7.1 AI Perception & Context
+
+**AI01–AI10 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**
+Caller-supplied perception is captured as immutable snapshots, validated and
+filtered using explicit L3 eligibility policy. Observations/time come from L4;
+Entity owns identity and Life. No target selection, spatial calculation or execution.
+Three functions/six types added: root **118 functions /197 types**.
+Installed evidence: **203 runtime contracts /41 groups +3 outer**, no skips;
+all197 v0.7.0 contracts retained. Core2.0.0 pin and other owners unchanged.
+Continue [Draft PR #12](https://github.com/TjnhPro/rpg_gameplay/pull/12) on
+feat/v0.7-actor-ai. Stop at this checkpoint; no Ready/merge/tag/publish/v0.7.2.
+[Approved task](docs/tasks/active/v0.7.1-ai-perception-context.md) /
+[Report](docs/reports/v0.7.1-ai-perception-context.md) / [API](docs/API.md).
+Concrete gameplay profiles remain NOT_EVALUATED. Earlier status below is historical.
+
 # RPG Gameplay — v0.7.0 Actor AI Foundation
 
 > **Current: AI01–AI05 implemented; Actor AI phase IN_PROGRESS; Developer acceptance PENDING.**

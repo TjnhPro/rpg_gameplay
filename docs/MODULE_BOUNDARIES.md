@@ -1,3 +1,13 @@
+## v0.7.1 perception ownership
+
+Optional actor-ai → entity remains the only Actor AI dependency; registry unchanged.
+Entity is canonical identity/Life owner; Actor AI reuses EntityLifeStatus and public
+Entity lookup. L4 discovers nearby entities and supplies relation/life/visibility/
+range/reachability/time facts; L3 provides exact membership and boolean gates.
+L2 validates/captures/filters without selecting targets, World queries, spatial
+math, state commits, execution or a second runtime/store. Other owners and Core
+are untouched. See [API](API.md); earlier milestone statements are historical.
+
 ## v0.7.0 Actor AI boundary
 
 New optional `actor-ai -> [entity]`; registry defaults it off.

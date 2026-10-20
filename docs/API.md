@@ -1,3 +1,43 @@
+## v0.7.1 AI Perception & Context — AI06–AI10
+
+Additive root API: three functions/six types; total **118 functions /197 types**.
+All v0.7.0 signatures/semantics preserved. New signatures:
+
+```ts
+createActorAIPerceptionSnapshot(state: ActorAIState,
+  input: {readonly observedAtMs: number; readonly candidates: readonly ActorAIPerceivedEntity[]}): ActorAIPerceptionSnapshot
+validateActorAIPerceptionSnapshot(state: ActorAIState,
+  perception: ActorAIPerceptionSnapshot): ActorAIPerceptionSnapshot
+evaluateActorAIPerception(state: ActorAIState, entities: EntityCollection,
+  perception: ActorAIPerceptionSnapshot, policy: ActorAIPerceptionPolicy): ActorAIPerceptionAssessment
+```
+
+All fields readonly. ActorAIPerceivedEntity: entityId/relationId:string,
+lifeStatus:EntityLifeStatus, visible/inRange/reachable:boolean.
+ActorAIPerceptionSnapshot: actorId:string, observedAtMs:number, candidates:readonly facts[].
+ActorAIPerceptionPolicy: allowedRelationIds:readonly string[],
+allowedLifeStatuses:readonly EntityLifeStatus[], requireVisible/requireInRange/
+requireReachable/allowSelf:boolean; every field required, empty lists allow none.
+ActorAIPerceptionExclusionReason: the seven strings below.
+ActorAIPerceptionExclusion: entityId:string, reason:exclusion reason.
+ActorAIPerceptionAssessment: actorId/observedAtMs, status:'candidates_available'|
+'no_candidates', reason:'none'|'no_perceived_entities'|'no_eligible_candidates',
+eligible:readonly facts[], excluded:readonly exclusions[].
+
+Closed own-data ordinary/null-prototype records; dense own-data arrays without
+extra/symbol/accessor fields. Invalid IDs/life/booleans, duplicates, negative or
+nonfinite time and actor mismatch throw TypeError without running getters.
+Factory/validator capture facts including structurally valid stale references.
+Evaluation validates state, canonical collection/actor, snapshot, policy, binding;
+then filters in input order. First failing reason wins:
+entity_not_found → self_not_allowed → target_life_not_allowed → relation_not_allowed
+→ target_not_visible → target_out_of_range → target_not_reachable.
+Exact relation/life membership; each boolean gate is explicit. Both manual/AI
+controllers may inspect perception; manual proposal restriction is preserved.
+Results are deeply detached/frozen, preserve order/time, never select or mutate a
+target/state, execute gameplay, inspect HP or query World/Spatial. L4 owns fact
+truth/freshness; eligible means advisory filtering, never admission.
+
 ## v0.7.0 Actor AI Foundation — AI01–AI05
 
 Additive root API: six functions / seven types; total **115 functions / 191 types**.

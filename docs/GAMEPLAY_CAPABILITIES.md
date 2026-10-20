@@ -1,3 +1,13 @@
+## v0.7.1 checkpoint delta
+
+AI06 Perception Snapshot, AI07 Target Facts, AI08 Awareness Validation,
+AI09 Candidate Filtering and AI10 Perception Outcomes are IMPLEMENTED.
+AI01–AI05 preserved. AI11–AI40 remain OUT_OF_SCOPE (v0.7.2–v0.7.7).
+L4 supplies observation facts/time; L3 supplies all eligibility gates; L2 captures,
+validates and filters only. No target selection or World/Spatial implementation.
+Actor AI phase IN_PROGRESS; Developer acceptance PENDING; profiles NOT_EVALUATED.
+See [report](reports/v0.7.1-ai-perception-context.md). Earlier status is historical.
+
 ## Current checkpoint: v0.7.0 — Actor AI Foundation
 
 Effect PR #11 is merged at baseline be716c4. AI01–AI05 implement actor identity,

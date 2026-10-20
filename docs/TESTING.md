@@ -1,3 +1,15 @@
+## v0.7.1 perception evidence
+
+New installed consumers actor-ai-perception.mjs/.ts cover task P01–P43 through six
+cohesive assertion-bearing groups: capture/binding/time, closed validation/no
+getters, policy/manual advisory use, seven-way precedence, stable outcomes/order,
+actor-agnostic isolation/replay/owner preservation. Literal independent expected
+envelopes and all player/monster/npc/pet/summon/companion/custom actors are used.
+Targeted tarball6/6 and strict NodeNext PASS. Full203 runtime /41 groups +3 outer,
+zero skips; negative controls mutate actual installed dist/declarations, restore
+in finally, and verify original packed bytes. Existing197 contracts unchanged.
+See [report](reports/v0.7.1-ai-perception-context.md); earlier counts are historical.
+
 ## v0.7.0 Actor AI Foundation evidence
 
 `tests/consumers/actor-ai-foundation.mjs` has five installed contract groups:

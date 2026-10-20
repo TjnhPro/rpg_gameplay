@@ -1,3 +1,14 @@
+## v0.7.1 installed evidence delta
+
+Actor AI AI06–AI10 adds six assertion-bearing installed runtime contracts and a
+strict external NodeNext consumer. Total observed203 runtime /41 groups +3 outer;
+197 prior contracts retained, zero skip/fail/cancel/todo. Runtime faults cover
+duplicate/binding/precedence/order/state mutation/automatic selection; missing
+fixtures/exports/version/Core, skipped tests and declaration faults fail closed.
+Real packed/installed dist bytes are verified and every injected fault restored.
+Both exact-head push/pull_request Windows/Ubuntu Node22/24 matrices are required.
+See [report](reports/v0.7.1-ai-perception-context.md); earlier status is historical.
+
 ## v0.7.0 Actor AI verification
 
 Installed package0.7.0 adds five assertion-bearing contract groups, covering

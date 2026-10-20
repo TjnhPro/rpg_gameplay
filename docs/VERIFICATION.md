@@ -1,3 +1,17 @@
+## v0.7.1 verification delta
+
+Run core:prepare, npm ci --ignore-scripts, harness:check, harness:selftest, build,
+typecheck, installed targeted runtime/strict NodeNext, and npm run verify.
+Actor AI perception registration is mandatory. Full actual203 installed runtime
+contracts /41 groups +3 outer, zero failures/skips/cancellations/todos.
+Negative controls cover missing fixtures/three exports, wrong version/Core,
+duplicates, binding, precedence, order, mutation, automatic target selection,
+skips and strict NodeNext faults; restored artifacts must match packed bytes.
+Both push and pull_request exact-head Windows/Ubuntu Node22/24 jobs8/8 required.
+The report's final SHA-bound PR supplement records each CI URL after push; local
+success alone is not CHECKPOINT_COMPLETE. Core pin and historical oracles unchanged.
+See [report](reports/v0.7.1-ai-perception-context.md); earlier status is historical.
+
 ## v0.7.0 Actor AI gates
 
 Run core:prepare and npm ci --ignore-scripts, harness:check, harness:selftest,

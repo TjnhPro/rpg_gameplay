@@ -1,3 +1,18 @@
+## Current authorized checkpoint: v0.7.1 AI Perception & Context
+
+Developer supplied the approved [task](tasks/active/v0.7.1-ai-perception-context.md).
+Start from completed v0.7.0 SHA71acd06994ef3f07d543114981f31bdce7ef4d89,
+same feat/v0.7-actor-ai / Draft PR #12 to main. D01–D05 ALL A remain approved.
+AI06–AI10 only: snapshots/facts/validation/explicit policy filtering/outcomes.
+Production restricted to actor-ai plus additive root exports; version0.7.1.
+Protect every other owner, Core pin/source/dependencies, module graph and old
+fixtures/reports. Add new installed runtime/type consumers and necessary wiring/docs.
+Required local gates plus exact-head push AND pull_request Windows/Ubuntu Node22/24
+8/8 success precede CHECKPOINT_COMPLETE; final SHA-bound PR supplement completes
+the [report](reports/v0.7.1-ai-perception-context.md). Keep Draft, phase IN_PROGRESS,
+acceptance PENDING. Stop here; no Ready/merge/tag/publish/new PR/v0.7.2.
+All earlier authorizations/statuses below are historical.
+
 ## Current authorized checkpoint: v0.7.0 Actor AI Foundation
 
 The Developer's approved [task](tasks/active/v0.7.0-actor-ai-foundation.md) authorizes
