@@ -3,6 +3,7 @@
   "notes": "Add one module entry only when its implementation task is approved. 14 gameplay groups are scope, not 14 precreated modules.",
   "modules": [
     {"id": "entity", "optional": true, "dependencies": []},
-    {"id": "progression", "optional": true, "dependencies": ["entity"]}
+    {"id": "progression", "optional": true, "dependencies": ["entity"]},
+    {"id": "combat", "optional": true, "dependencies": ["entity"]}
   ]
 }

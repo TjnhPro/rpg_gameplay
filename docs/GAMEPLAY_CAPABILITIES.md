@@ -73,3 +73,74 @@ public snapshots: required readonly pointKind attribute/skill, own-data runtime
 guards and strict TypeScript isolation. No new capability/API/module, formula or
 engine; package0.3.5 and phase REVIEW_PENDING. Structural kind is not a trusted
 credential. Untagged old snapshots reject; no implicit migration/conversion.
+
+## v0.4.0 checkpoint checkpoint: Combat Foundation
+
+Group A (GF01–GF16, EC01–EC18, PG01–PG19 including point-pool isolation) is the
+merged PR #8 baseline. Historical pending statuses above describe prior checkpoints.
+Group04 now has CB01–CB05: optional combat -> entity, exact action/source/target
+identity, frozen detached action intent and closed own-data structural validation.
+Self-target/unknown references are valid; no actor lookup or authorization follows.
+Basic attack intent requires no Skill/Progression dependency. No admission, target
+relations, attack/damage/resource/death execution, active session, Skill/Effect/AI/
+Encounter integration, scheduler or renderer is implemented. Remaining candidate
+groups are unchanged. Context data compatibility is verified for Text/Realtime/
+Turn-Based callers; gameplay execution/profile behavior remains NOT_EVALUATED.
+Combat phase IN_PROGRESS, PR DRAFT, Developer acceptance PENDING. v0.4.1+ NOT_STARTED.
+
+## v0.4.1 checkpoint checkpoint: Actor-stage admission
+
+CB06–CB10 adds pure source existence (canonical Entity Collection), supplied
+Entity Life and explicit caller boolean eligibility evaluation. Structured frozen
+admitted/rejected results distinguish valid rejection from malformed TypeError.
+Priority is source_not_found > source_dead > source_ineligible > none.
+Unknown target/self-target can pass actor-stage admission. No target policy,
+execution, resources/death changes, Skill/Effect dependency or session authority.
+Group A and CB01–CB05 remain intact. Phase IN_PROGRESS; PR #9 DRAFT; acceptance
+PENDING; v0.4.2–v0.4.5 NOT_STARTED. Gameplay profile behavior NOT_EVALUATED.
+
+
+## v0.4.2 current checkpoint: Target Validation
+
+Group04 adds CB11-CB15: target existence through Entity getEntity, exact target/Life
+identity, self by exact IDs and caller-resolved ally/enemy/neutral. Explicit closed
+policies require nonempty unique relation/life lists. Dead targets may be accepted.
+Admitted/none precondition; validation precedes missing > relation > life rejection.
+Frozen detached result with accepted/rejected diagnostics. No faction authority,
+spatial targeting, execution/damage/death/revival/Skill feature. Earlier milestone
+sections above describe their historical checkpoints. Phase IN_PROGRESS, PR #9
+DRAFT; Developer acceptance PENDING. v0.4.3-v0.4.5 NOT_STARTED.
+
+## v0.4.3 current checkpoint: Attack Resolution
+
+Group04 CB16–CB20 sequences structurally admitted/accepted matching stage results,
+Kernel Hit/Dodge, Critical, B0, B1 and Mitigation using explicit caller numerical
+snapshots/policy and lazy Foundation RNG. Frozen detached discriminated outcomes
+omit unrun diagnostics after dodge. Critical is additive once; final damage is
+calculated only. No HP/death/events/Skill/Effect implementation or persistent
+Combat state. GF/EC/PG and CB01–CB15 remain intact. Phase IN_PROGRESS, PR #9 DRAFT,
+Developer acceptance PENDING; v0.4.4/v0.4.5 NOT_STARTED. Gameplay profile behavior
+remains NOT_EVALUATED. Earlier sections are historical checkpoint descriptions.
+
+## v0.4.4 current checkpoint: Damage Application & Death
+
+Group04 CB21–CB25 accepts actual CB20 receipts, caller target Resource/Life and
+explicit life-resource/bounds/above-max policy. Positive damage runs canonical
+Entity reduction then defeat with updated resources; calculated/applied damage
+and Life transition outcomes remain distinct. Dodge/zero are validated no-ops.
+No heal/revive/Skill/Effect/Encounter, automatic events/rewards, persistent Combat
+state or exactly-once authority. Custom resources and player/monster parity work.
+Prior sections are historical. Phase IN_PROGRESS; PR #9 DRAFT; acceptance PENDING;
+v0.4.5 NOT_STARTED. Gameplay profiles NOT_EVALUATED.
+
+## v0.4.5 current Combat review scope
+
+Group04 CB01–CB30 implementation complete for review; phase REVIEW_PENDING,
+Developer acceptance PENDING. Earlier sections describe milestone history.
+CB26 full public Basic Attack/updated-state continuation; CB27 independent literal
+replay/RNG/snapshot isolation; CB28 rejection and prior contract regression;
+CB29 installed/root-only/strict types and ownership; CB30 full phase audit/review
+handoff. No new mechanics/API/module. No Skill/Effect/AI/Encounter, spatial/turn/
+realtime controller, automatic events/rewards, persistence or global authority.
+Combat core function semantics VERIFIED; concrete game-mode integrations and
+gameplay profiles NOT_EVALUATED. Agent does not close/accept the phase.

@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.3.5 Progression Integration & Closure
+# RPG Gameplay — v0.4.5 Combat Integration & Closure
 
-> **Status: merged Entity v0.2.5 baseline; PG01–PG19 implemented and integration verified. Progression phase REVIEW_PENDING; Developer acceptance PENDING.**
+> **Status: Group A baseline merged through PR #8; CB01–CB30 implemented. Combat phase REVIEW_PENDING; final review gates required; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18 and PG01–PG19 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB30 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -129,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.3.5.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.4.1.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -398,3 +398,109 @@ Phase REVIEW_PENDING, not accepted/closed; no merge/tag/publish. See the
 [closure report](docs/reports/v0.3.5-progression-integration-closure.md). Exact final
 SHA/CI and self-contained review handoff live in ignored
 `.artifacts/progression-v0.3-final-review.md` after final push/CI.
+
+## Combat Foundation (CB01–CB05)
+
+```ts
+import {createCombatActionContext} from '@rpg/gameplay';
+const context = createCombatActionContext({
+  actionId: 'attack-001', actionType: 'basic_attack', sourceEntityId: 'player-1',
+  target: {kind: 'entity', entityId: 'monster-1'},
+});
+```
+
+The root and nested target are frozen detached snapshots. IDs/action types are
+caller-supplied nonblank strings preserved exactly. Closed own-data inputs reject
+missing/extra fields, symbols, accessors and inherited required fields without
+calling getters. Self-target and unknown actor references are structurally valid;
+duplicate action IDs are allowed across independent contexts. Optional Combat
+requires explicit Entity selection for composition and does not require Progression
+or Skill. Direct creation requires no registry, providers or actor lookup.
+
+This describes intent only: no admission, supported-action guarantee, execution,
+damage, resource/life change, event, persistent combat state or turn scheduler.
+75 installed contracts (71 baseline + 4 Combat) and strict external NodeNext
+consumers verify the current artifact. Earlier milestone sections above
+retain their historical checkpoint statuses. See [API](docs/API.md#cb01cb05-combat-foundation)
+and [checkpoint evidence](docs/reports/v0.4.0-combat-foundation.md).
+At the v0.4.0 checkpoint, v0.4.1–v0.4.5 were NOT_STARTED; Developer acceptance is PENDING.
+
+## Combat Action Admission (CB06–CB10, v0.4.1)
+
+`evaluateCombatActionAdmission(context, entities, sourceLife, {eligible: true})`
+returns frozen `{context, status, reason}`. It revalidates/detaches context,
+uses canonical Entity Collection lookup, checks matching source Life and explicit
+boolean eligibility. All input structures validate before rejection decisions.
+Reason priority: source_not_found, source_dead, source_ineligible, then none
+with status admitted. Malformed input or life/source mismatch throws TypeError;
+missing/dead actors never hide malformed policy. No getters/callbacks are invoked.
+
+Unknown targets and self-target remain admissible at this actor stage. This is
+no execution guarantee, reservation or token. Caller supplies current state and
+owns HP/Life consistency; no target checks, numerical work, resource/life changes,
+events, Skill dependency or hidden time/RNG. 79 installed contracts (75 retained
++4 admission), 2 outer gate tests and strict NodeNext cover the current artifact.
+See [v0.4.1 report](docs/reports/v0.4.1-combat-action-admission.md).
+At the v0.4.1 checkpoint, v0.4.2+ were NOT_STARTED.
+
+## Combat Target Validation (CB11–CB15, v0.4.2)
+
+After actor admission, call `evaluateCombatTargetValidation(admission, entities,
+targetLife, {relation: 'enemy', allowedRelations: ['enemy'], allowedLifeStatuses:
+['alive']})`. Only a closed admitted/none receipt can enter this stage. Canonical
+Entity lookup checks the target; the supplied Life must match its exact ID.
+Self requires equal IDs; ally/enemy/neutral are caller-resolved facts. Nonempty,
+unique own-data lists explicitly allow relations and alive/dead statuses, including
+dead targets when requested. Malformed input throws before gameplay rejection.
+Priority: target_not_found, relation_not_allowed, target_life_not_allowed, none.
+Results use accepted/rejected and frozen detached context/target snapshots.
+
+No source admission rerun, faction authority, spatial check, execution, damage,
+revival, event or authorization token. Caller owns current snapshots and operation
+ordering. Package0.4.2 has 83 installed contracts (79 retained +4 target), 2 outer
+gate tests and strict external NodeNext evidence. See [API](docs/API.md#cb11cb15-combat-target-validation)
+and [report](docs/reports/v0.4.2-combat-target-validation.md).
+Phase IN_PROGRESS, PR #9 DRAFT, Developer acceptance PENDING; v0.4.3+ NOT_STARTED.
+
+## v0.4.3 Attack Resolution
+
+`resolveCombatAttack(admission, targetValidation, attackInput, executionContext)`
+requires matching admitted/accepted results and explicit caller numerical policy.
+Public Kernel owns Hit/Critical/B0/B1/Mitigation; Foundation supplies lazy caller
+RNG. Results are detached/frozen: `dodged` omits all later diagnostics; `landed`
+retains actual Kernel stages and final damage. No HP/Life changes or hidden events.
+See [API](docs/API.md#cb16cb20-combat-attack-resolution) and
+[checkpoint report](docs/reports/v0.4.3-combat-attack-resolution.md).
+Installed90 contracts and2 outer gates cover existing and new behavior. Combat
+phase IN_PROGRESS; PR #9 DRAFT; Developer acceptance PENDING. Damage application
+and death (v0.4.4), phase closure (v0.4.5) are NOT_STARTED. Earlier milestone
+sections describe their own historical scopes. Gameplay profiles NOT_EVALUATED.
+
+## v0.4.4 Damage Application & Death
+
+`applyCombatAttackDamage(attack, resources, life, policy)` validates actual CB20
+receipts/exact target identity and explicit caller life-resource policy. Positive
+damage runs Entity Resource reduction then Entity defeat using updated resources.
+Results preserve calculated damage vs canonical applied damage and Life outcomes.
+Dodge/zero return null transitions without normalization/defeat. No automatic
+events/rewards or replay/concurrency authority. See [API](docs/API.md#cb21cb25-combat-damage-application)
+and [report](docs/reports/v0.4.4-combat-damage-death.md).
+Installed98 contracts plus2 outer gates cover current behavior. Earlier milestone
+sections are historical. Combat phase IN_PROGRESS; PR #9 DRAFT; Developer acceptance
+PENDING; v0.4.5 NOT_STARTED. Gameplay profiles NOT_EVALUATED.
+
+## v0.4.5 Combat integration and review readiness
+
+CB01–CB30 implementation is ready for final Developer review after final exact-head
+gates. Existing root APIs compose a Basic Attack without Skill/Effect/AI/Encounter:
+context -> admission -> target -> Kernel resolution -> Entity resource/death.
+Two independent installed sessions each match the literal HP100->25->0 oracle,
+calculated75/75, applied75/25, alive->alive->dead, with exactly2 critical RNG draws.
+Rejected callers stop before downstream work; dodge/zero expose null transitions.
+Above-max140->100/request20 preserves canonical applied20, not HP delta40.
+
+No new production API in0.4.5: root65 functions/95 types. Caller owns current
+snapshots/policies, scheduling, persistence and replay/concurrency consistency.
+Text/Realtime/TurnBased labels prove shared API semantics, not concrete games.
+Gameplay profiles NOT_EVALUATED; acceptance PENDING; phase REVIEW_PENDING.
+See [closure report](docs/reports/v0.4.5-combat-integration-closure.md).

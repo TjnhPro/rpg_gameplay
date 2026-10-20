@@ -227,3 +227,104 @@ unused @ts-expect-error fails compilation. No any/cast bypass or config change.
 Current total71 installed contracts +2 outer, zero skips; prior70 retained with
 only authorized snapshot additions. Focused evidence and before/after installed
 reproduction are in reports/v0.3.5-f001-point-pool-isolation-fix.md.
+
+## CB01–CB05 installed Combat evidence (v0.4.0)
+
+combat.mjs adds four distinct contract groups: exact/frozen/detached/role-neutral
+intent; closed invalid-shape/primitive/accessor rejection; optional dependency
+composition; two independent literal-oracle sessions and mode-neutral caller data
+with unchanged Entity/Progression/resource/life snapshots. Each covers approved
+R01–R25 invariants mapped in the checkpoint report, without execution tests.
+combat.ts proves required readonly root/nested fields, exact target literal,
+string-only IDs, no accidental any, absent execution data and root-only imports.
+The existing runner packs actual gameplay0.4.0, installs alongside pinned real
+Core into an independent temporary consumer, and runs both runtime and strict
+NodeNext evidence (skipLibCheck:false). No source import/link or Core mock.
+
+75 installed contracts = 71 retained Group A + 4 Combat; 2 outer gate tests,
+zero skips. Existing fixture oracles stay unchanged; runner inventory changes
+only add the approved files/export/version/consumer. Static boundary checks and
+source review supplement functional evidence for no state, engines or hidden
+providers. Mode labels exercise the same structural contract, not three games
+or gameplay execution. Report: reports/v0.4.0-combat-foundation.md.
+
+## CB06–CB10 admission evidence (v0.4.1)
+
+combat-admission.mjs adds four installed groups: positive/parity/target independence;
+rejection priority and identity isolation; malformed-before-rejection/accessor
+safety; immutable deterministic sessions and domain independence. Literal context
+and admitted/none or named rejection outputs derive from approved scenarios A–L.
+Dropped groups would lose distinct boundary evidence. No simulator or duplicated
+Entity suite; a small malformed collection probe confirms canonical validation.
+combat-admission.ts checks required explicit Life/policy, boolean-only policy,
+readonly result/nested data, exact reason/status unions, no any and root-only API.
+Existing75 installed contracts stay unchanged; current total79 plus2 outer tests,
+zero skips. Strict NodeNext directives are active (unused expect-error fails).
+Actual installed0.4.1/Core tarballs run in the existing independent temp consumer.
+
+
+## CB11-CB15 installed target evidence (v0.4.2)
+
+combat-target.mjs adds four cohesive groups, not one test per requirement:
+T1 self/ally/enemy/neutral, role independence and explicit alive/dead allowances;
+T2 missing/relation/life priority, rejected admission short-circuit, target-only
+collection and structurally valid receipt limitation; T3 malformed receipt,
+collection, Life, policy/lists, getters/holes/duplicates/unknowns and validation
+before rejection even when target missing; T4 two independent sessions matching
+literal accepted oracle, caller mutation/detachment, frozen accepted/rejected
+results and unchanged domain state. HP0 is separate from supplied alive Life.
+No hidden clock/RNG; source inspection proves no event/numerical execution.
+combat-target.ts checks exact unions, mandatory inputs, canonical Life, readonly
+arrays/result/context, no any/callback/deep import. Existing79 contracts remain
+unchanged; total83 plus2 outer gates, zero skips. Actual installed0.4.2/Core tarballs
+and strict NodeNext skipLibCheck:false are used. R01-R30 mapping is in the report.
+
+## CB16–CB20 installed attack evidence (v0.4.3)
+
+combat-attack.mjs adds seven cohesive groups: literal full oracle/public Kernel
+agreement; ordered scaling/rank/flat/bonuses; lazy RNG/dodge short-circuit; stage
+preconditions/identity; malformed numerical own-data contracts before RNG;
+invalid RNG/nonfinite outputs; immutable independent replay and actor parity.
+Actual installed gameplay/Core artifacts run in an external temporary consumer,
+without mocks. Literal oracle: B0=100, B1=150, mitigation reduction0.5, final75;
+critical without defense=150, never225. Scaling90, rank120 and ordered flat129
+are independent expectations. HP80/Life alive remain unchanged.
+
+combat-attack.ts proves Kernel type composition, discriminated outcomes, deeply
+readonly diagnostics, mandatory stage/execution inputs, no any and closed deep
+exports with strict NodeNext/skipLibCheck:false. Existing83 contracts/oracles stay
+unchanged; current total90 installed contracts plus2 outer gates, zero skips.
+See v0.4.3 report for A–T/R01–R33 evidence and CI delivery references.
+
+## CB21–CB25 installed application evidence (v0.4.4)
+
+combat-damage.mjs adds eight cohesive groups, always using actual CB03/CB09/CB15/
+CB20 for positive integration. Independent literal oracles:100->70/applied30;
+100->0/request150/applied100/defeated;10->0/request25/applied10; above-max140->100/
+request20/applied20/delta40; vitality80->50; mana50/stamina30 unchanged. Positive
+attempt at minimum can defeat alive with applied0; already dead remains unchanged.
+Dodge/zero no-op has null transitions, preserves above-max140 and HP0/alive.
+Malformed nested receipts, target states/identity and explicit policies fail with
+getter_calls0, including before no-op. Canonical above-max reject propagates.
+Deep immutability and two independent lethal replay sessions match literal
+calculated75/applied60; reverse actor kinds agree. No mocks/source imports.
+combat-damage.ts checks exact Entity type reuse, readonly diagnostics, null no-op
+fields/discrimination, required inputs/policy, no any/deep imports with strict
+NodeNext/skipLibCheck:false. Existing90 contracts/oracles unchanged; total98
+installed contracts plus2 outer gates, no skips. Report maps scenarios A–R/R01–R35.
+
+## CB26–CB30 Combat closure evidence (v0.4.5)
+
+combat-integration.mjs adds3 cohesive installed tests: (1) two actual attacks,
+independent sessions each matching literal75/75 calculated,75/25 applied and
+HP100->25->0; role parity, mode-neutral labels, optional composition, no events
+and unchanged domains; (2) rejection-stage trace, wrong receipts/numerical policy,
+dodge with overflow poison downstream input, invalid/missing/throwing RNG;
+(3) actual CB20 final20 with authoritative above-max applied20/delta40,
+zero/minimum/dead edges and mutable detached handoffs. No previous oracle changes.
+Dropped groups lose distinct continuation, failure boundary or accounting evidence.
+combat-integration.ts checks actual cross-stage root signatures under strict
+NodeNext/skipLibCheck:false, readonly Entity results and discriminated nulls.
+101 installed contracts (98 retained +3) and2 outer gate tests, zero skips.
+R01–R40/N01–N20 mapping and source audit are in the closure report. Text/Realtime/
+TurnBased labels assert identical shared APIs, not renderer/scheduler/game execution.

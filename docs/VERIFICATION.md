@@ -181,3 +181,86 @@ skips. Both final-head CI matrices must be observed again after the fix; old
 41c3d3d results do not certify remediation. Package remains0.3.5; Core unchanged.
 Final fix SHA/CI are recorded in PR #8 and the same ignored single-file handoff.
 macOS NOT_RUN; gameplay profile behavior NOT_EVALUATED.
+
+## v0.4.0 checkpoint verification scope
+
+Current artifact @rpg/gameplay0.4.0 adds CB01–CB05 to the merged Group A baseline.
+Run harness:check, harness:selftest, build, typecheck, test:functional and verify;
+verify requires all steps and propagates failures. Current inventory is 3 static
+modules / 8 source files, 61 root runtime functions / 80 types, 75 installed
+contracts and 2 outer gate tests, zero skips. Strict external NodeNext includes
+combat.ts with skipLibCheck:false; deep imports fail at runtime and type boundaries.
+Actual installed gameplay/Core tarballs, Core SHA-512 and GF/EC/PG regression
+oracles remain mandatory. CB evidence covers closed exact intent/freeze/getter
+safety/self-target/unknown refs/duplicate IDs/composition and deterministic
+independent sessions. No admission or execution evidence is claimed.
+
+Use checkpoint report and PR for current results/exact-head push + PR CI on
+Ubuntu/Windows Node22/24. Earlier counts/statuses are historical milestone records.
+Combat phase IN_PROGRESS, Developer acceptance PENDING; gameplay profile behavior
+NOT_EVALUATED and v0.4.1+ NOT_STARTED. No gate is silently skipped.
+
+## v0.4.1 checkpoint verification scope
+
+Current artifact0.4.1: GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB10.
+Unchanged3 modules/8 source files; root62 functions/84 types; installed79 contracts
+(75 prior +4 admission), 2 outer tests, zero skips. Full verify runs all gates;
+strict external NodeNext/deep exports and real pinned Core integrity remain required.
+Admission proves source-only evaluation, deterministic priority, malformed policy
+before rejection, Life ID consistency/getter safety and detached frozen result.
+No target validation/execution proof is claimed; gameplay profiles NOT_EVALUATED.
+Exact-head push/PR Ubuntu/Windows Node22/24 CI is required for checkpoint completion.
+See v0.4.1 report and PR #9 final delivery evidence; prior counts are historical.
+Phase IN_PROGRESS, PR DRAFT, Developer acceptance PENDING; v0.4.2+ NOT_STARTED.
+
+
+## v0.4.2 current verification scope
+
+Artifact0.4.2: GF01-GF16, EC01-EC18, PG01-PG19 and CB01-CB15. Registry3 modules,
+8 source files unchanged; root63 functions/89 types. Installed83 contracts
+(79 retained +4 target) and2 outer gate tests, no skips. Targeted harness:check,
+harness:selftest, build, typecheck, test:functional and full verify must pass.
+Package tarball external install, pinned Core integrity, closed exports and strict
+NodeNext remain mandatory. Target evaluation only; no gameplay execution/profile
+PASS claim. Exact-head push and PR jobs must each pass Windows/Ubuntu Node22/24;
+prior CI is not current evidence. See v0.4.2 report and PR #9 delivery evidence.
+macOS NOT_RUN; gameplay profiles NOT_EVALUATED; Developer acceptance PENDING.
+
+## v0.4.3 current verification scope
+
+Artifact0.4.3: GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB20. Registry3 modules,
+8 source files unchanged; root64 functions/92 types. Installed90 contracts
+(83 retained +7 attack) and2 outer gates, zero skips. Required commands remain
+harness:check, harness:selftest, build, typecheck, test:functional and full verify.
+Real tarball installation, pinned Core SHA-512 and strict external NodeNext remain
+mandatory. CB16–CB20 proves numerical resolution, not damage application or death.
+Exact-head push and PR CI each require Windows/Ubuntu Node22/24. Final evidence
+is attached to PR #9; the tracked report records its pre-push snapshot.
+macOS NOT_RUN; gameplay profiles NOT_EVALUATED. Phase IN_PROGRESS, PR DRAFT,
+Developer acceptance PENDING. v0.4.4/v0.4.5 NOT_STARTED. Historical scopes above
+remain records of their own checkpoints, not current feature limitations.
+
+## v0.4.4 current verification scope
+
+Artifact0.4.4: GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB25. Registry3 modules/
+8 sources unchanged; root65 functions/95 types. Total98 installed contracts
+(90 retained +8) plus2 outer gates; zero skips. All targeted gates and full verify
+must run, with real tarball installation, strict external NodeNext and pinned
+Core integrity. CB21–CB25 proves explicit damage application/canonical defeat,
+not a completed game/Combat phase. Exact-head push and PR Windows/Ubuntu Node22/24
+CI evidence is attached to PR #9; tracked report records the pre-push snapshot.
+macOS NOT_RUN; profiles NOT_EVALUATED. Phase IN_PROGRESS, PR DRAFT, Developer
+acceptance PENDING; v0.4.5 NOT_STARTED. Earlier scopes are historical records.
+
+## v0.4.5 current verification scope
+
+Actual installed0.4.5: GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB30.
+101 installed runtime contracts +2 outer gates, zero failures/skips. Run
+harness:check, harness:selftest, build, typecheck, test:functional, full verify and
+git diff --check. Root65 functions/95 types,3 registered modules/8 sources.
+Strict external NodeNext/closed exports, tarball install and pinned Core integrity
+remain mandatory. No production delta in0.4.5; full phase diff audit required.
+Exact-head push+PR Windows/Ubuntu Node22/24 must PASS before PR readiness. Final
+results go into ignored .artifacts/combat-v0.4-final-review.md and PR #9, avoiding
+a post-CI tracked commit. Phase REVIEW_PENDING/acceptance PENDING after gates;
+macOS NOT_RUN, concrete game-mode integrations/gameplay profiles NOT_EVALUATED.

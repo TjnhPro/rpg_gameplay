@@ -56,3 +56,24 @@ at merged Entity PR #7. Each milestone has its own approved task, checkpoint com
 verification and exact-head CI. Milestone delivery is CHECKPOINT_COMPLETE only;
 phase stays IN_PROGRESS. No intermediate merge/tag/publish. Only final v0.3.5
 may prepare full phase review; Developer decides acceptance and merge.
+
+## Active Combat phase
+
+Approved task: tasks/active/v0.4.0-combat-foundation.md. Phase branch
+feat/v0.4-combat, one Draft PR explicitly targeting main through v0.4.5.
+Baseline is merged Progression PR #8 at c550669. v0.4.0 authorizes CB01–CB05
+only: action intent snapshots, optional dependency, validation and evidence.
+Each later milestone requires its separately approved task; no admission/target
+policy/attack/damage/death/Skill implementation is implied. Checkpoint delivery
+is CHECKPOINT_COMPLETE after local and exact-head CI evidence. Phase remains
+IN_PROGRESS, PR DRAFT, Developer acceptance PENDING; no merge/tag/publish.
+
+## Combat final integration authorization (v0.4.5)
+
+Approved task: tasks/active/v0.4.5-combat-integration-closure.md. Continue
+feat/v0.4-combat/PR #9 from completed0.4.4 checkpoint. CB26–CB30 is installed
+integration/whole-phase audit and review handoff; no new mechanics/facade or
+Group A/Core change. Version0.4.5, all local and exact-head CI gates, tracked
+closure report and ignored self-contained handoff are required before moving
+existing PR from Draft to Ready for Review. Final evidence stays ignored/PR-side
+to preserve verified SHA. Developer alone accepts/closes; no merge/tag/publish.

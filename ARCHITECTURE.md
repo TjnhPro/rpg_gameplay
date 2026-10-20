@@ -236,3 +236,92 @@ recalculates, upgrades and publishes. No operation synchronizes another domain.
 Full PR diff from merged Entity baseline is classified in the closure report.
 Static registry remains optional entity and optional progression -> entity; no
 Skill/Reward placeholders. Phase REVIEW_PENDING; Developer alone accepts/closes.
+
+## CB01–CB05 Combat Foundation (v0.4.0)
+
+Group A is the merged PR #8 baseline at c550669. Combat phase is IN_PROGRESS,
+Developer acceptance PENDING. Earlier sections retain milestone history.
+One canonical owner, `src/modules/combat/index.ts`, captures a structural action
+attempt as immutable exact IDs and one entity target. Static optional combat
+requires entity, independently of progression. At v0.4.0 it needed no imports:
+opaque identity validation requires no Entity creation or lookup. Root exports
+one factory and three types; package deep exports remain closed.
+
+Request and context share one structural shape and one validation path. Private
+own-data/identifier helpers capture descriptors before building a frozen root and
+target; caller records stay untouched. Entity owns identity/attributes/resources/
+life, Progression owns EXP/level/ranks/points, Foundation owns coordination/providers,
+Kernel owns numerical work. No action admission, target policy, numerical formula,
+execution, global action registry, CombatSession, Skill/Effect/Encounter owner or
+second engine is introduced. Later basic attacks must remain independent of Skill.
+The snapshot is mode-neutral and needs no clock, RNG, IDs, turns or spatial data.
+
+## CB06–CB10 Actor-stage admission (v0.4.1)
+
+Same Combat owner imports getEntity and EntityCollection/EntityLifeState only
+through ../entity/index.js. Canonical CB03 factory supplies context validation;
+canonical getEntity owns full collection validation and exact source lookup.
+Combat protects supplied Life schema/identity only, comparing existing alive/dead
+without HP calculation or transitions. Existing private own-data helper also
+captures explicit boolean policy. One evaluation function validates all inputs,
+then applies missing > dead > ineligible > admitted priority and freezes result.
+No new Life/Collection owner, lookup engine, state store, numerical calculator,
+Condition Engine, Skill dependency or execution authority. Registry unchanged.
+At the v0.4.1 checkpoint, target identity was structural only.
+
+## CB11–CB15 Target evaluation (v0.4.2)
+
+Combat retains target evaluation ownership and depends only on public Entity APIs.
+getEntity owns canonical collection validation/target lookup; EntityLifeState and
+EntityLifeStatus remain Entity-owned. One private readLife boundary helper now
+serves both admission and target validation, preserving admission semantics.
+No Entity/Foundation/Progression production or registry/Core changes.
+
+Target validation accepts a structurally valid admitted/none receipt and never
+reruns source admission. Exact IDs enforce self consistency; other relations are
+caller assertions, not authenticated faction facts. Explicit nonempty policies
+permit alive or dead targets. Entire input contracts validate before target
+missing > relation denied > life denied priority. Diagnostics retain only frozen
+context and validated scalars, no authoritative target store or execution ticket.
+No numerical work, second engine, Skill/Effect dependency, state write or event.
+
+## CB16–CB20 Attack resolution (v0.4.3)
+
+Combat sequences validated actor/target receipts, Hit -> Critical -> B0 -> B1 ->
+Mitigation. Numerical ownership stays entirely in public @rpg/core/kernel.
+Caller supplies explicit finite numerical snapshots and policy, including scaling
+source order, already-effective bonuses, flat terms and mitigation configuration.
+Combat only validates/captures data and adapts callbacks; it contains no damage,
+probability or defense formulas. Critical bonus enters B1 once; multiplier is
+only diagnostic. Dodge returns before all later calculations.
+
+Foundation nextExecutionRandom supplies lazy caller RNG. No new provider/store,
+clock access, engine, event, HP/Life mutation or Skill/Effect implementation.
+All result diagnostics are newly detached and recursively frozen. Stage receipts
+are structural data, not provenance/freshness/concurrency authority. Registry and
+Group A owners remain unchanged; no persistent Combat state is introduced.
+
+## CB21–CB25 Damage application and death (v0.4.4)
+
+Combat validates a CB20 calculation receipt and exact target Resource/Life identity,
+then orchestrates one canonical Entity transitionEntityResource decrease and one
+resolveEntityDefeat using the updated Resource State and identical caller bounds.
+Entity/Core retain resource arithmetic; Entity retains death evaluation. Combat
+projects transition.applied verbatim, never resource delta/reachedMinimum as death.
+Dodge/zero validate first and return null transitions without normalization or
+Life evaluation. Combined immutable results reuse canonical Entity snapshots;
+there is no Combat health/Life store, duplicate calculator, event or reward engine.
+Caller owns current authority, persistence and replay/idempotency/concurrency.
+
+## CB26–CB30 integration/closure (v0.4.5)
+
+Integration is installed consumer evidence, with no production facade or API delta.
+Combat sequences; actual public Kernel calculates Hit/Critical/B0/B1/Mitigation;
+Entity owns current resources and defeat; Foundation supplies lazy caller RNG.
+Consumer explicitly threads updated immutable Resource/Life snapshots between two
+attempts. Rejection branching belongs to caller; resolver also rejects invalid
+stage receipts before numerical work. Application preserves Entity.applied verbatim.
+Full PR audit from Group A confirms unchanged Foundation/Entity/Progression owners,
+Core pin, dependency versions and CI. Only optional combat->entity was added to
+registry; no store/ledger/Skill/Effect/Encounter or scheduler. Review/acceptance
+remain separate; see the v0.4.5 closure report and ignored final review handoff.

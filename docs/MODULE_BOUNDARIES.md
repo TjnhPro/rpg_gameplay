@@ -122,3 +122,74 @@ is only optional progression -> entity, introduced by v0.3.0 and unchanged since
 PG19's consumer composes both explicitly; selecting progression alone still
 rejects. No copied Entity setter/validator, Kernel calculator, Skill Engine,
 Foundation event bus, hidden synchronization or global reward authority.
+
+## CB01–CB05 ownership (v0.4.0)
+
+Current registry: optional entity -> [], progression -> [entity], combat -> [entity].
+Existing metadata/entries are preserved. Combat has one owner at
+src/modules/combat/index.ts (no imports at v0.4.0); opaque references need no fake Entity
+or full Entity validator. No progression/skill/effect/encounter dependency.
+Root adds only createCombatActionContext and CombatEntityTarget/CombatActionRequest/
+CombatActionContext (61 runtime functions / 80 types total). No deep exports.
+Explicit selection entity+combat resolves entity then combat; combat-only rejects.
+Progression can be omitted or selected independently with its existing dependency.
+No Foundation/Entity/Progression source semantics, Core pin or dependency changes.
+No new registry placeholders, execution binding, state store or numerical owner.
+
+## CB06–CB10 admission boundary (v0.4.1)
+
+combat -> entity remains the only Combat module dependency; registry unchanged.
+Combat now consumes public getEntity and EntityCollection/EntityLifeState from
+../entity/index.js. CB03 creation stays provider/lookup-free; admission reuses
+that factory then canonical lookup instead of scanning collection.entities.
+Life boundary checks schema/identity only, never death/revival logic. No other
+production source changes except root exports: evaluateCombatActionAdmission,
+CombatActorEligibilityPolicy/CombatAdmissionStatus/CombatAdmissionReason/
+CombatAdmissionResult (62 functions /84 types total). No new module/deep export,
+Skill/Effect/Progression coupling, Kernel call or runtime binding.
+
+
+## CB11-CB15 target boundary (v0.4.2)
+
+Combat -> Entity remains unchanged. Public getEntity owns target lookup and
+collection validation. Canonical EntityLifeState/EntityLifeStatus are reused;
+private readLife shares the prior admission schema/identity checks. No Group A
+production, Core, static registry or dependency delta. Root adds only
+ evaluateCombatTargetValidation and CombatTargetRelation/CombatTargetPolicy/
+CombatTargetValidationStatus/CombatTargetRejectionReason/CombatTargetValidationResult
+(63 functions/89 types). No deep exports or private helpers escape. No Faction,
+Target Store, targeting engine, Skill owner, numerical work or source re-admission.
+
+## CB16–CB20 attack boundary (v0.4.3)
+
+Combat imports only the public @rpg/core/kernel numerical entry point and existing
+Foundation execution nextExecutionRandom. It reuses actual admission/target
+result types; neither admission nor target existence/policy is rerun. Full action
+identity must match. Structural receipts are not authenticated reservations.
+No production delta in Foundation/Entity/Progression, Core, registry or dependencies.
+Root adds resolveCombatAttack and CombatAttackInput/CombatAttackOutcome/
+CombatAttackResolutionResult (64 functions/92 types). No deep exports or helper
+exports. Combat never writes resource/Life state or publishes events. Kernel
+owns Hit, Critical, B0, B1 and Mitigation; caller owns numerical snapshots/policy.
+
+## CB21–CB25 damage/death boundary (v0.4.4)
+
+Same Combat owner reuses public Entity getEntityResourceCurrent (full snapshot
+validation without mutation), transitionEntityResource and resolveEntityDefeat.
+It reuses the existing private Life shape/identity helper plus canonical Life
+prototype validation. No Entity/Foundation/Progression, Core, registry/dependency
+or CI changes. Root adds applyCombatAttackDamage and CombatDamageApplicationPolicy/
+CombatDamageApplicationOutcome/CombatDamageApplicationResult:65 functions/95 types.
+No new modules/deep exports or validators exported. Damage/Life calculations are
+not duplicated; no automatic publish, Skill/Effect/Encounter or reward coupling.
+
+## CB26–CB30 closure boundary (v0.4.5)
+
+No production changes in this milestone. Full phase audit: Combat owner/root
+exports only; Group A owners byte-identical to merged PR #8 baseline. Registry
+adds only optional combat depending on entity; progression remains optional and
+independent. Static owner checks cover3 modules/8 sources. Installed tests select
+entity+combat without progression; combat-only fails without auto-enablement.
+Canonical numerical/resource/life delegation and absence of stores/formulas/events
+are reviewed in reports/v0.4.5-combat-integration-closure.md. Lexical checks alone
+are not architectural proof; source review plus installed behavior supply evidence.

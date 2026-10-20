@@ -1,4 +1,4 @@
-# Public API — v0.3.5 (GF01–GF16, EC01–EC18, PG01–PG19)
+# Public API — v0.4.1 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB10)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -1013,3 +1013,263 @@ Consumers constructing/exact-matching snapshots must include it. Untagged legacy
 objects are rejected with no inference, normalization or migration. pointKind is
 a structural domain discriminator, not authentication/provenance or an exactly-once
 authority; stale immutable snapshots can still branch. Package stays0.3.5.
+
+## CB01–CB05 Combat Foundation
+
+Canonical owner: `src/modules/combat/index.ts`. One new runtime function and three
+readonly types, exported only through the package root. Current root inventory:
+61 functions / 80 public types; accepted Group A exports remain unchanged.
+
+```ts
+interface CombatEntityTarget {
+  readonly kind: 'entity';
+  readonly entityId: string;
+}
+interface CombatActionRequest {
+  readonly actionId: string;
+  readonly actionType: string;
+  readonly sourceEntityId: string;
+  readonly target: CombatEntityTarget;
+}
+type CombatActionContext = CombatActionRequest;
+function createCombatActionContext(request: CombatActionRequest): CombatActionContext;
+```
+
+The factory synchronously validates exactly four own data fields and exactly two
+own target data fields. All IDs and actionType must be primitive nonblank strings;
+trim checks blankness only, preserving the original string including whitespace
+and case. Target kind must be exactly `entity`. Null, arrays, functions, missing,
+unknown (including nonenumerable/symbol), inherited required fields and accessors
+throw TypeError without invoking getters or returning a partial snapshot. Plain
+and null-prototype own-data records are supported using existing boundary semantics.
+No coercion, defaults, ID generation or fake Entity validation.
+
+Each call returns a fresh frozen root with a fresh frozen target. Original inputs
+stay mutable and detached. Equal requests produce semantically equal independent
+snapshots; duplicate actionId is permitted. Source/target are opaque references:
+self-target, swapped actor roles and unknown references are accepted. No collection
+lookup, supported-action catalog, trusted receipt, admission or execution is implied.
+
+Static module combat is optional and declares only entity. Consumer module
+registration/selection is explicit; combat alone fails dependency resolution without
+auto-enabling Entity. Progression remains independently selectable with Entity.
+The factory requires neither runtime registration nor Entity objects, Foundation
+execution providers or Kernel calls. No event, domain-state mutation, persistent
+session, numerical operation, Skill integration or game-mode/time/spatial policy.
+
+## CB06–CB10 Combat Action Admission
+
+Same Combat owner; one new root function and four types. At the v0.4.1 checkpoint:
+62 runtime functions /84 public types. CB01–CB05 contracts remain unchanged.
+
+```ts
+interface CombatActorEligibilityPolicy { readonly eligible: boolean; }
+type CombatAdmissionStatus = 'admitted' | 'rejected';
+type CombatAdmissionReason = 'none' | 'source_not_found' | 'source_dead' | 'source_ineligible';
+interface CombatAdmissionResult {
+  readonly context: CombatActionContext;
+  readonly status: CombatAdmissionStatus;
+  readonly reason: CombatAdmissionReason;
+}
+function evaluateCombatActionAdmission(
+  context: CombatActionContext, entities: EntityCollection,
+  sourceLife: EntityLifeState, policy: CombatActorEligibilityPolicy,
+): CombatAdmissionResult;
+```
+
+Synchronous pure evaluation: canonical createCombatActionContext validates and
+captures context; public Entity getEntity validates collection/looks up only
+source; Life must have exactly own data entityId/status, nonblank exact ID and
+alive/dead; source ID must match; policy must have exactly own boolean eligible.
+All validation completes before gameplay rejection. Missing/invalid records,
+extra/symbol/inherited/accessor fields, invalid life status, mismatched IDs,
+missing boolean or callback policy throw TypeError without invoking getters.
+Plain/null-prototype records retain accepted own-data semantics. No default Life
+or eligible, coercion, HP inference or implicit policy evaluation.
+
+| Valid inputs | status | reason |
+| --- | --- | --- |
+| Source absent (even dead/ineligible) | rejected | source_not_found |
+| Source present, dead (even ineligible) | rejected | source_dead |
+| Source present/alive, eligible false | rejected | source_ineligible |
+| Source present/alive, eligible true | admitted | none |
+
+Every result and its context/target are freshly detached/frozen, including rejected
+results. Original inputs remain untouched. Player/Monster/custom actor kinds share
+semantics. Unknown target and self-target are actor-stage admissible; no target
+lookup/relations/life/range or supported-action catalog is evaluated. Admitted does
+not mean executed or fully authorized. No state writes/events/time/RNG/ID allocation,
+resource/death/numerical operations or persistent reservation. Caller provides
+current authoritative state; stale snapshots can be evaluated again and results
+supply no concurrency or transaction authority. No additional function/deep export.
+
+## CB11–CB15 Combat Target Validation
+
+Package0.4.2 adds one root function and five types (63 functions/89 types total).
+
+```ts
+type CombatTargetRelation = 'self' | 'ally' | 'enemy' | 'neutral';
+interface CombatTargetPolicy {
+  readonly relation: CombatTargetRelation;
+  readonly allowedRelations: readonly CombatTargetRelation[];
+  readonly allowedLifeStatuses: readonly EntityLifeStatus[];
+}
+type CombatTargetValidationStatus = 'accepted' | 'rejected';
+type CombatTargetRejectionReason = 'none' | 'target_not_found'
+  | 'relation_not_allowed' | 'target_life_not_allowed';
+interface CombatTargetValidationResult {
+  readonly context: CombatActionContext;
+  readonly targetEntityId: string;
+  readonly relation: CombatTargetRelation;
+  readonly targetLifeStatus: EntityLifeStatus;
+  readonly status: CombatTargetValidationStatus;
+  readonly reason: CombatTargetRejectionReason;
+}
+function evaluateCombatTargetValidation(
+  admission: CombatAdmissionResult, entities: EntityCollection,
+  targetLife: EntityLifeState, policy: CombatTargetPolicy,
+): CombatTargetValidationResult;
+```
+
+Admission must be exactly own data context/status/reason with admitted/none;
+rejected or malformed receipts throw TypeError before target inputs are evaluated.
+The nested context uses the canonical factory. This validates structure only, not
+receipt provenance, freshness or authority. Source life/eligibility is never rerun.
+
+Target lookup uses public getEntity. Life requires own data entityId/status,
+alive/dead and exact target ID even if target is absent. Policy requires exactly
+own data relation/allowedRelations/allowedLifeStatuses, exact literals and nonempty
+dense arrays of unique own data entries without extra/symbol/accessor fields.
+Missing/inherited required fields, unknown literals, duplicates, holes, accessors,
+wrong identities or same-ID/non-self and different-ID/self inconsistencies throw
+TypeError without calling getters. No coercion/defaults/callbacks. Own-data plain
+and null-prototype records follow the existing Combat contract.
+
+All validation precedes selection: missing target -> rejected/target_not_found;
+otherwise disallowed relation -> rejected/relation_not_allowed; otherwise
+disallowed life -> rejected/target_life_not_allowed; otherwise accepted/none.
+Ally/enemy/neutral truth belongs to caller. Dead is valid if explicitly allowed;
+no HP inference/revival. Original inputs stay untouched/unfrozen; result and its
+fresh context/target are frozen/detached. No mutable policy aliases survive.
+No attack/range/Skill check, numerical call, execution token, state mutation,
+global relationship/target store, event or time/RNG. Caller supplies current
+snapshots and sequences stages; structural accepted results are replayable data.
+
+## CB16–CB20 Combat Attack Resolution
+
+Package0.4.3 adds one root function and three types (64 functions/92 types total).
+
+```ts
+function resolveCombatAttack(
+  admission: CombatAdmissionResult,
+  targetValidation: CombatTargetValidationResult,
+  attackInput: CombatAttackInput,
+  executionContext: GameplayExecutionContext,
+): CombatAttackResolutionResult;
+type CombatAttackOutcome = 'dodged' | 'landed';
+```
+
+CombatAttackInput composes public Kernel types, with no callbacks/RNG in numerical
+data: hit requires dodgeChance/eligible/rule; critical requires chance/bonus/
+eligible/rule. damage requires base/rank/perRank, explicit ordered scaling entries
+{source,value,coefficient}, flat {definition,additional,resolved} and explicit
+already-effective ResolvedDamageBonus[] bonuses (id/source/eligible/reason/value/
+contributions). mitigation requires ruleKey/rating/rule; optional sourceLevel and
+targetLevel follow Kernel. Rule requires enabled/bounds/levelScalingEnabled;
+baseK/levelPenalty can be omitted while disabled. Enabled mitigation requires
+positive baseK and nonnegative levelPenalty, plus levels when scaling is enabled.
+
+All records are closed own-data; arrays are dense own-data without extra fields.
+Finite numeric fields, positive safe-integer rank, nonblank IDs, unique scaling
+source IDs and finite non-inverted bounds are mandatory. No defaults/coercion or
+inherited/accessor fields; explicit undefined is invalid. All stage/numerical
+validation precedes RNG. Receipts require admitted/none and accepted/none, exact
+actionId/actionType/sourceEntityId/target.kind/target.entityId agreement and
+targetEntityId/self-relation/Life consistency. They are structural, not fresh or
+authenticated authority. Admission/existence/policies are never rerun.
+
+Hit -> Critical -> B0 -> B1 -> Mitigation delegates actual public Kernel calls.
+Lazy Foundation nextExecutionRandom supplies rolls: zero/disabled/ineligible
+dodge draws0; enabled eligible critical draws1 even at chance0. Dodge draws at
+most1, never Critical. Invalid/missing/throwing RNG propagates without retries or
+rollback. Already-effective bonus eligibility is not resolved again. Actual
+critical.bonus is added once in B1; multiplier is diagnostic only. Missing enabled
+mitigation config and nonfinite Kernel diagnostics throw TypeError.
+
+Result is a deeply frozen detached discriminated union. Both outcomes include
+context, outcome, actual hit diagnostics and finalDamage. dodged has finalDamage0
+and no critical/b0/b1/mitigation properties. landed includes actual critical, b0
+(including ordered scaling), b1 and mitigation (including missing diagnostics);
+finalDamage is mitigation.finalDamage. Disabled mitigation preserves status and
+missing fields. Original inputs/Kernel results are never frozen or mutated.
+No HP/Life writes, automatic events, clock access, global store, Skill/Effect
+execution or supported-action catalog. Caller explicitly invokes resolution and
+owns current state, numerical snapshots and execution dependencies.
+
+## CB21–CB25 Combat Damage Application
+
+Package0.4.4 adds one root function and three types (65 functions/95 types total).
+
+```ts
+interface CombatDamageApplicationPolicy extends EntityLifeResourcePolicy {
+  readonly currentAboveMaximum: EntityResourceTransitionInput['rule']['currentAboveMaximum'];
+}
+type CombatDamageApplicationOutcome = 'dodged' | 'zero_damage' | 'processed';
+function applyCombatAttackDamage(
+  attack: CombatAttackResolutionResult, resources: EntityResourceState,
+  life: EntityLifeState, policy: CombatDamageApplicationPolicy,
+): CombatDamageApplicationResult;
+```
+
+Policy requires resourceId/minimum/maximum/currentAboveMaximum with no default
+health key, rounding, minimum damage or multiplier. Attack is the complete actual
+CB20 dodged/landed shape with finite nonnegative finalDamage, canonical context,
+closed own-data records/dense arrays and valid nested diagnostics. Redundant
+hit/outcome, Critical/B1 and B1/mitigation/finalDamage links must agree. Numerical
+stages are never recalculated. Validation is structural, not receipt authentication.
+
+Exact target IDs must match Resource/Life IDs. Canonical Entity resource read
+validates every map entry; Life schema/prototype/identity and explicit finite
+ordered policy bounds/resource selection validate before no-op. Unknown IDs,
+current below minimum, getters, inherited required/unknown fields, malformed
+states/receipts/policy throw TypeError without invoking getters. Positive damage
+with above-max reject propagates the canonical Entity/Core error.
+
+CombatDamageApplicationResult is a readonly discriminated union. Both variants
+include detached frozen context and calculatedDamage/appliedDamage. dodged or
+zero_damage has both damage fields0 and resourceResult/lifeResult:null; caller
+keeps its current snapshots. These paths do not transition, normalize above-max
+resources or evaluate defeat, even at minimum. Above-max behavior applies only
+when an actual positive resource transition runs.
+
+processed contains exact EntityResourceTransitionResult and EntityLifeTransitionResult.
+One transitionEntityResource decrease uses finalDamage, selected bounds/above-max
+and allowIncreaseFromMinimum:false. One resolveEntityDefeat uses its UPDATED
+resource state and the same resourceId/minimum/maximum. appliedDamage is exactly
+transition.applied, never HP delta (140->100/request20 gives applied20/delta40).
+Positive damage at minimum is processed even if applied0; alive may be defeated,
+while already dead remains unchanged. Life outcome, not reachedMinimum/final dead
+status alone, identifies a new defeat. All nested canonical results are frozen;
+caller originals remain untouched/unfrozen, without mutable aliases.
+
+No damage recalculation, blanket dead-target ban, automatic events/rewards,
+Skill/Effect/Encounter feature, healing/revival, ledger or global state. Caller
+owns trusted/current snapshots, authorization, durable writes, replay/exactly-once
+and concurrent consistency. A receipt can be reused on independent state branches.
+
+## CB26–CB30 installed composition (v0.4.5)
+
+No public API/type additions or signature changes:65 root functions/95 types.
+Root-only exports remain closed. Caller creates contexts, evaluates admission and
+target, explicitly stops on rejection, resolves through Kernel with Foundation RNG,
+then calls applyCombatAttackDamage. For processed outcomes, retain both
+resourceResult.state and lifeResult.state together for the next attempt; no-op
+outcomes retain caller states. resourceResult/lifeResult are canonical Entity
+results, not Combat-specific state. Strict external combat-integration.ts verifies
+this continuation, discriminated nulls, readonly snapshots and absence of facades.
+
+The same calculated75 can apply75 to HP100, then25 to HP25. Caller must not infer
+applied magnitude from HP delta (above-max140->100/request20 still applied20).
+Structural receipts are not authenticated/fresh authorization. Reusing old state
+branches again; no persistent exactly-once, transaction or concurrency authority.
+No Skill/Effect/AI/Encounter integration is provided. See closure report.

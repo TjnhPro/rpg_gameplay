@@ -158,3 +158,43 @@ calculateEntityStats. A caller transform counter proves allocation never invokes
 stat calculation. No Progression formula/Kernel mock or numerical fallback.
 Pin, peer/dev dependencies and tarball SHA-512 remain unchanged across the whole
 Progression phase; the installed runner verifies artifact bytes against the lock.
+
+## CB16–CB20 numerical delegation (v0.4.3)
+
+resolveCombatAttack delegates calculateHit, calculateCritical, calculateDamageB0,
+calculateDamageB1 and calculateMitigation to the pinned public Kernel. Input types
+compose its public contracts. Ordered scaling snapshots adapt sourceOrder,
+sourceValue/coefficient callbacks; explicit flat data adapts resolveFlat. No L2
+numerical formulas, clamps or fallback engine. Already-effective bonus values go
+to B1 unchanged; actual critical.bonus enters once, never multiplier a second time.
+
+Lazy roll closures call Foundation nextExecutionRandom only when Kernel requests
+it. Zero/disabled/ineligible dodge consumes zero; eligible enabled critical still
+draws at chance zero. Dodge skips Critical/B0/B1/Mitigation. Invalid RNG propagates
+without retry/default/rollback. Enabled mitigation requires complete valid config;
+missing_config never succeeds. Every numerical diagnostic must be finite, copied
+and frozen without mutating Kernel results. Disabled mitigation preserves actual
+missing diagnostics. Core2.0.0 pin/revision/artifact integrity remain unchanged.
+
+## CB21–CB25 canonical resource semantics (v0.4.4)
+
+Combat calls Entity transitionEntityResource with amount=actual CB20 finalDamage,
+operation=decrease, caller resource/bounds/currentAboveMaximum and fixed
+allowIncreaseFromMinimum:false. Then resolveEntityDefeat uses its updated state.
+No direct resource arithmetic or second Core damage calculation. appliedDamage
+is exactly resourceResult.transition.applied. Pinned Kernel permits above-max
+140->100 after requested20 while applied=20 and delta=40; Combat preserves this.
+Above-max reject propagates the canonical Entity/Core error, with originals intact.
+No-op paths never transition/normalize/evaluate defeat. Core pin/artifact/deps
+remain unchanged; real installed integrity and numerical regressions are required.
+
+## v0.4.5 full-flow integration evidence
+
+Pinned Core2.0.0/revision04b7239f998c3c688a0dfa3202f11811a9acd775 and locked
+SHA-512 remain unchanged. Two installed sessions independently assert raw100,
+critical bonus.5, B1=150, reduction.5, final75; application threads HP100->25->0
+with applied75/25. Dodge chance0 consumes0; Critical consumes2 total. Real positive
+CB20 resolution also supplies20 for above-max140->100/applied20/delta40.
+No numerical reimplementation or new runtime dependencies. Existing artifact-byte
+integrity and public Kernel consumers remain mandatory. Consumer literal oracles
+are independent expectations, not values regenerated from implementation output.
