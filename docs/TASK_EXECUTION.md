@@ -1,3 +1,15 @@
+## Current authorized checkpoint: v0.7.5 Combat / Skill / Effect Integration
+
+Developer supplied approved [task](tasks/active/v0.7.5-combat-skill-effect-integration.md); D01–D05 remain ALL A.
+Starting/accepted v0.7.4 SHA 7c5c6c24b0a8cf0deca6836b9e38992ef610d12b,
+clean synchronized feat/v0.7-actor-ai; Draft PR #12 to main. Baseline push/PR CI
+re-audited 8/8, 208 required markers/job. Package 0.7.4→0.7.5.
+AI26–AI30 only: canonical integration in installed L4 fixtures, plus minimal
+cross-domain terminal feedback validator/type. No domain owner/graph changes.
+Deliver local verification and exact-final-head push/PR CI evidence on PR #12.
+Keep Draft; phase IN_PROGRESS, acceptance PENDING. Stop v0.7.5. No new branch/PR,
+Ready, merge/tag/publish or automatic next milestone. Prior authorizations historical.
+
 ## Current authorized checkpoint: v0.7.4 Action Selection & Intent
 
 Developer supplied approved [task](tasks/active/v0.7.4-ai-action-selection-intent.md); D01–D05 ALL A.

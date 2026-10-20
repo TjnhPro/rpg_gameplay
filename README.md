@@ -1,3 +1,17 @@
+# RPG Gameplay — v0.7.5 Combat / Skill / Effect Integration
+
+**AI01–AI30 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**
+Canonical Combat, Skill and Effect integration is demonstrated by installed L4
+consumer fixtures. Production adds only immutable terminal feedback validation;
+L4 owns freshness, execution, receipts, commits and local duplicate handling.
+Root **126 functions /215 types**, additive one function/one type.
+Installed evidence: **234 runtime contracts /45 groups +3 outer**, zero skips;
+all224 prior contracts retained. Core, other owners and graph unchanged.
+Continue [Draft PR #12](https://github.com/TjnhPro/rpg_gameplay/pull/12).
+[Task](docs/tasks/active/v0.7.5-combat-skill-effect-integration.md) / [Report](docs/reports/v0.7.5-combat-skill-effect-integration.md) / [API](docs/API.md).
+Stop v0.7.5; no Ready/merge/tag/publish or automatic v0.7.6.
+Concrete gameplay profiles NOT_EVALUATED; earlier status is historical.
+
 # RPG Gameplay — v0.7.4 Action Selection & Intent
 
 **AI01–AI25 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**

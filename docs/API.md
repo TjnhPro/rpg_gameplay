@@ -1,3 +1,36 @@
+## v0.7.5 terminal feedback — AI26–AI30
+
+One additive root function/type; total **126 functions /215 types**:
+
+```ts
+validateActorAIActionExecutionFeedback(
+  selection: ActorAIActionSelectionResult,
+  feedback: ActorAIActionExecutionFeedback
+): ActorAIActionExecutionFeedback
+```
+
+Feedback carries exact actorId/decisionId/actionKey/targetEntityId from the selected
+proposal and a caller-owned nonblank attemptId. Valid terminal combinations:
+
+| phase | status | reasonId |
+|---|---|---|
+| admission | rejected | nonblank string |
+| execution | completed | null |
+| execution | failed | nonblank string |
+
+Selection and feedback use closed own-data validation, without invoking getters.
+No feedback for no_action/manual. Result is detached and frozen; inputs/state are
+unchanged. Invalid discriminants, target bindings, malformed diagnostics or wrong
+correlation throw TypeError. Nonblank identifiers are preserved exactly.
+The validator cannot prove caller execution, authorize an action, establish current
+controller/world state, prevent duplicate execution, or commit state. Repeated valid
+reports are intentionally accepted. L4 verifies receipts, binds actionKey to canonical
+execution, rechecks freshness and owns any attempt ledger. No runtime/store/callback.
+Integration consumers use actual Combat admission/target/attack/damage, Skill
+admission/cost/cooldown/activation/outcome, Effect lifecycle/status/restrictions and
+Entity resources/Life. These are test-only caller composition, not new AI APIs.
+[report](reports/v0.7.5-combat-skill-effect-integration.md). Historical inventories below are preserved.
+
 ## v0.7.4 Action Selection & Intent — AI21–AI25
 
 Three functions/nine types added; root **125 functions /214 types**.

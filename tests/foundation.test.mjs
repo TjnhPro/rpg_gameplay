@@ -21,7 +21,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI25, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI30, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -67,7 +67,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.7.4');
+    assertVersion(packageJson.version, '0.7.5');
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
@@ -85,7 +85,7 @@ assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModu
  'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId', 'createEntity',
  'createEntityCollection', 'addEntity', 'getEntity', 'hasEntity', 'listEntities', 'removeEntity', 'replaceEntity',
  'createEntityAttributeState', 'getEntityBaseAttributes', 'setEntityBaseAttribute', 'calculateEntityStats',
- 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection'].sort());
+ 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
@@ -98,7 +98,7 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     // A missing packaged root export must fail the very same runtime consumer.
     const installedRoot = path.join(installed, 'dist/index.js');
     const rootSource = fs.readFileSync(installedRoot, 'utf8');
-    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection']) {
+    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback']) {
       const pattern = new RegExp(`\\b${requiredExport}\\b`);
       assert.match(rootSource, pattern);
       try {
@@ -928,6 +928,72 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     assertPackedFiles();
     console.log('INSTALLED_ACTOR_AI_ACTION_VALIDATOR_DELEGATION_PASS actual_validator_invoked; bypass_detected; restored');
     console.log('INSTALLED_ACTOR_AI_ACTION_NEGATIVE_PASS missing_fixtures; three_root_exports; wrong_version; Core_integrity; twelve_runtime_faults; validator_bypass; skipped; zero_assertions; restored_artifacts');
+    { // AI26-AI30: real L4 consumer composition, terminal reports and fail-closed evidence.
+    for (const extension of ['mjs', 'ts']) {
+      const required = path.join(temp, 'actor-ai-integration.' + extension);
+      copyRequiredConsumer(path.join(root, 'tests/consumers/actor-ai-integration.' + extension), required);
+      const saved = required + '.saved';
+      try {fs.renameSync(required, saved); assert.throws(() => copyRequiredConsumer(required, required + '.copy'), {code: 'ENOENT'});}
+      finally {fs.renameSync(saved, required);}
+    }
+    assert.throws(() => assertVersion('0.7.4', '0.7.5'), /installed package version/);
+    const integrationMarkers = ['COMBAT','REJECTIONS','SKILL','SKILL_REJECTIONS','EFFECT','FEEDBACK','VALIDATION','FRESHNESS','FALLBACK','REPLAY'].map(x => 'ACTOR_AI_INTEGRATION_' + x + '_PASS');
+    const integrationEvidence = exec(['--test', '--test-reporter=tap', 'actor-ai-integration.mjs'], temp);
+    assertTapEvidence(integrationEvidence, 10, integrationMarkers);
+    for (const marker of integrationMarkers) console.log(integrationEvidence.split(/\r?\n/).find(line => line.includes(marker)));
+    console.log('INSTALLED_ACTOR_AI_INTEGRATION_PASS AI26-AI30; consumer_tests=10 skipped=0; canonical_L4_composition');
+    const integrationFile = path.join(temp, 'actor-ai-integration.mjs'), integrationSource = fs.readFileSync(integrationFile, 'utf8').replace(/\r\n/g, '\n');
+    const mutations = [
+      ['pending_completion', "if(options.pending) return {activation,feedback:null};", "if(options.pending) return {activation,feedback:terminal(f,selected,attemptId,'execution','completed',null)};"],
+      ['cooldown_bypass', 'const ready=g.evaluateSkillCooldownReady', 'f.cooldown=g.createSkillCooldownState(f.instance); const ready=g.evaluateSkillCooldownReady'],
+      ['resource_bypass', 'const payment=g.evaluateSkillResourceCosts', "f.resources=g.createEntityResourceState(f.actor,{mana:{minimum:0,maximum:100,current:100}}); const payment=g.evaluateSkillResourceCosts"],
+      ['combat_actor_bypass', 'g.evaluateCombatActionAdmission(context,f.entities,f.life,{eligible})', "g.evaluateCombatActionAdmission(context,f.entities,g.createEntityLifeState(f.actor,{status:'alive'}),{eligible})"],
+      ['combat_target_bypass', 'g.evaluateCombatTargetValidation(admission,f.entities,f.targetLife,targetPolicy(relation))', "g.evaluateCombatTargetValidation(admission,f.entities,g.createEntityLifeState(f.target,{status:'alive'}),targetPolicy(relation))"],
+      ['effect_block_ignored', "if(restriction.status === 'blocked') return rejected('effect_blocked');", '/* fault: restriction ignored */'],
+      ['effect_allowed_overrides_rejection', "if(admission.status !== 'admitted') return {reason:admission.reason};", "if(admission.status !== 'admitted') return {admission:{...admission,status:'admitted',reason:'none'},validation:g.evaluateCombatTargetValidation({...admission,status:'admitted',reason:'none'},f.entities,f.targetLife,targetPolicy('enemy'))};"],
+      ['commit_after_rejection', "const rejected=reason=>({feedback:terminal(f,selected,attemptId,'admission','rejected',reason)});", "const rejected=reason=>{f.targetResources=g.transitionEntityResource(f.targetResources,'health',{operation:'decrease',amount:5,maximum:100,rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:false}}).state;return {feedback:terminal(f,selected,attemptId,'admission','rejected',reason)};};"],
+      ['stale_execution', "if(intent.actorId !== f.actor.id || f.currentDecision !== intent.decisionId || bound.revision !== f.revision\n    || bound.stateToken !== JSON.stringify(f.ai)) return rejected('stale_decision');", '/* fault: stale decision admitted */'],
+      ['manual_takeover', "if(f.ai.controller !== 'ai') return rejected('controller_changed');", "if(f.ai.controller !== 'ai'){f.ai.controller='ai';bound.stateToken=JSON.stringify(f.ai);}"],
+      ['automatic_retry', 'const outcome=g.reportSkillExecutionOutcome(activation.request,report);', "const outcome=g.reportSkillExecutionOutcome(activation.request,report); if(outcome.status === 'failed'){f.dispatches++;combatDispatch(f,checked,options.mode);}"],
+      ['duplicate_commit', "if(f.attempts.has(attemptId) || f.decisions.has(intent.decisionId)) throw new TypeError('L4 duplicate attempt/decision');", '/* fault: duplicate allowed */'],
+      ['feedback_mutates_ai', 'f.feedback.push(result);', "f.ai.behaviorStateId='changed'; f.feedback.push(result);"],
+      ['feedback_wrong_action', 'selected,{...selected.decision.intent,attemptId,phase,status,reasonId}', "selected,{...selected.decision.intent,actionKey:'wrong',attemptId,phase,status,reasonId}"],
+    ];
+    for (const [name, expected, faulty] of mutations) {
+      assert.ok(integrationSource.includes(expected), 'required integration fault: ' + name);
+      let fault = integrationSource.replace(expected, faulty);
+      if (name === 'stale_execution') fault = fault.replace("else if(intent.targetEntityId !== f.ai.targetEntityId && intent.targetEntityId !== null) return rejected('stale_target');", 'else {}');
+      try {
+        fs.writeFileSync(integrationFile, fault);
+        assert.throws(() => exec(['--test','--test-reporter=tap','actor-ai-integration.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(integrationFile, integrationSource);}
+      assertPackedFiles(); console.log('INSTALLED_ACTOR_AI_INTEGRATION_FAULT_DETECTED ' + name);
+    }
+    for (const mode of ['skipped', 'zero_assertions']) {
+      const fault = mode === 'skipped' ? integrationSource.replace("contract('integration C01", "test.skip('integration C01")
+        : "const unchecked = new Proxy(() => {}, {get: () => () => {}});\n" + integrationSource.replaceAll('assert.', 'unchecked.')
+          .replace("unchecked.ok(assertions > 0, 'Integration contract requires actual assertions')", "assert.ok(assertions > 0, 'Integration contract requires actual assertions')");
+      assert.notEqual(fault, integrationSource);
+      try {fs.writeFileSync(integrationFile, fault);assert.throws(() => exec(['--test','--test-reporter=tap','actor-ai-integration.mjs'], temp), /AssertionError|ERR_ASSERTION/);}
+      finally {fs.writeFileSync(integrationFile, integrationSource);}
+      console.log('INSTALLED_ACTOR_AI_INTEGRATION_RUNNER_FAULT_DETECTED ' + mode);
+    }
+    const feedbackStart = aiRuntime.indexOf('export function validateActorAIActionExecutionFeedback(');assert.ok(feedbackStart > 0);
+    const feedbackRuntime = aiRuntime.slice(feedbackStart);
+    for (const [name, expected, faulty] of [
+      ['correlation', "if (report.actorId !== intent.actorId || report.decisionId !== intent.decisionId\n        || report.actionKey !== intent.actionKey || report.targetEntityId !== intent.targetEntityId)", 'if (false)'],
+      ['no_action', 'const selected = fields(selection,', "if(selection.status === 'no_action') return Object.freeze({...feedback}); const selected = fields(selection,"],
+      ['reason', "data.status === 'completed' && data.reasonId === null", "data.status === 'completed'"],
+      ['snapshot', "return Object.freeze({ ...report, phase: 'execution', status: 'completed', reasonId: null });", "return {...report, phase: 'execution', status: 'completed', reasonId: null};"],
+    ]) {
+      assert.ok(feedbackRuntime.includes(expected), 'required feedback fault: ' + name);
+      try {fs.writeFileSync(aiRuntimeFile, aiRuntime.slice(0,feedbackStart)+feedbackRuntime.replace(expected,faulty));
+        assert.throws(() => exec(['--test','--test-reporter=tap','actor-ai-integration.mjs'],temp),/AssertionError|ERR_ASSERTION/);}
+      finally {fs.writeFileSync(aiRuntimeFile,aiRuntime);}
+      assertPackedFiles();console.log('INSTALLED_ACTOR_AI_FEEDBACK_FAULT_DETECTED '+name);
+    }
+    console.log('INSTALLED_ACTOR_AI_INTEGRATION_NEGATIVE_PASS fourteen_L4_faults; four_feedback_faults; missing_fixture_export; version_Core; skipped_zero_assertions; restored_artifacts');
+    }
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);
 
@@ -962,7 +1028,7 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts', 'effect-periodic.ts', 'effect-integration.ts', 'actor-ai-foundation.ts', 'actor-ai-perception.ts', 'actor-ai-target-selection.ts', 'actor-ai-behavior.ts', 'actor-ai-action-selection.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts', 'effect-periodic.ts', 'effect-integration.ts', 'actor-ai-foundation.ts', 'actor-ai-perception.ts', 'actor-ai-target-selection.ts', 'actor-ai-behavior.ts', 'actor-ai-action-selection.ts', 'actor-ai-integration.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
     const aiDeclarationFile = path.join(installed, 'dist/modules/actor-ai/index.d.ts');
     const aiDeclaration = fs.readFileSync(aiDeclarationFile, 'utf8');
@@ -1001,6 +1067,15 @@ void resource; void invalid;
     } finally {fs.writeFileSync(aiDeclarationFile, aiDeclaration);}
     assertPackedFiles();
     console.log('INSTALLED_ACTOR_AI_ACTION_DECLARATION_NEGATIVE_PASS missing_self_target; strict_NodeNext_failure; restored_declarations');
+    const feedbackDeclaration = aiDeclaration.slice(aiDeclaration.indexOf('export type ActorAIActionExecutionFeedback'));
+    assert.ok(feedbackDeclaration.includes('readonly attemptId: string'));
+    try {
+      fs.writeFileSync(aiDeclarationFile, aiDeclaration.slice(0, aiDeclaration.indexOf('export type ActorAIActionExecutionFeedback'))
+        + feedbackDeclaration.replace('readonly attemptId: string', 'readonly attemptId: number'));
+      assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp), /TS\d+/);
+    } finally {fs.writeFileSync(aiDeclarationFile, aiDeclaration);}
+    assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_INTEGRATION_DECLARATION_NEGATIVE_PASS wrong_attempt_type; real_strict_NodeNext_failure; restored');
     const declarationFile = path.join(installed, 'dist/modules/effect/index.d.ts');
     const declarationBytes = fs.readFileSync(declarationFile, 'utf8');
     assert.ok(declarationBytes.includes("readonly kind: 'dot' | 'hot';"));

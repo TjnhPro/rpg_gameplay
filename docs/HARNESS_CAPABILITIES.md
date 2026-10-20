@@ -1,3 +1,13 @@
+## v0.7.5 installed evidence delta
+
+45 installed groups /234 runtime contracts +3 outer tests; skipped/cancelled/todo=0.
+Ten new integration contracts exercise actual canonical owners through caller-owned
+fixtures. Strict NodeNext consumes real root declarations and rejects deep imports.
+Required-file/version/Core/export/declaration and TAP gates fail closed. Fourteen L4
+faults, four feedback runtime faults and skipped/zero-assertion faults are detected
+and restored. All224 prior contracts and historical mutation gates retained.
+[report](reports/v0.7.5-combat-skill-effect-integration.md); exact-head remote results belong to the SHA-bound PR supplement.
+
 ## v0.7.4 installed evidence delta
 
 Eight assertion-bearing installed groups cover AI21–AI25 with actual npm tarball,

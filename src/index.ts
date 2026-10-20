@@ -130,3 +130,6 @@ export {createActorAIActionSelectionPolicy, createActorAIActionObservation, eval
 export type {ActorAIActionKind, ActorAIActionTargetMode, ActorAIActionRule, ActorAIActionSelectionPolicy,
   ActorAIActionAvailability, ActorAIActionObservation, ActorAIActionRuleRejectionReason,
   ActorAIActionRuleRejection, ActorAIActionSelectionResult} from './modules/actor-ai/index.js';
+
+export {validateActorAIActionExecutionFeedback} from './modules/actor-ai/index.js';
+export type {ActorAIActionExecutionFeedback} from './modules/actor-ai/index.js';

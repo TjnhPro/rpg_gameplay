@@ -1,3 +1,12 @@
+## v0.7.5 Actor AI integration checkpoint
+
+AI26 canonical Combat; AI27 canonical Skill; AI28 actual Effect restriction AND-gates;
+AI29 immutable terminal feedback/correlation; AI30 caller-explicit fresh fallback:
+IMPLEMENTED with installed fixture evidence. AI01–AI25 retained. Production adds
+only feedback capture/validation; no AI execution authority or domain dependency.
+AI31–AI40 OUT_OF_SCOPE. Phase IN_PROGRESS, Developer acceptance PENDING.
+Concrete gameplay profiles NOT_EVALUATED. [report](reports/v0.7.5-combat-skill-effect-integration.md); previous statements historical.
+
 ## v0.7.4 Actor AI checkpoint
 
 AI01–AI20 retained; AI21 Basic Attack Intent, AI22 Skill Use Intent, AI23 Movement

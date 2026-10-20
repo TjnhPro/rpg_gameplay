@@ -1,3 +1,16 @@
+## v0.7.5 canonical integration evidence
+
+`tests/consumers/actor-ai-integration.mjs` has ten assertion-bearing installed
+contracts: Combat/rejections, Skill/rejections, Effect, feedback/validation,
+freshness, explicit fallback and independent literal replay. C01–C47 traceability
+is in [report](reports/v0.7.5-combat-skill-effect-integration.md). `actor-ai-integration.ts` checks strict NodeNext, readonly values,
+terminal discriminants, exact attemptId typing and root-only declarations.
+Fourteen caller fixture mutations and four actual installed feedback mutations
+must fail; skipped/zero-assertion consumers and declaration corruption must fail.
+Artifacts restored after every mutation. Existing 224 runtime contracts retained:
+observed total234 /45 groups +3 outer; zero skips/cancelled/todo.
+Fixture duplicate ledger is local to each caller session, never a durable guarantee.
+
 ## v0.7.4 action evidence
 
 A01–A47 map to eight installed consumer groups: CAPTURE; INTENTS; PRIORITY;

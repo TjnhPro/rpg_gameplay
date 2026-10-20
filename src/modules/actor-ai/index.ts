@@ -527,3 +527,57 @@ export function evaluateActorAIActionSelection(state: ActorAIState, entities: En
     decision: validateActorAIDecisionResult(current, correlation,
       {status: 'no_action', reason: 'no_candidate', intent: null}), rejected: Object.freeze(rejected)});
 }
+
+/** Caller report only: correlation is not execution proof or duplicate prevention. */
+export type ActorAIActionExecutionFeedback = ActorAIActionIntent & {readonly attemptId: string} & (
+  | {readonly phase: 'admission'; readonly status: 'rejected'; readonly reasonId: string}
+  | {readonly phase: 'execution'; readonly status: 'completed'; readonly reasonId: null}
+  | {readonly phase: 'execution'; readonly status: 'failed'; readonly reasonId: string}
+);
+
+/** Capture terminal feedback without execution, state mutation, retry or receipt verification. */
+export function validateActorAIActionExecutionFeedback(selection: ActorAIActionSelectionResult,
+  feedback: ActorAIActionExecutionFeedback): ActorAIActionExecutionFeedback {
+  const selected = fields(selection, ['status', 'reason', 'selectedRuleId', 'actionKind', 'decision', 'rejected']);
+  if (selected.status !== 'selected' || selected.reason !== 'rule_selected') {
+    throw new TypeError('Feedback requires selected Actor AI proposal');
+  }
+  const selectedRuleId = id(selected.selectedRuleId);
+  if (!['basic_attack', 'skill', 'approach_target', 'return_home', 'wait'].includes(selected.actionKind as string)) {
+    throw new TypeError('Invalid selected Actor AI action kind');
+  }
+  const decision = fields(selected.decision, ['status', 'reason', 'intent']);
+  if (decision.status !== 'proposed' || decision.reason !== 'none') throw new TypeError('Feedback requires proposed intent');
+  const intent = intentSnapshot(decision.intent as ActorAIActionIntent);
+  if ((selected.actionKind === 'return_home' || selected.actionKind === 'wait') !== (intent.targetEntityId === null)) {
+    throw new TypeError('Invalid selected Actor AI target binding');
+  }
+  const seen = new Set<string>();
+  perceptionArray(selected.rejected, value => {
+    const rejection = fields(value, ['ruleId', 'actionKey', 'reason']), ruleId = id(rejection.ruleId);
+    id(rejection.actionKey);
+    if (ruleId === selectedRuleId || seen.has(ruleId)
+      || !['availability_missing', 'action_unavailable', 'target_missing'].includes(rejection.reason as string)) {
+      throw new TypeError('Invalid Actor AI rejection diagnostic');
+    }
+    seen.add(ruleId);
+    return ruleId;
+  });
+  const data = fields(feedback, ['decisionId', 'actorId', 'actionKey', 'targetEntityId', 'attemptId', 'phase', 'status', 'reasonId']);
+  const report = {decisionId: id(data.decisionId), actorId: id(data.actorId), actionKey: id(data.actionKey),
+    targetEntityId: target(data.targetEntityId), attemptId: id(data.attemptId)};
+  if (report.actorId !== intent.actorId || report.decisionId !== intent.decisionId
+    || report.actionKey !== intent.actionKey || report.targetEntityId !== intent.targetEntityId) {
+    throw new TypeError('Actor AI feedback correlation mismatch');
+  }
+  if (data.phase === 'execution' && data.status === 'completed' && data.reasonId === null) {
+    return Object.freeze({...report, phase: 'execution', status: 'completed', reasonId: null});
+  }
+  if (data.phase === 'admission' && data.status === 'rejected') {
+    return Object.freeze({...report, phase: 'admission', status: 'rejected', reasonId: id(data.reasonId)});
+  }
+  if (data.phase === 'execution' && data.status === 'failed') {
+    return Object.freeze({...report, phase: 'execution', status: 'failed', reasonId: id(data.reasonId)});
+  }
+  throw new TypeError('Invalid Actor AI terminal feedback');
+}

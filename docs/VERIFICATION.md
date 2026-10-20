@@ -1,3 +1,16 @@
+## v0.7.5 verification delta
+
+Windows targeted installed integration: 10/10 and strict NodeNext PASS.
+`npm run verify` requires boundaries, self-tests, build, strict typecheck and actual
+installed package evidence, including AI01–AI30. Missing fixtures/exports, bad
+version/Core, skipped/no-assertion tests and runtime/declaration faults fail closed.
+Observed functional evidence:234 runtime /45 groups +3 outer, zero skipped.
+Full verification and protected-file/API inventory audits are required before push.
+Exact delivered HEAD must have both push/PR matrices: Windows+Ubuntu Node22/24,
+eight successful jobs with all markers and no skipped steps. Final SHA/job URLs
+and artifact hashes are published on Draft PR #12 after CI. [report](reports/v0.7.5-combat-skill-effect-integration.md) remains local
+evidence until that supplement; phase IN_PROGRESS, Developer acceptance PENDING.
+
 ## v0.7.4 verification delta
 
 Preparation/fresh install, harness check/selftest, build/typecheck, targeted installed

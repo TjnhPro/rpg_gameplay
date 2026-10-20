@@ -1,3 +1,13 @@
+## v0.7.5 feedback / integration ownership
+
+Graph unchanged: optional actor-ai → entity only. Production changes append only
+one terminal feedback function/type in Actor AI and additive public root exports.
+No Combat/Skill/Effect imports in Actor AI; no second engine or global store.
+L3 provides action/restriction policy; test-local L4 binds action/attempt, revalidates
+current controller/target and canonical gates, commits candidates and dispatches.
+Entity/Core/Combat/Skill/Effect retain all numerical and state ownership. Other
+production, Core pin, registry and dependencies unchanged. [report](reports/v0.7.5-combat-skill-effect-integration.md).
+
 ## v0.7.4 action-selection ownership
 
 Graph unchanged: optional actor-ai → entity only. Actor AI validates canonical
