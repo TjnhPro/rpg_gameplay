@@ -1,5 +1,15 @@
 # Module Registry Contract
 
+## v0.5.6 closure audit boundary
+
+No production module/API or registry change is authorized in this milestone.
+Graph: entity[], progression[entity], combat[entity], skill[entity], all optional.
+Integration coordination is confined to installed consumer tests. Skill does not
+import Progression or Combat; callers supply rank and preflight data and dispatch
+to canonical owners. No L2 dependency on L3/L4, duplicate numerical owner or
+hidden state authority is introduced. Phase acceptance remains PENDING.
+
+
 `harness/modules.json` declares optional Entity, Progression, Combat and Skill; the latter three depend only on Entity. Add entries **only with an approved implementation task**. Default convention is `src/modules/<id>`; changing conventions requires reviewing architecture checks.
 
 Example (documentation only, **not an implemented module**):

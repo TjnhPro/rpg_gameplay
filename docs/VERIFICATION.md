@@ -1,4 +1,17 @@
-# Verification gates — v0.5.3
+# Verification gates — v0.5.6
+
+## Current release candidate — v0.5.6
+
+npm run verify requires production source and every gate: boundaries, harness
+self-tests, build, strict typecheck and installed functional consumers. It now
+includes SK31–SK35 integration and runner negative controls. The runner checks
+actual package/Core versions, tarball integrity, required TAP execution and zero
+failed/cancelled/skipped/todo results. Required consumers cannot silently vanish.
+See [final review](reports/v0.5.6-skill-final-review.md) for actual local counts and
+artifact provenance; PR #10 carries final exact-head Windows/Ubuntu Node22/24
+push+PR evidence. Developer acceptance is PENDING. Historical checkpoint sections
+below retain their original scope and do not establish current acceptance.
+
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.

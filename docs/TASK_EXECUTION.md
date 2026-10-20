@@ -1,5 +1,17 @@
 # Approved Task Execution — ChatGPT → Agent
 
+## Current Skill closure handoff — v0.5.6
+
+The approved [closure task](tasks/active/v0.5.6-skill-integration-closure.md)
+continues feat/v0.5-skill / PR #10. Changes are verification, documentation and
+version metadata only; production source, Core, module graph and public API are
+frozen. The [final review](reports/v0.5.6-skill-final-review.md) distinguishes
+historical checkpoints, current local evidence and final exact-head CI. PR may
+become Ready for Review only after required Windows/Ubuntu Node22/24 push and PR
+jobs pass with no BLOCKER/MAJOR. Developer acceptance remains PENDING; merge,
+tag, publish and a next phase require separate authority.
+
+
 ## Authority
 
 **Developer + ChatGPT:** discuss design and author task/plan. **Developer:** approves exact task. **Agent:** implements within that approved plan, provides evidence. **Developer:** closes the phase.

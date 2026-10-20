@@ -1,5 +1,16 @@
 # L2 Gameplay Foundation — 14 accepted capability groups
 
+## Skill v0.5.6 closure candidate
+
+SK01–SK30 are exercised together by installed SK31–SK35 evidence: ranked Combat,
+rankless caller execution, multi-resource payment, cooldown reuse, reference-only
+loadout and deterministic rejection/replay. No production capability is added.
+No Effect runtime, cast/channel, range/LOS, refund, persistent catalog or live
+application runtime is claimed. Full gameplay profile behavior remains
+NOT_EVALUATED; phase acceptance remains PENDING. See the
+[final review](reports/v0.5.6-skill-final-review.md).
+
+
 **Accepted scope**, not an instruction to write 14 packages/classes or implement all at once. Each capability can be optional. Evaluate owners and dependencies only when a task reaches that capability.
 
 | # | Capability group | Reusable responsibility | Examples left to L3 |

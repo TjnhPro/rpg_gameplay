@@ -1,4 +1,4 @@
-# Public API — v0.5.5 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK30)
+# Public API — v0.5.6 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK35)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -1679,3 +1679,13 @@ events. Rank/Resource/Cooldown/Skill Instances stay in their canonical owners.
 L3 owns layout/restrictions/duplicate policy; L4 owns active selection, reference
 resolution, persistence and authoritative commit. No active-loadout manager,
 Skill Instance registry/inventory, automatic activation, UI or move/swap/reorder.
+
+## SK31–SK35 Skill installed integration (v0.5.6)
+
+No new runtime functions/types or signature changes: root 80 functions/133 types
+retained exactly from0.5.5. Installed skill-integration.mjs/.ts composes Foundation,
+Entity, Progression, Skill and actual Combat public APIs. L3 supplies content/
+layout/policies; L4 resolves references, preflights, checks current local inputs,
+commits candidates and dispatches. Consumers are verification, not a production
+facade. No new authorization, exactly-once, rollback/refund or concurrency promise.
+See reports/v0.5.6-skill-final-review.md for current-artifact evidence.

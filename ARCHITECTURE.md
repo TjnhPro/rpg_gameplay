@@ -1,5 +1,16 @@
 # Architecture — accepted scope, open implementation
 
+## v0.5.6 closure review candidate
+
+SK31–SK35 add installed integration evidence only. Production source and public
+API are unchanged from v0.5.5. L1 Core owns numerical calculations; Entity owns
+resources/life, Progression owns ranks, Combat owns attack execution, and Skill
+owns its immutable contracts and loadout references. L3 supplies policy; L4
+selects current inputs, commits candidates and dispatches execution. No runtime
+or transaction manager is added. Module graph remains entity[], progression[entity],
+combat[entity], skill[entity], all optional. Developer phase acceptance is PENDING.
+
+
 ## Four layers
 
 ```text

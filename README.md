@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.5.5 Skill Slots & Loadout
+# RPG Gameplay — v0.5.6 Skill Integration & Closure
 
-> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK30 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
+> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK30 implemented; SK31–SK35 closure evidence prepared for Developer review, acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK30 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK35 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Skill identity foundation
@@ -164,7 +164,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.4.1.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.5.6.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -592,3 +592,21 @@ external catalog integrity. L4 owns resolution, active selection and persistence
 See [API](docs/API.md) and [report](docs/reports/v0.5.5-skill-slots-loadout.md).
 Phase IN_PROGRESS; PR #10 DRAFT; Developer acceptance PENDING.
 v0.5.6 NOT_STARTED; concrete game profiles NOT_EVALUATED.
+
+## v0.5.6 current Skill closure candidate
+
+SK31–SK35 adds verification only: ranked Combat, rankless caller dispatch and
+multi-resource workflows through the actual installed package. Two independent
+sessions match literal activation/cooldown/Combat traces with explicit Foundation
+clock/RNG/IDs. Loadout never bypasses admission; duplicate slots resolve one
+canonical instance/cooldown. Rejections expose no candidates; the caller commits
+accepted snapshots, dispatches and reports completion/failure. Dodge completes
+without refund/reset. Production source/API unchanged: 80 functions/133 types,
+4 optional modules/9 sources; Core2.0.0 pinned. No new runtime/catalog/effects,
+transaction manager, persistence or exactly-once guarantee.
+
+Earlier milestone statuses are historical. See [final report](docs/reports/v0.5.6-skill-final-review.md)
+and [PR #10](https://github.com/TjnhPro/rpg_gameplay/pull/10) for local evidence,
+exact-head CI and readiness. Only after all gates does Draft move to Ready for
+Review. Developer acceptance PENDING; no merge/tag/publish. Game profiles remain
+NOT_EVALUATED.

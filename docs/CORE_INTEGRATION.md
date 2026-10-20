@@ -1,5 +1,16 @@
 # Core Kernel integration
 
+## v0.5.6 closure verification
+
+Core remains 2.0.0 at revision
+04b7239f998c3c688a0dfa3202f11811a9acd775 with unchanged artifact/lock integrity.
+Installed tests verify the actual Core artifact, exact peer/version and non-symlink
+installation. Ranked Skill dispatch uses canonical Combat/Core; Skill payment
+uses Entity transitions and cooldown uses Core. No Core change, fallback formula
+or alternate calculator is included. Package0.5.6 is packed for isolated consumer
+verification only; npm publishing is not authorized.
+
+
 Only production import: `@rpg/core/kernel`. Core root, Legacy entrypoints, source
 checkout paths and `dist` deep imports remain forbidden. No numerical code is
 copied or implemented in L2. GF01–GF05 registry/configuration/dependency/composition functions require no

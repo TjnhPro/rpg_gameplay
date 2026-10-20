@@ -1,5 +1,18 @@
 # Function-First Testing Policy — evidence over count
 
+## v0.5.6 Skill integration evidence
+
+Installed skill-integration.mjs exercises ranked Combat, rankless caller dispatch
+and multi-resource rejection/recovery through public APIs. Two independent
+sessions each assert the same literal clock/Combat oracle and provider calls;
+immutable histories remain isolated. Its strict NodeNext companion verifies
+public typing. These are function-level consumer flows, not gameplay apps.
+Shared runner guards reject missing fixtures/tests, wrong versions, invalid Core
+integrity, nonzero commands and failing/skipped/cancelled/todo TAP evidence.
+Actual TypeScript and missing-export negative controls must fail. Existing
+GF/EC/PR/CB/SK fixtures remain required; counts are observed evidence, not goals.
+
+
 `rpg_gameplay` is **code/library**, not a game. No full Text RPG, 2D or 2.5D sample application is needed or permitted just to test L2.
 
 ## Principle

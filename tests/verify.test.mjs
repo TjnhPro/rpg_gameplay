@@ -5,6 +5,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import test from 'node:test';
+import {copyRequiredConsumer, assertVersion, assertCoreIntegrity, assertTapEvidence} from './consumer-evidence.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 test('verification requires source, executes every gate, propagates failures, handles spaced Node paths', () => {
@@ -81,5 +82,53 @@ if(process.env.FAIL_GATE===process.argv[2]) process.exit(7);
     assert.equal(path.dirname(resolved), fs.realpathSync(os.tmpdir()));
     assert.ok(path.basename(resolved).startsWith('rpg verify gates '));
     fs.rmSync(resolved, {recursive:true,force:true});
+  }
+});
+
+test('installed runner rejects missing consumers/tests, bad versions/integrity and skipped/cancelled TAP', () => {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg consumer controls '));
+  try {
+    const missing = path.join(temp, 'required.mjs'), destination = path.join(temp, 'consumer.mjs');
+    assert.throws(() => copyRequiredConsumer(missing, destination), {code: 'ENOENT'});
+    fs.writeFileSync(missing, 'required consumer'); copyRequiredConsumer(missing, destination);
+    assert.equal(fs.readFileSync(destination, 'utf8'), 'required consumer');
+    assertVersion('0.5.6', '0.5.6'); assertVersion('2.0.0', '2.0.0');
+    assert.throws(() => assertVersion('0.5.5', '0.5.6'));
+    assert.throws(() => assertVersion('2.0.1', '2.0.0'));
+    const pin = JSON.parse(fs.readFileSync(path.join(root, 'harness/core-pin.json'), 'utf8'));
+    const lock = JSON.parse(fs.readFileSync(path.join(root, 'package-lock.json'), 'utf8'));
+    const bytes = fs.readFileSync(path.join(root, '.artifacts', pin.artifact));
+    const integrity = lock.packages['node_modules/@rpg/core'].integrity;
+    assertCoreIntegrity(bytes, integrity);
+    const corrupted = Buffer.from(bytes); corrupted[0] ^= 1;
+    assert.throws(() => assertCoreIntegrity(corrupted, integrity));
+    const env = {...process.env}; delete env.NODE_TEST_CONTEXT;
+    function tap(source) {
+      fs.writeFileSync(path.join(temp, 'probe.mjs'), source);
+      return spawnSync(process.execPath, ['--test', '--test-reporter=tap', '--test-timeout=1000', 'probe.mjs'],
+        {cwd: temp, shell: false, encoding: 'utf8', env, timeout: 10000});
+    }
+    const cases = [
+      ["import test from 'node:test';test('required',()=>{console.log('REQUIRED_TEST_EXECUTED');});", true],
+      ["import test from 'node:test';", false],
+      ["import test from 'node:test';test.skip('required',()=>{});", false],
+      ["import test from 'node:test';test.todo('required');", false],
+      ["import test from 'node:test';test('required',()=>{throw Error('required failed');});", false],
+      ["import test from 'node:test';test('required',()=>new Promise(()=>{}));", false],
+    ];
+    for (const [source, pass] of cases) {
+      const result = tap(source); assert.equal(result.error, undefined);
+      if (pass) {assert.equal(result.status, 0); assertTapEvidence(result.stdout, 1, ['REQUIRED_TEST_EXECUTED']);}
+      else assert.throws(() => assertTapEvidence(result.stdout, 1, ['REQUIRED_TEST_EXECUTED']));
+    }
+    const positive = tap(cases[0][0]).stdout;
+    assert.throws(() => assertTapEvidence(positive, 2), /required test count/);
+    assert.throws(() => assertTapEvidence('PASS'), /required TAP/);
+    console.log('CONSUMER_RUNNER_NEGATIVE_PASS missing_fixture; missing_test; versions; corrupt_Core; failed_skipped_todo_cancelled; count');
+  } finally {
+    const resolved = fs.realpathSync(temp);
+    assert.equal(path.dirname(resolved), fs.realpathSync(os.tmpdir()));
+    assert.ok(path.basename(resolved).startsWith('rpg consumer controls '));
+    fs.rmSync(resolved, {recursive: true, force: true});
   }
 });

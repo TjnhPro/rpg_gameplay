@@ -1,5 +1,16 @@
 # Harness Features H01–H16 — scope vs. implementation
 
+## v0.5.6 installed integration and fail-closed evidence
+
+The installed Skill integration group adds canonical cross-module flows and
+strict NodeNext consumption without a production coordinator. Required runner
+controls detect missing consumer/test execution, wrong package/Core versions,
+corrupt Core artifact, real TypeScript failure, missing root export, nonzero
+commands and failed/skipped/cancelled/todo tests. No previous fixture is optional.
+Final exact-head CI is separate from local/historical evidence; see the
+[final review](reports/v0.5.6-skill-final-review.md).
+
+
 **Important:** A feature listed here is NOT proof of gameplay implementation.
 v0.1.0 adds real package/Kernel integration contracts and strict build tooling;
 v0.1.5 adds installed-package GF01–GF16 module/lifecycle/messaging/execution

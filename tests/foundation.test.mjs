@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import test from 'node:test';
+import {copyRequiredConsumer, assertVersion, assertCoreIntegrity, assertTapEvidence} from './consumer-evidence.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const cli = process.env.npm_execpath;
@@ -16,20 +17,21 @@ function exec(args, cwd) {
   const result = spawnSync(process.execPath, args, {cwd, shell: false, encoding: 'utf8', env});
   assert.equal(result.error, undefined);
   assert.equal(result.status, 0, result.stdout + result.stderr);
+  if (args.includes('--test')) assertTapEvidence(result.stdout);
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK30, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
     const pin = JSON.parse(fs.readFileSync(path.join(root, 'harness/core-pin.json'), 'utf8'));
     const lock = JSON.parse(fs.readFileSync(path.join(root, 'package-lock.json'), 'utf8'));
     const coreArtifact = path.join(root, '.artifacts', pin.artifact);
-    const integrity = 'sha512-' + createHash('sha512').update(fs.readFileSync(coreArtifact)).digest('base64');
-    assert.equal(integrity, lock.packages['node_modules/@rpg/core'].integrity);
+    assertCoreIntegrity(fs.readFileSync(coreArtifact), lock.packages['node_modules/@rpg/core'].integrity);
     const packedResult = JSON.parse(exec([cli, 'pack', '--ignore-scripts', '--json', '--pack-destination', temp], root));
     const packed = Array.isArray(packedResult) ? packedResult[0] : packedResult['@rpg/gameplay'];
+    console.log(`INSTALLED_PACKAGE_SHA256 ${packed.filename} ${createHash('sha256').update(fs.readFileSync(path.join(temp, packed.filename))).digest('hex')}`);
     assert.deepEqual(packed.files.map(x => x.path).sort(), [
       'README.md', 'dist/foundation/execution/index.d.ts', 'dist/foundation/execution/index.js',
       'dist/foundation/messaging/index.d.ts', 'dist/foundation/messaging/index.js',
@@ -47,7 +49,10 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assert.equal(packageJson.version, '0.5.5');
+    assertVersion(packageJson.version, '0.5.6');
+    assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
+    assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
+    assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
     assert.equal(packageJson.private, true);
     assert.equal(packageJson.type, 'module');
     assert.deepEqual(packageJson.exports, {'.': {types: './dist/index.d.ts', import: './dist/index.js'}});
@@ -72,6 +77,14 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
 }
 `);
     exec(['consumer.mjs'], temp);
+    // A missing packaged root export must fail the very same runtime consumer.
+    const installedRoot = path.join(installed, 'dist/index.js');
+    const rootSource = fs.readFileSync(installedRoot, 'utf8');
+    assert.match(rootSource, /\bactivateSkill\b/);
+    try {
+      fs.writeFileSync(installedRoot, rootSource.replace(/\bactivateSkill\b/, 'activateSkill as deliberatelyMissingExport'));
+      assert.throws(() => exec(['consumer.mjs'], temp), /activateSkill/);
+    } finally {fs.writeFileSync(installedRoot, rootSource);}
     fs.copyFileSync(path.join(root, 'tests/consumers/modules.mjs'), path.join(temp, 'modules.mjs'));
     const moduleEvidence = exec(['--test', '--test-reporter=tap', 'modules.mjs'], temp);
     assert.match(moduleEvidence, /# pass 3/);
@@ -324,20 +337,24 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
       ['skill-combat-handoff', 2, ['SKILL_COMBAT_PREFLIGHT_PASS', 'SKILL_COMBAT_HANDOFF_PASS']],
       ['skill-loadout', 5, ['SKILL_LOADOUT_TRANSITIONS_PASS', 'SKILL_LOADOUT_POLICY_PASS',
         'SKILL_LOADOUT_VALIDATION_PASS', 'SKILL_LOADOUT_BOUNDARY_PASS', 'SKILL_LOADOUT_ISOLATION_PASS']],
+      ['skill-integration', 5, ['SKILL_INTEGRATION_TRACE_PASS', 'SKILL_INTEGRATION_CALLER_PASS',
+        'SKILL_INTEGRATION_REJECTIONS_PASS', 'SKILL_INTEGRATION_LOADOUT_PASS', 'SKILL_INTEGRATION_VALIDATION_PASS']],
     ]) {
-      fs.copyFileSync(path.join(root, `tests/consumers/${fixture}.mjs`), path.join(temp, `${fixture}.mjs`));
+      copyRequiredConsumer(path.join(root, `tests/consumers/${fixture}.mjs`), path.join(temp, `${fixture}.mjs`));
       const evidence = exec(['--test', '--test-reporter=tap', `${fixture}.mjs`], temp);
+      assertTapEvidence(evidence, count, markers);
       for (const metric of ['tests', 'pass']) assert.match(evidence, new RegExp(`# ${metric} ${count}\\b`));
       for (const metric of ['fail', 'cancelled', 'skipped', 'todo']) assert.match(evidence, new RegExp(`# ${metric} 0\\b`));
       for (const marker of markers) {
         assert.ok(evidence.includes(marker), `Missing ${marker}`);
         console.log(evidence.split(/\r?\n/).find(line => line.includes(marker)));
       }
-      console.log(`INSTALLED_${fixture.toUpperCase().replaceAll('-', '_')}_PASS ${fixture === 'skill-loadout' ? 'SK26-SK30' : 'SK21-SK25'}; consumer_tests=${count} skipped=0`);
+      console.log(`INSTALLED_${fixture.toUpperCase().replaceAll('-', '_')}_PASS ${fixture === 'skill-integration' ? 'SK31-SK35' : fixture === 'skill-loadout' ? 'SK26-SK30' : 'SK21-SK25'}; consumer_tests=${count} skipped=0`);
     }
     fs.copyFileSync(path.join(root, 'tests/consumers/skill-activation.ts'), path.join(temp, 'skill-activation.ts'));
 
     fs.copyFileSync(path.join(root, 'tests/consumers/skill-loadout.ts'), path.join(temp, 'skill-loadout.ts'));
+    copyRequiredConsumer(path.join(root, 'tests/consumers/skill-integration.ts'), path.join(temp, 'skill-integration.ts'));
 
     const skillDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/skill/index.d.ts'), 'utf8');
     assert.doesNotMatch(skillDeclarations, /\b(?:any|identityField|admissionFields|admissionId|rankPolicy|costArray|costNumber|captureResourceCosts|resolveResourceCosts|cooldownIdentity|cooldownTime|cooldownSnapshot|cooldownAssessment|cooldownConfiguration|executionDispatch|executionIntent|activationAdmission|mutateLoadoutSlot|Set|Map|WeakMap|SkillEngine|SkillRuntime)\b/);
@@ -370,8 +387,12 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
+    fs.writeFileSync(path.join(temp, 'broken.ts'), "import type {SkillActivationInput} from '@rpg/gameplay';const invalid: SkillActivationInput = {};void invalid;");
+    fs.writeFileSync(path.join(temp, 'negative-tsconfig.json'), JSON.stringify({extends: './tsconfig.json', files: ['broken.ts']}));
+    assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'negative-tsconfig.json'], temp), /TS\d+/);
+    console.log('INSTALLED_CONSUMER_NEGATIVE_PASS missing_root_export; real_TypeScript_failure; required_commands_nonzero');
   } finally {
     const resolved = fs.realpathSync(temp);
     assert.equal(path.dirname(resolved), fs.realpathSync(os.tmpdir()));
