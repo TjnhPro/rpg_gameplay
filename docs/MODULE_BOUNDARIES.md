@@ -206,3 +206,16 @@ rank/point/Resource/Life state, numerical calculator, runtime or global authorit
 Current root67 functions/98 types, registry4 modules/9 sources. Accepted owners,
 Core pin and runtime dependencies unchanged. Actual registry composition and
 source review supplement lexical boundary checks.
+
+## SK06–SK10 admission boundary (v0.5.1)
+
+Same Skill owner adds evaluateSkillActivationAdmission; imports public getEntity
+and EntityCollection/EntityLifeState types. Existence and collection validation
+reuse canonical getEntity. Life shape/status/actor association are validated with
+no HP inference or Entity transition. Rank is an explicit scalar snapshot; caller
+reads canonical Progression getSkillRank. No Skill production Progression/Combat
+imports or static dependency changes. skill -> [entity] remains optional; sibling
+owners/Core pin are untouched. No second ownership/rank/Life store, calculator,
+generic admission engine, cache or execution session. L3 supplies booleans and rank
+requirements; L4 supplies freshness/authority and coordinates later execution.
+Current root68 functions/103 types; registry4 modules/9 sources unchanged.

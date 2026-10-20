@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.5.0 Skill Foundation
+# RPG Gameplay — v0.5.1 Skill Availability & Admission
 
-> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK05 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
+> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK10 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK05 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK10 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Skill identity foundation
@@ -58,6 +58,23 @@ owner. There is no catalog, resource/cooldown/loadout or execution implementatio
 See [API](docs/API.md#sk01sk05-skill-foundation-v050) and
 [checkpoint report](docs/reports/v0.5.0-skill-foundation.md).
 Later milestone sections below retain their original historical status.
+
+## Skill availability and admission
+
+`evaluateSkillActivationAdmission(definition, instance, actorEntityId, entities,
+actorLife, policy)` evaluates explicit ownership, rank and eligibility against
+canonical Entity collection/life snapshots. Policy supplies `owned`, `eligible`
+and rank `{mode: 'not_required'}` or `{mode: 'required', currentRank, minimumRank}`.
+Read ranked values through Progression `getSkillRank`; explicitly map missing
+registration to null. Skill keeps only its Entity dependency.
+
+All supplied contracts validate before rejection priority: actor missing, dead,
+not owned, unregistered rank, rank too low, ineligible. The detached frozen result
+is an assessment only; no resource/cooldown/Combat/execution transition occurs.
+See [API](docs/API.md#sk06sk10-skill-availability--admission-v051) and
+[v0.5.1 report](docs/reports/v0.5.1-skill-availability-admission.md).
+Skill phase IN_PROGRESS; Developer acceptance PENDING; v0.5.2 onward NOT_STARTED.
+The identity-only milestone description above is historical.
 
 ## Entity identity and classification
 

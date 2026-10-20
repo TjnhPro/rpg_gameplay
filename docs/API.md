@@ -1,4 +1,4 @@
-# Public API — v0.5.0 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK05)
+# Public API — v0.5.1 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK10)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -1309,3 +1309,62 @@ operations are present. L3 explicitly projects rich content to {skillId}.
 Static optional skill -> entity requires explicit selection of both. Progression
 and Combat remain independent siblings. No implicit runtime, events, providers,
 Core calculation or registry/catalog is created. All Skill deep imports stay closed.
+
+## SK06–SK10 Skill Availability & Admission (v0.5.1)
+
+One added root function and five types; current total **68 functions/103 types**.
+SK01–SK05 schemas and all previous signatures remain unchanged. Deep exports closed.
+
+```ts
+type SkillRankAdmissionPolicy =
+  | {readonly mode: 'not_required'}
+  | {readonly mode: 'required'; readonly currentRank: number | null; readonly minimumRank: number};
+interface SkillAdmissionPolicy {
+  readonly owned: boolean;
+  readonly eligible: boolean;
+  readonly rank: SkillRankAdmissionPolicy;
+}
+type SkillAdmissionStatus = 'admitted' | 'rejected';
+type SkillAdmissionReason = 'none' | 'actor_not_found' | 'actor_dead' | 'skill_not_owned'
+  | 'skill_rank_unregistered' | 'skill_rank_too_low' | 'actor_ineligible';
+interface SkillAdmissionResult {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly actorEntityId: string;
+  readonly status: SkillAdmissionStatus;
+  readonly reason: SkillAdmissionReason;
+}
+function evaluateSkillActivationAdmission(definition: SkillDefinition,
+  instance: SkillInstanceState, actorEntityId: string, entities: EntityCollection,
+  actorLife: EntityLifeState, policy: SkillAdmissionPolicy): SkillAdmissionResult;
+```
+
+Closed own-data records are mandatory: missing/unknown/nonenumerable extra/symbol/
+accessor fields, inherited required fields, malformed identities, life status,
+policy booleans or rank configuration throw TypeError without invoking getters.
+Life snapshots follow Entity's ordinary/null prototype contract. IDs remain exact.
+Definition/instance skill mismatch or life/actor mismatch throws TypeError even
+when actor lookup misses. Instance/actor mismatch is valid skill_not_owned.
+Entity lookup delegates to getEntity, including full collection validation.
+
+Required ranks: currentRank is null for unregistered, otherwise a nonnegative safe
+integer (0 is registered/unlearned); minimumRank is a positive safe integer.
+No coercion/default/undefined fallback. Rankless policy has only mode and requires
+no Progression. Caller reads canonical getSkillRank for the correct Entity/Skill
+and explicitly maps undefined to null; Skill neither authenticates freshness/
+provenance nor imports Progression. L3 owns rank requirements and both booleans;
+owned:true cannot override exact actor binding. No Entity kind policy is inferred.
+
+Every supplied contract validates before choosing this fixed rejection priority:
+actor_not_found > actor_dead > skill_not_owned > skill_rank_unregistered >
+skill_rank_too_low > actor_ineligible > none. Only none is admitted; all others
+are ordinary structured rejections. Results contain exactly the five fields
+shown, detached/frozen scalar data. Caller inputs remain unchanged/unfrozen.
+
+Admitted means Skill-stage availability at evaluation only. It does not establish
+resource sufficiency, cooldown readiness, target/Combat admission, activation,
+execution or committed state. Assessment is not an authorization token/execution
+receipt. No spending, scheduling, event, ID, Clock/RNG, rank/Life mutation, cache
+or global store occurs. L4 supplies authoritative current snapshots and coordinates
+later checks/persistence/concurrency. Optional skill -> entity remains unchanged;
+Combat stays independent. v0.5.2+ mechanisms remain unimplemented.

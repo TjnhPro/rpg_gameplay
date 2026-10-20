@@ -1,4 +1,4 @@
-# Verification gates — v0.5.0
+# Verification gates — v0.5.1
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
@@ -283,3 +283,20 @@ local evidence without an extra commit invalidating CI. Skill IN_PROGRESS, PR
 DRAFT, Developer phase acceptance PENDING. No merge/tag/publish, Ready transition
 or v0.5.1 work. macOS NOT_RUN; gameplay profiles NOT_EVALUATED. Earlier sections
 retain their own checkpoint inventories and limitations.
+
+## v0.5.1 current Skill admission gates
+
+SK01–SK10 joins unchanged GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30. Actual0.5.1
+packed tarball installs with the real pinned Core in an independent directory,
+no source/symlink imports. Required skill-admission.mjs/.ts add4 runtime contracts
+and strict NodeNext/skipLibCheck:false checks; runner requires tests4/pass4/skips0
+and all four evidence markers. Current108 runtime contracts +2 outer gates,
+root68 functions/103 types. Existing missing-source/spaced-Node/failure-propagation
+regressions remain active. Registry4 modules/9 source files, Core pin unchanged.
+
+Required local harness:check/selftest/build/typecheck/test:functional/full verify
+and diff audit precede delivery. Exact delivered HEAD requires both push and PR
+Windows/Ubuntu Node22/24 jobs PASS before CHECKPOINT_COMPLETE. Final SHA/CI links
+are attached to existing Draft PR #10 and ignored local evidence, preserving the
+tested SHA. Phase IN_PROGRESS; Developer acceptance PENDING. No merge/tag/publish
+or v0.5.2 implementation; macOS NOT_RUN, gameplay profiles NOT_EVALUATED.

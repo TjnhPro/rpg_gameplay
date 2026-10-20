@@ -91,3 +91,15 @@ and exact-head push+PR CI evidence. Status CHECKPOINT_COMPLETE, phase IN_PROGRES
 PR DRAFT and Developer phase acceptance PENDING; no Ready/merge/tag/publish or
 next milestone without its own task. The submitted task's PROPOSED header is
 retained verbatim as source text; it is not phase acceptance evidence.
+
+## Active Skill admission checkpoint (v0.5.1)
+
+Approved submitted task: tasks/active/v0.5.1-skill-availability-admission.md.
+Continue feat/v0.5-skill / existing Draft PR #10 from verified v0.5.0 checkpoint
+a60de0c1ee96df637be59289e68a6ffe88bda024. SK06–SK10 authorizes one pure admission
+operation/five types, canonical Entity lookup/Life snapshots, explicit caller
+rank/ownership/eligibility, deterministic fail-closed assessment and installed
+contracts. No accepted owner/Core/dependency/schema changes or activation/cost/
+cooldown/loadout. Required local and exact-head push+PR CI precede checkpoint
+completion. Phase IN_PROGRESS, PR DRAFT, acceptance PENDING; no v0.5.2/merge/tag/
+publish/Ready transition implied.

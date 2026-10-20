@@ -171,3 +171,13 @@ runtime contracts +2 outer gates. H06 still needs source review for canonical
 Entity reuse/no rank, numerical duplicate or global runtime. Core integrity/root
 exports/fail-closed controls remain. Skill phase IN_PROGRESS, acceptance PENDING;
 no application/gameplay profile execution is claimed.
+
+## v0.5.1 Skill admission evidence extension
+
+Four installed SK06–SK10 contract groups cover exact outcomes/canonical rank
+handoff/rankless composition, rejection priority, whole-invocation fail-closed
+validation without getters, and immutable deterministic isolation. Strict external
+NodeNext adds policy/result contracts; all104 earlier installed contracts retained:
+108 installed runtime contracts +2 outer gate tests, zero failures/skips. Existing
+Core integrity/root-only package/gate controls remain mandatory. Source review
+confirms unchanged dependencies/accepted owners; no game-profile PASS is claimed.

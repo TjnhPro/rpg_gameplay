@@ -156,3 +156,14 @@ admission/target/numerical application contracts. Neither is a Skill dependency.
 No availability, learning/unlocking, costs, cooldown, execution or loadout is
 implemented. Skill phase IN_PROGRESS, PR DRAFT, acceptance PENDING; v0.5.1–v0.5.6
 NOT_STARTED. Shared structural contracts verified; game profiles NOT_EVALUATED.
+
+## v0.5.1 current Skill checkpoint
+
+SK01–SK10 implemented: immutable identity foundation plus pure synchronous
+Skill-stage availability/admission. Explicit actor binding/ownership, canonical
+Entity existence/Life, caller-supplied canonical rank and L3 eligibility produce
+frozen structured assessments. Full validation precedes deterministic rejection.
+No learning/unlocking, costs, cooldown, execution, loadout, effects or global
+state. Prior v0.5.0 availability/NOT_STARTED statements are historical.
+Skill phase IN_PROGRESS; PR DRAFT; Developer acceptance PENDING.
+v0.5.2–v0.5.6 NOT_STARTED. Game profiles NOT_EVALUATED.

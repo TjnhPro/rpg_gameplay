@@ -348,3 +348,17 @@ three passing runtime tests/zero skips and all diagnostic markers; marker text
 never replaces assertions. Every previous101 runtime contracts retained unchanged:
 104 installed contracts +2 outer gates. No profile-specific matrix is needed for
 scalar structural identities; concrete gameplay profiles remain NOT_EVALUATED.
+
+## SK06–SK10 installed availability evidence (v0.5.1)
+
+skill-admission.mjs adds four cohesive external installed-package tests: outcomes
+including canonical Progression 3/0/undefined handoff and entity+skill composition;
+literal overlapping rejection priorities; malformed six-input validation before
+rejections without getters; detached immutable exact IDs, two independently built
+sessions each checked against a literal oracle, and unchanged domain snapshots.
+Expected results come from approved S01–S18, never another evaluation. The strict
+NodeNext skill-admission.ts fixture checks the six-argument signature/five new
+types, required closed readonly policy/result shapes, rank union and no any/deep
+imports. All104 previous runtime contracts remain unchanged; actual current108
+installed contracts +2 outer gates, zero skips. No game/simulator/profile matrix.
+See the v0.5.1 report for requirement mapping and limitations.
