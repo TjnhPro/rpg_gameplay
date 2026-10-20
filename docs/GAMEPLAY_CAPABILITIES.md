@@ -1,3 +1,18 @@
+## Current checkpoint: v0.6.5 Effect Restrictions & Status
+
+EF26–EF30 adds exact opaque status/restriction IDs, immutable apply-time snapshots,
+ordered active contributor views and explicit exact-match restriction assessment.
+L3 defines meaning/applicable actions; L4 binds the assessed Entity, ANDs existing
+eligibility and passes unchanged Skill/Combat/EF08 policies. Installed examples
+prove Stun/Silence/immunity through those canonical admissions. Assessment alone
+is not full authorization. Lifecycle remains the sole membership/time authority;
+status companion contains only Entity/time and per-instance payloads. Refresh
+preserves capture; expiration/removal/consumption prune it. No numerical operation,
+status vocabulary, action engine, periodic runtime or global registry. Foundation,
+Application, Lifecycle, Stacking, Modifiers and Restrictions through0.6.5 are
+IMPLEMENTED. DoT/HoT0.6.6 and Closure0.6.7 OUT_OF_SCOPE. Phase IN_PROGRESS,
+acceptance PENDING; gameplay profiles NOT_EVALUATED. Earlier sections are history.
+
 ## Current checkpoint: v0.6.4 Buff / Debuff & Stat Modifiers
 
 EF21–EF25 adds explicit buff/debuff/neutral metadata, immutable apply-time payload

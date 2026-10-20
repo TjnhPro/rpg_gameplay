@@ -1,3 +1,21 @@
+## v0.6.5 checkpoint gates
+
+Fresh core:prepare and npm ci --ignore-scripts, harness:check, harness:selftest,
+build, typecheck, test:functional, full verify and git diff --check are required.
+Actual installed0.6.5/pinned Core, strict NodeNext, root exports/private closure,
+byte provenance and real negative faults must pass with zero skips. Inventory:
+104 runtime functions/174 types, five static gameplay modules/10 source files.
+Required regressions GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30/SK01–SK35/EF01–EF30.
+Audit additive five-function/eight-type delta, preserved EF01–EF25 declarations,
+shared private receipt validation, unchanged protected owners/Core/graph/deps and
+version-only metadata. Both delivered-head push and PR matrices must pass
+Windows/Ubuntu Node22/24 (eight jobs). Pending CI is not CHECKPOINT_COMPLETE.
+The committed report records pre-push evidence; final SHA/job links supplement it
+on existing Draft PR #11 without a new tracked commit invalidating tested HEAD.
+Stop at0.6.5; phase IN_PROGRESS, acceptance PENDING. No Ready/merge/tag/publish or
+v0.6.6. Earlier checkpoint counts/statuses are historical. macOS NOT_RUN;
+concrete gameplay profiles NOT_EVALUATED.
+
 ## v0.6.4 checkpoint gates
 
 Fresh core:prepare and npm ci --ignore-scripts; harness:check, harness:selftest,

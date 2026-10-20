@@ -1,3 +1,17 @@
+## Current authorized checkpoint: v0.6.5
+
+The submitted approved [Effect Restrictions & Status task](tasks/active/v0.6.5-effect-restrictions-status.md)
+authorizes EF26–EF30 after actual v0.6.4 checkpoint ad7e411. Rechecked exact-head
+push39393620706 and PR39393628233: eight Windows/Ubuntu Node22/24 jobs PASS.
+Continue feat/v0.6-effect / existing Draft PR #11 to main. Five functions/eight
+types, version0.6.5, installed contracts and affected documentation only. Preserve
+EF01–EF25 schemas, protected owners, graph, Core and dependencies. Internal receipt
+validation is shared by modifier/status companions; canonical lifecycle executes
+membership/time. L4 coordinates all candidate commits atomically. Required local
+and exact-head push/PR gates precede CHECKPOINT_COMPLETE. Stop there: phase
+IN_PROGRESS, Developer acceptance PENDING; v0.6.6 NOT_STARTED. No Ready, new PR,
+merge, tag or publish. All earlier checkpoint sections describe history.
+
 ## Current authorized checkpoint: v0.6.4
 
 The Developer-approved [Buff/Debuff/modifier task](tasks/active/v0.6.4-buff-debuff-stat-modifiers.md)

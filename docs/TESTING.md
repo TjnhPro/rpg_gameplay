@@ -1,3 +1,26 @@
+## v0.6.5 status/restriction evidence
+
+Eight installed effect-restrictions.mjs contracts group S01–S37 by invariant:
+
+| Contract group | Independent evidence |
+| --- | --- |
+| Capture (S01–S06/S10–S12/S31–S32) | Explicit empty/independent arrays, exact custom/case/special IDs, literal snapshots, detached deep freeze |
+| Provenance (S09/S20–S22) | Literal ordered views, two matching sources, one removal leaves other blocking |
+| Cleanup (S14–S19) | Both refresh paths retain capture, replacement TypeError, exact-N selection, group isolation, persistent and exact expiry |
+| Validation (S07–S08/S28–S30) | Closed own-data records, dense arrays, duplicates/getters0, wrong Entity/order/time, unresolved expiry fails closed |
+| Transitions (S13/S29–S30) | Missing capture/null, canonical rejected receipts, forged deltas/events, stale baseline and joint-commit refusal |
+| Admissions (S02–S03/S23–S24/S27–S28) | Actual Skill/Combat calls, ownership/rank/life/existence/eligibility retained, actor binding, target relation still independent |
+| Immunity (S04/S25–S26) | Actual EF08 rejection, unrelated Effect policy accepted, all independent gates, multiple immunity identities |
+| Replay (S33–S35) | Two independent literal traces, shared modifier lifecycle, actual Entity source death, unchanged resources/ranks/stats/cooldown, blocked implicit providers |
+| Artifact/types/regression (S36–S37) | Physical tarballs, strict external NodeNext, all prior consumers |
+
+Six installed JS faults plus real caller admission-bypass faults must fail the
+same consumer. Skip/no-assertion/missing fixture/export/wrong version/Core/TAP/TS
+controls remain mandatory. Previous expected values and fixtures are unchanged;
+old modifier fault anchors alone follow the extracted private validator metadata.
+Test counts describe observed execution, not a quota. No full gameplay profile
+acceptance, periodic behavior, runtime scheduler or automatic events are claimed.
+
 ## v0.6.4 modifier contract evidence
 
 Seven installed effect-modifiers.mjs contracts cover classification/snapshot/identity;

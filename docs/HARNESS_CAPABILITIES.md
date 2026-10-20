@@ -1,3 +1,17 @@
+## v0.6.5 installed restriction evidence
+
+Mandatory effect-restrictions.mjs/.ts run through actual packed/installed0.6.5,
+physical pinned Core, native ESM root-only and strict NodeNext/skipLibCheck:false.
+Eight behavior tests/eight markers cover EF26–EF30, including actual unchanged
+Skill/Combat/EF08 admissions and coordinated modifier/status candidates. Required
+fixtures, five root exports, version, artifact provenance/integrity, compiler and
+TAP guards fail closed. Six installed JS faults (duplicates, wrong Entity, stale
+expiry boundary, refresh overwrite, expired blocker, collapsed provenance), real
+Skill/Combat bypass, skipped and no-assertion consumers must fail. Full prior
+GF/EC/PG/CB/SK/EF contracts retained; no gameplay-profile PASS inferred. Phase
+IN_PROGRESS, Developer acceptance PENDING; v0.6.6 NOT_STARTED. Earlier sections
+are historical checkpoints.
+
 ## v0.6.4 installed numerical modifier evidence
 
 The mandatory packed-package consumer now includes EF21–EF25 beside prior

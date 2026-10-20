@@ -1,3 +1,19 @@
+## v0.6.5 status/restriction ownership
+
+EffectStatusState is a companion payload index, not another active store. The
+separate canonical lifecycle owns membership/time/effectId; snapshots store only
+instance ID and status/restriction arrays. Every boundary validates exact Entity,
+time, ordered one-to-one membership and complete own-data values. A shared private
+receipt validator follows canonical lifecycle/stack deltas for both companions,
+without reexecuting expiration, stacking or admission. Existing public schemas
+remain intact. L4 must accept/reject and commit all companions with the same
+lifecycle candidate, without partial authoritative commit. L3 owns all meanings;
+L4 binds Entity IDs and combines independent eligibility before existing public
+Skill, Combat and EF08 admission. No sibling import/change or second admission
+engine. Core alone owns numerics. Module graph/dependency/pin unchanged:
+entity[]; progression/combat/skill/effect[entity], all optional. No scheduler,
+mutable cache, global status registry or automatic interrupt/death cleanup.
+
 ## v0.6.4 modifier ownership
 
 Effect adds type-only ModifierOperation/NumericalModifier imports from the public

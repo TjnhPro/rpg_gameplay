@@ -1,3 +1,107 @@
+## EF26–EF30 Effect Restrictions & Status (v0.6.5)
+
+Five functions/eight types, root-only. IDs are opaque nonblank exact/case-sensitive
+strings with no interpretation, defaults or registry. Both capture arrays required,
+empty allowed, duplicates within each array rejected. The same identity across
+instances retains all contributor provenance. Values/order detach and freeze;
+closed own-data records/dense arrays reject accessors without invoking getters.
+
+createEffectStatusState requires empty canonical lifecycle. Status state contains
+entityId/observedAtMs/snapshots only, not instances or embedded lifecycle. Every
+query/assessment validates Entity/time/order and one snapshot per active instance,
+including strict unresolved-expiry rejection. Queries never advance lifecycle.
+Status views use first-appearance order; restriction views use canonical instance
+then capture order, resolving effectId from the lifecycle.
+
+applyEffectStatusTransition(current, previousLifecycle, transition, capture?)
+consumes actual EF12–EF20 results and validates canonical deltas through the same
+private validator as modifiers. New appended instance requires explicit capture,
+even empty. Refresh/no-membership changes preserve snapshots; cleanup follows
+exact removed membership. All outputs detached/frozen. Rejected canonical receipts
+return transition_rejected/null, mismatched delta baseline stale_transition/null,
+missing new capture capture_required/null. Malformed values and capture on
+refresh/another non-addition throw TypeError, as in the accepted modifier API;
+the proposed capture_not_allowed outcome is finalized as this malformed-input
+rule, not an unused union placeholder. Receipts do not authenticate freshness.
+
+L4 must coordinate modifier/status candidates from the same previous lifecycle
+and commit all with the canonical next lifecycle, or commit none. Companion
+validation cannot prove authoritative freshness for equivalent structural history;
+L4 owns current authority/concurrency. No second lifetime/transaction manager.
+
+evaluateEffectRestrictionGate exact-matches caller blockedByRestrictionIds and
+returns allowed/none/[] or blocked/active_restriction/all matching provenance.
+It does not authorize a Skill, Combat action or Effect. L4 must first bind
+assessment.entityId to the actor or target being assessed, then AND its existing
+eligibility with assessment.status === 'allowed', and call the existing canonical
+admission. Skill owned/rank/life and Combat source/target checks remain independent.
+CombatTargetPolicy relation/life fields are not a generic immunity API. Any future
+target-restriction API is a separate capability gap, not implemented here.
+
+Public declarations:
+
+```ts
+/** Opaque, case-sensitive L3 identities; no built-in status/restriction vocabulary. */
+export interface EffectStatusCapture {
+    readonly statusIds: readonly string[];
+    readonly restrictionIds: readonly string[];
+}
+export interface EffectStatusSnapshot extends EffectStatusCapture {
+    readonly effectInstanceId: string;
+}
+/** Payload index only. Active membership is supplied separately by the canonical lifecycle. */
+export interface EffectStatusState {
+    readonly entityId: string;
+    readonly observedAtMs: number;
+    readonly snapshots: readonly EffectStatusSnapshot[];
+}
+export interface EffectStatusView {
+    readonly statusId: string;
+    readonly effectInstanceIds: readonly string[];
+}
+export interface EffectRestrictionView {
+    readonly effectInstanceId: string;
+    readonly effectId: string;
+    readonly restrictionId: string;
+}
+export interface EffectRestrictionPolicy {
+    readonly blockedByRestrictionIds: readonly string[];
+}
+/** Restriction assessment only; never full Skill/Combat/Effect authorization. */
+export interface EffectRestrictionAssessment {
+    readonly entityId: string;
+    readonly status: 'allowed' | 'blocked';
+    readonly reason: 'none' | 'active_restriction';
+    readonly matches: readonly EffectRestrictionView[];
+}
+export type EffectStatusTransitionResult = {
+    readonly status: 'applied';
+    readonly reason: 'none';
+    readonly state: EffectStatusState;
+} | {
+    readonly status: 'rejected';
+    readonly reason: 'transition_rejected' | 'stale_transition' | 'capture_required';
+    readonly state: null;
+};
+/** Empty initialization only; no historical capture backfill. */
+export declare function createEffectStatusState(lifecycle: EffectLifecycleState): EffectStatusState;
+/** Follow validated canonical membership deltas, without executing another lifetime or admission engine.
+ * L4 must atomically commit all companions with the same lifecycle candidate.
+ * A replacement capture on refresh or another non-addition is malformed (TypeError).
+ */
+export declare function applyEffectStatusTransition(current: EffectStatusState, previousLifecycle: EffectLifecycleState, transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult, capture?: EffectStatusCapture): EffectStatusTransitionResult;
+/** First-appearance status order and canonical contributor order, with no counters or caches. */
+export declare function listActiveEffectStatuses(lifecycle: EffectLifecycleState, state: EffectStatusState): readonly EffectStatusView[];
+/** Per-instance provenance; effectId comes exclusively from canonical membership. */
+export declare function listActiveEffectRestrictions(lifecycle: EffectLifecycleState, state: EffectStatusState): readonly EffectRestrictionView[];
+/** Exact caller-selected identities only. L3 interprets meaning; L4 composes existing admission policies. */
+export declare function evaluateEffectRestrictionGate(lifecycle: EffectLifecycleState, state: EffectStatusState, policy: EffectRestrictionPolicy): EffectRestrictionAssessment;
+```
+
+Root104 functions/174 types. EF01–EF25 public declarations preserved. D01–D18,
+Core pin, protected owners and graph unchanged; DoT/HoT/Closure deferred. Phase
+IN_PROGRESS, acceptance PENDING. Earlier API sections describe historical scopes.
+
 ## EF21–EF25 Buff / Debuff & Stat Modifiers (v0.6.4)
 
 `createEffectModifierState(lifecycle)` initializes an empty canonical lifecycle

@@ -103,3 +103,7 @@ export type {
 export {createEffectModifierState, applyEffectModifierTransition, listActiveEffectModifiers} from './modules/effect/index.js';
 export type {EffectClassification, EffectModifierSpec, EffectModifierCapture, EffectModifierSnapshot,
   EffectModifierState, EffectModifierTransitionResult} from './modules/effect/index.js';
+export {createEffectStatusState, applyEffectStatusTransition, listActiveEffectStatuses,
+  listActiveEffectRestrictions, evaluateEffectRestrictionGate} from './modules/effect/index.js';
+export type {EffectStatusCapture, EffectStatusSnapshot, EffectStatusState, EffectStatusView,
+  EffectRestrictionView, EffectRestrictionPolicy, EffectRestrictionAssessment, EffectStatusTransitionResult} from './modules/effect/index.js';

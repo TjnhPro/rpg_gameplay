@@ -724,18 +724,19 @@ function sameLifetime(left: EffectLifetimeState, right: EffectLifetimeState): bo
     && left.startedAtMs === right.startedAtMs && left.expiresAtMs === right.expiresAtMs;
 }
 
-/** Associate payloads with validated canonical deltas; never execute lifecycle/stack policy here.
- * Structural receipts are not authorization tokens. L4 owns freshness and commit.
- * Capture on an existing-instance transition is malformed and throws TypeError.
- */
-export function applyEffectModifierTransition(current: EffectModifierState,
+type CompanionTransition =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly state: EffectLifecycleState;
+      readonly action: unknown; readonly removed: readonly EffectInstanceState[]}
+  | {readonly status: 'rejected'; readonly reason: 'transition_rejected' | 'stale_transition' | 'capture_required'; readonly state: null};
+
+/** Validate canonical receipt deltas only; lifecycle/stack owners still execute transitions. */
+function companionTransition(before: EffectLifecycleState,
   transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult,
-  capture?: EffectModifierCapture): EffectModifierTransitionResult {
-  const previous = modifierState(current), payload = capture === undefined ? undefined : modifierCapture(capture);
+  hasCapture: boolean): CompanionTransition {
   const hasAction = typeof transition === 'object' && transition !== null && Object.hasOwn(transition, 'action');
   const fields = effectFields(transition, ['status', 'reason', 'state', 'events', ...(hasAction ? ['action'] : [])]);
   const events = lifecycleArray(fields.events).map(modifierEvent);
-  const reject = (reason: 'transition_rejected' | 'stale_transition' | 'capture_required'): EffectModifierTransitionResult =>
+  const reject = (reason: 'transition_rejected' | 'stale_transition' | 'capture_required'): CompanionTransition =>
     Object.freeze({status: 'rejected', reason, state: null});
   if (fields.status === 'rejected') {
     const reasons: readonly EffectStackRejectionReason[] = ['application_rejected', 'stale_application', 'lifecycle_not_advanced',
@@ -752,7 +753,7 @@ export function applyEffectModifierTransition(current: EffectModifierState,
     throw new TypeError('Invalid canonical transition result');
   }
   const next = lifecycleSnapshot(fields.state as EffectLifecycleState);
-  const before = previous.lifecycle, oldInstances = before.effectState.instances, newInstances = next.effectState.instances;
+  const oldInstances = before.effectState.instances, newInstances = next.effectState.instances;
   if (next.effectState.entityId !== before.effectState.entityId || next.observedAtMs < before.observedAtMs) return reject('stale_transition');
   const added = newInstances.filter(instance => !oldInstances.some(old => old.effectInstanceId === instance.effectInstanceId));
   const removed = oldInstances.filter(instance => !newInstances.some(item => item.effectInstanceId === instance.effectInstanceId));
@@ -778,7 +779,7 @@ export function applyEffectModifierTransition(current: EffectModifierState,
     if (lifetime.startedAtMs !== next.observedAtMs) throw new TypeError('Addition start/time mismatch');
   } else {
     if (added.length) throw new TypeError('Unexpected canonical addition');
-    if (payload !== undefined) throw new TypeError('Capture is allowed only for a new Effect instance');
+    if (hasCapture) throw new TypeError('Capture is allowed only for a new Effect instance');
     if (action === 'refreshed') {
       if (removed.length || events.length !== 1 || events[0]!.type !== 'refreshed' || changed.length > 1) {
         throw new TypeError('Invalid canonical refresh delta');
@@ -825,7 +826,21 @@ export function applyEffectModifierTransition(current: EffectModifierState,
     if (!instance || event.effectId !== instance.effectId || event.targetEntityId !== instance.targetEntityId
       || (event.type !== 'expired' && event.atMs !== next.observedAtMs)) throw new TypeError('Canonical event identity/time mismatch');
   }
-  if (added.length && payload === undefined) return reject('capture_required');
+  if (added.length && !hasCapture) return reject('capture_required');
+  return {status: 'applied', reason: 'none', state: next, action, removed};
+}
+
+/** Associate payloads with validated canonical deltas; never execute lifecycle/stack policy here.
+ * Structural receipts are not authorization tokens. L4 owns freshness and commit.
+ * Capture on an existing-instance transition is malformed and throws TypeError.
+ */
+export function applyEffectModifierTransition(current: EffectModifierState,
+  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult,
+  capture?: EffectModifierCapture): EffectModifierTransitionResult {
+  const previous = modifierState(current), payload = capture === undefined ? undefined : modifierCapture(capture);
+  const validated = companionTransition(previous.lifecycle, transition, payload !== undefined);
+  if (validated.status === 'rejected') return Object.freeze({status: 'rejected', reason: validated.reason, state: null});
+  const next = validated.state, newInstances = next.effectState.instances;
   const snapshots = newInstances.map(instance => previous.snapshots.find(snapshot => snapshot.effectInstanceId === instance.effectInstanceId)
     ?? Object.freeze({effectInstanceId: instance.effectInstanceId, ...payload!}));
   return Object.freeze({status: 'applied', reason: 'none', state: modifierState({lifecycle: next, snapshots})});
@@ -839,4 +854,126 @@ export function listActiveEffectModifiers(state: EffectModifierState): readonly 
     identity: Object.freeze({source: 'effect', sourceInstanceId: snapshot.effectInstanceId, id: modifier.modifierId}),
     target: modifier.target, operation: modifier.operation, value: modifier.value, enabled: modifier.enabled,
   }))));
+}
+
+/** Opaque, case-sensitive L3 identities; no built-in status/restriction vocabulary. */
+export interface EffectStatusCapture {
+  readonly statusIds: readonly string[];
+  readonly restrictionIds: readonly string[];
+}
+export interface EffectStatusSnapshot extends EffectStatusCapture {
+  readonly effectInstanceId: string;
+}
+/** Payload index only. Active membership is supplied separately by the canonical lifecycle. */
+export interface EffectStatusState {
+  readonly entityId: string;
+  readonly observedAtMs: number;
+  readonly snapshots: readonly EffectStatusSnapshot[];
+}
+export interface EffectStatusView {
+  readonly statusId: string;
+  readonly effectInstanceIds: readonly string[];
+}
+export interface EffectRestrictionView {
+  readonly effectInstanceId: string;
+  readonly effectId: string;
+  readonly restrictionId: string;
+}
+export interface EffectRestrictionPolicy {
+  readonly blockedByRestrictionIds: readonly string[];
+}
+/** Restriction assessment only; never full Skill/Combat/Effect authorization. */
+export interface EffectRestrictionAssessment {
+  readonly entityId: string;
+  readonly status: 'allowed' | 'blocked';
+  readonly reason: 'none' | 'active_restriction';
+  readonly matches: readonly EffectRestrictionView[];
+}
+export type EffectStatusTransitionResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly state: EffectStatusState}
+  | {readonly status: 'rejected'; readonly reason: 'transition_rejected' | 'stale_transition'
+      | 'capture_required'; readonly state: null};
+
+function statusIds(input: unknown): readonly string[] {
+  const ids = lifecycleArray(input).map(effectId);
+  if (new Set(ids).size !== ids.length) throw new TypeError('Duplicate Effect status/restriction identity');
+  return Object.freeze(ids);
+}
+function statusCapture(input: unknown): EffectStatusCapture {
+  const fields = effectFields(input, ['statusIds', 'restrictionIds']);
+  return Object.freeze({statusIds: statusIds(fields.statusIds), restrictionIds: statusIds(fields.restrictionIds)});
+}
+function statusState(lifecycle: EffectLifecycleState, input: EffectStatusState): EffectStatusState {
+  const fields = effectFields(input, ['entityId', 'observedAtMs', 'snapshots']);
+  const entityId = effectId(fields.entityId), observedAtMs = lifecycleTime(fields.observedAtMs);
+  const entries = lifecycleArray(fields.snapshots);
+  if (entityId !== lifecycle.effectState.entityId || observedAtMs !== lifecycle.observedAtMs
+    || entries.length !== lifecycle.effectState.instances.length) throw new TypeError('Status/lifecycle association mismatch');
+  const snapshots = entries.map((entry, index): EffectStatusSnapshot => {
+    const data = effectFields(entry, ['effectInstanceId', 'statusIds', 'restrictionIds']);
+    const effectInstanceId = effectId(data.effectInstanceId);
+    if (effectInstanceId !== lifecycle.effectState.instances[index]!.effectInstanceId) {
+      throw new TypeError('Status snapshot identity/order mismatch');
+    }
+    return Object.freeze({effectInstanceId, ...statusCapture({statusIds: data.statusIds, restrictionIds: data.restrictionIds})});
+  });
+  return Object.freeze({entityId, observedAtMs, snapshots: Object.freeze(snapshots)});
+}
+
+/** Empty initialization only; no historical capture backfill. */
+export function createEffectStatusState(lifecycle: EffectLifecycleState): EffectStatusState {
+  const current = lifecycleSnapshot(lifecycle);
+  if (current.effectState.instances.length) throw new TypeError('Status initialization requires empty lifecycle');
+  return statusState(current, {entityId: current.effectState.entityId, observedAtMs: current.observedAtMs, snapshots: []});
+}
+
+/** Follow validated canonical membership deltas, without executing another lifetime or admission engine.
+ * L4 must atomically commit all companions with the same lifecycle candidate.
+ * A replacement capture on refresh or another non-addition is malformed (TypeError).
+ */
+export function applyEffectStatusTransition(current: EffectStatusState, previousLifecycle: EffectLifecycleState,
+  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult,
+  capture?: EffectStatusCapture): EffectStatusTransitionResult {
+  const before = lifecycleSnapshot(previousLifecycle, true), previous = statusState(before, current);
+  const payload = capture === undefined ? undefined : statusCapture(capture);
+  const validated = companionTransition(before, transition, payload !== undefined);
+  if (validated.status === 'rejected') return Object.freeze({status: 'rejected', reason: validated.reason, state: null});
+  const next = validated.state;
+  const snapshots = next.effectState.instances.map(instance =>
+    previous.snapshots.find(snapshot => snapshot.effectInstanceId === instance.effectInstanceId)
+    ?? Object.freeze({effectInstanceId: instance.effectInstanceId, ...payload!}));
+  return Object.freeze({status: 'applied', reason: 'none', state: statusState(next,
+    {entityId: next.effectState.entityId, observedAtMs: next.observedAtMs, snapshots})});
+}
+
+/** First-appearance status order and canonical contributor order, with no counters or caches. */
+export function listActiveEffectStatuses(lifecycle: EffectLifecycleState, state: EffectStatusState): readonly EffectStatusView[] {
+  const current = statusState(lifecycleSnapshot(lifecycle), state);
+  const views = new Map<string, string[]>();
+  for (const snapshot of current.snapshots) for (const statusId of snapshot.statusIds) {
+    const contributors = views.get(statusId);
+    if (contributors) contributors.push(snapshot.effectInstanceId);
+    else views.set(statusId, [snapshot.effectInstanceId]);
+  }
+  return Object.freeze([...views].map(([statusId, contributors]) =>
+    Object.freeze({statusId, effectInstanceIds: Object.freeze(contributors)})));
+}
+
+/** Per-instance provenance; effectId comes exclusively from canonical membership. */
+export function listActiveEffectRestrictions(lifecycle: EffectLifecycleState, state: EffectStatusState): readonly EffectRestrictionView[] {
+  const canonical = lifecycleSnapshot(lifecycle), current = statusState(canonical, state);
+  return Object.freeze(current.snapshots.flatMap((snapshot, index) => snapshot.restrictionIds.map(restrictionId => Object.freeze({
+    effectInstanceId: snapshot.effectInstanceId, effectId: canonical.effectState.instances[index]!.effectId, restrictionId,
+  }))));
+}
+
+/** Exact caller-selected identities only. L3 interprets meaning; L4 composes existing admission policies. */
+export function evaluateEffectRestrictionGate(lifecycle: EffectLifecycleState, state: EffectStatusState,
+  policy: EffectRestrictionPolicy): EffectRestrictionAssessment {
+  const restrictions = listActiveEffectRestrictions(lifecycle, state);
+  const fields = effectFields(policy, ['blockedByRestrictionIds']);
+  const blockedBy = statusIds(fields.blockedByRestrictionIds);
+  const matches = Object.freeze(restrictions.filter(view => blockedBy.includes(view.restrictionId)));
+  return Object.freeze({entityId: state.entityId, status: matches.length ? 'blocked' : 'allowed',
+    reason: matches.length ? 'active_restriction' : 'none', matches});
 }
