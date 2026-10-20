@@ -1222,8 +1222,19 @@ void resource; void invalid;
     finally{fs.writeFileSync(aiDeclarationFile,aiDeclaration);}assertPackedFiles();
     console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED installed_declaration');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const broken=JSON.parse(manifestBytes);broken.exports['.'].types='./dist/missing.d.ts';fs.writeFileSync(manifestFile,JSON.stringify(broken));assert.throws(()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','tsconfig.json'],temp),/TS\d+/);}
-    finally{fs.writeFileSync(manifestFile,manifestBytes);}assertPackedFiles();
+    // NodeNext can fall back through the import condition. Check the package
+    // declaration contract directly; declaration validity remains a compiler gate.
+    const assertRootDeclarationExport=()=>{
+      const manifest=JSON.parse(fs.readFileSync(manifestFile,'utf8'));
+      const declaration=manifest.exports['.'].types;
+      assert.equal(declaration,'./dist/index.d.ts','installed root types export must name the canonical declaration');
+      assert.ok(packed.files.some(file=>'./'+file.path===declaration),'root declaration must be included in the packed artifact');
+      assert.ok(fs.statSync(path.join(installed,declaration)).isFile(),'installed root declaration must exist as a file');
+    };
+    assertRootDeclarationExport();
+    try{const broken=JSON.parse(manifestBytes);broken.exports['.'].types='./dist/missing.d.ts';fs.writeFileSync(manifestFile,JSON.stringify(broken));assert.throws(assertRootDeclarationExport,{code:'ERR_ASSERTION',message:/installed root types export must name the canonical declaration/});}
+    finally{fs.writeFileSync(manifestFile,manifestBytes);}
+    assert.deepEqual(fs.readFileSync(manifestFile),manifestBytes);assertRootDeclarationExport();assertPackedFiles();
     exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','tsconfig.json'],temp);
     console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED export_map');
     console.log('INSTALLED_ACTOR_AI_CLOSURE_DECLARATION_PASS strict_NodeNext; skipLibCheck_false; restored');
