@@ -114,3 +114,7 @@ export type {EffectPeriodicCapture, EffectPeriodicEntry, EffectPeriodicState, Ef
   EffectPeriodicTransitionResult} from './modules/effect/index.js';
 export {cleanupDefeatedTargetEffects} from './modules/effect/index.js';
 export type {EffectTargetDefeatCleanupRequest, EffectTargetDefeatCleanupResult} from './modules/effect/index.js';
+export {createActorAIProfileReference, createActorAIState, validateActorAIState,
+  createActorAIDecisionContext, createActorAIActionIntent, validateActorAIDecisionResult} from './modules/actor-ai/index.js';
+export type {ActorAIProfileReference, ActorAIControllerMode, ActorAIInitialState, ActorAIState,
+  ActorAIDecisionContext, ActorAIActionIntent, ActorAIDecisionResult} from './modules/actor-ai/index.js';

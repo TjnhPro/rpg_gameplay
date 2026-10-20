@@ -1,3 +1,18 @@
+## v0.7.0 Actor AI verification
+
+Installed package0.7.0 adds five assertion-bearing contract groups, covering
+AI01–AI05 and the task's AI01–AI33 acceptance scenarios. Full observed coverage:
+197 runtime contracts /40 installed groups plus3 outer tests; zero failures,
+skips, cancellations or todos. All192 historical runtime contracts remain active,
+including Effect FIX01. Root inventory115 functions/191 types.
+Native ESM and strict NodeNext/skipLibCheck:false use the real tarball and pinned
+physical Core2.0.0. Controls require both AI fixtures, each of six root exports,
+correct version/Core integrity, actual assertions/no skips, manual rejection,
+actor existence, strict declarations and installed dist-byte provenance.
+Injection is restored before final verification.
+Exact-head push + pull_request Windows/Ubuntu Node22/24 require8/8 success.
+[Report](reports/v0.7.0-actor-ai-foundation.md); phase IN_PROGRESS, acceptance PENDING.
+
 ## v0.6.7-FIX01 verification
 
 Installed integration now requires9 contracts: six retained plus three grouped

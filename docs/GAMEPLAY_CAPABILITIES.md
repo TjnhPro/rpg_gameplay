@@ -1,3 +1,18 @@
+## Current checkpoint: v0.7.0 — Actor AI Foundation
+
+Effect PR #11 is merged at baseline be716c4. AI01–AI05 implement actor identity,
+opaque L3 profile references, immutable AI state, structural decision/action
+contracts and an optional Entity-only module. Player, Monster, NPC, Pet, Summon,
+Companion and arbitrary Entity kinds use the same six functions.
+Manual states reject AI proposals; no_action reasons are controller-bound.
+Target references do not imply target validity or action admission.
+AI06–AI40 remain OUT_OF_SCOPE at this checkpoint: no perception, evaluator, target
+selection, FSM transitions, priorities, execution, feedback, lifecycle or scheduler.
+Actor AI phase IN_PROGRESS; Developer acceptance PENDING.
+[Task](tasks/active/v0.7.0-actor-ai-foundation.md) /
+[report](reports/v0.7.0-actor-ai-foundation.md). Concrete game profiles NOT_EVALUATED.
+Earlier candidate statuses below are historical.
+
 ## Current patch candidate: v0.6.7-FIX01
 
 EF01–EF40 remains the baseline. One explicit canonical Effect cleanup operation

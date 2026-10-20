@@ -1,3 +1,16 @@
+## v0.7.0 Actor AI boundary
+
+New optional `actor-ai -> [entity]`; registry defaults it off.
+The complete graph is Entity -> []; Progression/Combat/Skill/Effect/Actor AI -> [Entity].
+Production changes are limited to src/modules/actor-ai/index.ts and additive root
+exports. Actor AI imports only canonical Entity APIs/types; no dependency on
+Combat, Skill, Effect, Progression, L3 or L4.
+Entity owns identity/resources/life; L2 Actor AI owns only immutable AI schema and
+structural contracts; L3 owns profiles/policy; L4 owns authoritative storage,
+controller dispatch, execution and commit. No global store, runtime or second
+Entity/calculation owner. Existing production owners and Core pin are protected.
+[Approved task](tasks/active/v0.7.0-actor-ai-foundation.md).
+
 ## v0.6.7-FIX01 boundary audit
 
 Production delta is confined to src/modules/effect/index.ts and root exports:

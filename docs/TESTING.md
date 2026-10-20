@@ -1,3 +1,21 @@
+## v0.7.0 Actor AI Foundation evidence
+
+`tests/consumers/actor-ai-foundation.mjs` has five installed contract groups:
+actor-agnostic canonical binding; correlated proposals/controller exclusivity;
+closed records/no getters; optional Entity-only composition; detached immutable
+snapshots/independent replay/canonical Resource and Life preservation.
+Literal expected states and envelopes are independent of implementation.
+Same APIs cover Player/Monster/NPC/Pet/Summon/Companion/custom kinds.
+Replay runs with Date.now/Math.random/timers replaced by throwing providers.
+Strict installed `actor-ai-foundation.ts` imports six functions/seven types and
+proves readonly/discriminated contracts and closed package paths.
+Runner detects missing fixtures, each missing new export, bad version/Core,
+skips/zero assertions, actual manual-proposal/unknown-actor runtime faults,
+installed declaration failure and artifact drift; all mutations restored.
+Observed full197 runtime /40 groups +3 outer; retained192 historical runtime
+contracts include all GF/EC/PG/CB/SK/EF and Effect FIX01.
+[Checkpoint report](reports/v0.7.0-actor-ai-foundation.md).
+
 ## v0.6.7-FIX01 target-defeat cleanup evidence
 
 effect-integration.mjs retains its six original contracts and adds three grouped

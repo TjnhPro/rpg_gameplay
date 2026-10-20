@@ -1,3 +1,20 @@
+## v0.7.0 Actor AI gates
+
+Run core:prepare and npm ci --ignore-scripts, harness:check, harness:selftest,
+build, typecheck, test:functional, full npm run verify and git diff --check.
+Require real installed @rpg/gameplay@0.7.0/Core2.0.0, native ESM, strict external
+NodeNext with skipLibCheck:false, correct dist bytes and no symlinks/source imports.
+Observed197 runtime contracts /40 installed groups +3 outer tests, zero
+fail/cancel/skip/todo; AI's five grouped contracts preserve192 historical contracts.
+Require all five AI evidence markers, negative controls and restored artifacts.
+Audit six-function/seven-type delta (115/191), protected owners/Core pin unchanged,
+no runtime dependency delta, and only optional actor-ai -> entity graph addition.
+Both exact-head push/pull_request Windows/Ubuntu Node22/24 matrices must pass8/8
+before CHECKPOINT_COMPLETE. Keep the phase PR Draft, phase IN_PROGRESS and
+Developer acceptance PENDING. No Ready/merge/tag/publish or v0.7.1 implementation.
+The [report](reports/v0.7.0-actor-ai-foundation.md) records local evidence; its
+SHA-bound phase PR supplement records final CI without changing tested HEAD.
+
 ## v0.6.7-FIX01 gates
 
 Repeat all local commands listed below, plus targeted installed integration9/9

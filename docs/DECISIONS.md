@@ -156,3 +156,19 @@ create an L2 calculator to fill the gap. L2 Effect owns structural identity/stat
 canonical Entity validates targets. L3 supplies content/policy; L4 supplies stable
 source identity, authoritative state and explicit orchestration. No global store,
 second runtime engine or coupling to Skill/Combat/Progression is authorized.
+
+## Actor AI phase decisions — v0.7.x (Developer approved, 2026-10-20)
+
+These phase-scoped D01–D05 names are from the approved Actor AI task; they do
+not replace historical project D01–D18.
+
+| Phase ID | Approved choice A | v0.7.0 boundary |
+| --- | --- | --- |
+| Actor AI D01 | L2 canonical immutable AI schema; L4 storage/commit authority | State contracts only; no global store |
+| Actor AI D02 | FSM + Priority Rules; L3 behavior/priorities | Opaque behaviorStateId only; no evaluator |
+| Actor AI D03 | One active manual or AI controller per actor | Reject manual AI proposals; L4 switches/dispatches |
+| Actor AI D04 | Actual L4 execution feedback, no optimistic success | Structural decision/intent association; feedback deferred to v0.7.5 |
+| Actor AI D05 | Deterministic priority with stable tie-break | Explicit IDs, immutable replay; no implicit time/RNG or evaluator |
+
+Only optional actor-ai -> entity is authorized. L3 owns profiles; Entity retains
+identity/resources/life. [Approved checkpoint task](tasks/active/v0.7.0-actor-ai-foundation.md).

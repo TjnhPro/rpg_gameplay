@@ -1,4 +1,22 @@
-# RPG Gameplay — v0.6.7 Effect Integration & Closure
+# RPG Gameplay — v0.7.0 Actor AI Foundation
+
+> **Current: AI01–AI05 implemented; Actor AI phase IN_PROGRESS; Developer acceptance PENDING.**
+
+Optional Actor AI adds actor-agnostic immutable state, L3-owned profile references,
+manual/AI controller identity and structural decision/action contracts. It depends
+only on Entity. Six functions/seven types are additive (root115 functions/191 types).
+No evaluator, FSM transitions, target selection or execution runtime exists yet.
+Actual installed coverage:197 runtime contracts /40 groups +3 outer; all192
+historical contracts retained, including Effect FIX01. Core2.0.0 pin unchanged.
+Effect PR #11 is merged in accepted main be716c4. One new phase Draft PR tracks
+feat/v0.7-actor-ai; no Ready/merge/tag/publish or automatic v0.7.1.
+
+[Approved task](docs/tasks/active/v0.7.0-actor-ai-foundation.md) /
+[Checkpoint report](docs/reports/v0.7.0-actor-ai-foundation.md) /
+[Public API](docs/API.md). Concrete game profiles remain NOT_EVALUATED.
+Earlier candidate statements below are historical.
+
+## Historical v0.6.7 Effect Integration & Closure
 
 > **Status: Skill baseline merged through PR #10. Effect EF01–EF40 implemented and locally verified; v0.6.7 closure candidate, Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract

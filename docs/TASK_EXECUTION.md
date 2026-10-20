@@ -1,3 +1,19 @@
+## Current authorized checkpoint: v0.7.0 Actor AI Foundation
+
+The Developer's approved [task](tasks/active/v0.7.0-actor-ai-foundation.md) authorizes
+AI01–AI05 with phase-scoped D01–D05 ALL A. Effect PR #11 was verified MERGED;
+accepted main baseline be716c4ea7c12a6ac9d73503dd9ea6d0c6a45bf0.
+New feat/v0.7-actor-ai uses one Draft PR to main through v0.7.7.
+Only new actor-ai owner/root exports change production; optional dependency is
+actor-ai -> entity only, with package0.7.0. Preserve prior owners/API/oracles and Core.
+Implement structural contracts only, not AI evaluation/execution/feedback/runtime.
+All local gates and both exact-head Windows/Ubuntu Node22/24 matrices8/8 must pass
+before CHECKPOINT_COMPLETE. Stop at v0.7.0. Keep Draft, phase IN_PROGRESS,
+Developer acceptance PENDING. No merge/tag/publish/Ready/next milestone.
+[Report](reports/v0.7.0-actor-ai-foundation.md) is completed by a SHA-bound CI
+supplement on that Draft PR, avoiding a report-only commit that invalidates evidence.
+All earlier authorizations/statuses below are historical.
+
 ## Current authorized task: v0.6.7-FIX01
 
 Developer-approved Target Defeat Cleanup & Event Timeline Consistency patch starts

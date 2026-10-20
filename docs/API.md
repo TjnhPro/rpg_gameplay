@@ -1,3 +1,42 @@
+## v0.7.0 Actor AI Foundation — AI01–AI05
+
+Additive root API: six functions / seven types; total **115 functions / 191 types**.
+Existing signatures and behavior are preserved.
+
+```ts
+createActorAIProfileReference(input: ActorAIProfileReference): ActorAIProfileReference
+createActorAIState(actor: EntitySnapshot, profile: ActorAIProfileReference,
+  initial: ActorAIInitialState): ActorAIState
+validateActorAIState(state: ActorAIState, entities: EntityCollection): ActorAIState
+createActorAIDecisionContext(state: ActorAIState, decisionId: string): ActorAIDecisionContext
+createActorAIActionIntent(context: ActorAIDecisionContext,
+  input: {readonly actionKey: string; readonly targetEntityId: string | null}): ActorAIActionIntent
+validateActorAIDecisionResult(state: ActorAIState, context: ActorAIDecisionContext,
+  result: ActorAIDecisionResult): ActorAIDecisionResult
+```
+
+Public types: `ActorAIProfileReference` (profileId), `ActorAIControllerMode`
+(manual | ai), `ActorAIInitialState` (controller, behaviorStateId),
+`ActorAIState` (actorId, profileId, controller, behaviorStateId, targetEntityId),
+`ActorAIDecisionContext` (decisionId, actorId), `ActorAIActionIntent`
+(decisionId, actorId, actionKey, targetEntityId), `ActorAIDecisionResult`.
+All fields are readonly; every returned record, including nested result intent,
+is detached and frozen.
+
+Creation validates canonical Entity, preserves exact nonblank IDs and starts with
+targetEntityId:null. State validation requires the actor in canonical collection;
+a stale nonblank target is permitted as a reference, never eligibility evidence.
+Contexts require explicit decision IDs; intents accept opaque action keys and
+nullable target references without action lookup or execution.
+Result `proposed / none / intent` requires AI controller and exact actor/decision
+bindings. `no_action / manual_control / null` requires manual controller;
+`no_action / no_candidate / null` requires AI controller.
+Malformed records, missing/extra/symbol/accessor/inherited fields, invalid IDs,
+controllers or discriminator combinations throw TypeError without invoking getters.
+Ordinary or null-prototype own-data records are supported.
+These functions only validate structure; they do not evaluate AI or change state.
+See [checkpoint report](reports/v0.7.0-actor-ai-foundation.md).
+
 ## v0.6.7-FIX01: explicit target-defeat cleanup
 
 One additive function and two types: root109 functions /184 types. Historical
