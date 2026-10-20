@@ -1,3 +1,14 @@
+## v0.7.3 Actor AI behavior checkpoint
+
+AI16 generic state/profile policy, AI17 ordered FSM/guards, AI18 Idle/Guard,
+AI19 configurable Aggressive/Defensive/Passive and AI20 Disengage/Return:
+IMPLEMENTED with installed contract evidence. AI01–AI15 preserved.
+L3 examples are test data, not framework presets. L4 supplies triggers and commits
+behavior-only candidates. No target mutation/actions/World/spatial/automatic reset.
+AI21–AI25(v0.7.4), AI26–AI30(v0.7.5), AI31–AI35(v0.7.6), AI36–AI40(v0.7.7)
+remain OUT_OF_SCOPE. Phase IN_PROGRESS, acceptance PENDING. [Report](reports/v0.7.3-ai-behavior-state-transitions.md).
+Concrete gameplay profiles NOT_EVALUATED; older statements are historical.
+
 ## v0.7.2 checkpoint delta
 
 AI11 Target Selection Policy, AI12 Acquisition, AI13 Retention, AI14 Switching

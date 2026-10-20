@@ -123,3 +123,6 @@ export type {ActorAIPerceivedEntity, ActorAIPerceptionSnapshot, ActorAIPerceptio
   ActorAIPerceptionExclusionReason, ActorAIPerceptionExclusion, ActorAIPerceptionAssessment} from './modules/actor-ai/index.js';
 export {evaluateActorAITargetSelection} from './modules/actor-ai/index.js';
 export type {ActorAITargetSelectionPolicy, ActorAITargetLossReason, ActorAITargetSelectionResult} from './modules/actor-ai/index.js';
+export {createActorAIBehaviorPolicy, createActorAIBehaviorObservation, evaluateActorAIBehaviorTransition} from './modules/actor-ai/index.js';
+export type {ActorAIBehaviorTargetRequirement, ActorAIBehaviorRule, ActorAIBehaviorPolicy,
+  ActorAIBehaviorObservation, ActorAIBehaviorTransitionResult} from './modules/actor-ai/index.js';

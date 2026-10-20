@@ -1,3 +1,15 @@
+## v0.7.3 behavior ownership
+
+Only Actor AI owner/additive root production changes. Optional actor-ai→entity
+graph preserved. Canonical Entity validates actor; Actor AI owns pure behavior
+evaluation/candidates; L3 owns state/profile/rule/guard priority configuration;
+L4 owns events/provenance/controller/authoritative commit. Target selection and
+behavior evaluation remain separate caller-coordinated functions.
+No Combat/Skill/Effect/Progression dependencies, World/movement/spatial owner,
+Behavior Tree, Utility AI, scheduler, second FSM store/runtime or numerical code.
+Core and every other owner/registry/pin/dependency remain unchanged.
+[API](API.md) / [report](reports/v0.7.3-ai-behavior-state-transitions.md); prior statements are historical.
+
 ## v0.7.2 target-selection ownership
 
 Graph unchanged: optional actor-ai → entity only. Existing perception validators

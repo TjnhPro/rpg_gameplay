@@ -1,3 +1,18 @@
+# RPG Gameplay — v0.7.3 AI Behavior & State Transitions
+
+**AI01–AI20 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**
+Generic FSM evaluates explicit L4 triggers against ordered L3 rules and structural
+target-presence guards. Only behaviorStateId changes in immutable candidates;
+L4 retains commit/controller authority. Passive/Guard/Aggressive/Defensive are
+consumer configurations, not built-in engines. No actions or World calculations.
+Three functions/five types added: root **122 functions /205 types**.
+Actual installed evidence: **216 runtime contracts /43 groups +3 outer**, zero
+skips; all209 prior contracts retained. Core/other owners/graph unchanged.
+Continue [Draft PR #12](https://github.com/TjnhPro/rpg_gameplay/pull/12).
+[Task](docs/tasks/active/v0.7.3-ai-behavior-state-transitions.md) / [Report](docs/reports/v0.7.3-ai-behavior-state-transitions.md) / [API](docs/API.md).
+Stop at v0.7.3; no Ready/merge/tag/publish/automatic v0.7.4.
+Concrete gameplay profiles NOT_EVALUATED; earlier status is historical.
+
 # RPG Gameplay — v0.7.2 Target Acquisition & Selection
 
 **AI01–AI15 implemented; Actor AI phase IN_PROGRESS; Developer acceptance PENDING.**

@@ -1,3 +1,16 @@
+## Current authorized checkpoint: v0.7.3 AI Behavior & State Transitions
+
+Developer supplied approved [task](tasks/active/v0.7.3-ai-behavior-state-transitions.md); D01–D05 ALL A, no reapproval required.
+Preflight completed v0.7.2 at4aef1201513b482193b1292349334f702faa2834 with clean
+synchronized branch feat/v0.7-actor-ai and existing Draft PR #12/main, baseline8/8.
+AI16–AI20 only: configurable FSM state/profile/rules, explicit L4 observations,
+first-match guards/priority, immutable behavior-only candidate. Add3functions/5types,
+package0.7.2→0.7.3. Protect Core/all other owners/registry/dependencies/old fixtures.
+Local gates and both exact-head Windows/Ubuntu Node22/24 matrices8/8 precede
+CHECKPOINT_COMPLETE. SHA-bound supplement completes [report](reports/v0.7.3-ai-behavior-state-transitions.md).
+Keep Draft; phase IN_PROGRESS, acceptance PENDING. Stop at v0.7.3; no new PR,
+Ready/merge/tag/publish or automatic v0.7.4. Previous authorization is historical.
+
 ## Current authorized checkpoint: v0.7.2 Target Acquisition & Selection
 
 Developer supplied the approved [task](tasks/active/v0.7.2-target-acquisition-selection.md).

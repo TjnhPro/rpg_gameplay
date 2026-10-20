@@ -1,3 +1,16 @@
+## v0.7.3 installed behavior evidence
+
+New actor-ai-behavior.mjs/.ts adds seven assertion-bearing runtime groups plus
+strict external NodeNext. Observed216 runtime /43 installed groups +3 outer;
+all209 prior contracts retained, zero fail/cancel/skip/todo.
+Eight installed executable faults are detected: manual, ordering, profile,
+state reference, guard, target mutation, input mutation and forbidden canonical
+execution. Execution prohibition has a compiled dependency/call assertion alongside
+runtime owner preservation; no claim of an implemented World/Movement system.
+Missing fixtures/exports/version/Core, skip/zero assertions and wrong declarations
+also fail; every injected byte restored. Both exact-head CI matrices8/8 required.
+[Report](reports/v0.7.3-ai-behavior-state-transitions.md); prior status below is historical.
+
 ## v0.7.2 installed evidence delta
 
 New target-selection consumer adds six assertion-bearing runtime groups and a

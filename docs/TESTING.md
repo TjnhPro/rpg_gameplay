@@ -1,3 +1,19 @@
+## v0.7.3 behavior evidence
+
+S01–S46 map to seven installed groups: generic capture; ordered transitions and
+guards/outcomes; actor-agnostic profile differences; explicit target-selection
+and full idle/guard return timelines; manual gate; closed fail-closed validation;
+snapshot isolation/replay/owner and compiled execution boundaries.
+Literal outcomes independent of evaluator implementation; no-transition/self-rule
+and duplicate-guard fallback are explicit. Unknown trigger is a valid no-match.
+Runtime owners include canonical Entity Resource/Life, Skill cooldown and Effect
+state. World position is opaque caller fixture, not a World implementation.
+Throwing implicit clock/RNG/timers, independent captures/sessions and unchanged
+inputs prove deterministic isolation. Targeted7/7 plus strict NodeNext PASS.
+Full216/43+3, historical209 intact; eight executable faults and skip/zero/assertion/
+declaration/fixture/export/version/Core controls fail and restore original bytes.
+[Report](reports/v0.7.3-ai-behavior-state-transitions.md); earlier counts are historical.
+
 ## v0.7.2 target-selection evidence
 
 actor-ai-target-selection.mjs/.ts exercise S01–S41 through six cohesive groups:

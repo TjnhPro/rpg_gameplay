@@ -1,3 +1,17 @@
+## v0.7.3 verification delta
+
+Run preparation/fresh install, harness check/selftest, build/typecheck, targeted
+installed7/7+strict NodeNext, test:functional and full npm run verify.
+Observed216 installed runtime /43 groups +3 outer, zero fail/cancel/skip/todo;
+all209 historical contracts preserved. Every new fixture/export is mandatory.
+Eight executable faults, skipped/no-assertion consumers and missing target-guard
+declarations fail; injected gameplay call is caught by installed execution-boundary
+assertions even if its discarded numerical result leaves caller state unchanged.
+All mutations restore in finally; original packed bytes checked.
+Require exact delivered SHA push AND pull_request Windows/Ubuntu Node22/24 jobs8/8.
+Final SHA-bound PR #12 supplement completes the [37-section report](reports/v0.7.3-ai-behavior-state-transitions.md)
+after push without changing verified HEAD. Earlier status is historical.
+
 ## v0.7.2 verification delta
 
 Preparation/install, harness checks/self-tests, build/typecheck, targeted installed

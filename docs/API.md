@@ -1,3 +1,66 @@
+## v0.7.3 AI Behavior & State Transitions — AI16–AI20
+
+Additive root API: three functions/five types; total **122 functions /205 types**.
+All AI01–AI15 signatures and behavior retained.
+
+```ts
+type ActorAIBehaviorTargetRequirement = 'any' | 'present' | 'absent';
+interface ActorAIBehaviorRule {
+  readonly ruleId: string;
+  readonly fromStateId: string;
+  readonly triggerId: string;
+  readonly toStateId: string;
+  readonly targetRequirement: ActorAIBehaviorTargetRequirement;
+}
+interface ActorAIBehaviorPolicy {
+  readonly profileId: string;
+  readonly stateIds: readonly string[];
+  readonly rules: readonly ActorAIBehaviorRule[];
+}
+interface ActorAIBehaviorObservation {
+  readonly actorId: string;
+  readonly triggerIds: readonly string[];
+}
+createActorAIBehaviorPolicy(input: ActorAIBehaviorPolicy): ActorAIBehaviorPolicy;
+createActorAIBehaviorObservation(state: ActorAIState,
+  triggerIds: readonly string[]): ActorAIBehaviorObservation;
+evaluateActorAIBehaviorTransition(state: ActorAIState, entities: EntityCollection,
+  observation: ActorAIBehaviorObservation,
+  policy: ActorAIBehaviorPolicy): ActorAIBehaviorTransitionResult;
+```
+
+All IDs exact/nonblank/case-sensitive. Unique state/trigger/rule IDs, valid rule
+state references and explicit guard required. Empty rules/triggers are valid;
+empty state sets can be captured but cannot contain a valid evaluation state.
+Policy factory detaches/freezes nested records/arrays and preserves rule order.
+Observation factory structurally validates state and captures supplied triggers,
+without generating events or checking collection membership.
+
+Evaluator validates state/canonical actor, complete policy/observation, profile
+and actor binding, current-state membership before manual gate. All malformed
+input rejects even when manual/no-trigger/no-match; no partial valid subset.
+First rule matching source, trigger membership and target guard wins. Guard
+failure continues to later rules; trigger order has no priority. present/absent
+checks null only, not target existence/Life/eligibility. Same-state rule wins
+without continuing to later rules. No automatic target-selection chaining.
+
+ActorAIBehaviorTransitionResult is a readonly discriminated union:
+
+| status | reason | ruleId / triggerId | nextBehaviorStateId | state |
+| --- | --- | --- | --- | --- |
+| transitioned | rule_matched | string / string | string | ActorAIState |
+| unchanged | no_trigger / no_matching_rule / same_state | string or null | string | ActorAIState |
+| blocked | manual_control | null / null | null | null |
+
+Every result includes previousBehaviorStateId:string. same_state carries matched
+IDs; no_trigger/no_matching_rule carry null IDs. Every nonblocked state is detached
+and frozen; only behaviorStateId can change. Actor/profile/controller/target exact
+values preserved. No result-validation API is added; closed output discriminators
+are proved by literal runtime oracles and strict declarations.
+L3 configures arbitrary states/profiles, L4 supplies genuine events/current state
+and commits candidates after authority/freshness checks. No built-in profile,
+action success inference, timer/RNG, World/movement or execution. [Report](reports/v0.7.3-ai-behavior-state-transitions.md).
+
 ## v0.7.2 Target Acquisition & Selection — AI11–AI15
 
 Additive root API: one function/three types; total **119 functions /200 types**.

@@ -318,3 +318,97 @@ export function evaluateActorAITargetSelection(state: ActorAIState, entities: En
     : previousTargetEntityId === selectedTargetEntityId ? 'retained' : 'switched',
     previousTargetEntityId, selectedTargetEntityId, lossReason, state: next});
 }
+
+export type ActorAIBehaviorTargetRequirement = 'any' | 'present' | 'absent';
+export interface ActorAIBehaviorRule {
+  readonly ruleId: string;
+  readonly fromStateId: string;
+  readonly triggerId: string;
+  readonly toStateId: string;
+  readonly targetRequirement: ActorAIBehaviorTargetRequirement;
+}
+/** L3-owned opaque state identities and ordered first-match rules. */
+export interface ActorAIBehaviorPolicy {
+  readonly profileId: string;
+  readonly stateIds: readonly string[];
+  readonly rules: readonly ActorAIBehaviorRule[];
+}
+/** Explicit L4 facts; capture neither generates nor subscribes to events. */
+export interface ActorAIBehaviorObservation {
+  readonly actorId: string;
+  readonly triggerIds: readonly string[];
+}
+export type ActorAIBehaviorTransitionResult =
+  | {readonly status: 'transitioned'; readonly reason: 'rule_matched';
+      readonly ruleId: string; readonly triggerId: string;
+      readonly previousBehaviorStateId: string; readonly nextBehaviorStateId: string; readonly state: ActorAIState}
+  | {readonly status: 'unchanged'; readonly reason: 'no_trigger' | 'no_matching_rule' | 'same_state';
+      readonly ruleId: string | null; readonly triggerId: string | null;
+      readonly previousBehaviorStateId: string; readonly nextBehaviorStateId: string; readonly state: ActorAIState}
+  | {readonly status: 'blocked'; readonly reason: 'manual_control'; readonly ruleId: null; readonly triggerId: null;
+      readonly previousBehaviorStateId: string; readonly nextBehaviorStateId: null; readonly state: null};
+
+function behaviorIds(input: unknown): readonly string[] {
+  const seen = new Set<string>();
+  return perceptionArray(input, value => {
+    const identity = id(value);
+    if (seen.has(identity)) throw new TypeError('Duplicate Actor AI behavior identity');
+    seen.add(identity);
+    return identity;
+  });
+}
+function behaviorRule(input: unknown): ActorAIBehaviorRule {
+  const data = fields(input, ['ruleId', 'fromStateId', 'triggerId', 'toStateId', 'targetRequirement']);
+  if (data.targetRequirement !== 'any' && data.targetRequirement !== 'present' && data.targetRequirement !== 'absent') {
+    throw new TypeError('Invalid Actor AI behavior target requirement');
+  }
+  return Object.freeze({ruleId: id(data.ruleId), fromStateId: id(data.fromStateId), triggerId: id(data.triggerId),
+    toStateId: id(data.toStateId), targetRequirement: data.targetRequirement});
+}
+export function createActorAIBehaviorPolicy(input: ActorAIBehaviorPolicy): ActorAIBehaviorPolicy {
+  const data = fields(input, ['profileId', 'stateIds', 'rules']);
+  const profileId = id(data.profileId), stateIds = behaviorIds(data.stateIds);
+  const rules = perceptionArray(data.rules, behaviorRule), ruleIds = new Set<string>();
+  for (const rule of rules) {
+    if (ruleIds.has(rule.ruleId)) throw new TypeError('Duplicate Actor AI behavior rule');
+    ruleIds.add(rule.ruleId);
+    if (!stateIds.includes(rule.fromStateId) || !stateIds.includes(rule.toStateId)) {
+      throw new TypeError('Unknown Actor AI behavior rule state');
+    }
+  }
+  return Object.freeze({profileId, stateIds, rules});
+}
+function behaviorObservation(input: unknown): ActorAIBehaviorObservation {
+  const data = fields(input, ['actorId', 'triggerIds']);
+  return Object.freeze({actorId: id(data.actorId), triggerIds: behaviorIds(data.triggerIds)});
+}
+export function createActorAIBehaviorObservation(state: ActorAIState, triggerIds: readonly string[]): ActorAIBehaviorObservation {
+  const current = stateSnapshot(state);
+  return behaviorObservation({actorId: current.actorId, triggerIds});
+}
+/** Behavior decision only. L4 validates current authority and commits; no execution. */
+export function evaluateActorAIBehaviorTransition(state: ActorAIState, entities: EntityCollection,
+  observation: ActorAIBehaviorObservation, policy: ActorAIBehaviorPolicy): ActorAIBehaviorTransitionResult {
+  const current = validateActorAIState(state, entities), rules = createActorAIBehaviorPolicy(policy);
+  const observed = behaviorObservation(observation), previousBehaviorStateId = current.behaviorStateId;
+  if (rules.profileId !== current.profileId) throw new TypeError('Actor AI behavior profile mismatch');
+  if (!rules.stateIds.includes(previousBehaviorStateId)) throw new TypeError('Unknown current Actor AI behavior state');
+  if (observed.actorId !== current.actorId) throw new TypeError('Actor AI behavior observation binding mismatch');
+  if (current.controller === 'manual') {
+    return Object.freeze({status: 'blocked', reason: 'manual_control', ruleId: null, triggerId: null,
+      previousBehaviorStateId, nextBehaviorStateId: null, state: null});
+  }
+  const matched = rules.rules.find(rule => rule.fromStateId === previousBehaviorStateId
+    && observed.triggerIds.includes(rule.triggerId)
+    && (rule.targetRequirement === 'any'
+      || (rule.targetRequirement === 'present' ? current.targetEntityId !== null : current.targetEntityId === null)));
+  const nextBehaviorStateId = matched?.toStateId ?? previousBehaviorStateId;
+  const next = Object.freeze({...current, behaviorStateId: nextBehaviorStateId});
+  if (nextBehaviorStateId !== previousBehaviorStateId && matched) {
+    return Object.freeze({status: 'transitioned', reason: 'rule_matched', ruleId: matched.ruleId, triggerId: matched.triggerId,
+      previousBehaviorStateId, nextBehaviorStateId, state: next});
+  }
+  return Object.freeze({status: 'unchanged', reason: matched ? 'same_state'
+    : observed.triggerIds.length === 0 ? 'no_trigger' : 'no_matching_rule',
+    ruleId: matched?.ruleId ?? null, triggerId: matched?.triggerId ?? null, previousBehaviorStateId, nextBehaviorStateId, state: next});
+}
