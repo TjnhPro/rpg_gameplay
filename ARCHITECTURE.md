@@ -267,4 +267,20 @@ captures explicit boolean policy. One evaluation function validates all inputs,
 then applies missing > dead > ineligible > admitted priority and freezes result.
 No new Life/Collection owner, lookup engine, state store, numerical calculator,
 Condition Engine, Skill dependency or execution authority. Registry unchanged.
-Target identity is structural only until a separately approved target milestone.
+At the v0.4.1 checkpoint, target identity was structural only.
+
+## CB11–CB15 Target evaluation (v0.4.2)
+
+Combat retains target evaluation ownership and depends only on public Entity APIs.
+getEntity owns canonical collection validation/target lookup; EntityLifeState and
+EntityLifeStatus remain Entity-owned. One private readLife boundary helper now
+serves both admission and target validation, preserving admission semantics.
+No Entity/Foundation/Progression production or registry/Core changes.
+
+Target validation accepts a structurally valid admitted/none receipt and never
+reruns source admission. Exact IDs enforce self consistency; other relations are
+caller assertions, not authenticated faction facts. Explicit nonempty policies
+permit alive or dead targets. Entire input contracts validate before target
+missing > relation denied > life denied priority. Diagnostics retain only frozen
+context and validated scalars, no authoritative target store or execution ticket.
+No numerical work, second engine, Skill/Effect dependency, state write or event.

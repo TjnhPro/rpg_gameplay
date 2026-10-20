@@ -441,4 +441,23 @@ owns HP/Life consistency; no target checks, numerical work, resource/life change
 events, Skill dependency or hidden time/RNG. 79 installed contracts (75 retained
 +4 admission), 2 outer gate tests and strict NodeNext cover the current artifact.
 See [v0.4.1 report](docs/reports/v0.4.1-combat-action-admission.md).
-Phase IN_PROGRESS, PR #9 DRAFT, Developer acceptance PENDING; v0.4.2+ NOT_STARTED.
+At the v0.4.1 checkpoint, v0.4.2+ were NOT_STARTED.
+
+## Combat Target Validation (CB11–CB15, v0.4.2)
+
+After actor admission, call `evaluateCombatTargetValidation(admission, entities,
+targetLife, {relation: 'enemy', allowedRelations: ['enemy'], allowedLifeStatuses:
+['alive']})`. Only a closed admitted/none receipt can enter this stage. Canonical
+Entity lookup checks the target; the supplied Life must match its exact ID.
+Self requires equal IDs; ally/enemy/neutral are caller-resolved facts. Nonempty,
+unique own-data lists explicitly allow relations and alive/dead statuses, including
+dead targets when requested. Malformed input throws before gameplay rejection.
+Priority: target_not_found, relation_not_allowed, target_life_not_allowed, none.
+Results use accepted/rejected and frozen detached context/target snapshots.
+
+No source admission rerun, faction authority, spatial check, execution, damage,
+revival, event or authorization token. Caller owns current snapshots and operation
+ordering. Package0.4.2 has 83 installed contracts (79 retained +4 target), 2 outer
+gate tests and strict external NodeNext evidence. See [API](docs/API.md#cb11cb15-combat-target-validation)
+and [report](docs/reports/v0.4.2-combat-target-validation.md).
+Phase IN_PROGRESS, PR #9 DRAFT, Developer acceptance PENDING; v0.4.3+ NOT_STARTED.

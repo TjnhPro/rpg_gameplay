@@ -88,7 +88,7 @@ groups are unchanged. Context data compatibility is verified for Text/Realtime/
 Turn-Based callers; gameplay execution/profile behavior remains NOT_EVALUATED.
 Combat phase IN_PROGRESS, PR DRAFT, Developer acceptance PENDING. v0.4.1+ NOT_STARTED.
 
-## v0.4.1 current checkpoint: Actor-stage admission
+## v0.4.1 checkpoint checkpoint: Actor-stage admission
 
 CB06–CB10 adds pure source existence (canonical Entity Collection), supplied
 Entity Life and explicit caller boolean eligibility evaluation. Structured frozen
@@ -98,3 +98,15 @@ Unknown target/self-target can pass actor-stage admission. No target policy,
 execution, resources/death changes, Skill/Effect dependency or session authority.
 Group A and CB01–CB05 remain intact. Phase IN_PROGRESS; PR #9 DRAFT; acceptance
 PENDING; v0.4.2–v0.4.5 NOT_STARTED. Gameplay profile behavior NOT_EVALUATED.
+
+
+## v0.4.2 current checkpoint: Target Validation
+
+Group04 adds CB11-CB15: target existence through Entity getEntity, exact target/Life
+identity, self by exact IDs and caller-resolved ally/enemy/neutral. Explicit closed
+policies require nonempty unique relation/life lists. Dead targets may be accepted.
+Admitted/none precondition; validation precedes missing > relation > life rejection.
+Frozen detached result with accepted/rejected diagnostics. No faction authority,
+spatial targeting, execution/damage/death/revival/Skill feature. Earlier milestone
+sections above describe their historical checkpoints. Phase IN_PROGRESS, PR #9
+DRAFT; Developer acceptance PENDING. v0.4.3-v0.4.5 NOT_STARTED.

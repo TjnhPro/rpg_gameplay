@@ -200,7 +200,7 @@ Ubuntu/Windows Node22/24. Earlier counts/statuses are historical milestone recor
 Combat phase IN_PROGRESS, Developer acceptance PENDING; gameplay profile behavior
 NOT_EVALUATED and v0.4.1+ NOT_STARTED. No gate is silently skipped.
 
-## v0.4.1 current verification scope
+## v0.4.1 checkpoint verification scope
 
 Current artifact0.4.1: GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB10.
 Unchanged3 modules/8 source files; root62 functions/84 types; installed79 contracts
@@ -212,3 +212,16 @@ No target validation/execution proof is claimed; gameplay profiles NOT_EVALUATED
 Exact-head push/PR Ubuntu/Windows Node22/24 CI is required for checkpoint completion.
 See v0.4.1 report and PR #9 final delivery evidence; prior counts are historical.
 Phase IN_PROGRESS, PR DRAFT, Developer acceptance PENDING; v0.4.2+ NOT_STARTED.
+
+
+## v0.4.2 current verification scope
+
+Artifact0.4.2: GF01-GF16, EC01-EC18, PG01-PG19 and CB01-CB15. Registry3 modules,
+8 source files unchanged; root63 functions/89 types. Installed83 contracts
+(79 retained +4 target) and2 outer gate tests, no skips. Targeted harness:check,
+harness:selftest, build, typecheck, test:functional and full verify must pass.
+Package tarball external install, pinned Core integrity, closed exports and strict
+NodeNext remain mandatory. Target evaluation only; no gameplay execution/profile
+PASS claim. Exact-head push and PR jobs must each pass Windows/Ubuntu Node22/24;
+prior CI is not current evidence. See v0.4.2 report and PR #9 delivery evidence.
+macOS NOT_RUN; gameplay profiles NOT_EVALUATED; Developer acceptance PENDING.

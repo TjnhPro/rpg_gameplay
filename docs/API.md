@@ -1059,7 +1059,7 @@ session, numerical operation, Skill integration or game-mode/time/spatial policy
 
 ## CB06–CB10 Combat Action Admission
 
-Same Combat owner; one new root function and four types. Current inventory:
+Same Combat owner; one new root function and four types. At the v0.4.1 checkpoint:
 62 runtime functions /84 public types. CB01–CB05 contracts remain unchanged.
 
 ```ts
@@ -1102,3 +1102,55 @@ not mean executed or fully authorized. No state writes/events/time/RNG/ID alloca
 resource/death/numerical operations or persistent reservation. Caller provides
 current authoritative state; stale snapshots can be evaluated again and results
 supply no concurrency or transaction authority. No additional function/deep export.
+
+## CB11–CB15 Combat Target Validation
+
+Package0.4.2 adds one root function and five types (63 functions/89 types total).
+
+```ts
+type CombatTargetRelation = 'self' | 'ally' | 'enemy' | 'neutral';
+interface CombatTargetPolicy {
+  readonly relation: CombatTargetRelation;
+  readonly allowedRelations: readonly CombatTargetRelation[];
+  readonly allowedLifeStatuses: readonly EntityLifeStatus[];
+}
+type CombatTargetValidationStatus = 'accepted' | 'rejected';
+type CombatTargetRejectionReason = 'none' | 'target_not_found'
+  | 'relation_not_allowed' | 'target_life_not_allowed';
+interface CombatTargetValidationResult {
+  readonly context: CombatActionContext;
+  readonly targetEntityId: string;
+  readonly relation: CombatTargetRelation;
+  readonly targetLifeStatus: EntityLifeStatus;
+  readonly status: CombatTargetValidationStatus;
+  readonly reason: CombatTargetRejectionReason;
+}
+function evaluateCombatTargetValidation(
+  admission: CombatAdmissionResult, entities: EntityCollection,
+  targetLife: EntityLifeState, policy: CombatTargetPolicy,
+): CombatTargetValidationResult;
+```
+
+Admission must be exactly own data context/status/reason with admitted/none;
+rejected or malformed receipts throw TypeError before target inputs are evaluated.
+The nested context uses the canonical factory. This validates structure only, not
+receipt provenance, freshness or authority. Source life/eligibility is never rerun.
+
+Target lookup uses public getEntity. Life requires own data entityId/status,
+alive/dead and exact target ID even if target is absent. Policy requires exactly
+own data relation/allowedRelations/allowedLifeStatuses, exact literals and nonempty
+dense arrays of unique own data entries without extra/symbol/accessor fields.
+Missing/inherited required fields, unknown literals, duplicates, holes, accessors,
+wrong identities or same-ID/non-self and different-ID/self inconsistencies throw
+TypeError without calling getters. No coercion/defaults/callbacks. Own-data plain
+and null-prototype records follow the existing Combat contract.
+
+All validation precedes selection: missing target -> rejected/target_not_found;
+otherwise disallowed relation -> rejected/relation_not_allowed; otherwise
+disallowed life -> rejected/target_life_not_allowed; otherwise accepted/none.
+Ally/enemy/neutral truth belongs to caller. Dead is valid if explicitly allowed;
+no HP inference/revival. Original inputs stay untouched/unfrozen; result and its
+fresh context/target are frozen/detached. No mutable policy aliases survive.
+No attack/range/Skill check, numerical call, execution token, state mutation,
+global relationship/target store, event or time/RNG. Caller supplies current
+snapshots and sequences stages; structural accepted results are replayable data.

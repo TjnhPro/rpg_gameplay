@@ -261,3 +261,20 @@ readonly result/nested data, exact reason/status unions, no any and root-only AP
 Existing75 installed contracts stay unchanged; current total79 plus2 outer tests,
 zero skips. Strict NodeNext directives are active (unused expect-error fails).
 Actual installed0.4.1/Core tarballs run in the existing independent temp consumer.
+
+
+## CB11-CB15 installed target evidence (v0.4.2)
+
+combat-target.mjs adds four cohesive groups, not one test per requirement:
+T1 self/ally/enemy/neutral, role independence and explicit alive/dead allowances;
+T2 missing/relation/life priority, rejected admission short-circuit, target-only
+collection and structurally valid receipt limitation; T3 malformed receipt,
+collection, Life, policy/lists, getters/holes/duplicates/unknowns and validation
+before rejection even when target missing; T4 two independent sessions matching
+literal accepted oracle, caller mutation/detachment, frozen accepted/rejected
+results and unchanged domain state. HP0 is separate from supplied alive Life.
+No hidden clock/RNG; source inspection proves no event/numerical execution.
+combat-target.ts checks exact unions, mandatory inputs, canonical Life, readonly
+arrays/result/context, no any/callback/deep import. Existing79 contracts remain
+unchanged; total83 plus2 outer gates, zero skips. Actual installed0.4.2/Core tarballs
+and strict NodeNext skipLibCheck:false are used. R01-R30 mapping is in the report.

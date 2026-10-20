@@ -147,3 +147,15 @@ production source changes except root exports: evaluateCombatActionAdmission,
 CombatActorEligibilityPolicy/CombatAdmissionStatus/CombatAdmissionReason/
 CombatAdmissionResult (62 functions /84 types total). No new module/deep export,
 Skill/Effect/Progression coupling, Kernel call or runtime binding.
+
+
+## CB11-CB15 target boundary (v0.4.2)
+
+Combat -> Entity remains unchanged. Public getEntity owns target lookup and
+collection validation. Canonical EntityLifeState/EntityLifeStatus are reused;
+private readLife shares the prior admission schema/identity checks. No Group A
+production, Core, static registry or dependency delta. Root adds only
+ evaluateCombatTargetValidation and CombatTargetRelation/CombatTargetPolicy/
+CombatTargetValidationStatus/CombatTargetRejectionReason/CombatTargetValidationResult
+(63 functions/89 types). No deep exports or private helpers escape. No Faction,
+Target Store, targeting engine, Skill owner, numerical work or source re-admission.

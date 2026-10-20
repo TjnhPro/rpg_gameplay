@@ -107,7 +107,7 @@ confirms one Combat owner, no engine/global state/numerical duplicate. Mode-neut
 caller fixtures prove context data semantics only; gameplay profiles remain
 NOT_EVALUATED. Combat phase IN_PROGRESS; Developer acceptance PENDING.
 
-## v0.4.1 current evidence
+## v0.4.1 checkpoint evidence
 
 H11/H12 now include CB06–CB10 installed admission/rejection priority, malformed
 boundaries/getter safety, immutable results, deterministic sessions and unchanged
@@ -116,3 +116,14 @@ zero skips; strict external NodeNext verifies readonly fields and literal unions
 H04 registry and Core pin unchanged. Source review supplements tests for no target
 lookup, HP/life transitions, events, numerical work, sessions or hidden providers.
 Gameplay profile behavior NOT_EVALUATED; phase IN_PROGRESS, acceptance PENDING.
+
+
+## v0.4.2 current evidence
+
+Installed CB11-CB15 adds four focused runtime groups: policy/identity, rejection
+priority/stage boundary, malformed-input/getter safety, immutable deterministic
+sessions. Strict external NodeNext verifies root types and closed deep exports.
+Actual package0.4.2 + pinned Core artifact; 83 installed contracts (79 retained +4),
+2 outer gates, zero skips. Source/diff audit supplements tests for no numerical
+execution/event/store/duplicate owner and unchanged registry/Core/Group A. Mode
+profiles remain NOT_EVALUATED. Exact-head push/PR evidence is on existing Draft PR.
