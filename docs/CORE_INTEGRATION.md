@@ -1,5 +1,16 @@
 # Core Kernel integration
 
+## v0.5.6 closure verification
+
+Core remains 2.0.0 at revision
+04b7239f998c3c688a0dfa3202f11811a9acd775 with unchanged artifact/lock integrity.
+Installed tests verify the actual Core artifact, exact peer/version and non-symlink
+installation. Ranked Skill dispatch uses canonical Combat/Core; Skill payment
+uses Entity transitions and cooldown uses Core. No Core change, fallback formula
+or alternate calculator is included. Package0.5.6 is packed for isolated consumer
+verification only; npm publishing is not authorized.
+
+
 Only production import: `@rpg/core/kernel`. Core root, Legacy entrypoints, source
 checkout paths and `dist` deep imports remain forbidden. No numerical code is
 copied or implemented in L2. GF01–GF05 registry/configuration/dependency/composition functions require no
@@ -198,3 +209,35 @@ CB20 resolution also supplies20 for above-max140->100/applied20/delta40.
 No numerical reimplementation or new runtime dependencies. Existing artifact-byte
 integrity and public Kernel consumers remain mandatory. Consumer literal oracles
 are independent expectations, not values regenerated from implementation output.
+
+## SK11–SK15 canonical cost transitions (v0.5.2)
+
+Skill delegates positive costs through Entity transitionEntityResource(decrease),
+with caller bounds/policy and allowIncreaseFromMinimum:false. Exact canonical
+applied determines full payment; no subtraction, clamping, tolerance or rounding.
+Core140->100 for cost20 preserves applied20/delta40. Above-max reject and other
+canonical errors propagate without fallback. Zero/free performs no numerical
+operation; full-state validation still uses Entity lookup. Installed package
+literal oracles and unchanged artifact SHA-512 prove real pinned Core integration.
+
+## SK17 canonical cooldown duration (v0.5.3)
+
+Skill calls the actual pinned public Kernel calculateCooldownDurationMs(baseMs,
+effectiveCdr) only for ready starts. L2 validates closed configuration: finite
+base>=0 and finite effectiveCdr in [0,1]. Core's returned duration is used unchanged;
+no copied formula/double reduction/round/clamp/epsilon. Literal installed oracles:
+1000/.25 ->750; 1000/0 ->1000; 1000/1 ->0; 1001/.5 ->500.5. L2 only adds the
+observed Foundation timestamp and checks finite/later representability. Active
+reuse does not invoke duration calculation. Kernel errors propagate; Core pin,
+revision, lock integrity and dependencies remain unchanged.
+
+## SK21–SK25 activation reuse (v0.5.4)
+
+Activation introduces no numerical implementation: applySkillResourceCosts owns
+all-or-nothing payment via canonical Entity/Core and startSkillCooldown owns
+canonical duration via the unchanged pinned public Kernel. Earlier rejected
+gates perform structural Entity lookup only; no numerical transition/time read.
+Canonical errors propagate. Actual installed handoff exercises Combat->Kernel
+attack/damage and Entity Resource/Life application; Skill imports no Combat.
+Core2.0.0 revision04b7239f998c3c688a0dfa3202f11811a9acd775, artifact integrity,
+registry, dependencies and protected owners remain unchanged.

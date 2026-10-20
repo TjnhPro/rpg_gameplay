@@ -1,5 +1,16 @@
 # L2 Gameplay Foundation — 14 accepted capability groups
 
+## Skill v0.5.6 closure candidate
+
+SK01–SK30 are exercised together by installed SK31–SK35 evidence: ranked Combat,
+rankless caller execution, multi-resource payment, cooldown reuse, reference-only
+loadout and deterministic rejection/replay. No production capability is added.
+No Effect runtime, cast/channel, range/LOS, refund, persistent catalog or live
+application runtime is claimed. Full gameplay profile behavior remains
+NOT_EVALUATED; phase acceptance remains PENDING. See the
+[final review](reports/v0.5.6-skill-final-review.md).
+
+
 **Accepted scope**, not an instruction to write 14 packages/classes or implement all at once. Each capability can be optional. Evaluate owners and dependencies only when a task reaches that capability.
 
 | # | Capability group | Reusable responsibility | Examples left to L3 |
@@ -8,7 +19,7 @@
 | 02 | Entity / Character | identity and gameplay character state, actor/resource storage | character names, game classes, initial stats |
 | 03 | Progression | EXP/level/upgrades rules interface & state transitions | level curves, talent restrictions |
 | 04 | Combat | action admission, target policy interfaces, damage application/lifecycle | PvP/PvE rules, game formula selection |
-| 05 | Skill | skill instance/availability/activation/cost/cooldown lifecycle | skill definitions, skill ranks/visuals |
+| 05 | Skill | definition identity schema, skill instance/availability/activation/cost/cooldown lifecycle | concrete skill content, tuning, visuals; rank state remains Progression-owned |
 | 06 | Effect | reusable apply/stack/refresh/expire/DoT/HoT/status transitions | effect catalogs & presentation |
 | 07 | Monster & AI | monsters as gameplay actors, decision interfaces/behaviors | monster templates and tuning |
 | 08 | Encounter | encounter lifecycle, participation, completion conditions | zone/dungeon/wave designs |
@@ -144,3 +155,70 @@ handoff. No new mechanics/API/module. No Skill/Effect/AI/Encounter, spatial/turn
 realtime controller, automatic events/rewards, persistence or global authority.
 Combat core function semantics VERIFIED; concrete game-mode integrations and
 gameplay profiles NOT_EVALUATED. Agent does not close/accept the phase.
+
+## v0.5.0 current Skill checkpoint
+
+Combat CB01–CB30 is the accepted merged PR #9 baseline at 82feaf5; earlier pending
+statuses above are historical. Group05 now implements SK01–SK05 only: optional
+skill -> entity, reusable identity-only SkillDefinition and independent immutable
+SkillInstanceState. L2 owns schema/structural validation; L3 owns concrete Skill
+content/configuration. Progression retains Skill Rank/Points; Combat retains its
+admission/target/numerical application contracts. Neither is a Skill dependency.
+No availability, learning/unlocking, costs, cooldown, execution or loadout is
+implemented. Skill phase IN_PROGRESS, PR DRAFT, acceptance PENDING; v0.5.1–v0.5.6
+NOT_STARTED. Shared structural contracts verified; game profiles NOT_EVALUATED.
+
+## v0.5.1 current Skill checkpoint
+
+SK01–SK10 implemented: immutable identity foundation plus pure synchronous
+Skill-stage availability/admission. Explicit actor binding/ownership, canonical
+Entity existence/Life, caller-supplied canonical rank and L3 eligibility produce
+frozen structured assessments. Full validation precedes deterministic rejection.
+No learning/unlocking, costs, cooldown, execution, loadout, effects or global
+state. Prior v0.5.0 availability/NOT_STARTED statements are historical.
+Skill phase IN_PROGRESS; PR DRAFT; Developer acceptance PENDING.
+v0.5.2–v0.5.6 NOT_STARTED. Game profiles NOT_EVALUATED.
+
+## v0.5.2 current Skill checkpoint
+
+Group05 now implements SK01–SK15: identities, availability and reusable explicit
+Resource Costs. Sufficiency/application reuse Entity/Core and return an immutable
+all-or-nothing candidate; no activation/execution, reservation, cooldown or store.
+L3 owns cost/bounds policy; L4 owns runtime commit/concurrency. This supersedes
+historical Skill scope above. Phase IN_PROGRESS, PR #10 DRAFT, acceptance PENDING;
+v0.5.3+ requires separately submitted tasks. Gameplay profiles NOT_EVALUATED.
+
+## v0.5.3 current Skill checkpoint
+
+Group05 implements SK01–SK20, adding independent immutable cooldown state,
+canonical Core duration, injected Foundation time and explicit ready/reuse
+assessments/candidate starts. Zero/fractional durations and exact boundaries are
+supported; malformed, rewound and unrepresentable time fails closed. No implicit
+refresh/activation/cost commit, timer/scheduler/global store. L3 config and L4
+time origin/commit remain caller-owned. Supersedes historical cooldown exclusions;
+phase IN_PROGRESS, PR #10 DRAFT, acceptance PENDING; v0.5.4 NOT_STARTED.
+
+## v0.5.4 current Skill checkpoint
+
+Group05 implements SK01–SK25. Activation returns immutable all-or-nothing
+Resource/Cooldown candidates plus execution references after admission, caller
+preflight, cost and cooldown gates. Caller-mediated actual Combat handoff covers
+rejection/dodge/landed; outcome reports only caller completion/failure. No Skill
+Combat executor, authoritative commit, reservation, rollback/refund/exactly-once,
+Effect System or complete game runtime. This supersedes historical activation
+exclusions above. L3 policy and L4 commit/dispatch remain external.
+Phase IN_PROGRESS, PR #10 DRAFT, Developer acceptance PENDING;
+v0.5.5 slots/loadout NOT_STARTED; game profiles NOT_EVALUATED.
+
+## v0.5.5 current Skill checkpoint
+
+Group05 implements SK01–SK30. Loadout adds ordered immutable nullable instance
+references, empty-layout support, canonical structural validation, assign/replace/
+remove candidates and explicit L3 eligibility/duplicate policy. Duplicate/stale
+references are structurally valid; no catalog authority is claimed. L4 owns active
+loadout selection, resolution, persistence and authoritative commit. Assignment
+is independent of learning, admission, resource, cooldown or Combat state.
+This supersedes historical loadout exclusions above. No Skill inventory, global
+registry, UI, move/swap, automatic activation or new gameplay module.
+Phase IN_PROGRESS; PR #10 DRAFT; Developer acceptance PENDING;
+v0.5.6 NOT_STARTED; concrete game profiles NOT_EVALUATED.

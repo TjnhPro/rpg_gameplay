@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.4.5 Combat Integration & Closure
+# RPG Gameplay — v0.5.6 Skill Integration & Closure
 
-> **Status: Group A baseline merged through PR #8; CB01–CB30 implemented. Combat phase REVIEW_PENDING; final review gates required; Developer acceptance PENDING.**
+> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK30 implemented; SK31–SK35 closure evidence prepared for Developer review, acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,8 +38,43 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB30 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK35 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
+
+## Skill identity foundation
+
+```ts
+import {createEntity, createSkillDefinition, createSkillInstance} from '@rpg/gameplay';
+const definition = createSkillDefinition({skillId: 'fireball'});
+const actor = createEntity({id: 'player-1', kind: 'player'});
+const instance = createSkillInstance(definition, actor, {instanceId: 'skill-instance-001'});
+// Frozen {instanceId: 'skill-instance-001', skillId: 'fireball', entityId: 'player-1'}
+```
+
+Optional `skill` requires explicitly selected `entity`, independently of Progression
+and Combat. These are detached structural identities, not learned/unlocked/eligible
+or activated skills. L3 supplies concrete content; Progression remains the rank
+owner. These initial identity operations do not implement a catalog or perform resource/cooldown/loadout/execution operations.
+See [API](docs/API.md#sk01sk05-skill-foundation-v050) and
+[checkpoint report](docs/reports/v0.5.0-skill-foundation.md).
+Later milestone sections below retain their original historical status.
+
+## Skill availability and admission
+
+`evaluateSkillActivationAdmission(definition, instance, actorEntityId, entities,
+actorLife, policy)` evaluates explicit ownership, rank and eligibility against
+canonical Entity collection/life snapshots. Policy supplies `owned`, `eligible`
+and rank `{mode: 'not_required'}` or `{mode: 'required', currentRank, minimumRank}`.
+Read ranked values through Progression `getSkillRank`; explicitly map missing
+registration to null. Skill keeps only its Entity dependency.
+
+All supplied contracts validate before rejection priority: actor missing, dead,
+not owned, unregistered rank, rank too low, ineligible. The detached frozen result
+is an assessment only; no resource/cooldown/Combat/execution transition occurs.
+See [API](docs/API.md#sk06sk10-skill-availability--admission-v051) and
+[v0.5.1 report](docs/reports/v0.5.1-skill-availability-admission.md).
+Skill phase IN_PROGRESS; Developer acceptance PENDING; v0.5.2 onward NOT_STARTED.
+The identity-only milestone description above is historical.
 
 ## Entity identity and classification
 
@@ -129,7 +164,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.4.1.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.5.6.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -504,3 +539,74 @@ snapshots/policies, scheduling, persistence and replay/concurrency consistency.
 Text/Realtime/TurnBased labels prove shared API semantics, not concrete games.
 Gameplay profiles NOT_EVALUATED; acceptance PENDING; phase REVIEW_PENDING.
 See [closure report](docs/reports/v0.4.5-combat-integration-closure.md).
+
+## Skill resource costs (v0.5.2)
+
+evaluateSkillResourceCosts(admission, resources, request) assesses full payment;
+applySkillResourceCosts(admission, resources, request) re-evaluates current Entity
+resources and returns one immutable candidate state plus canonical diagnostics.
+L3 supplies costs and explicit bounds/policy. Positive costs use Entity/Core
+transitions; zero/free costs do not normalize. First missing/insufficient cost
+rejects the entire candidate with state:null and no partial receipts. No resource
+reservation, life mutation, activation or runtime commit occurs.
+See [API](docs/API.md#sk11sk15-skill-resource-costs-v052) and
+[report](docs/reports/v0.5.2-skill-resource-costs.md). This checkpoint supersedes
+historical scope statements above; phase IN_PROGRESS, PR #10 DRAFT, acceptance PENDING.
+
+## Skill cooldown (v0.5.3)
+
+SK16–SK20 adds createSkillCooldownState, evaluateSkillCooldownReady and
+startSkillCooldown. State is separate from the instance and immutable; each
+observation/start reads injected Foundation time once. Core Kernel owns duration
+calculation. Active reuse returns no candidate; exact deadline is ready, zero and
+fractional durations are valid, rewind/invalid/unrepresentable timestamps throw.
+L3 supplies base duration/effective CDR; L4 owns time origin and authoritative
+commit. No activation, scheduler or global cooldown state.
+See [API](docs/API.md#sk16sk20-skill-cooldown-v053) and
+[report](docs/reports/v0.5.3-skill-cooldown.md). Supersedes historical exclusions
+above: phase IN_PROGRESS, PR #10 DRAFT, Developer acceptance PENDING; v0.5.4 NOT_STARTED.
+
+## Skill activation checkpoint (v0.5.4)
+
+SK21–SK25 adds activateSkill and reportSkillExecutionOutcome. Activation validates
+complete supplied data, then gates admission, explicit execution preflight,
+canonical Resource payment and canonical Cooldown start. Accepted results contain
+immutable request/Resource/Cooldown candidates; rejected results contain three
+null candidates. L4 owns preflight, authoritative commit and execution. Combat
+handoff is demonstrated through installed public APIs; completed can include dodge.
+No refund/retry/exactly-once guarantee or implicit execution. See [API](docs/API.md)
+and [checkpoint report](docs/reports/v0.5.4-skill-activation-execution.md).
+Skill phase IN_PROGRESS; Draft PR #10; Developer acceptance PENDING.
+v0.5.5 slots/loadout NOT_STARTED. Game profiles NOT_EVALUATED.
+
+## Skill Slots & Loadout checkpoint (v0.5.5)
+
+SK26–SK30 adds createSkillLoadoutState, validateSkillLoadoutState,
+assignSkillLoadoutSlot, replaceSkillLoadoutSlot and removeSkillLoadoutSlot.
+L3 supplies ordered slot layout and explicit eligibility/duplicate policies.
+Loadout stores nullable instanceId references only; transitions return immutable
+candidates or structured rejection without partial state. Assignment requires an
+empty slot, replacement an occupied slot, removal clears only one reference.
+Structural validation permits duplicate/stale instance references without claiming
+external catalog integrity. L4 owns resolution, active selection and persistence.
+See [API](docs/API.md) and [report](docs/reports/v0.5.5-skill-slots-loadout.md).
+Phase IN_PROGRESS; PR #10 DRAFT; Developer acceptance PENDING.
+v0.5.6 NOT_STARTED; concrete game profiles NOT_EVALUATED.
+
+## v0.5.6 current Skill closure candidate
+
+SK31–SK35 adds verification only: ranked Combat, rankless caller dispatch and
+multi-resource workflows through the actual installed package. Two independent
+sessions match literal activation/cooldown/Combat traces with explicit Foundation
+clock/RNG/IDs. Loadout never bypasses admission; duplicate slots resolve one
+canonical instance/cooldown. Rejections expose no candidates; the caller commits
+accepted snapshots, dispatches and reports completion/failure. Dodge completes
+without refund/reset. Production source/API unchanged: 80 functions/133 types,
+4 optional modules/9 sources; Core2.0.0 pinned. No new runtime/catalog/effects,
+transaction manager, persistence or exactly-once guarantee.
+
+Earlier milestone statuses are historical. See [final report](docs/reports/v0.5.6-skill-final-review.md)
+and [PR #10](https://github.com/TjnhPro/rpg_gameplay/pull/10) for local evidence,
+exact-head CI and readiness. Only after all gates does Draft move to Ready for
+Review. Developer acceptance PENDING; no merge/tag/publish. Game profiles remain
+NOT_EVALUATED.

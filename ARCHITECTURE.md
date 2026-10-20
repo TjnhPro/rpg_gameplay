@@ -1,5 +1,16 @@
 # Architecture — accepted scope, open implementation
 
+## v0.5.6 closure review candidate
+
+SK31–SK35 add installed integration evidence only. Production source and public
+API are unchanged from v0.5.5. L1 Core owns numerical calculations; Entity owns
+resources/life, Progression owns ranks, Combat owns attack execution, and Skill
+owns its immutable contracts and loadout references. L3 supplies policy; L4
+selects current inputs, commits candidates and dispatches execution. No runtime
+or transaction manager is added. Module graph remains entity[], progression[entity],
+combat[entity], skill[entity], all optional. Developer phase acceptance is PENDING.
+
+
 ## Four layers
 
 ```text
@@ -26,7 +37,7 @@ Dependency hướng xuống; các layer thấp hơn không tham chiếu layer ph
 
 - L1 owns: stats, modifiers, damage calculation, hit/critical/mitigation, resource arithmetic, numerical snapshots.
 - L2 owns: gameplay policy/state changes/lifecycle/coordination và reusable item/skill/effect/... khi được triển khai.
-- L3 owns: skill definitions, item catalogs, class balancing, game-specific constraints, quests/content, rules presets.
+- L3 owns: concrete skill definition data/content, item catalogs, class balancing, game-specific constraints, quests/content, rules presets. L2 owns the approved reusable Skill identity schema.
 - L4 owns: UI, scene graph, rendering, platform persistence, network transports.
 - Legacy entrypoints của `rpg_core` tồn tại để tương thích nhưng KHÔNG làm L2 phụ thuộc chúng.
 
@@ -119,6 +130,19 @@ No global store, scheduler, life state, events or additional module is introduce
 - Ownership of each actual module declared in registry; do not add all 14 empty modules in advance.
 - Do not confuse optional with 'no dependency': optional feature may list a required dependency when **enabled**.
 - Function contracts/data are designed per approved capability task; no global framework engine required.
+
+## SK01–SK05 Skill foundation (v0.5.0)
+
+Combat PR #9 is the merged accepted baseline at 82feaf5. Skill has one owner at
+`src/modules/skill/index.ts`, optional with only `entity` as a dependency. Its two
+factories capture closed exact definition/instance identities and immutable scalar
+snapshots. `createSkillInstance` reuses public `createEntity` for canonical actor
+validation; it stores only instanceId/skillId/entityId. No second Entity validator,
+Progression rank/point state, Combat operation, catalog, numerical calculation or
+runtime provider/store is added. L3 supplies concrete content; L4 owns authority,
+uniqueness, persistence and future operation coordination. Root-only exports stay
+closed. Current registry has entity, progression, combat and skill; earlier scope
+sections describe their checkpoint history. Skill phase IN_PROGRESS, acceptance PENDING.
 
 ## Meaningful reasons to split early
 

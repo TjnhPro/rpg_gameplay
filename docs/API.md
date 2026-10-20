@@ -1,4 +1,4 @@
-# Public API — v0.4.1 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB10)
+# Public API — v0.5.6 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK35)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -1273,3 +1273,419 @@ applied magnitude from HP delta (above-max140->100/request20 still applied20).
 Structural receipts are not authenticated/fresh authorization. Reusing old state
 branches again; no persistent exactly-once, transaction or concurrency authority.
 No Skill/Effect/AI/Encounter integration is provided. See closure report.
+
+## SK01–SK05 Skill Foundation (v0.5.0)
+
+Two additive root functions and three readonly types: 67 runtime functions and
+98 exported types total. No existing signatures or package export paths change.
+
+```ts
+interface SkillDefinition { readonly skillId: string; }
+interface SkillInstanceInitialState { readonly instanceId: string; }
+interface SkillInstanceState {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly entityId: string;
+}
+function createSkillDefinition(definition: SkillDefinition): SkillDefinition;
+function createSkillInstance(definition: SkillDefinition, entity: EntitySnapshot,
+  initial: SkillInstanceInitialState): SkillInstanceState;
+```
+
+Both factories capture detached frozen data. Skill/instance IDs are nonblank,
+case-sensitive strings preserved exactly, without trimming, normalization or
+generation. Definition and initial records contain exactly one own data property;
+unknown/non-enumerable extra fields, symbols, getters, inherited required fields,
+null/arrays and malformed IDs throw TypeError without invoking getters. Entity
+validation delegates to public createEntity. The instance stores no definition or
+Entity object reference; callers may supply structurally valid records directly.
+
+Same skillId may bind multiple actors or instances. Repeated instanceId inputs
+are structurally valid: uniqueness, idempotency, membership and authorization are
+caller-owned. Creation does not imply learned/unlocked/equipped/available/alive,
+admitted or activated. No rank/resources/cooldown/execution fields or lifecycle
+operations are present. L3 explicitly projects rich content to {skillId}.
+
+Static optional skill -> entity requires explicit selection of both. Progression
+and Combat remain independent siblings. No implicit runtime, events, providers,
+Core calculation or registry/catalog is created. All Skill deep imports stay closed.
+
+## SK06–SK10 Skill Availability & Admission (v0.5.1)
+
+One added root function and five types; current total **68 functions/103 types**.
+SK01–SK05 schemas and all previous signatures remain unchanged. Deep exports closed.
+
+```ts
+type SkillRankAdmissionPolicy =
+  | {readonly mode: 'not_required'}
+  | {readonly mode: 'required'; readonly currentRank: number | null; readonly minimumRank: number};
+interface SkillAdmissionPolicy {
+  readonly owned: boolean;
+  readonly eligible: boolean;
+  readonly rank: SkillRankAdmissionPolicy;
+}
+type SkillAdmissionStatus = 'admitted' | 'rejected';
+type SkillAdmissionReason = 'none' | 'actor_not_found' | 'actor_dead' | 'skill_not_owned'
+  | 'skill_rank_unregistered' | 'skill_rank_too_low' | 'actor_ineligible';
+interface SkillAdmissionResult {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly actorEntityId: string;
+  readonly status: SkillAdmissionStatus;
+  readonly reason: SkillAdmissionReason;
+}
+function evaluateSkillActivationAdmission(definition: SkillDefinition,
+  instance: SkillInstanceState, actorEntityId: string, entities: EntityCollection,
+  actorLife: EntityLifeState, policy: SkillAdmissionPolicy): SkillAdmissionResult;
+```
+
+Closed own-data records are mandatory: missing/unknown/nonenumerable extra/symbol/
+accessor fields, inherited required fields, malformed identities, life status,
+policy booleans or rank configuration throw TypeError without invoking getters.
+Life snapshots follow Entity's ordinary/null prototype contract. IDs remain exact.
+Definition/instance skill mismatch or life/actor mismatch throws TypeError even
+when actor lookup misses. Instance/actor mismatch is valid skill_not_owned.
+Entity lookup delegates to getEntity, including full collection validation.
+
+Required ranks: currentRank is null for unregistered, otherwise a nonnegative safe
+integer (0 is registered/unlearned); minimumRank is a positive safe integer.
+No coercion/default/undefined fallback. Rankless policy has only mode and requires
+no Progression. Caller reads canonical getSkillRank for the correct Entity/Skill
+and explicitly maps undefined to null; Skill neither authenticates freshness/
+provenance nor imports Progression. L3 owns rank requirements and both booleans;
+owned:true cannot override exact actor binding. No Entity kind policy is inferred.
+
+Every supplied contract validates before choosing this fixed rejection priority:
+actor_not_found > actor_dead > skill_not_owned > skill_rank_unregistered >
+skill_rank_too_low > actor_ineligible > none. Only none is admitted; all others
+are ordinary structured rejections. Results contain exactly the five fields
+shown, detached/frozen scalar data. Caller inputs remain unchanged/unfrozen.
+
+Admitted means Skill-stage availability at evaluation only. It does not establish
+resource sufficiency, cooldown readiness, target/Combat admission, activation,
+execution or committed state. Assessment is not an authorization token/execution
+receipt. No spending, scheduling, event, ID, Clock/RNG, rank/Life mutation, cache
+or global store occurs. L4 supplies authoritative current snapshots and coordinates
+later checks/persistence/concurrency. Optional skill -> entity remains unchanged;
+Combat stays independent. Resource costs are added below in v0.5.2; later Skill mechanisms remain unimplemented.
+
+## SK11–SK15 Skill resource costs (v0.5.2)
+
+Root adds evaluateSkillResourceCosts(admission: SkillAdmissionResult,
+resources: EntityResourceState, request: SkillResourceCostRequest): SkillResourceCostAssessment
+and applySkillResourceCosts with the same arguments returning SkillResourceCostApplicationResult.
+
+```ts
+interface SkillResourceCost {readonly resourceId: string; readonly amount: number}
+interface SkillResourceCostBounds {
+  readonly resourceId: string;
+  readonly minimum: number;
+  readonly maximum: number;
+  readonly currentAboveMaximum: 'allow' | 'reject';
+}
+interface SkillResourceCostRequest {
+  readonly costs: readonly SkillResourceCost[];
+  readonly bounds: readonly SkillResourceCostBounds[];
+}
+type SkillResourceCostStatus = 'payable' | 'rejected';
+type SkillResourceCostRejectionReason = 'none' | 'resource_not_found' | 'insufficient_resource';
+interface SkillResourceCostAssessment {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly entityId: string;
+  readonly status: SkillResourceCostStatus;
+  readonly reason: SkillResourceCostRejectionReason;
+  readonly rejectedResourceId: string | null;
+}
+type SkillResourceCostApplicationResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly assessment: SkillResourceCostAssessment;
+      readonly state: EntityResourceState;
+      readonly transitions: readonly EntityResourceTransitionResult['transition'][]}
+  | {readonly status: 'rejected'; readonly reason: 'resource_not_found' | 'insufficient_resource';
+      readonly assessment: SkillResourceCostAssessment; readonly state: null; readonly transitions: readonly []};
+```
+
+Admission must be exact own-data admitted/none with nonblank identities and match
+resources.entityId. All request records/arrays are closed own-data; no unknown,
+symbol/accessor/inherited required fields, sparse/extra array fields or coercion.
+Amounts finite >=0, fractions accepted, IDs exact case/whitespace-sensitive.
+Cost/bounds IDs unique and matched one-to-one; finite minimum<=maximum and explicit
+policy required. Entire request and canonical resource state validate before an
+ordinary rejection. Malformed data/preconditions throw TypeError; canonical
+Entity/Core errors propagate, including positive cost with above-max reject.
+
+Presence uses getEntityResourceCurrent. Each positive amount calls canonical
+transitionEntityResource(decrease) and succeeds only when its applied exactly
+equals cost. Fixed allowIncreaseFromMinimum:false; no numerical math/rounding/
+epsilon. Caller order controls first missing/insufficient rejection. Above-max
+allow may yield140->100 for cost20 with canonical applied20; diagnostics remain
+unchanged. Zero requires presence but does not transition/normalize even above
+maximum; free/all-zero returns detached equivalent state and empty transitions.
+
+Success exposes only final candidate plus scalar canonical diagnostics, no interim
+state. Failure exposes state:null/transitions:[]/rejectedResourceId. Every output
+is detached/frozen; input remains unchanged/unfrozen. Evaluation exposes no state
+or reservation; application resolves again against supplied current state. Bounds,
+amounts and policies belong to L3; authoritative commits/concurrency belong to L4.
+HP reaching minimum never changes Life or emits events. No activation/cooldown/
+execution or new store/engine. skill->[entity] only; root70 functions/110 types.
+
+## SK16–SK20 Skill cooldown (v0.5.3)
+
+Root-only additions (73 functions/116 types total):
+
+```ts
+interface SkillCooldownState {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly entityId: string;
+  readonly startedAtMs: number | null;
+  readonly readyAtMs: number | null;
+}
+interface SkillCooldownConfiguration {
+  readonly baseDurationMs: number;
+  readonly effectiveCdr: number;
+}
+type SkillCooldownStatus = 'ready' | 'active';
+type SkillCooldownReason = 'none' | 'cooldown_active';
+interface SkillCooldownAssessment {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly entityId: string;
+  readonly observedAtMs: number;
+  readonly readyAtMs: number | null;
+  readonly remainingMs: number;
+  readonly status: SkillCooldownStatus;
+  readonly reason: SkillCooldownReason;
+}
+type SkillCooldownStartResult =
+  | {readonly status: 'started'; readonly reason: 'none'; readonly assessment: SkillCooldownAssessment;
+      readonly durationMs: number; readonly state: SkillCooldownState}
+  | {readonly status: 'rejected'; readonly reason: 'cooldown_active'; readonly assessment: SkillCooldownAssessment;
+      readonly durationMs: null; readonly state: null};
+function createSkillCooldownState(instance: SkillInstanceState): SkillCooldownState;
+function evaluateSkillCooldownReady(instance: SkillInstanceState, state: SkillCooldownState,
+  context: GameplayExecutionContext): SkillCooldownAssessment;
+function startSkillCooldown(instance: SkillInstanceState, state: SkillCooldownState,
+  context: GameplayExecutionContext, config: SkillCooldownConfiguration): SkillCooldownStartResult;
+```
+
+Instance/state/config are closed own-data records: reject missing/unknown/symbol/
+accessor/inherited required fields without invoking accessors. IDs are exact
+nonblank strings and all three state identities must match the instance. State
+timestamps are both null or finite >=0 with readyAtMs>=startedAtMs. Factory captures
+identity as null/null without time, RNG or IDs. Configuration requires finite
+baseDurationMs>=0 and finite effectiveCdr in [0,1]; no defaults/coercion/clamping.
+Malformed records throw TypeError before provider access or ordinary rejection.
+
+Readiness/start each read readExecutionTime(context) exactly once after validation.
+Foundation rejects invalid/nonfinite/negative clock values; provider errors
+propagate. now<startedAtMs throws TypeError. Never-started and now>=readyAtMs are
+ready/none/remaining0. Otherwise active/cooldown_active with remaining=readyAtMs-now.
+Readiness does not mutate expired timestamps. Start's assessment describes the
+preattempt snapshot. Active reuse returns rejected, durationMs:null/state:null,
+without calculating duration, refreshing or applying changed configuration.
+
+Ready start delegates to pinned calculateCooldownDurationMs(baseDurationMs,
+effectiveCdr) from @rpg/core/kernel and uses the returned duration unchanged.
+readyAtMs=now+durationMs must be finite and strictly later for positive duration,
+otherwise TypeError; no epsilon/rounding/double reduction. Zero duration permits
+same-time repeated starts. Successful state captures the current observation,
+not the old deadline. All output objects/nested assessments are detached/frozen;
+caller-owned data/providers are neither frozen nor mutated.
+
+Cooldown is independent of cost/admission/Combat/rank. Readiness or a successful
+candidate is not activation or authority. L3 supplies resolved effective CDR/base
+duration. L4 owns clock origin/monotonic policy, snapshot freshness, authoritative
+commit and coordinating later activation. No cross-call rewind history, timer,
+scheduler, store, events, refunds or implicit global state. Optional skill->[entity]
+unchanged; shared Foundation execution is not an optional-module dependency.
+
+## SK21–SK25 Skill activation and execution (v0.5.4)
+
+Root-only additions:2 functions/9 types; total75 functions/125 types.
+
+```ts
+export interface SkillExecutionIntent {
+  readonly attemptId: string;
+  readonly dispatch:
+    | {readonly kind: 'combat'; readonly actionId: string; readonly actionType: string; readonly targetEntityId: string}
+    | {readonly kind: 'caller'};
+}
+/** Explicit caller assertion; canonical Combat preflight remains caller-mediated. */
+export type SkillExecutionPreflight =
+  | {readonly kind: 'combat'; readonly status: 'accepted' | 'rejected'}
+  | {readonly kind: 'caller'; readonly status: 'accepted' | 'rejected'};
+export interface SkillActivationInput {
+  readonly instance: SkillInstanceState;
+  readonly admission: SkillAdmissionResult;
+  readonly resourceState: EntityResourceState;
+  readonly resourceCosts: SkillResourceCostRequest;
+  readonly cooldownState: SkillCooldownState;
+  readonly cooldownConfig: SkillCooldownConfiguration;
+  readonly executionContext: GameplayExecutionContext;
+  readonly intent: SkillExecutionIntent;
+  readonly executionPreflight: SkillExecutionPreflight;
+}
+export type SkillActivationRejectionReason = 'skill_admission_rejected' | 'execution_preflight_rejected'
+  | 'resource_cost_rejected' | 'cooldown_active';
+export interface SkillExecutionRequest {
+  readonly attemptId: string;
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly actorEntityId: string;
+  readonly dispatch: SkillExecutionIntent['dispatch'];
+}
+export type SkillActivationResult =
+  | {readonly status: 'accepted'; readonly reason: 'none'; readonly request: SkillExecutionRequest;
+      readonly resources: EntityResourceState; readonly cooldown: SkillCooldownState}
+  | {readonly status: 'rejected'; readonly reason: SkillActivationRejectionReason;
+      readonly request: null; readonly resources: null; readonly cooldown: null};
+export type SkillExecutionStatus = 'completed' | 'failed';
+export interface SkillExecutionReport {readonly status: SkillExecutionStatus}
+export interface SkillExecutionOutcome {
+  readonly attemptId: string;
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly actorEntityId: string;
+  readonly dispatchKind: 'combat' | 'caller';
+  readonly status: SkillExecutionStatus;
+}
+function activateSkill(input: SkillActivationInput): SkillActivationResult;
+function reportSkillExecutionOutcome(request: SkillExecutionRequest,
+  report: SkillExecutionReport): SkillExecutionOutcome;
+```
+
+Every supplied Skill data record is closed own-data: no missing/unknown/symbol/
+accessor/inherited required fields. IDs are nonblank, exact strings. Instance,
+admission, Resource and Cooldown identities must match; preflight kind must match
+dispatch. Shared private validation captures complete configuration before
+ordinary rejection; Resource state validation remains canonical Entity. No
+transitions or time observation during admission/preflight rejection.
+Opaque Foundation executionContext is passed unchanged: nonobject/array inputs
+fail structurally; capability identity and provider validation occur canonically
+when startSkillCooldown is reached. Skill does not inspect its bindings or invent
+a second validator. Invalid supplied data throws TypeError; canonical numerical
+and provider errors propagate without conversion to ordinary rejection.
+
+Gate priority: skill_admission_rejected > execution_preflight_rejected >
+resource_cost_rejected > cooldown_active > accepted. Resource application reuses
+applySkillResourceCosts; a failed payment never reads time. Cooldown start reuses
+startSkillCooldown once after successful payment, reads exactly once, and returns
+its canonical candidate unchanged. A cooldown rejection discards the payment
+candidate. Every ordinary rejection exposes exactly status/reason and three null
+request/resources/cooldown fields. Acceptance exposes one immutable request,
+one detached Resource candidate and one immutable Cooldown candidate. No input
+is mutated or frozen. Literal example: mana100/cost25 ->75, now1000,
+base1000/CDR.25 -> ready1750. Free/zero-duration activation remains explicit.
+
+Preflight is a caller assertion, not authorization/provenance or a Combat receipt.
+For combat, L4 creates the canonical context from actor+intent, runs actual Combat
+admission/target validation, and derives preflight before activation. After
+acceptance L4 decides whether/how to commit candidates and reconstructs Combat
+context from request.actorEntityId + dispatch.actionId/actionType/targetEntityId,
+then calls canonical Combat attack/application. Skill never imports Combat.
+L3 owns policy/configuration and eligibility. No request generation implies
+execution, hit, damage, life transition or events.
+
+Outcome reporting captures caller assertions only: completed includes a finished
+dodge, failed records external execution failure. It does not execute, refund,
+rollback, retry or prove success. Reports are detached scalar immutable snapshots;
+caller reports/requests remain untouched. Duplicate attemptId is accepted: no
+exactly-once ledger, reservation, concurrency protection or authoritative runtime
+commit. These remain L4 concerns. No Effect System or complete game runtime.
+
+## SK26–SK30 Skill Slots & Loadout (v0.5.5)
+
+Root-only additions:5 functions/8 types; total80 functions/133 types.
+
+```ts
+export interface SkillLoadoutLayout {
+  readonly loadoutId: string;
+  readonly slotIds: readonly string[];
+}
+export interface SkillLoadoutSlot {
+  readonly slotId: string;
+  readonly instanceId: string | null;
+}
+/** References only; instance resolution, active selection and persistence belong to L4. */
+export interface SkillLoadoutState {
+  readonly entityId: string;
+  readonly loadoutId: string;
+  readonly slots: readonly SkillLoadoutSlot[];
+}
+export interface SkillSlotAssignmentPolicy {
+  readonly eligible: boolean;
+  readonly allowDuplicateInstance: boolean;
+}
+export interface SkillSlotRemovalPolicy {readonly eligible: boolean}
+export type SkillLoadoutMutationOperation = 'assign' | 'replace' | 'remove';
+export type SkillLoadoutMutationReason = 'none' | 'slot_not_found' | 'slot_ineligible'
+  | 'slot_occupied' | 'slot_empty' | 'same_instance' | 'instance_already_assigned';
+export type SkillLoadoutMutationResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly operation: SkillLoadoutMutationOperation;
+      readonly slotId: string; readonly beforeInstanceId: string | null; readonly afterInstanceId: string | null;
+      readonly state: SkillLoadoutState}
+  | {readonly status: 'rejected'; readonly reason: Exclude<SkillLoadoutMutationReason, 'none'>;
+      readonly operation: SkillLoadoutMutationOperation; readonly slotId: string;
+      readonly beforeInstanceId: string | null; readonly afterInstanceId: null; readonly state: null};
+function createSkillLoadoutState(entity: EntitySnapshot, layout: SkillLoadoutLayout): SkillLoadoutState;
+function validateSkillLoadoutState(state: SkillLoadoutState): SkillLoadoutState;
+function assignSkillLoadoutSlot(state: SkillLoadoutState, slotId: string, instance: SkillInstanceState,
+  policy: SkillSlotAssignmentPolicy): SkillLoadoutMutationResult;
+function replaceSkillLoadoutSlot(state: SkillLoadoutState, slotId: string, instance: SkillInstanceState,
+  policy: SkillSlotAssignmentPolicy): SkillLoadoutMutationResult;
+function removeSkillLoadoutSlot(state: SkillLoadoutState, slotId: string,
+  policy: SkillSlotRemovalPolicy): SkillLoadoutMutationResult;
+```
+
+Factory validates Entity through createEntity and returns ordered empty slots from
+L3 layout. Empty layout is valid; no default/minimum/maximum count or slot types.
+All IDs are exact nonblank, case-sensitive strings, preserved without generation
+or normalization. Slot IDs must be unique within the loadout. entityId+loadoutId
+uniqueness across independent snapshots belongs to L4. Special identifiers such
+as __proto__/constructor/toString use safe ordered-array references.
+
+Canonical validateSkillLoadoutState validates complete closed own-data records
+and dense own-data arrays, rejecting missing/extra/symbol/accessor/inherited
+required fields without invoking getters, duplicate slot IDs and invalid nullable
+instance references. It returns a detached frozen snapshot, including every slot.
+Duplicate nonnull instance IDs and stale external references are structurally
+valid; it does not consult a catalog or prove referential integrity.
+
+Assign/replace reuse accepted private Skill Instance validation; entityId must
+match loadout or TypeError. Policies require actual booleans and exact fields.
+All supplied state/instance/slot ID/policy contracts validate before ordinary
+rejection. Priority: slot_not_found > slot_ineligible > operation-specific state
+reason > instance_already_assigned > none. Assign rejects occupied; replace
+rejects empty then same_instance; remove rejects empty. Duplicate restrictions
+apply only to assign/replace and exclude the target slot. same_instance wins even
+when the instance also exists elsewhere. allowDuplicateInstance:true permits
+shared references without copying the instance or creating per-slot cooldown.
+
+Applied results expose the exact operation, slot ID, before/after references and
+one immutable final Loadout candidate. Rejected results expose state:null and
+afterInstanceId:null, with current target reference as beforeInstanceId (null if
+missing/empty). No partial candidate is exposed. Unchanged slots retain order;
+removal clears exactly the target reference, never every duplicate. All outputs
+are frozen/detached; original caller inputs remain unchanged and unfrozen.
+
+Example primary [null,null,null]: assign fireball to slot1, assign heal to slot2,
+replace slot1 with lightning, remove slot2 -> [lightning-instance,null,null].
+Each transition preserves earlier snapshots. Multiple loadouts remain independent.
+Eligibility is a caller assertion, not proof of learning/admission or authority.
+Loadout never calls admission, activation, costs, cooldown, Combat, providers or
+events. Rank/Resource/Cooldown/Skill Instances stay in their canonical owners.
+L3 owns layout/restrictions/duplicate policy; L4 owns active selection, reference
+resolution, persistence and authoritative commit. No active-loadout manager,
+Skill Instance registry/inventory, automatic activation, UI or move/swap/reorder.
+
+## SK31–SK35 Skill installed integration (v0.5.6)
+
+No new runtime functions/types or signature changes: root 80 functions/133 types
+retained exactly from0.5.5. Installed skill-integration.mjs/.ts composes Foundation,
+Entity, Progression, Skill and actual Combat public APIs. L3 supplies content/
+layout/policies; L4 resolves references, preflights, checks current local inputs,
+commits candidates and dispatches. Consumers are verification, not a production
+facade. No new authorization, exactly-once, rollback/refund or concurrency promise.
+See reports/v0.5.6-skill-final-review.md for current-artifact evidence.

@@ -1,5 +1,18 @@
 # Function-First Testing Policy — evidence over count
 
+## v0.5.6 Skill integration evidence
+
+Installed skill-integration.mjs exercises ranked Combat, rankless caller dispatch
+and multi-resource rejection/recovery through public APIs. Two independent
+sessions each assert the same literal clock/Combat oracle and provider calls;
+immutable histories remain isolated. Its strict NodeNext companion verifies
+public typing. These are function-level consumer flows, not gameplay apps.
+Shared runner guards reject missing fixtures/tests, wrong versions, invalid Core
+integrity, nonzero commands and failing/skipped/cancelled/todo TAP evidence.
+Actual TypeScript and missing-export negative controls must fail. Existing
+GF/EC/PR/CB/SK fixtures remain required; counts are observed evidence, not goals.
+
+
 `rpg_gameplay` is **code/library**, not a game. No full Text RPG, 2D or 2.5D sample application is needed or permitted just to test L2.
 
 ## Principle
@@ -328,3 +341,105 @@ NodeNext/skipLibCheck:false, readonly Entity results and discriminated nulls.
 101 installed contracts (98 retained +3) and2 outer gate tests, zero skips.
 R01–R40/N01–N20 mapping and source audit are in the closure report. Text/Realtime/
 TurnBased labels assert identical shared APIs, not renderer/scheduler/game execution.
+
+## SK01–SK05 Skill Foundation evidence (v0.5.0)
+
+skill-foundation.mjs adds three cohesive installed tests: T1 exact definition/
+instance identities, two actor kinds/same actor distinct instances, mutable input
+isolation, freeze/reflection, case/whitespace and deterministic duplicate creation
+with implicit Date.now/Math.random forbidden; T2 closed malformed records and
+canonical Entity rejection, no getter invocation or mutation; T3 actual copied
+registry dependency composition, missing Entity rejection without auto-enable,
+Progression/Combat independent siblings and structural creation without learning.
+Literal expected records come from the approved task, not implementation output.
+Dropping T1/T2/T3 loses positive ownership, negative validation or dependency evidence.
+
+skill-foundation.ts checks root factory signatures, required string identities,
+readonly fields, no any, no unauthorized state and closed deep declarations with
+strict external NodeNext/skipLibCheck:false. Runner requires both fixtures, exact
+three passing runtime tests/zero skips and all diagnostic markers; marker text
+never replaces assertions. Every previous101 runtime contracts retained unchanged:
+104 installed contracts +2 outer gates. No profile-specific matrix is needed for
+scalar structural identities; concrete gameplay profiles remain NOT_EVALUATED.
+
+## SK06–SK10 installed availability evidence (v0.5.1)
+
+skill-admission.mjs adds four cohesive external installed-package tests: outcomes
+including canonical Progression 3/0/undefined handoff and entity+skill composition;
+literal overlapping rejection priorities; malformed six-input validation before
+rejections without getters; detached immutable exact IDs, two independently built
+sessions each checked against a literal oracle, and unchanged domain snapshots.
+Expected results come from approved S01–S18, never another evaluation. The strict
+NodeNext skill-admission.ts fixture checks the six-argument signature/five new
+types, required closed readonly policy/result shapes, rank union and no any/deep
+imports. All104 previous runtime contracts remain unchanged; actual current108
+installed contracts +2 outer gates, zero skips. No game/simulator/profile matrix.
+See the v0.5.1 report for requirement mapping and limitations.
+
+## v0.5.2 installed resource-cost evidence
+
+Five coherent skill-resource-costs.mjs tests cover numerical literal oracles and
+actual Core diagnostics; all-or-nothing/order/missing/stale state; zero/free no-op;
+full malformed matrix before rejection without getters; immutable replay and
+caller ownership. S01–S20 are mapped in the checkpoint report, including health
+minimum without Life mutation and all old regressions. Expectations are literal
+contract values, never regenerated using the implementation under test.
+skill-resource-costs.ts checks seven types, signatures/readonly/canonical diagnostic
+integration, discriminated outcomes and invalid/missing/deep imports. Runner packs
+actual0.5.2, installs independently with real pinned Core, requires5 pass/0 skips,
+and compiles strict NodeNext/skipLibCheck:false. No simulator or count KPI.
+
+## v0.5.3 installed cooldown evidence
+
+Five skill-cooldown.mjs groups cover approved S01–S24: state/literal real-Kernel
+duration oracles; boundary/reuse/exactly-one-read; full closed malformed records
+before providers, invalid/error/rewound/unrepresentable time; immutable instance/
+actor isolation and selected entity+skill composition; two independent literal
+replay sessions with Date.now/Math.random disabled. Expected constants come from
+the approved contract, not the implementation or session A. No Core mocks.
+skill-cooldown.ts proves all6 types/3 signatures, readonly snapshots, discriminated
+result narrowing, opaque Foundation context, required configuration and root-only
+exports without any. Runner packs actual0.5.3 and independently installs with
+real pinned Core, checks5 pass/0 fail/0 skips and all5 markers; strict NodeNext
+uses skipLibCheck:false. S25 retains all113 prior runtime tests:118 installed
+runtime contracts +2 outer tests. Count is observed evidence, not a test KPI.
+
+## v0.5.4 installed activation evidence
+
+skill-activation.mjs has5 contract groups: literal candidates/multi-cost/free
+caller-only composition; ordered rejection/no partial exposure/no downstream
+clock reads; complete malformed contracts/identity binding/getter avoidance;
+immutable completed/failed assertions without refund; two independent literal
+replay sessions with hidden time/RNG disabled, duplicate IDs and snapshot isolation.
+skill-combat-handoff.mjs adds2 groups using actual installed Combat context,
+admission, target validation, attack and damage APIs. Enemy preflight passes,
+ally fails relation_not_allowed; dodge is completed, landed damage75 leaves HP25.
+Both retain paid mana75/cooldown1750. No mock numerical owners or simulator.
+
+skill-activation.ts checks all9 types,2 signatures, result narrowing, readonly
+nested data, invalid/missing/extra contracts and blocked deep imports. Installed
+strict NodeNext uses skipLibCheck:false with no any. Runner requires exact5+2
+passes, zero fail/cancel/skip/todo and all7 markers. All118 prior runtime tests
+remain: observed125 installed runtime tests +2 outer tests. Tests prove framework
+contracts; game profile behavior remains NOT_EVALUATED.
+
+## v0.5.5 installed Loadout evidence
+
+skill-loadout.mjs has five distinct contract groups: ordered assign/replace/remove
+with two independently created literal replay histories; deterministic rejection
+priority and explicit duplicate policies; complete malformed state/Entity/Instance/
+layout/policy/array contracts before ordinary rejection with getters0; stale and
+duplicate structural references, independent loadouts, empty layout, admission
+independence and no cascade; opaque special IDs and detached frozen snapshots
+without freezing caller inputs. These cover S01–S27; S28 retains earlier consumers.
+No numerical work, simulator, external catalog mock or count KPI.
+
+skill-loadout.ts checks all8 types/5 function signatures, readonly nested slots/
+policies/layout/results, union narrowing, missing/extra/invalid contracts and
+blocked deep imports. Actual0.5.5 tarball installs independently with pinned Core;
+runner requires5 passes/5 markers, fail/cancel/skip/todo0 and strict external
+NodeNext/skipLibCheck:false. Counts are observed evidence, not acceptance quotas.
+Game profiles remain NOT_EVALUATED.
+
+Observed v0.5.5 total:130 installed runtime tests (125 retained +5 Loadout),
+2 outer tests; zero failures/skips.

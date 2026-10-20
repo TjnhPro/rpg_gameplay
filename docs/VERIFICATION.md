@@ -1,4 +1,17 @@
-# Verification gates — v0.3.5
+# Verification gates — v0.5.6
+
+## Current release candidate — v0.5.6
+
+npm run verify requires production source and every gate: boundaries, harness
+self-tests, build, strict typecheck and installed functional consumers. It now
+includes SK31–SK35 integration and runner negative controls. The runner checks
+actual package/Core versions, tarball integrity, required TAP execution and zero
+failed/cancelled/skipped/todo results. Required consumers cannot silently vanish.
+See [final review](reports/v0.5.6-skill-final-review.md) for actual local counts and
+artifact provenance; PR #10 carries final exact-head Windows/Ubuntu Node22/24
+push+PR evidence. Developer acceptance is PENDING. Historical checkpoint sections
+below retain their original scope and do not establish current acceptance.
+
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
@@ -264,3 +277,95 @@ Exact-head push+PR Windows/Ubuntu Node22/24 must PASS before PR readiness. Final
 results go into ignored .artifacts/combat-v0.4-final-review.md and PR #9, avoiding
 a post-CI tracked commit. Phase REVIEW_PENDING/acceptance PENDING after gates;
 macOS NOT_RUN, concrete game-mode integrations/gameplay profiles NOT_EVALUATED.
+
+## v0.5.0 current Skill checkpoint verification
+
+Actual packed/installed @rpg/gameplay@0.5.0 must include the Skill JS/declaration,
+execute skill-foundation.mjs (3 PASS, zero skips) and compile skill-foundation.ts
+under strict NodeNext/skipLibCheck:false. Exact root67 runtime functions, root-only
+exports, canonical Core tarball SHA-512 and all prior101 contracts remain gates.
+Current104 installed runtime contracts +2 outer gate tests; registry4 modules/
+9 sources. Required commands: harness:check, harness:selftest, build, typecheck,
+test:functional, full verify and git diff --check. Missing fixture/tests, failed
+assertion/typecheck or required source/gate failure propagates; no skip path added.
+
+Exact-head push AND PR Windows/Ubuntu Node22/24 must PASS for CHECKPOINT_COMPLETE.
+Tracked report records local results and pre-push CI pending; final exact SHA,
+workflow/job results and links are attached to the same Draft phase PR and ignored
+local evidence without an extra commit invalidating CI. Skill IN_PROGRESS, PR
+DRAFT, Developer phase acceptance PENDING. No merge/tag/publish, Ready transition
+or v0.5.1 work. macOS NOT_RUN; gameplay profiles NOT_EVALUATED. Earlier sections
+retain their own checkpoint inventories and limitations.
+
+## v0.5.1 current Skill admission gates
+
+SK01–SK10 joins unchanged GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30. Actual0.5.1
+packed tarball installs with the real pinned Core in an independent directory,
+no source/symlink imports. Required skill-admission.mjs/.ts add4 runtime contracts
+and strict NodeNext/skipLibCheck:false checks; runner requires tests4/pass4/skips0
+and all four evidence markers. Current108 runtime contracts +2 outer gates,
+root68 functions/103 types. Existing missing-source/spaced-Node/failure-propagation
+regressions remain active. Registry4 modules/9 source files, Core pin unchanged.
+
+Required local harness:check/selftest/build/typecheck/test:functional/full verify
+and diff audit precede delivery. Exact delivered HEAD requires both push and PR
+Windows/Ubuntu Node22/24 jobs PASS before CHECKPOINT_COMPLETE. Final SHA/CI links
+are attached to existing Draft PR #10 and ignored local evidence, preserving the
+tested SHA. Phase IN_PROGRESS; Developer acceptance PENDING. No merge/tag/publish
+or v0.5.2 implementation; macOS NOT_RUN, gameplay profiles NOT_EVALUATED.
+
+## v0.5.2 current Skill resource-cost gates
+
+SK11–SK15 joins unchanged GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30/SK01–SK10.
+Actual0.5.2 installed ESM/root-only consumer adds5 runtime tests and strict
+NodeNext contracts; all108 prior runtime tests remain. Required state/source/gate
+checks still fail closed, no silent skips. Fresh core:prepare and npm ci precede
+verification. Exact delivered SHA must pass both push/PR Windows+Ubuntu Node22/24
+matrix (8 jobs). Local PASS does not imply remote PASS. Final SHA/CI evidence is
+recorded on Draft PR #10 without changing tested commit. macOS NOT_RUN; gameplay
+profiles NOT_EVALUATED; phase IN_PROGRESS and Developer acceptance PENDING.
+
+## v0.5.3 current Skill cooldown gates
+
+Unchanged GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30/SK01–SK15 plus SK16–SK20
+run via actual installed0.5.3 root-only package and strict external NodeNext.
+Runner requires5 cooldown tests/5 markers with zero skips, retains all113 old
+runtime tests and fail-closed source/spaced-Node/failure-propagation regressions.
+Observed total118 installed runtime contracts +2 outer gates. Core artifact
+integrity/root export closure and protected-owner audits remain mandatory.
+Harness, selftests, build, typecheck, functional and full verify must PASS locally;
+delivered SHA must also pass push and PR Windows/Ubuntu Node22/24 matrices (8 jobs).
+Final SHA/CI evidence is attached to Draft PR #10 without changing the tested SHA.
+Phase IN_PROGRESS; Developer acceptance PENDING. macOS NOT_RUN; game profiles
+NOT_EVALUATED. No activation/timer runtime/merge/tag/publish or v0.5.4 implied.
+
+## v0.5.4 current Skill activation gates
+
+Actual installed0.5.4 root-only tarball/real pinned Core exercises SK01–SK25 plus
+unchanged GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30. Observed125 runtime contracts
+(118 unchanged +7 activation/handoff) and2 outer gates pass without skips.
+Strict external NodeNext, closed75 runtime exports/125 types, Core SHA-512 and
+private declaration checks remain. Existing missing-source, spaced-Node and
+failure-propagation controls remain active. Four registry modules/nine production
+source files unchanged. Local harness check/selftest/build/typecheck/functional/
+full verify and diff audit must pass; push+PR exact delivered SHA requires8/8
+Windows/Ubuntu Node22/24 jobs. Final links attach to existing Draft PR #10 without
+changing tested SHA. Phase IN_PROGRESS, acceptance PENDING; v0.5.5 NOT_STARTED.
+macOS NOT_RUN; concrete game profiles NOT_EVALUATED.
+
+## v0.5.5 current Skill Slots & Loadout gates
+
+Actual installed0.5.5 root-only package exercises SK01–SK30 and unchanged
+GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30. Loadout fixture requires5 runtime tests,
+all5 markers and fail/cancel/skip/todo0; strict external NodeNext also compiles.
+Root80 functions/133 types, closed/private-free declarations, unchanged Core
+artifact integrity and version-only lock audit remain required. Existing source-
+required, spaced-Node and failure propagation controls stay active. All prior125
+runtime tests/oracles retained. Local required commands and full verify must PASS;
+exact delivered head requires push+PR Windows/Ubuntu Node22/24 matrix8/8 PASS.
+Final remote evidence attaches to Draft PR #10 without changing tested SHA.
+Phase IN_PROGRESS; acceptance PENDING; v0.5.6 NOT_STARTED. macOS NOT_RUN;
+concrete game profiles NOT_EVALUATED.
+
+Observed v0.5.5 total:130 installed runtime tests (125 retained +5 Loadout),
+2 outer tests; zero failures/skips.

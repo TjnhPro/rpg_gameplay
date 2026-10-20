@@ -1,6 +1,16 @@
 # Module Registry Contract
 
-`harness/modules.json` declares optional Entity and optional Progression (dependent on Entity). Add entries **only with an approved implementation task**. Default convention is `src/modules/<id>`; changing conventions requires reviewing architecture checks.
+## v0.5.6 closure audit boundary
+
+No production module/API or registry change is authorized in this milestone.
+Graph: entity[], progression[entity], combat[entity], skill[entity], all optional.
+Integration coordination is confined to installed consumer tests. Skill does not
+import Progression or Combat; callers supply rank and preflight data and dispatch
+to canonical owners. No L2 dependency on L3/L4, duplicate numerical owner or
+hidden state authority is introduced. Phase acceptance remains PENDING.
+
+
+`harness/modules.json` declares optional Entity, Progression, Combat and Skill; the latter three depend only on Entity. Add entries **only with an approved implementation task**. Default convention is `src/modules/<id>`; changing conventions requires reviewing architecture checks.
 
 Example (documentation only, **not an implemented module**):
 
@@ -193,3 +203,77 @@ entity+combat without progression; combat-only fails without auto-enablement.
 Canonical numerical/resource/life delegation and absence of stores/formulas/events
 are reviewed in reports/v0.4.5-combat-integration-closure.md. Lexical checks alone
 are not architectural proof; source review plus installed behavior supply evidence.
+
+## SK01–SK05 Skill boundary (v0.5.0)
+
+Canonical owner src/modules/skill/index.ts imports only public createEntity and
+EntitySnapshot from ../entity/index.js. Static optional skill depends only on
+entity; no Progression/Combat/Effect or Foundation coupling. Identity-only local
+own-data validation does not duplicate Entity validation. Root adds exactly
+createSkillDefinition/createSkillInstance and SkillDefinition/
+SkillInstanceInitialState/SkillInstanceState. No helper/deep exports, catalog,
+rank/point/Resource/Life state, numerical calculator, runtime or global authority.
+Current root67 functions/98 types, registry4 modules/9 sources. Accepted owners,
+Core pin and runtime dependencies unchanged. Actual registry composition and
+source review supplement lexical boundary checks.
+
+## SK06–SK10 admission boundary (v0.5.1)
+
+Same Skill owner adds evaluateSkillActivationAdmission; imports public getEntity
+and EntityCollection/EntityLifeState types. Existence and collection validation
+reuse canonical getEntity. Life shape/status/actor association are validated with
+no HP inference or Entity transition. Rank is an explicit scalar snapshot; caller
+reads canonical Progression getSkillRank. No Skill production Progression/Combat
+imports or static dependency changes. skill -> [entity] remains optional; sibling
+owners/Core pin are untouched. No second ownership/rank/Life store, calculator,
+generic admission engine, cache or execution session. L3 supplies booleans and rank
+requirements; L4 supplies freshness/authority and coordinates later execution.
+Current root68 functions/103 types; registry4 modules/9 sources unchanged.
+
+## SK11–SK15 resource-cost boundary (v0.5.2)
+
+Skill imports getEntityResourceCurrent/transitionEntityResource and Resource types
+from public Entity only. Full-state validation stays canonical Entity; copied
+validated data supports detached free snapshots without normalization. Positive
+amounts delegate to Entity->Core; Skill only compares canonical applied to cost.
+No resource arithmetic, direct Core import, interim state authority or new store.
+Optional skill->[entity] unchanged. Protected owners/registry/Core pin/deps remain
+unchanged. Root adds two functions/seven types:70 functions/110 types total.
+
+## SK16–SK20 cooldown boundary (v0.5.3)
+
+Skill imports only calculateCooldownDurationMs from @rpg/core/kernel for duration,
+and readExecutionTime/GameplayExecutionContext from shared Foundation execution.
+No provider access or copied CDR math. Private validation, identity matching,
+timestamp bookkeeping and immutable ready/start candidate orchestration stay in
+Skill; Foundation owns execution bindings/clock validation. No Foundation, Entity,
+Progression, Combat, Core/pin or registry changes. skill->[entity] unchanged;
+Foundation is shared infrastructure, not a declared optional-module dependency.
+Root adds3 functions/6 types:73/116 total. No global state, second engine,
+activation, automatic timers/events or authoritative commit.
+
+## SK21–SK25 activation boundary (v0.5.4)
+
+Skill orchestrates its existing admission/cost/cooldown contracts; private shared
+cost/config validators preserve prior public semantics and avoid transitions
+before early gates. Canonical Entity validates Resource state; Entity->Core owns
+payment, Core owns duration, Foundation owns opaque execution bindings/time.
+Combat remains independent and unmodified: L4 preflights and hands accepted
+request references to actual public Combat APIs. No Combat import, second
+executor, global state, transaction engine, timers or automatic events/refunds.
+Registry skill->[entity] and four modules/nine source files unchanged. L3 policies
+and L4 authoritative commits/concurrency remain external. Root75 functions/125
+types; only Skill/root production files changed.
+
+## SK26–SK30 Loadout reference boundary (v0.5.5)
+
+Skill owns immutable ordered nullable instanceId references only. Factory reuses
+canonical createEntity; assign/replace reuse the accepted cooldownIdentity private
+Skill Instance validator. Shared closed-data/dense-array helpers retain their
+previous semantics. validateSkillLoadoutState is the sole Loadout structural
+boundary; all mutations use it before rejection. Transient local uniqueness Set
+is not a persistent registry. No Core work, admission/activation coupling, provider
+reads, events or cascade state changes. Entity/Progression/Combat/Foundation stay
+unmodified; skill->[entity], four modules/nine source files unchanged. L3 supplies
+layout/eligible/allowDuplicateInstance; L4 owns catalogs/active selection/storage.
+Root80 functions/133 types; no deep exports or duplicate ownership authority.

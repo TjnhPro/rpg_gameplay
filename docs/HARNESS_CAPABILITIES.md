@@ -1,5 +1,16 @@
 # Harness Features H01–H16 — scope vs. implementation
 
+## v0.5.6 installed integration and fail-closed evidence
+
+The installed Skill integration group adds canonical cross-module flows and
+strict NodeNext consumption without a production coordinator. Required runner
+controls detect missing consumer/test execution, wrong package/Core versions,
+corrupt Core artifact, real TypeScript failure, missing root export, nonzero
+commands and failed/skipped/cancelled/todo tests. No previous fixture is optional.
+Final exact-head CI is separate from local/historical evidence; see the
+[final review](reports/v0.5.6-skill-final-review.md).
+
+
 **Important:** A feature listed here is NOT proof of gameplay implementation.
 v0.1.0 adds real package/Kernel integration contracts and strict build tooling;
 v0.1.5 adds installed-package GF01–GF16 module/lifecycle/messaging/execution
@@ -16,7 +27,7 @@ Gameplay profile behavior remains NOT_EVALUATED; Progression phase is REVIEW_PEN
 | H01 | Agent Onboarding & Routing | Implemented: concise `AGENTS.md` map |
 | H02 | Repository Knowledge Base | Implemented: scoped docs, accepted decisions |
 | H03 | Architecture Boundary Guard | Partial automation: check static imports and paths |
-| H04 | Module Ownership & Dependency Registry | Implemented: optional Entity and dependent optional Progression |
+| H04 | Module Ownership & Dependency Registry | Implemented: optional Entity; independent optional Progression, Combat and Skill each require Entity |
 | H05 | RPG Core Integration Guard | Partial automation: forbid Core root/Legacy/internal imports |
 | H06 | Canonical Implementation Guard | Governance/manual review; no fake algorithmic duplicate detector |
 | H07 | Module Isolation & Optionality Guard | Partial automation: imports, explicit deps; selected-module lifecycle/isolation contracts tested; dynamic enable/disable excluded |
@@ -161,3 +172,44 @@ Full phase source/diff review supplements lexical checks; no production delta in
 this milestone, no skipped gate or gameplay profile PASS claim. Final exact-head
 Windows/Ubuntu Node22/24 push+PR evidence and self-contained review handoff resolve
 tracked report's CI-pending snapshot. Developer acceptance PENDING.
+
+## v0.5.0 Skill evidence extension
+
+H04/H07 cover optional skill -> entity with actual registry composition; H11 adds
+three installed SK01–SK05 identity/immutability/closed-validation/dependency tests
+and strict external NodeNext types. All101 earlier contracts remain:104 installed
+runtime contracts +2 outer gates. H06 still needs source review for canonical
+Entity reuse/no rank, numerical duplicate or global runtime. Core integrity/root
+exports/fail-closed controls remain. Skill phase IN_PROGRESS, acceptance PENDING;
+no application/gameplay profile execution is claimed.
+
+## v0.5.1 Skill admission evidence extension
+
+Four installed SK06–SK10 contract groups cover exact outcomes/canonical rank
+handoff/rankless composition, rejection priority, whole-invocation fail-closed
+validation without getters, and immutable deterministic isolation. Strict external
+NodeNext adds policy/result contracts; all104 earlier installed contracts retained:
+108 installed runtime contracts +2 outer gate tests, zero failures/skips. Existing
+Core integrity/root-only package/gate controls remain mandatory. Source review
+confirms unchanged dependencies/accepted owners; no game-profile PASS is claimed.
+
+## v0.5.4 activation evidence extension
+
+Installed SK21–SK25 adds5 activation/report/replay groups and2 actual Combat
+handoff groups with explicit markers, exact counts and zero skips. Strict
+external NodeNext adds9 types/2 function signatures. All118 earlier runtime tests
+remain:125 installed runtime contracts +2 outer gates. Private validator reuse,
+unchanged canonical owners, no direct Combat dependency/global runtime and
+candidate-only authority require source audit alongside tests. Exact-head
+Windows/Ubuntu Node22/24 push+PR gates remain required. Game profiles NOT_EVALUATED.
+
+## v0.5.5 Loadout evidence extension
+
+Five installed SK26–SK30 groups prove reference-only immutable state, policy/
+priority, full-input malformed handling, identity and ownership boundaries,
+literal replay and special identifiers. Strict external NodeNext covers5 added
+functions/8 types. Earlier125 runtime tests remain; Core integrity, root closure,
+private declaration and fail-closed verifier controls stay active. Source audit
+must confirm no protected owner/registry/dependency/CI change, no instance catalog
+or activation coupling. Exact-head push+PR matrix required; game profiles
+NOT_EVALUATED. Final counts and links are recorded in checkpoint delivery evidence.
