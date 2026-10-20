@@ -1,4 +1,4 @@
-# Public API — v0.4.1 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB10)
+# Public API — v0.5.0 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK05)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -1273,3 +1273,39 @@ applied magnitude from HP delta (above-max140->100/request20 still applied20).
 Structural receipts are not authenticated/fresh authorization. Reusing old state
 branches again; no persistent exactly-once, transaction or concurrency authority.
 No Skill/Effect/AI/Encounter integration is provided. See closure report.
+
+## SK01–SK05 Skill Foundation (v0.5.0)
+
+Two additive root functions and three readonly types: 67 runtime functions and
+98 exported types total. No existing signatures or package export paths change.
+
+```ts
+interface SkillDefinition { readonly skillId: string; }
+interface SkillInstanceInitialState { readonly instanceId: string; }
+interface SkillInstanceState {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly entityId: string;
+}
+function createSkillDefinition(definition: SkillDefinition): SkillDefinition;
+function createSkillInstance(definition: SkillDefinition, entity: EntitySnapshot,
+  initial: SkillInstanceInitialState): SkillInstanceState;
+```
+
+Both factories capture detached frozen data. Skill/instance IDs are nonblank,
+case-sensitive strings preserved exactly, without trimming, normalization or
+generation. Definition and initial records contain exactly one own data property;
+unknown/non-enumerable extra fields, symbols, getters, inherited required fields,
+null/arrays and malformed IDs throw TypeError without invoking getters. Entity
+validation delegates to public createEntity. The instance stores no definition or
+Entity object reference; callers may supply structurally valid records directly.
+
+Same skillId may bind multiple actors or instances. Repeated instanceId inputs
+are structurally valid: uniqueness, idempotency, membership and authorization are
+caller-owned. Creation does not imply learned/unlocked/equipped/available/alive,
+admitted or activated. No rank/resources/cooldown/execution fields or lifecycle
+operations are present. L3 explicitly projects rich content to {skillId}.
+
+Static optional skill -> entity requires explicit selection of both. Progression
+and Combat remain independent siblings. No implicit runtime, events, providers,
+Core calculation or registry/catalog is created. All Skill deep imports stay closed.

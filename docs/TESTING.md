@@ -328,3 +328,23 @@ NodeNext/skipLibCheck:false, readonly Entity results and discriminated nulls.
 101 installed contracts (98 retained +3) and2 outer gate tests, zero skips.
 R01–R40/N01–N20 mapping and source audit are in the closure report. Text/Realtime/
 TurnBased labels assert identical shared APIs, not renderer/scheduler/game execution.
+
+## SK01–SK05 Skill Foundation evidence (v0.5.0)
+
+skill-foundation.mjs adds three cohesive installed tests: T1 exact definition/
+instance identities, two actor kinds/same actor distinct instances, mutable input
+isolation, freeze/reflection, case/whitespace and deterministic duplicate creation
+with implicit Date.now/Math.random forbidden; T2 closed malformed records and
+canonical Entity rejection, no getter invocation or mutation; T3 actual copied
+registry dependency composition, missing Entity rejection without auto-enable,
+Progression/Combat independent siblings and structural creation without learning.
+Literal expected records come from the approved task, not implementation output.
+Dropping T1/T2/T3 loses positive ownership, negative validation or dependency evidence.
+
+skill-foundation.ts checks root factory signatures, required string identities,
+readonly fields, no any, no unauthorized state and closed deep declarations with
+strict external NodeNext/skipLibCheck:false. Runner requires both fixtures, exact
+three passing runtime tests/zero skips and all diagnostic markers; marker text
+never replaces assertions. Every previous101 runtime contracts retained unchanged:
+104 installed contracts +2 outer gates. No profile-specific matrix is needed for
+scalar structural identities; concrete gameplay profiles remain NOT_EVALUATED.

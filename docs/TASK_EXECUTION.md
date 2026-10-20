@@ -77,3 +77,17 @@ Group A/Core change. Version0.4.5, all local and exact-head CI gates, tracked
 closure report and ignored self-contained handoff are required before moving
 existing PR from Draft to Ready for Review. Final evidence stays ignored/PR-side
 to preserve verified SHA. Developer alone accepts/closes; no merge/tag/publish.
+
+## Active Skill phase (v0.5.0)
+
+Task: tasks/active/v0.5.0-skill-foundation.md, submitted for execution under the
+Developer's standing instruction to proceed without repeated approval requests.
+Create feat/v0.5-skill from accepted main82feaf5 (merged Combat PR #9), then reuse
+one Draft PR targeting explicit main through v0.5.6. SK01–SK05 authorizes only
+optional skill -> entity, identity-only definitions/instances and verification.
+No accepted owner/Core changes, numerical operations, availability/activation,
+cost/cooldown/loadout or catalog/runtime engine. Each checkpoint requires local
+and exact-head push+PR CI evidence. Status CHECKPOINT_COMPLETE, phase IN_PROGRESS,
+PR DRAFT and Developer phase acceptance PENDING; no Ready/merge/tag/publish or
+next milestone without its own task. The submitted task's PROPOSED header is
+retained verbatim as source text; it is not phase acceptance evidence.

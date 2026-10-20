@@ -8,7 +8,7 @@
 | 02 | Entity / Character | identity and gameplay character state, actor/resource storage | character names, game classes, initial stats |
 | 03 | Progression | EXP/level/upgrades rules interface & state transitions | level curves, talent restrictions |
 | 04 | Combat | action admission, target policy interfaces, damage application/lifecycle | PvP/PvE rules, game formula selection |
-| 05 | Skill | skill instance/availability/activation/cost/cooldown lifecycle | skill definitions, skill ranks/visuals |
+| 05 | Skill | definition identity schema, skill instance/availability/activation/cost/cooldown lifecycle | concrete skill content, tuning, visuals; rank state remains Progression-owned |
 | 06 | Effect | reusable apply/stack/refresh/expire/DoT/HoT/status transitions | effect catalogs & presentation |
 | 07 | Monster & AI | monsters as gameplay actors, decision interfaces/behaviors | monster templates and tuning |
 | 08 | Encounter | encounter lifecycle, participation, completion conditions | zone/dungeon/wave designs |
@@ -144,3 +144,15 @@ handoff. No new mechanics/API/module. No Skill/Effect/AI/Encounter, spatial/turn
 realtime controller, automatic events/rewards, persistence or global authority.
 Combat core function semantics VERIFIED; concrete game-mode integrations and
 gameplay profiles NOT_EVALUATED. Agent does not close/accept the phase.
+
+## v0.5.0 current Skill checkpoint
+
+Combat CB01–CB30 is the accepted merged PR #9 baseline at 82feaf5; earlier pending
+statuses above are historical. Group05 now implements SK01–SK05 only: optional
+skill -> entity, reusable identity-only SkillDefinition and independent immutable
+SkillInstanceState. L2 owns schema/structural validation; L3 owns concrete Skill
+content/configuration. Progression retains Skill Rank/Points; Combat retains its
+admission/target/numerical application contracts. Neither is a Skill dependency.
+No availability, learning/unlocking, costs, cooldown, execution or loadout is
+implemented. Skill phase IN_PROGRESS, PR DRAFT, acceptance PENDING; v0.5.1–v0.5.6
+NOT_STARTED. Shared structural contracts verified; game profiles NOT_EVALUATED.

@@ -19,7 +19,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK05, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -37,7 +37,8 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30,
       'dist/foundation/runtime/index.d.ts', 'dist/foundation/runtime/index.js',
       'dist/index.d.ts', 'dist/index.js', 'dist/modules/combat/index.d.ts', 'dist/modules/combat/index.js',
       'dist/modules/entity/index.d.ts', 'dist/modules/entity/index.js',
-      'dist/modules/progression/index.d.ts', 'dist/modules/progression/index.js', 'package.json',
+      'dist/modules/progression/index.d.ts', 'dist/modules/progression/index.js',
+      'dist/modules/skill/index.d.ts', 'dist/modules/skill/index.js', 'package.json',
     ].sort());
     fs.writeFileSync(path.join(temp, 'package.json'), JSON.stringify({name: 'foundation-consumer', private: true, type: 'module'}));
     exec([cli, 'install', '--ignore-scripts', '--no-audit', '--no-fund', path.join(temp, packed.filename), coreArtifact], temp);
@@ -46,7 +47,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30,
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assert.equal(packageJson.version, '0.4.5');
+    assert.equal(packageJson.version, '0.5.0');
     assert.equal(packageJson.private, true);
     assert.equal(packageJson.type, 'module');
     assert.deepEqual(packageJson.exports, {'.': {types: './dist/index.d.ts', import: './dist/index.js'}});
@@ -61,12 +62,12 @@ assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModu
  'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId', 'createEntity',
  'createEntityCollection', 'addEntity', 'getEntity', 'hasEntity', 'listEntities', 'removeEntity', 'replaceEntity',
  'createEntityAttributeState', 'getEntityBaseAttributes', 'setEntityBaseAttribute', 'calculateEntityStats',
- 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage'].sort());
+ 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
  {resource:'energy',before:8,after:5,applied:3,reachedMinimum:false});
-for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', '@rpg/gameplay/foundation/modules', '@rpg/gameplay/foundation/runtime', '@rpg/gameplay/dist/foundation/runtime/index.js', '@rpg/gameplay/foundation/messaging', '@rpg/gameplay/dist/foundation/messaging/index.js', '@rpg/gameplay/foundation/execution', '@rpg/gameplay/dist/foundation/execution/index.js', '@rpg/gameplay/modules/entity', '@rpg/gameplay/dist/modules/entity/index.js', '@rpg/gameplay/modules/combat', '@rpg/gameplay/dist/modules/combat/index.js', '@rpg/gameplay/modules/progression', '@rpg/gameplay/dist/modules/progression/index.js']) {
+for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', '@rpg/gameplay/foundation/modules', '@rpg/gameplay/foundation/runtime', '@rpg/gameplay/dist/foundation/runtime/index.js', '@rpg/gameplay/foundation/messaging', '@rpg/gameplay/dist/foundation/messaging/index.js', '@rpg/gameplay/foundation/execution', '@rpg/gameplay/dist/foundation/execution/index.js', '@rpg/gameplay/modules/entity', '@rpg/gameplay/dist/modules/entity/index.js', '@rpg/gameplay/modules/combat', '@rpg/gameplay/dist/modules/combat/index.js', '@rpg/gameplay/modules/progression', '@rpg/gameplay/dist/modules/progression/index.js', '@rpg/gameplay/skill', '@rpg/gameplay/skill/internal', '@rpg/gameplay/modules/skill', '@rpg/gameplay/dist/modules/skill/index.js']) {
  await assert.rejects(import(spec), {code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 }
 `);
@@ -201,6 +202,7 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
       {id: 'entity', optional: true, dependencies: []},
       {id: 'progression', optional: true, dependencies: ['entity']},
       {id: 'combat', optional: true, dependencies: ['entity']},
+      {id: 'skill', optional: true, dependencies: ['entity']},
     ]);
     fs.copyFileSync(path.join(root, 'tests/consumers/combat.mjs'), path.join(temp, 'combat.mjs'));
     const combatEvidence = exec(['--test', '--test-reporter=tap', 'combat.mjs'], temp);
@@ -264,6 +266,20 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     }
     console.log('INSTALLED_COMBAT_INTEGRATION_PASS CB26-CB30; consumer_tests=3 skipped=0; sessions2/literal_oracle');
     fs.copyFileSync(path.join(root, 'tests/consumers/combat-integration.ts'), path.join(temp, 'combat-integration.ts'));
+    fs.copyFileSync(path.join(root, 'harness/modules.json'), path.join(temp, 'skill-modules.json'));
+    fs.copyFileSync(path.join(root, 'tests/consumers/skill-foundation.mjs'), path.join(temp, 'skill-foundation.mjs'));
+    const skillFoundationEvidence = exec(['--test', '--test-reporter=tap', 'skill-foundation.mjs'], temp);
+    assert.match(skillFoundationEvidence, /# tests 3\b/);
+    assert.match(skillFoundationEvidence, /# pass 3\b/);
+    assert.match(skillFoundationEvidence, /# skipped 0\b/);
+    for (const marker of ['SKILL_FOUNDATION_IDENTITY_PASS', 'SKILL_FOUNDATION_VALIDATION_PASS', 'SKILL_FOUNDATION_COMPOSITION_PASS']) {
+      assert.ok(skillFoundationEvidence.includes(marker), `Missing ${marker}`);
+      console.log(skillFoundationEvidence.split(/\r?\n/).find(line => line.includes(marker)));
+    }
+    console.log('INSTALLED_SKILL_FOUNDATION_PASS SK01-SK05; consumer_tests=3 skipped=0; identity_only');
+    fs.copyFileSync(path.join(root, 'tests/consumers/skill-foundation.ts'), path.join(temp, 'skill-foundation.ts'));
+    const skillDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/skill/index.d.ts'), 'utf8');
+    assert.doesNotMatch(skillDeclarations, /\b(?:any|identityField|Map|WeakMap|SkillEngine|SkillRuntime)\b/);
     const combatDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/combat/index.d.ts'), 'utf8');
     assert.doesNotMatch(combatDeclarations, /\b(?:any|dataFields|identifier|Map|WeakMap|Set|CombatSession|CombatEngine)\b/);
     const progressionDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/progression/index.d.ts'), 'utf8');
@@ -293,7 +309,7 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
   } finally {
     const resolved = fs.realpathSync(temp);

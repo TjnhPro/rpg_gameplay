@@ -1,4 +1,4 @@
-# Verification gates — v0.3.5
+# Verification gates — v0.5.0
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
@@ -264,3 +264,22 @@ Exact-head push+PR Windows/Ubuntu Node22/24 must PASS before PR readiness. Final
 results go into ignored .artifacts/combat-v0.4-final-review.md and PR #9, avoiding
 a post-CI tracked commit. Phase REVIEW_PENDING/acceptance PENDING after gates;
 macOS NOT_RUN, concrete game-mode integrations/gameplay profiles NOT_EVALUATED.
+
+## v0.5.0 current Skill checkpoint verification
+
+Actual packed/installed @rpg/gameplay@0.5.0 must include the Skill JS/declaration,
+execute skill-foundation.mjs (3 PASS, zero skips) and compile skill-foundation.ts
+under strict NodeNext/skipLibCheck:false. Exact root67 runtime functions, root-only
+exports, canonical Core tarball SHA-512 and all prior101 contracts remain gates.
+Current104 installed runtime contracts +2 outer gate tests; registry4 modules/
+9 sources. Required commands: harness:check, harness:selftest, build, typecheck,
+test:functional, full verify and git diff --check. Missing fixture/tests, failed
+assertion/typecheck or required source/gate failure propagates; no skip path added.
+
+Exact-head push AND PR Windows/Ubuntu Node22/24 must PASS for CHECKPOINT_COMPLETE.
+Tracked report records local results and pre-push CI pending; final exact SHA,
+workflow/job results and links are attached to the same Draft phase PR and ignored
+local evidence without an extra commit invalidating CI. Skill IN_PROGRESS, PR
+DRAFT, Developer phase acceptance PENDING. No merge/tag/publish, Ready transition
+or v0.5.1 work. macOS NOT_RUN; gameplay profiles NOT_EVALUATED. Earlier sections
+retain their own checkpoint inventories and limitations.

@@ -1,3 +1,5 @@
+export {createSkillDefinition, createSkillInstance} from './modules/skill/index.js';
+export type {SkillDefinition, SkillInstanceInitialState, SkillInstanceState} from './modules/skill/index.js';
 export {
   validateModuleDefinition, createModuleRegistry, registerModule,
   getModule, listModules, configureModules, isModuleEnabled,

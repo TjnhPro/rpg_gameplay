@@ -1,6 +1,6 @@
 # Module Registry Contract
 
-`harness/modules.json` declares optional Entity and optional Progression (dependent on Entity). Add entries **only with an approved implementation task**. Default convention is `src/modules/<id>`; changing conventions requires reviewing architecture checks.
+`harness/modules.json` declares optional Entity, Progression, Combat and Skill; the latter three depend only on Entity. Add entries **only with an approved implementation task**. Default convention is `src/modules/<id>`; changing conventions requires reviewing architecture checks.
 
 Example (documentation only, **not an implemented module**):
 
@@ -193,3 +193,16 @@ entity+combat without progression; combat-only fails without auto-enablement.
 Canonical numerical/resource/life delegation and absence of stores/formulas/events
 are reviewed in reports/v0.4.5-combat-integration-closure.md. Lexical checks alone
 are not architectural proof; source review plus installed behavior supply evidence.
+
+## SK01–SK05 Skill boundary (v0.5.0)
+
+Canonical owner src/modules/skill/index.ts imports only public createEntity and
+EntitySnapshot from ../entity/index.js. Static optional skill depends only on
+entity; no Progression/Combat/Effect or Foundation coupling. Identity-only local
+own-data validation does not duplicate Entity validation. Root adds exactly
+createSkillDefinition/createSkillInstance and SkillDefinition/
+SkillInstanceInitialState/SkillInstanceState. No helper/deep exports, catalog,
+rank/point/Resource/Life state, numerical calculator, runtime or global authority.
+Current root67 functions/98 types, registry4 modules/9 sources. Accepted owners,
+Core pin and runtime dependencies unchanged. Actual registry composition and
+source review supplement lexical boundary checks.

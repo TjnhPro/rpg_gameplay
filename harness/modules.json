@@ -4,6 +4,7 @@
   "modules": [
     {"id": "entity", "optional": true, "dependencies": []},
     {"id": "progression", "optional": true, "dependencies": ["entity"]},
-    {"id": "combat", "optional": true, "dependencies": ["entity"]}
+    {"id": "combat", "optional": true, "dependencies": ["entity"]},
+    {"id": "skill", "optional": true, "dependencies": ["entity"]}
   ]
 }

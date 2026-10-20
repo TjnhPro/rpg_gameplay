@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.4.5 Combat Integration & Closure
+# RPG Gameplay — v0.5.0 Skill Foundation
 
-> **Status: Group A baseline merged through PR #8; CB01–CB30 implemented. Combat phase REVIEW_PENDING; final review gates required; Developer acceptance PENDING.**
+> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK05 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,8 +38,26 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB30 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK05 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
+
+## Skill identity foundation
+
+```ts
+import {createEntity, createSkillDefinition, createSkillInstance} from '@rpg/gameplay';
+const definition = createSkillDefinition({skillId: 'fireball'});
+const actor = createEntity({id: 'player-1', kind: 'player'});
+const instance = createSkillInstance(definition, actor, {instanceId: 'skill-instance-001'});
+// Frozen {instanceId: 'skill-instance-001', skillId: 'fireball', entityId: 'player-1'}
+```
+
+Optional `skill` requires explicitly selected `entity`, independently of Progression
+and Combat. These are detached structural identities, not learned/unlocked/eligible
+or activated skills. L3 supplies concrete content; Progression remains the rank
+owner. There is no catalog, resource/cooldown/loadout or execution implementation.
+See [API](docs/API.md#sk01sk05-skill-foundation-v050) and
+[checkpoint report](docs/reports/v0.5.0-skill-foundation.md).
+Later milestone sections below retain their original historical status.
 
 ## Entity identity and classification
 

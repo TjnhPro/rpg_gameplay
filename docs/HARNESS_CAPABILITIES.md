@@ -16,7 +16,7 @@ Gameplay profile behavior remains NOT_EVALUATED; Progression phase is REVIEW_PEN
 | H01 | Agent Onboarding & Routing | Implemented: concise `AGENTS.md` map |
 | H02 | Repository Knowledge Base | Implemented: scoped docs, accepted decisions |
 | H03 | Architecture Boundary Guard | Partial automation: check static imports and paths |
-| H04 | Module Ownership & Dependency Registry | Implemented: optional Entity and dependent optional Progression |
+| H04 | Module Ownership & Dependency Registry | Implemented: optional Entity; independent optional Progression, Combat and Skill each require Entity |
 | H05 | RPG Core Integration Guard | Partial automation: forbid Core root/Legacy/internal imports |
 | H06 | Canonical Implementation Guard | Governance/manual review; no fake algorithmic duplicate detector |
 | H07 | Module Isolation & Optionality Guard | Partial automation: imports, explicit deps; selected-module lifecycle/isolation contracts tested; dynamic enable/disable excluded |
@@ -161,3 +161,13 @@ Full phase source/diff review supplements lexical checks; no production delta in
 this milestone, no skipped gate or gameplay profile PASS claim. Final exact-head
 Windows/Ubuntu Node22/24 push+PR evidence and self-contained review handoff resolve
 tracked report's CI-pending snapshot. Developer acceptance PENDING.
+
+## v0.5.0 Skill evidence extension
+
+H04/H07 cover optional skill -> entity with actual registry composition; H11 adds
+three installed SK01–SK05 identity/immutability/closed-validation/dependency tests
+and strict external NodeNext types. All101 earlier contracts remain:104 installed
+runtime contracts +2 outer gates. H06 still needs source review for canonical
+Entity reuse/no rank, numerical duplicate or global runtime. Core integrity/root
+exports/fail-closed controls remain. Skill phase IN_PROGRESS, acceptance PENDING;
+no application/gameplay profile execution is claimed.
