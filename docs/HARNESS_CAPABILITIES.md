@@ -95,3 +95,14 @@ boundaries.70 installed contracts +2 outer tests,zero skips; all69 old fixtures
 retained. Root60 functions/77 types unchanged. Harness checks remain lexical and
 semantic ownership still requires full phase source/diff review. No concrete
 gameplay profile claim; Developer acceptance PENDING, Progression REVIEW_PENDING.
+
+## v0.4.0 current harness evidence
+
+The Group A baseline is merged through PR #8. H04 now registers optional entity,
+progression -> entity and combat -> entity (no placeholders). H11/H12 include
+CB01–CB05 installed exact intent, closed own-data validation, immutable snapshots,
+composition and strict NodeNext root-only declarations. 75 installed contracts
+retain all71 baseline contracts; 2 outer gate tests, zero skips. H06 source review
+confirms one Combat owner, no engine/global state/numerical duplicate. Mode-neutral
+caller fixtures prove context data semantics only; gameplay profiles remain
+NOT_EVALUATED. Combat phase IN_PROGRESS; Developer acceptance PENDING.

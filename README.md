@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.3.5 Progression Integration & Closure
+# RPG Gameplay — v0.4.0 Combat Foundation
 
-> **Status: merged Entity v0.2.5 baseline; PG01–PG19 implemented and integration verified. Progression phase REVIEW_PENDING; Developer acceptance PENDING.**
+> **Status: Group A baseline merged through PR #8; CB01–CB05 implemented. Combat phase IN_PROGRESS; Draft PR; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18 and PG01–PG19 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB05 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -129,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.3.5.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.4.0.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -398,3 +398,29 @@ Phase REVIEW_PENDING, not accepted/closed; no merge/tag/publish. See the
 [closure report](docs/reports/v0.3.5-progression-integration-closure.md). Exact final
 SHA/CI and self-contained review handoff live in ignored
 `.artifacts/progression-v0.3-final-review.md` after final push/CI.
+
+## Combat Foundation (CB01–CB05)
+
+```ts
+import {createCombatActionContext} from '@rpg/gameplay';
+const context = createCombatActionContext({
+  actionId: 'attack-001', actionType: 'basic_attack', sourceEntityId: 'player-1',
+  target: {kind: 'entity', entityId: 'monster-1'},
+});
+```
+
+The root and nested target are frozen detached snapshots. IDs/action types are
+caller-supplied nonblank strings preserved exactly. Closed own-data inputs reject
+missing/extra fields, symbols, accessors and inherited required fields without
+calling getters. Self-target and unknown actor references are structurally valid;
+duplicate action IDs are allowed across independent contexts. Optional Combat
+requires explicit Entity selection for composition and does not require Progression
+or Skill. Direct creation requires no registry, providers or actor lookup.
+
+This describes intent only: no admission, supported-action guarantee, execution,
+damage, resource/life change, event, persistent combat state or turn scheduler.
+75 installed contracts (71 baseline + 4 Combat) and strict external NodeNext
+consumers verify the current artifact. Earlier milestone sections above
+retain their historical checkpoint statuses. See [API](docs/API.md#cb01cb05-combat-foundation)
+and [checkpoint evidence](docs/reports/v0.4.0-combat-foundation.md).
+Combat v0.4.1–v0.4.5 are NOT_STARTED; Developer acceptance is PENDING.

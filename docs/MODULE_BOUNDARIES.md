@@ -122,3 +122,16 @@ is only optional progression -> entity, introduced by v0.3.0 and unchanged since
 PG19's consumer composes both explicitly; selecting progression alone still
 rejects. No copied Entity setter/validator, Kernel calculator, Skill Engine,
 Foundation event bus, hidden synchronization or global reward authority.
+
+## CB01–CB05 ownership (v0.4.0)
+
+Current registry: optional entity -> [], progression -> [entity], combat -> [entity].
+Existing metadata/entries are preserved. Combat has one owner at
+src/modules/combat/index.ts and no imports; opaque references need no fake Entity
+or full Entity validator. No progression/skill/effect/encounter dependency.
+Root adds only createCombatActionContext and CombatEntityTarget/CombatActionRequest/
+CombatActionContext (61 runtime functions / 80 types total). No deep exports.
+Explicit selection entity+combat resolves entity then combat; combat-only rejects.
+Progression can be omitted or selected independently with its existing dependency.
+No Foundation/Entity/Progression source semantics, Core pin or dependency changes.
+No new registry placeholders, execution binding, state store or numerical owner.

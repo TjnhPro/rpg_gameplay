@@ -1,4 +1,4 @@
-# Public API — v0.3.5 (GF01–GF16, EC01–EC18, PG01–PG19)
+# Public API — v0.4.0 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB05)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -1013,3 +1013,46 @@ Consumers constructing/exact-matching snapshots must include it. Untagged legacy
 objects are rejected with no inference, normalization or migration. pointKind is
 a structural domain discriminator, not authentication/provenance or an exactly-once
 authority; stale immutable snapshots can still branch. Package stays0.3.5.
+
+## CB01–CB05 Combat Foundation
+
+Canonical owner: `src/modules/combat/index.ts`. One new runtime function and three
+readonly types, exported only through the package root. Current root inventory:
+61 functions / 80 public types; accepted Group A exports remain unchanged.
+
+```ts
+interface CombatEntityTarget {
+  readonly kind: 'entity';
+  readonly entityId: string;
+}
+interface CombatActionRequest {
+  readonly actionId: string;
+  readonly actionType: string;
+  readonly sourceEntityId: string;
+  readonly target: CombatEntityTarget;
+}
+type CombatActionContext = CombatActionRequest;
+function createCombatActionContext(request: CombatActionRequest): CombatActionContext;
+```
+
+The factory synchronously validates exactly four own data fields and exactly two
+own target data fields. All IDs and actionType must be primitive nonblank strings;
+trim checks blankness only, preserving the original string including whitespace
+and case. Target kind must be exactly `entity`. Null, arrays, functions, missing,
+unknown (including nonenumerable/symbol), inherited required fields and accessors
+throw TypeError without invoking getters or returning a partial snapshot. Plain
+and null-prototype own-data records are supported using existing boundary semantics.
+No coercion, defaults, ID generation or fake Entity validation.
+
+Each call returns a fresh frozen root with a fresh frozen target. Original inputs
+stay mutable and detached. Equal requests produce semantically equal independent
+snapshots; duplicate actionId is permitted. Source/target are opaque references:
+self-target, swapped actor roles and unknown references are accepted. No collection
+lookup, supported-action catalog, trusted receipt, admission or execution is implied.
+
+Static module combat is optional and declares only entity. Consumer module
+registration/selection is explicit; combat alone fails dependency resolution without
+auto-enabling Entity. Progression remains independently selectable with Entity.
+The factory requires neither runtime registration nor Entity objects, Foundation
+execution providers or Kernel calls. No event, domain-state mutation, persistent
+session, numerical operation, Skill integration or game-mode/time/spatial policy.

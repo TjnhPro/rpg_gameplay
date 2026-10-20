@@ -181,3 +181,21 @@ skips. Both final-head CI matrices must be observed again after the fix; old
 41c3d3d results do not certify remediation. Package remains0.3.5; Core unchanged.
 Final fix SHA/CI are recorded in PR #8 and the same ignored single-file handoff.
 macOS NOT_RUN; gameplay profile behavior NOT_EVALUATED.
+
+## v0.4.0 current verification scope
+
+Current artifact @rpg/gameplay0.4.0 adds CB01–CB05 to the merged Group A baseline.
+Run harness:check, harness:selftest, build, typecheck, test:functional and verify;
+verify requires all steps and propagates failures. Current inventory is 3 static
+modules / 8 source files, 61 root runtime functions / 80 types, 75 installed
+contracts and 2 outer gate tests, zero skips. Strict external NodeNext includes
+combat.ts with skipLibCheck:false; deep imports fail at runtime and type boundaries.
+Actual installed gameplay/Core tarballs, Core SHA-512 and GF/EC/PG regression
+oracles remain mandatory. CB evidence covers closed exact intent/freeze/getter
+safety/self-target/unknown refs/duplicate IDs/composition and deterministic
+independent sessions. No admission or execution evidence is claimed.
+
+Use checkpoint report and PR for current results/exact-head push + PR CI on
+Ubuntu/Windows Node22/24. Earlier counts/statuses are historical milestone records.
+Combat phase IN_PROGRESS, Developer acceptance PENDING; gameplay profile behavior
+NOT_EVALUATED and v0.4.1+ NOT_STARTED. No gate is silently skipped.

@@ -227,3 +227,23 @@ unused @ts-expect-error fails compilation. No any/cast bypass or config change.
 Current total71 installed contracts +2 outer, zero skips; prior70 retained with
 only authorized snapshot additions. Focused evidence and before/after installed
 reproduction are in reports/v0.3.5-f001-point-pool-isolation-fix.md.
+
+## CB01–CB05 installed Combat evidence (v0.4.0)
+
+combat.mjs adds four distinct contract groups: exact/frozen/detached/role-neutral
+intent; closed invalid-shape/primitive/accessor rejection; optional dependency
+composition; two independent literal-oracle sessions and mode-neutral caller data
+with unchanged Entity/Progression/resource/life snapshots. Each covers approved
+R01–R25 invariants mapped in the checkpoint report, without execution tests.
+combat.ts proves required readonly root/nested fields, exact target literal,
+string-only IDs, no accidental any, absent execution data and root-only imports.
+The existing runner packs actual gameplay0.4.0, installs alongside pinned real
+Core into an independent temporary consumer, and runs both runtime and strict
+NodeNext evidence (skipLibCheck:false). No source import/link or Core mock.
+
+75 installed contracts = 71 retained Group A + 4 Combat; 2 outer gate tests,
+zero skips. Existing fixture oracles stay unchanged; runner inventory changes
+only add the approved files/export/version/consumer. Static boundary checks and
+source review supplement functional evidence for no state, engines or hidden
+providers. Mode labels exercise the same structural contract, not three games
+or gameplay execution. Report: reports/v0.4.0-combat-foundation.md.

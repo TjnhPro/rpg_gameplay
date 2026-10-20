@@ -73,3 +73,17 @@ public snapshots: required readonly pointKind attribute/skill, own-data runtime
 guards and strict TypeScript isolation. No new capability/API/module, formula or
 engine; package0.3.5 and phase REVIEW_PENDING. Structural kind is not a trusted
 credential. Untagged old snapshots reject; no implicit migration/conversion.
+
+## v0.4.0 current checkpoint: Combat Foundation
+
+Group A (GF01–GF16, EC01–EC18, PG01–PG19 including point-pool isolation) is the
+merged PR #8 baseline. Historical pending statuses above describe prior checkpoints.
+Group04 now has CB01–CB05: optional combat -> entity, exact action/source/target
+identity, frozen detached action intent and closed own-data structural validation.
+Self-target/unknown references are valid; no actor lookup or authorization follows.
+Basic attack intent requires no Skill/Progression dependency. No admission, target
+relations, attack/damage/resource/death execution, active session, Skill/Effect/AI/
+Encounter integration, scheduler or renderer is implemented. Remaining candidate
+groups are unchanged. Context data compatibility is verified for Text/Realtime/
+Turn-Based callers; gameplay execution/profile behavior remains NOT_EVALUATED.
+Combat phase IN_PROGRESS, PR DRAFT, Developer acceptance PENDING. v0.4.1+ NOT_STARTED.

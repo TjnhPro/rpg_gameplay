@@ -236,3 +236,22 @@ recalculates, upgrades and publishes. No operation synchronizes another domain.
 Full PR diff from merged Entity baseline is classified in the closure report.
 Static registry remains optional entity and optional progression -> entity; no
 Skill/Reward placeholders. Phase REVIEW_PENDING; Developer alone accepts/closes.
+
+## CB01–CB05 Combat Foundation (v0.4.0)
+
+Group A is the merged PR #8 baseline at c550669. Combat phase is IN_PROGRESS,
+Developer acceptance PENDING. Earlier sections retain milestone history.
+One canonical owner, `src/modules/combat/index.ts`, captures a structural action
+attempt as immutable exact IDs and one entity target. Static optional combat
+requires entity, independently of progression. It imports no runtime modules:
+opaque identity validation requires no Entity creation or lookup. Root exports
+one factory and three types; package deep exports remain closed.
+
+Request and context share one structural shape and one validation path. Private
+own-data/identifier helpers capture descriptors before building a frozen root and
+target; caller records stay untouched. Entity owns identity/attributes/resources/
+life, Progression owns EXP/level/ranks/points, Foundation owns coordination/providers,
+Kernel owns numerical work. No action admission, target policy, numerical formula,
+execution, global action registry, CombatSession, Skill/Effect/Encounter owner or
+second engine is introduced. Later basic attacks must remain independent of Skill.
+The snapshot is mode-neutral and needs no clock, RNG, IDs, turns or spatial data.
