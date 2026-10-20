@@ -41,4 +41,4 @@ if (!npmCli || !fs.existsSync(npmCli)) {
 run(process.execPath,[npmCli,'run','build']);
 run(process.execPath,[npmCli,'run','typecheck']);
 run(process.execPath,[npmCli,'run','test:functional']);
-console.log(`VERIFY_PASS harness + build + typecheck + functional package contracts; source_files=${source.length}. GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK35, EF01–EF40 + FIX01 and Actor AI AI01–AI20 foundation/perception/target-selection/behavior contracts verified; Text/2D/2.5D Foundation/Entity data compatibility only. Gameplay profile behavior is NOT_EVALUATED; Effect is the merged baseline; Actor AI phase IN_PROGRESS, Developer acceptance PENDING.`);
+console.log(`VERIFY_PASS harness + build + typecheck + functional package contracts; source_files=${source.length}. GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK35, EF01–EF40 + FIX01 and Actor AI AI01–AI25 foundation/perception/target-selection/behavior/action-selection contracts verified; Text/2D/2.5D Foundation/Entity data compatibility only. Gameplay profile behavior is NOT_EVALUATED; Effect is the merged baseline; Actor AI phase IN_PROGRESS, Developer acceptance PENDING.`);

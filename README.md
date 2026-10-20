@@ -1,3 +1,17 @@
+# RPG Gameplay — v0.7.4 Action Selection & Intent
+
+**AI01–AI25 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**
+Actor AI selects one advisory intent from ordered L3 action rules and correlated
+L4 availability facts. Existing intent/result contracts are reused; canonical
+admission and execution remain L4 responsibilities. No AI state or gameplay mutation.
+Three functions/nine types added: root **125 functions /214 types**.
+Installed evidence: **224 runtime contracts /44 groups +3 outer**, zero skips;
+all 216 prior contracts retained. Core, protected owners and graph unchanged.
+Continue [Draft PR #12](https://github.com/TjnhPro/rpg_gameplay/pull/12).
+[Task](docs/tasks/active/v0.7.4-ai-action-selection-intent.md) / [Report](docs/reports/v0.7.4-ai-action-selection-intent.md) / [API](docs/API.md).
+Stop at v0.7.4; no Ready/merge/tag/publish/automatic v0.7.5.
+Concrete gameplay profiles NOT_EVALUATED; earlier status is historical.
+
 # RPG Gameplay — v0.7.3 AI Behavior & State Transitions
 
 **AI01–AI20 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**

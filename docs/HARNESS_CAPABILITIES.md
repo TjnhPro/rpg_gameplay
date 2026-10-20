@@ -1,3 +1,14 @@
+## v0.7.4 installed evidence delta
+
+Eight assertion-bearing installed groups cover AI21–AI25 with actual npm tarball,
+root/native ESM and strict external NodeNext. Observed 224 runtime contracts /
+44 groups +3 outer; all 216 prior contracts retained, no skips/fail/cancel/todo.
+Twelve executable faults, actual validator-delegation/bypass probe, missing fixture/
+export/version/Core, skip/zero-assertion and corrupted self-target declaration
+controls are required. Every injected byte restored against packed inventory.
+Exact-head push AND pull_request Windows/Ubuntu Node22/24 require 8/8 PASS.
+[report](reports/v0.7.4-ai-action-selection-intent.md); prior counts/status are historical.
+
 ## v0.7.3 installed behavior evidence
 
 New actor-ai-behavior.mjs/.ts adds seven assertion-bearing runtime groups plus

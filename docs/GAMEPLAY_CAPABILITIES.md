@@ -1,3 +1,13 @@
+## v0.7.4 Actor AI checkpoint
+
+AI01–AI20 retained; AI21 Basic Attack Intent, AI22 Skill Use Intent, AI23 Movement
+Intent (Approach/Return only), AI24 Priority & Fallback, AI25 Decision Outcomes
+IMPLEMENTED as advisory data selection. L3 supplies behavior/action priority;
+L4 supplies correlated availability and retains canonical admission/execution.
+Explicit wait supported; missing availability fails closed per rule, no implicit wait.
+AI26–AI40 OUT_OF_SCOPE. Phase IN_PROGRESS, acceptance PENDING. [report](reports/v0.7.4-ai-action-selection-intent.md).
+Concrete gameplay profiles remain NOT_EVALUATED; earlier statements are historical.
+
 ## v0.7.3 Actor AI behavior checkpoint
 
 AI16 generic state/profile policy, AI17 ordered FSM/guards, AI18 Idle/Guard,

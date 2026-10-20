@@ -1,3 +1,61 @@
+## v0.7.4 Action Selection & Intent — AI21–AI25
+
+Three functions/nine types added; root **125 functions /214 types**.
+All AI01–AI20 contracts remain unchanged. Types: ActorAIActionKind,
+ActorAIActionTargetMode, ActorAIActionRule, ActorAIActionSelectionPolicy,
+ActorAIActionAvailability, ActorAIActionObservation, ActorAIActionRuleRejectionReason,
+ActorAIActionRuleRejection, ActorAIActionSelectionResult.
+
+```ts
+createActorAIActionSelectionPolicy(input: ActorAIActionSelectionPolicy): ActorAIActionSelectionPolicy;
+createActorAIActionObservation(context: ActorAIDecisionContext,
+  availability: readonly ActorAIActionAvailability[]): ActorAIActionObservation;
+evaluateActorAIActionSelection(state: ActorAIState, entities: EntityCollection,
+  context: ActorAIDecisionContext, policy: ActorAIActionSelectionPolicy,
+  observation: ActorAIActionObservation): ActorAIActionSelectionResult;
+```
+
+Policy is a closed profileId/rules record. Each ordered rule has ruleId,
+behaviorStateId, actionKey, actionKind and targetMode. IDs are exact nonblank,
+case-sensitive, never normalized. Rule IDs unique. Reused actionKey requires
+consistent kind/mode across every behavior rule. Empty rules are valid.
+
+| actionKind | Allowed targetMode | Intent target |
+| --- | --- | --- |
+| basic_attack | current_target | state.targetEntityId |
+| skill | current_target / self | state.targetEntityId / actorId |
+| approach_target | current_target | state.targetEntityId |
+| return_home | none | null |
+| wait | none | null |
+
+Observation contains actorId, decisionId and dense availability array. Each entry
+is exactly {actionKey,status,reasonId}: available/null or unavailable/nonblank
+opaque reasonId. Unique action keys; unknown extra keys are valid facts but cannot
+select a rule. Availability order never defines priority. No canonical admission
+interpretation of reasonId. Fact freshness and decision-ID uniqueness are L4-owned.
+
+Validate canonical actor/state, closed context, entire policy and observation,
+actor/decision/profile identities before manual/no-op/selection. Manual returns
+no_action/manual_control, null rule/kind, validated no_action decision and [].
+AI iterates rules in declared order, skipping different behavior without diagnostics.
+Applicable rejection precedence: target_missing, availability_missing, action_unavailable.
+First valid available rule wins; rejected contains only preceding applicable failures,
+ordered by policy. None selected gives no_action/no_candidate with null intent;
+no implicit wait. Explicit wait still requires configured rule and available fact.
+
+Result fields: status selected/no_action; reason rule_selected/no_candidate/manual_control;
+selectedRuleId string/null; actionKind kind/null; decision ActorAIDecisionResult;
+rejected readonly ActorAIActionRuleRejection[] (ruleId/actionKey/reason).
+Selected wraps proposed/none using existing createActorAIActionIntent and
+validateActorAIDecisionResult. Both no-action paths use the same accepted validator.
+This metadata interface does not introduce another execution intent authority.
+All records/arrays detached and frozen; caller inputs remain untouched.
+
+Current target is a structural reference, not proof of eligibility/existence/Life.
+No state/target/behavior/controller changes, hidden time/RNG, execution or world
+calculations. L4 must revalidate all canonical conditions before execution.
+Full declarations live at public root; no deep export. [report](reports/v0.7.4-ai-action-selection-intent.md).
+
 ## v0.7.3 AI Behavior & State Transitions — AI16–AI20
 
 Additive root API: three functions/five types; total **122 functions /205 types**.

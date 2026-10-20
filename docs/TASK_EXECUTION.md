@@ -1,3 +1,16 @@
+## Current authorized checkpoint: v0.7.4 Action Selection & Intent
+
+Developer supplied approved [task](tasks/active/v0.7.4-ai-action-selection-intent.md); D01–D05 ALL A.
+Start from v0.7.3 CHECKPOINT_COMPLETE at 4863e01d20536b5bd0f2a148bb3c18ef10434179,
+clean synchronized feat/v0.7-actor-ai, existing Draft PR #12/main, baseline CI 8/8.
+AI21–AI25 only: three focused functions/nine types, existing intent/result reuse,
+ordered L3 rules, correlated L4 availability and advisory immutable decisions.
+Package 0.7.3→0.7.4; production limited to Actor AI/additive root. Protect all other
+owners/Core/graph/dependencies/history. All local gates and both exact-head CI
+matrices 8/8 precede CHECKPOINT_COMPLETE; SHA-bound supplement completes report.
+Keep Draft; phase IN_PROGRESS, acceptance PENDING. Stop v0.7.4; no new branch/PR,
+Ready/merge/tag/publish or automatic v0.7.5. Earlier authorizations are historical.
+
 ## Current authorized checkpoint: v0.7.3 AI Behavior & State Transitions
 
 Developer supplied approved [task](tasks/active/v0.7.3-ai-behavior-state-transitions.md); D01–D05 ALL A, no reapproval required.

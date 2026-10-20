@@ -1,3 +1,16 @@
+## v0.7.4 action evidence
+
+A01–A47 map to eight installed consumer groups: CAPTURE; INTENTS; PRIORITY;
+DIAGNOSTICS; MANUAL; VALIDATION; COMPOSITION; REPLAY. Literal expected envelopes,
+targets/rejections, configured order reversal and availability reordering prove
+contracts. Seven actor kinds share one evaluator; explicit target→behavior→action
+composition is caller wiring, with no automatic orchestration/execution.
+Runtime owner snapshots plus installed executable dependency/call boundaries guard
+no execution; opaque World fixture is not a Movement implementation.
+Actual installed validator probe observes delegation, then detects a bypass fault.
+Targeted 8/8 + strict NodeNext PASS; full 224/44+3, zero skips; all 216 historical
+contracts retained. Negative controls restore every installed byte. [report](reports/v0.7.4-ai-action-selection-intent.md).
+
 ## v0.7.3 behavior evidence
 
 S01–S46 map to seven installed groups: generic capture; ordered transitions and

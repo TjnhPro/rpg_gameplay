@@ -1,3 +1,15 @@
+## v0.7.4 verification delta
+
+Preparation/fresh install, harness check/selftest, build/typecheck, targeted installed
+8/8+strict NodeNext, test:functional and npm run verify are mandatory and PASS locally.
+Observed 224 runtime contracts /44 installed groups +3 outer, fail/cancel/skip/todo 0.
+Twelve runtime faults and actual accepted-validator bypass detection, mandatory
+fixtures/three exports/version/Core/skip/zero-assertion/declaration controls remain
+active; all injected artifacts restored and checked against original packed bytes.
+Require exact delivered SHA both push/pull_request Windows/Ubuntu Node22/24 8/8.
+Final SHA-bound PR #12 supplement completes the [36-section report](reports/v0.7.4-ai-action-selection-intent.md)
+after push without moving tested HEAD. Earlier statuses are historical.
+
 ## v0.7.3 verification delta
 
 Run preparation/fresh install, harness check/selftest, build/typecheck, targeted

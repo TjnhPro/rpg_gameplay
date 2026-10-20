@@ -1,3 +1,14 @@
+## v0.7.4 action-selection ownership
+
+Graph unchanged: optional actor-ai → entity only. Actor AI validates canonical
+actor binding and selects advisory action references using L3 ordered rules and
+L4 facts. Existing ActorAIActionIntent/ActorAIDecisionResult are sole proposal
+boundary. L4 resolves actionKey and revalidates canonical admission before execution.
+No Combat/Skill/Effect/Progression dependency or duplicated availability/admission
+logic, numerical calculation, World/Movement, scheduler or global store.
+Only Actor AI/additive root production changed. Core, Foundation, other modules,
+registry and dependencies unchanged. [report](reports/v0.7.4-ai-action-selection-intent.md); prior statements are historical.
+
 ## v0.7.3 behavior ownership
 
 Only Actor AI owner/additive root production changes. Optional actor-ai→entity

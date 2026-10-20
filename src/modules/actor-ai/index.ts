@@ -412,3 +412,118 @@ export function evaluateActorAIBehaviorTransition(state: ActorAIState, entities:
     : observed.triggerIds.length === 0 ? 'no_trigger' : 'no_matching_rule',
     ruleId: matched?.ruleId ?? null, triggerId: matched?.triggerId ?? null, previousBehaviorStateId, nextBehaviorStateId, state: next});
 }
+
+export type ActorAIActionKind = 'basic_attack' | 'skill' | 'approach_target' | 'return_home' | 'wait';
+export type ActorAIActionTargetMode = 'current_target' | 'self' | 'none';
+export interface ActorAIActionRule {
+  readonly ruleId: string;
+  readonly behaviorStateId: string;
+  readonly actionKey: string;
+  readonly actionKind: ActorAIActionKind;
+  readonly targetMode: ActorAIActionTargetMode;
+}
+/** L3 order is the sole priority; action keys are opaque L4 bindings. */
+export interface ActorAIActionSelectionPolicy {
+  readonly profileId: string;
+  readonly rules: readonly ActorAIActionRule[];
+}
+export type ActorAIActionAvailability =
+  | {readonly actionKey: string; readonly status: 'available'; readonly reasonId: null}
+  | {readonly actionKey: string; readonly status: 'unavailable'; readonly reasonId: string};
+/** Advisory L4 facts for one request, never canonical admission evidence. */
+export interface ActorAIActionObservation extends ActorAIDecisionContext {
+  readonly availability: readonly ActorAIActionAvailability[];
+}
+export type ActorAIActionRuleRejectionReason = 'availability_missing' | 'action_unavailable' | 'target_missing';
+export interface ActorAIActionRuleRejection {
+  readonly ruleId: string;
+  readonly actionKey: string;
+  readonly reason: ActorAIActionRuleRejectionReason;
+}
+export interface ActorAIActionSelectionResult {
+  readonly status: 'selected' | 'no_action';
+  readonly reason: 'rule_selected' | 'no_candidate' | 'manual_control';
+  readonly selectedRuleId: string | null;
+  readonly actionKind: ActorAIActionKind | null;
+  readonly decision: ActorAIDecisionResult;
+  readonly rejected: readonly ActorAIActionRuleRejection[];
+}
+
+function actionRule(input: unknown): ActorAIActionRule {
+  const data = fields(input, ['ruleId', 'behaviorStateId', 'actionKey', 'actionKind', 'targetMode']);
+  const kind = data.actionKind, mode = data.targetMode;
+  if (!((kind === 'basic_attack' || kind === 'approach_target') && mode === 'current_target')
+    && !(kind === 'skill' && (mode === 'current_target' || mode === 'self'))
+    && !((kind === 'return_home' || kind === 'wait') && mode === 'none')) {
+    throw new TypeError('Invalid Actor AI action kind/target mode');
+  }
+  return Object.freeze({ruleId: id(data.ruleId), behaviorStateId: id(data.behaviorStateId),
+    actionKey: id(data.actionKey), actionKind: kind as ActorAIActionKind, targetMode: mode as ActorAIActionTargetMode});
+}
+export function createActorAIActionSelectionPolicy(input: ActorAIActionSelectionPolicy): ActorAIActionSelectionPolicy {
+  const data = fields(input, ['profileId', 'rules']), profileId = id(data.profileId);
+  const rules = perceptionArray(data.rules, actionRule), seen = new Set<string>();
+  for (const rule of rules) {
+    if (seen.has(rule.ruleId)) throw new TypeError('Duplicate Actor AI action rule');
+    seen.add(rule.ruleId);
+    const binding = rules.find(other => other.actionKey === rule.actionKey);
+    if (binding && (binding.actionKind !== rule.actionKind || binding.targetMode !== rule.targetMode)) {
+      throw new TypeError('Inconsistent Actor AI action binding');
+    }
+  }
+  return Object.freeze({profileId, rules});
+}
+function actionObservation(input: unknown): ActorAIActionObservation {
+  const data = fields(input, ['actorId', 'decisionId', 'availability']);
+  const actorId = id(data.actorId), decisionId = id(data.decisionId), seen = new Set<string>();
+  const availability = perceptionArray(data.availability, value => {
+    const fact = fields(value, ['actionKey', 'status', 'reasonId']), actionKey = id(fact.actionKey);
+    if (seen.has(actionKey)) throw new TypeError('Duplicate Actor AI action availability');
+    seen.add(actionKey);
+    if (fact.status === 'available' && fact.reasonId === null) {
+      return Object.freeze({actionKey, status: 'available' as const, reasonId: null});
+    }
+    if (fact.status !== 'unavailable') throw new TypeError('Invalid Actor AI action availability');
+    return Object.freeze({actionKey, status: 'unavailable' as const, reasonId: id(fact.reasonId)});
+  });
+  return Object.freeze({actorId, decisionId, availability});
+}
+export function createActorAIActionObservation(context: ActorAIDecisionContext,
+  availability: readonly ActorAIActionAvailability[]): ActorAIActionObservation {
+  return actionObservation({...contextSnapshot(context), availability});
+}
+/** Pure proposal only. L4 revalidates canonical admission and owns execution. */
+export function evaluateActorAIActionSelection(state: ActorAIState, entities: EntityCollection,
+  context: ActorAIDecisionContext, policy: ActorAIActionSelectionPolicy,
+  observation: ActorAIActionObservation): ActorAIActionSelectionResult {
+  const current = validateActorAIState(state, entities), correlation = contextSnapshot(context);
+  const rules = createActorAIActionSelectionPolicy(policy), observed = actionObservation(observation);
+  if (current.actorId !== correlation.actorId || observed.actorId !== current.actorId
+    || observed.decisionId !== correlation.decisionId) throw new TypeError('Actor AI action correlation mismatch');
+  if (rules.profileId !== current.profileId) throw new TypeError('Actor AI action profile mismatch');
+  if (current.controller === 'manual') {
+    return Object.freeze({status: 'no_action', reason: 'manual_control', selectedRuleId: null, actionKind: null,
+      decision: validateActorAIDecisionResult(current, correlation,
+        {status: 'no_action', reason: 'manual_control', intent: null}), rejected: Object.freeze([])});
+  }
+  const rejected: ActorAIActionRuleRejection[] = [];
+  for (const rule of rules.rules) {
+    if (rule.behaviorStateId !== current.behaviorStateId) continue;
+    const fact = observed.availability.find(value => value.actionKey === rule.actionKey);
+    const reason = rule.targetMode === 'current_target' && current.targetEntityId === null ? 'target_missing'
+      : !fact ? 'availability_missing' : fact.status === 'unavailable' ? 'action_unavailable' : null;
+    if (reason) {
+      rejected.push(Object.freeze({ruleId: rule.ruleId, actionKey: rule.actionKey, reason}));
+      continue;
+    }
+    const intent = createActorAIActionIntent(correlation, {actionKey: rule.actionKey,
+      targetEntityId: rule.targetMode === 'current_target' ? current.targetEntityId
+        : rule.targetMode === 'self' ? current.actorId : null});
+    const decision = validateActorAIDecisionResult(current, correlation, {status: 'proposed', reason: 'none', intent});
+    return Object.freeze({status: 'selected', reason: 'rule_selected', selectedRuleId: rule.ruleId,
+      actionKind: rule.actionKind, decision, rejected: Object.freeze(rejected)});
+  }
+  return Object.freeze({status: 'no_action', reason: 'no_candidate', selectedRuleId: null, actionKind: null,
+    decision: validateActorAIDecisionResult(current, correlation,
+      {status: 'no_action', reason: 'no_candidate', intent: null}), rejected: Object.freeze(rejected)});
+}

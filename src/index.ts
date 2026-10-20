@@ -126,3 +126,7 @@ export type {ActorAITargetSelectionPolicy, ActorAITargetLossReason, ActorAITarge
 export {createActorAIBehaviorPolicy, createActorAIBehaviorObservation, evaluateActorAIBehaviorTransition} from './modules/actor-ai/index.js';
 export type {ActorAIBehaviorTargetRequirement, ActorAIBehaviorRule, ActorAIBehaviorPolicy,
   ActorAIBehaviorObservation, ActorAIBehaviorTransitionResult} from './modules/actor-ai/index.js';
+export {createActorAIActionSelectionPolicy, createActorAIActionObservation, evaluateActorAIActionSelection} from './modules/actor-ai/index.js';
+export type {ActorAIActionKind, ActorAIActionTargetMode, ActorAIActionRule, ActorAIActionSelectionPolicy,
+  ActorAIActionAvailability, ActorAIActionObservation, ActorAIActionRuleRejectionReason,
+  ActorAIActionRuleRejection, ActorAIActionSelectionResult} from './modules/actor-ai/index.js';
