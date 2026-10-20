@@ -247,3 +247,17 @@ only add the approved files/export/version/consumer. Static boundary checks and
 source review supplement functional evidence for no state, engines or hidden
 providers. Mode labels exercise the same structural contract, not three games
 or gameplay execution. Report: reports/v0.4.0-combat-foundation.md.
+
+## CB06–CB10 admission evidence (v0.4.1)
+
+combat-admission.mjs adds four installed groups: positive/parity/target independence;
+rejection priority and identity isolation; malformed-before-rejection/accessor
+safety; immutable deterministic sessions and domain independence. Literal context
+and admitted/none or named rejection outputs derive from approved scenarios A–L.
+Dropped groups would lose distinct boundary evidence. No simulator or duplicated
+Entity suite; a small malformed collection probe confirms canonical validation.
+combat-admission.ts checks required explicit Life/policy, boolean-only policy,
+readonly result/nested data, exact reason/status unions, no any and root-only API.
+Existing75 installed contracts stay unchanged; current total79 plus2 outer tests,
+zero skips. Strict NodeNext directives are active (unused expect-error fails).
+Actual installed0.4.1/Core tarballs run in the existing independent temp consumer.

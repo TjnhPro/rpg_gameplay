@@ -1,4 +1,4 @@
-# Public API — v0.4.0 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB05)
+# Public API — v0.4.1 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB10)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -1056,3 +1056,49 @@ auto-enabling Entity. Progression remains independently selectable with Entity.
 The factory requires neither runtime registration nor Entity objects, Foundation
 execution providers or Kernel calls. No event, domain-state mutation, persistent
 session, numerical operation, Skill integration or game-mode/time/spatial policy.
+
+## CB06–CB10 Combat Action Admission
+
+Same Combat owner; one new root function and four types. Current inventory:
+62 runtime functions /84 public types. CB01–CB05 contracts remain unchanged.
+
+```ts
+interface CombatActorEligibilityPolicy { readonly eligible: boolean; }
+type CombatAdmissionStatus = 'admitted' | 'rejected';
+type CombatAdmissionReason = 'none' | 'source_not_found' | 'source_dead' | 'source_ineligible';
+interface CombatAdmissionResult {
+  readonly context: CombatActionContext;
+  readonly status: CombatAdmissionStatus;
+  readonly reason: CombatAdmissionReason;
+}
+function evaluateCombatActionAdmission(
+  context: CombatActionContext, entities: EntityCollection,
+  sourceLife: EntityLifeState, policy: CombatActorEligibilityPolicy,
+): CombatAdmissionResult;
+```
+
+Synchronous pure evaluation: canonical createCombatActionContext validates and
+captures context; public Entity getEntity validates collection/looks up only
+source; Life must have exactly own data entityId/status, nonblank exact ID and
+alive/dead; source ID must match; policy must have exactly own boolean eligible.
+All validation completes before gameplay rejection. Missing/invalid records,
+extra/symbol/inherited/accessor fields, invalid life status, mismatched IDs,
+missing boolean or callback policy throw TypeError without invoking getters.
+Plain/null-prototype records retain accepted own-data semantics. No default Life
+or eligible, coercion, HP inference or implicit policy evaluation.
+
+| Valid inputs | status | reason |
+| --- | --- | --- |
+| Source absent (even dead/ineligible) | rejected | source_not_found |
+| Source present, dead (even ineligible) | rejected | source_dead |
+| Source present/alive, eligible false | rejected | source_ineligible |
+| Source present/alive, eligible true | admitted | none |
+
+Every result and its context/target are freshly detached/frozen, including rejected
+results. Original inputs remain untouched. Player/Monster/custom actor kinds share
+semantics. Unknown target and self-target are actor-stage admissible; no target
+lookup/relations/life/range or supported-action catalog is evaluated. Admitted does
+not mean executed or fully authorized. No state writes/events/time/RNG/ID allocation,
+resource/death/numerical operations or persistent reservation. Caller provides
+current authoritative state; stale snapshots can be evaluated again and results
+supply no concurrency or transaction authority. No additional function/deep export.

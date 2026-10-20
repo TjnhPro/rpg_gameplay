@@ -127,7 +127,7 @@ Foundation event bus, hidden synchronization or global reward authority.
 
 Current registry: optional entity -> [], progression -> [entity], combat -> [entity].
 Existing metadata/entries are preserved. Combat has one owner at
-src/modules/combat/index.ts and no imports; opaque references need no fake Entity
+src/modules/combat/index.ts (no imports at v0.4.0); opaque references need no fake Entity
 or full Entity validator. No progression/skill/effect/encounter dependency.
 Root adds only createCombatActionContext and CombatEntityTarget/CombatActionRequest/
 CombatActionContext (61 runtime functions / 80 types total). No deep exports.
@@ -135,3 +135,15 @@ Explicit selection entity+combat resolves entity then combat; combat-only reject
 Progression can be omitted or selected independently with its existing dependency.
 No Foundation/Entity/Progression source semantics, Core pin or dependency changes.
 No new registry placeholders, execution binding, state store or numerical owner.
+
+## CB06–CB10 admission boundary (v0.4.1)
+
+combat -> entity remains the only Combat module dependency; registry unchanged.
+Combat now consumes public getEntity and EntityCollection/EntityLifeState from
+../entity/index.js. CB03 creation stays provider/lookup-free; admission reuses
+that factory then canonical lookup instead of scanning collection.entities.
+Life boundary checks schema/identity only, never death/revival logic. No other
+production source changes except root exports: evaluateCombatActionAdmission,
+CombatActorEligibilityPolicy/CombatAdmissionStatus/CombatAdmissionReason/
+CombatAdmissionResult (62 functions /84 types total). No new module/deep export,
+Skill/Effect/Progression coupling, Kernel call or runtime binding.

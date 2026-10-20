@@ -182,7 +182,7 @@ skips. Both final-head CI matrices must be observed again after the fix; old
 Final fix SHA/CI are recorded in PR #8 and the same ignored single-file handoff.
 macOS NOT_RUN; gameplay profile behavior NOT_EVALUATED.
 
-## v0.4.0 current verification scope
+## v0.4.0 checkpoint verification scope
 
 Current artifact @rpg/gameplay0.4.0 adds CB01–CB05 to the merged Group A baseline.
 Run harness:check, harness:selftest, build, typecheck, test:functional and verify;
@@ -199,3 +199,16 @@ Use checkpoint report and PR for current results/exact-head push + PR CI on
 Ubuntu/Windows Node22/24. Earlier counts/statuses are historical milestone records.
 Combat phase IN_PROGRESS, Developer acceptance PENDING; gameplay profile behavior
 NOT_EVALUATED and v0.4.1+ NOT_STARTED. No gate is silently skipped.
+
+## v0.4.1 current verification scope
+
+Current artifact0.4.1: GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB10.
+Unchanged3 modules/8 source files; root62 functions/84 types; installed79 contracts
+(75 prior +4 admission), 2 outer tests, zero skips. Full verify runs all gates;
+strict external NodeNext/deep exports and real pinned Core integrity remain required.
+Admission proves source-only evaluation, deterministic priority, malformed policy
+before rejection, Life ID consistency/getter safety and detached frozen result.
+No target validation/execution proof is claimed; gameplay profiles NOT_EVALUATED.
+Exact-head push/PR Ubuntu/Windows Node22/24 CI is required for checkpoint completion.
+See v0.4.1 report and PR #9 final delivery evidence; prior counts are historical.
+Phase IN_PROGRESS, PR DRAFT, Developer acceptance PENDING; v0.4.2+ NOT_STARTED.

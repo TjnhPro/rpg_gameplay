@@ -1,3 +1,5 @@
+import {getEntity, type EntityCollection, type EntityLifeState} from '../entity/index.js';
+
 /** Exact caller-owned actor reference; existence and targeting policy are external. */
 export interface CombatEntityTarget {
   readonly kind: 'entity';
@@ -47,4 +49,40 @@ export function createCombatActionContext(request: CombatActionRequest): CombatA
   const entityId = identifier(target.entityId);
   return Object.freeze({actionId, actionType, sourceEntityId,
     target: Object.freeze({kind: 'entity' as const, entityId})});
+}
+
+/** Caller evaluates external conditions before supplying this explicit boolean. */
+export interface CombatActorEligibilityPolicy {
+  readonly eligible: boolean;
+}
+
+export type CombatAdmissionStatus = 'admitted' | 'rejected';
+export type CombatAdmissionReason = 'none' | 'source_not_found' | 'source_dead' | 'source_ineligible';
+
+/** Actor-stage evaluation only; not an execution token or durable reservation. */
+export interface CombatAdmissionResult {
+  readonly context: CombatActionContext;
+  readonly status: CombatAdmissionStatus;
+  readonly reason: CombatAdmissionReason;
+}
+
+/** Validate all inputs before evaluating source-only rejection priority. */
+export function evaluateCombatActionAdmission(
+  context: CombatActionContext,
+  entities: EntityCollection,
+  sourceLife: EntityLifeState,
+  policy: CombatActorEligibilityPolicy,
+): CombatAdmissionResult {
+  const snapshot = createCombatActionContext(context);
+  const source = getEntity(entities, snapshot.sourceEntityId);
+  const life = dataFields(sourceLife, ['entityId', 'status']);
+  const entityId = identifier(life.entityId);
+  if (life.status !== 'alive' && life.status !== 'dead') throw new TypeError('Invalid source life status');
+  if (entityId !== snapshot.sourceEntityId) throw new TypeError('Source and life entity IDs must match');
+  const eligibility = dataFields(policy, ['eligible']);
+  if (typeof eligibility.eligible !== 'boolean') throw new TypeError('Eligibility must be an explicit boolean');
+  const reason: CombatAdmissionReason = source === undefined ? 'source_not_found'
+    : life.status === 'dead' ? 'source_dead'
+      : !eligibility.eligible ? 'source_ineligible' : 'none';
+  return Object.freeze({context: snapshot, status: reason === 'none' ? 'admitted' : 'rejected', reason});
 }

@@ -96,7 +96,7 @@ retained. Root60 functions/77 types unchanged. Harness checks remain lexical and
 semantic ownership still requires full phase source/diff review. No concrete
 gameplay profile claim; Developer acceptance PENDING, Progression REVIEW_PENDING.
 
-## v0.4.0 current harness evidence
+## v0.4.0 checkpoint harness evidence
 
 The Group A baseline is merged through PR #8. H04 now registers optional entity,
 progression -> entity and combat -> entity (no placeholders). H11/H12 include
@@ -106,3 +106,13 @@ retain all71 baseline contracts; 2 outer gate tests, zero skips. H06 source revi
 confirms one Combat owner, no engine/global state/numerical duplicate. Mode-neutral
 caller fixtures prove context data semantics only; gameplay profiles remain
 NOT_EVALUATED. Combat phase IN_PROGRESS; Developer acceptance PENDING.
+
+## v0.4.1 current evidence
+
+H11/H12 now include CB06–CB10 installed admission/rejection priority, malformed
+boundaries/getter safety, immutable results, deterministic sessions and unchanged
+domain state. 79 installed contracts (75 prior +4 admission), 2 outer gates,
+zero skips; strict external NodeNext verifies readonly fields and literal unions.
+H04 registry and Core pin unchanged. Source review supplements tests for no target
+lookup, HP/life transitions, events, numerical work, sessions or hidden providers.
+Gameplay profile behavior NOT_EVALUATED; phase IN_PROGRESS, acceptance PENDING.

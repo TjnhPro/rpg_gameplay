@@ -74,7 +74,7 @@ guards and strict TypeScript isolation. No new capability/API/module, formula or
 engine; package0.3.5 and phase REVIEW_PENDING. Structural kind is not a trusted
 credential. Untagged old snapshots reject; no implicit migration/conversion.
 
-## v0.4.0 current checkpoint: Combat Foundation
+## v0.4.0 checkpoint checkpoint: Combat Foundation
 
 Group A (GF01–GF16, EC01–EC18, PG01–PG19 including point-pool isolation) is the
 merged PR #8 baseline. Historical pending statuses above describe prior checkpoints.
@@ -87,3 +87,14 @@ Encounter integration, scheduler or renderer is implemented. Remaining candidate
 groups are unchanged. Context data compatibility is verified for Text/Realtime/
 Turn-Based callers; gameplay execution/profile behavior remains NOT_EVALUATED.
 Combat phase IN_PROGRESS, PR DRAFT, Developer acceptance PENDING. v0.4.1+ NOT_STARTED.
+
+## v0.4.1 current checkpoint: Actor-stage admission
+
+CB06–CB10 adds pure source existence (canonical Entity Collection), supplied
+Entity Life and explicit caller boolean eligibility evaluation. Structured frozen
+admitted/rejected results distinguish valid rejection from malformed TypeError.
+Priority is source_not_found > source_dead > source_ineligible > none.
+Unknown target/self-target can pass actor-stage admission. No target policy,
+execution, resources/death changes, Skill/Effect dependency or session authority.
+Group A and CB01–CB05 remain intact. Phase IN_PROGRESS; PR #9 DRAFT; acceptance
+PENDING; v0.4.2–v0.4.5 NOT_STARTED. Gameplay profile behavior NOT_EVALUATED.

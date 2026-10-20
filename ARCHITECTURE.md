@@ -243,7 +243,7 @@ Group A is the merged PR #8 baseline at c550669. Combat phase is IN_PROGRESS,
 Developer acceptance PENDING. Earlier sections retain milestone history.
 One canonical owner, `src/modules/combat/index.ts`, captures a structural action
 attempt as immutable exact IDs and one entity target. Static optional combat
-requires entity, independently of progression. It imports no runtime modules:
+requires entity, independently of progression. At v0.4.0 it needed no imports:
 opaque identity validation requires no Entity creation or lookup. Root exports
 one factory and three types; package deep exports remain closed.
 
@@ -255,3 +255,16 @@ Kernel owns numerical work. No action admission, target policy, numerical formul
 execution, global action registry, CombatSession, Skill/Effect/Encounter owner or
 second engine is introduced. Later basic attacks must remain independent of Skill.
 The snapshot is mode-neutral and needs no clock, RNG, IDs, turns or spatial data.
+
+## CB06–CB10 Actor-stage admission (v0.4.1)
+
+Same Combat owner imports getEntity and EntityCollection/EntityLifeState only
+through ../entity/index.js. Canonical CB03 factory supplies context validation;
+canonical getEntity owns full collection validation and exact source lookup.
+Combat protects supplied Life schema/identity only, comparing existing alive/dead
+without HP calculation or transitions. Existing private own-data helper also
+captures explicit boolean policy. One evaluation function validates all inputs,
+then applies missing > dead > ineligible > admitted priority and freezes result.
+No new Life/Collection owner, lookup engine, state store, numerical calculator,
+Condition Engine, Skill dependency or execution authority. Registry unchanged.
+Target identity is structural only until a separately approved target milestone.

@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.4.0 Combat Foundation
+# RPG Gameplay — v0.4.1 Combat Action Admission
 
-> **Status: Group A baseline merged through PR #8; CB01–CB05 implemented. Combat phase IN_PROGRESS; Draft PR; Developer acceptance PENDING.**
+> **Status: Group A baseline merged through PR #8; CB01–CB10 implemented. Combat phase IN_PROGRESS; Draft PR; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB05 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB10 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -129,7 +129,7 @@ independent ESM project, install **both** that tarball and the prepared Core tar
 using paths appropriate to that project:
 
 ```sh
-npm install /path/to/rpg-gameplay-0.4.0.tgz /path/to/rpg-core-2.0.0.tgz
+npm install /path/to/rpg-gameplay-0.4.1.tgz /path/to/rpg-core-2.0.0.tgz
 ```
 
 Core is an exact `2.0.0` peer so the package contains no machine-local dependency
@@ -423,4 +423,22 @@ damage, resource/life change, event, persistent combat state or turn scheduler.
 consumers verify the current artifact. Earlier milestone sections above
 retain their historical checkpoint statuses. See [API](docs/API.md#cb01cb05-combat-foundation)
 and [checkpoint evidence](docs/reports/v0.4.0-combat-foundation.md).
-Combat v0.4.1–v0.4.5 are NOT_STARTED; Developer acceptance is PENDING.
+At the v0.4.0 checkpoint, v0.4.1–v0.4.5 were NOT_STARTED; Developer acceptance is PENDING.
+
+## Combat Action Admission (CB06–CB10, v0.4.1)
+
+`evaluateCombatActionAdmission(context, entities, sourceLife, {eligible: true})`
+returns frozen `{context, status, reason}`. It revalidates/detaches context,
+uses canonical Entity Collection lookup, checks matching source Life and explicit
+boolean eligibility. All input structures validate before rejection decisions.
+Reason priority: source_not_found, source_dead, source_ineligible, then none
+with status admitted. Malformed input or life/source mismatch throws TypeError;
+missing/dead actors never hide malformed policy. No getters/callbacks are invoked.
+
+Unknown targets and self-target remain admissible at this actor stage. This is
+no execution guarantee, reservation or token. Caller supplies current state and
+owns HP/Life consistency; no target checks, numerical work, resource/life changes,
+events, Skill dependency or hidden time/RNG. 79 installed contracts (75 retained
++4 admission), 2 outer gate tests and strict NodeNext cover the current artifact.
+See [v0.4.1 report](docs/reports/v0.4.1-combat-action-admission.md).
+Phase IN_PROGRESS, PR #9 DRAFT, Developer acceptance PENDING; v0.4.2+ NOT_STARTED.
