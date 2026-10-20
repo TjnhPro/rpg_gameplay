@@ -21,7 +21,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF30, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF35, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -66,7 +66,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.6.5');
+    assertVersion(packageJson.version, '0.6.6');
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
@@ -84,7 +84,7 @@ assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModu
  'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId', 'createEntity',
  'createEntityCollection', 'addEntity', 'getEntity', 'hasEntity', 'listEntities', 'removeEntity', 'replaceEntity',
  'createEntityAttributeState', 'getEntityBaseAttributes', 'setEntityBaseAttribute', 'calculateEntityStats',
- 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate'].sort());
+ 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
@@ -97,7 +97,7 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     // A missing packaged root export must fail the very same runtime consumer.
     const installedRoot = path.join(installed, 'dist/index.js');
     const rootSource = fs.readFileSync(installedRoot, 'utf8');
-    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate']) {
+    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick']) {
       const pattern = new RegExp(`\\b${requiredExport}\\b`);
       assert.match(rootSource, pattern);
       try {
@@ -548,8 +548,57 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     }
     assertPackedFiles();
     console.log('INSTALLED_EFFECT_RESTRICTIONS_RUNNER_NEGATIVE_PASS all_five_exports; missing_fixtures; wrong_version; duplicates; wrong_entity; stale_boundary; refresh_overwrite; expired_blocker; collapsed_contributors; actual_admission_bypass; skipped; no_assertions; runtime_faults6');
+    copyRequiredConsumer(path.join(root, 'tests/consumers/effect-periodic.mjs'), path.join(temp, 'effect-periodic.mjs'));
+    copyRequiredConsumer(path.join(root, 'tests/consumers/effect-periodic.ts'), path.join(temp, 'effect-periodic.ts'));
+    const periodicMarkers = ['CAPTURE', 'TIMELINE', 'STACK', 'RESOURCE', 'DEATH', 'RECOVERY', 'VALIDATION', 'REPLAY'].map(x => 'EFFECT_PERIODIC_' + x + '_PASS');
+    const periodicEvidence = exec(['--test', '--test-reporter=tap', 'effect-periodic.mjs'], temp);
+    assertTapEvidence(periodicEvidence, 8, periodicMarkers);
+    for (const marker of periodicMarkers) console.log(periodicEvidence.split(/\r?\n/).find(line => line.includes(marker)));
+    console.log('INSTALLED_EFFECT_PERIODIC_PASS EF31-EF35; consumer_tests=8 skipped=0; actual_Entity_Core_Resource_Life');
+    for (const extension of ['mjs', 'ts']) {
+      const required = path.join(temp, 'effect-periodic.' + extension), saved = required + '.saved';
+      try {fs.renameSync(required, saved); assert.throws(() => copyRequiredConsumer(required, required + '.copy'), {code: 'ENOENT'});}
+      finally {fs.renameSync(saved, required);}
+    }
+    assert.throws(() => assertVersion('0.6.5', '0.6.6'), /installed package version/);
+    const periodicFile = path.join(temp, 'effect-periodic.mjs'), periodicSource = fs.readFileSync(periodicFile, 'utf8');
+    for (const [expected, faulty] of [
+      ["contract('EF31:", "test.skip('EF31:"],
+      ['const resource = g.transitionEntityResource(', 'const resource = null; throw new TypeError("Entity operation bypassed"); g.transitionEntityResource('],
+      ['maximum: 100, amount, operation:', 'maximum: 1000, amount, operation:'],
+      ['assert.', 'unchecked.'],
+    ]) {
+      assert.ok(periodicSource.includes(expected), 'required periodic consumer fault: ' + expected);
+      try {
+        const fault = expected === 'assert.'
+          ? "const unchecked = new Proxy(() => {}, {get: () => () => {}});\n" + periodicSource.replaceAll('assert.', 'unchecked.')
+            .replace("unchecked.ok(assertions > 0, 'contract must execute real assertions')", "assert.ok(assertions > 0, 'contract must execute real assertions')")
+          : periodicSource.replace(expected, faulty);
+        fs.writeFileSync(periodicFile, fault);
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'effect-periodic.mjs'], temp), /AssertionError|ERR_ASSERTION|Entity operation bypassed/);
+      } finally {fs.writeFileSync(periodicFile, periodicSource);}
+    }
+    const periodicRuntime = fs.readFileSync(effectFile, 'utf8'), periodicStart = periodicRuntime.indexOf('function periodicCapture(');
+    assert.ok(periodicStart > 0);
+    for (const [expected, faulty] of [
+      ['entry.nextTickAtMs > lifetime.expiresAtMs', 'entry.nextTickAtMs >= lifetime.expiresAtMs'],
+      ['periodicNext(entry.nextTickAtMs, entry.intervalMs)', 'periodicNext(entry.nextTickAtMs, entry.intervalMs * 2)'],
+      ["if (status === 'dead')", 'if (false)'],
+      ['if (existing)\n            return existing;', 'if (existing && existing.mode === "periodic") return {...existing, nextTickAtMs: existing.nextTickAtMs + 123}; if (existing) return existing;'],
+      ['if (periodicDue(before, previous, next.observedAtMs))', 'if (false)'],
+      ["return Object.freeze({ status: 'rejected', reason: 'stale_tick', state: null, events: Object.freeze([]) });", "return Object.freeze({status: 'applied', reason: 'none', state: current, events: Object.freeze([])});"],
+    ]) {
+      const tail = periodicRuntime.slice(periodicStart);
+      assert.ok(tail.includes(expected), 'required installed periodic fault: ' + expected);
+      try {
+        fs.writeFileSync(effectFile, periodicRuntime.slice(0, periodicStart) + tail.replaceAll(expected, faulty));
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'effect-periodic.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(effectFile, periodicRuntime);}
+    }
+    assertPackedFiles();
+    console.log('INSTALLED_EFFECT_PERIODIC_RUNNER_NEGATIVE_PASS all_four_exports; missing_fixtures; wrong_version; expiry_tick; catchup; duplicate_completion; target_death; refresh_cadence; pending_tick_loss; Entity_bypass; HoT_maximum; skipped; no_assertions; runtime_faults6');
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
-    assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);
+    assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);
 
     const skillDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/skill/index.d.ts'), 'utf8');
     assert.doesNotMatch(skillDeclarations, /\b(?:any|identityField|admissionFields|admissionId|rankPolicy|costArray|costNumber|captureResourceCosts|resolveResourceCosts|cooldownIdentity|cooldownTime|cooldownSnapshot|cooldownAssessment|cooldownConfiguration|executionDispatch|executionIntent|activationAdmission|mutateLoadoutSlot|Set|Map|WeakMap|SkillEngine|SkillRuntime)\b/);
@@ -582,7 +631,7 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts', 'effect-periodic.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
     fs.writeFileSync(path.join(temp, 'broken.ts'), "import type {SkillActivationInput} from '@rpg/gameplay';const invalid: SkillActivationInput = {};void invalid;");
     fs.writeFileSync(path.join(temp, 'negative-tsconfig.json'), JSON.stringify({extends: './tsconfig.json', files: ['broken.ts']}));
@@ -590,6 +639,9 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'broken-status.ts'), "import type {EffectStatusCapture} from '@rpg/gameplay';const invalid: EffectStatusCapture = {statusIds: []};void invalid;");
     fs.writeFileSync(path.join(temp, 'negative-status-tsconfig.json'), JSON.stringify({extends: './tsconfig.json', files: ['broken-status.ts']}));
     assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'negative-status-tsconfig.json'], temp), /TS\d+/);
+    fs.writeFileSync(path.join(temp, 'broken-periodic.ts'), "import type {EffectPeriodicCapture} from '@rpg/gameplay';const invalid: EffectPeriodicCapture = {mode: 'periodic', kind: 'dot'};void invalid;");
+    fs.writeFileSync(path.join(temp, 'negative-periodic-tsconfig.json'), JSON.stringify({extends: './tsconfig.json', files: ['broken-periodic.ts']}));
+    assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'negative-periodic-tsconfig.json'], temp), /TS\d+/);
     console.log('INSTALLED_CONSUMER_NEGATIVE_PASS missing_root_export; real_TypeScript_failure; required_commands_nonzero');
   } finally {
     const resolved = fs.realpathSync(temp);

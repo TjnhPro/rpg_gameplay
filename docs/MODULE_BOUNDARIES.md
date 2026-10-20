@@ -1,3 +1,16 @@
+## v0.6.6 periodic ownership
+
+The existing optional Effect owner adds configuration/cursor payloads and tick
+planning/completion only. Canonical Effect lifecycle remains sole membership/time
+authority. One aligned periodic entry per instance; no copied lifetime/instance store.
+Imports/graph unchanged: Effect -> Entity/Foundation/public Kernel only. L3 supplies
+fixed resolved amount; L4 invokes Entity Resource/Life and atomically commits all
+companion candidates. Core owns arithmetic; Entity owns bounds/applied amount/death.
+Planning never executes resources, Skill or Combat. No reverse edges, second
+engine, scheduler, timer, manager, globals, dependency or protected-owner changes.
+Refresh preserves cadence; pending work must drain before expiry advancement;
+explicit cleanup at the old boundary can cancel work. v0.6.7 remains out of scope.
+
 ## v0.6.5 status/restriction ownership
 
 EffectStatusState is a companion payload index, not another active store. The

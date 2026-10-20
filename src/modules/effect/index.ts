@@ -977,3 +977,180 @@ export function evaluateEffectRestrictionGate(lifecycle: EffectLifecycleState, s
   return Object.freeze({entityId: state.entityId, status: matches.length ? 'blocked' : 'allowed',
     reason: matches.length ? 'active_restriction' : 'none', matches});
 }
+
+export type EffectPeriodicCapture =
+  | {readonly mode: 'none'}
+  | {readonly mode: 'periodic'; readonly kind: 'dot' | 'hot'; readonly intervalMs: number; readonly resourceId: string};
+export type EffectPeriodicEntry =
+  | {readonly effectInstanceId: string; readonly mode: 'none'}
+  | {readonly effectInstanceId: string; readonly mode: 'periodic'; readonly kind: 'dot' | 'hot';
+      readonly intervalMs: number; readonly resourceId: string; readonly nextTickAtMs: number};
+/** Progress payload only; canonical lifecycle remains membership/lifetime authority. */
+export interface EffectPeriodicState {
+  readonly entityId: string;
+  readonly observedAtMs: number;
+  readonly entries: readonly EffectPeriodicEntry[];
+}
+export interface EffectPeriodicTickIntent {
+  readonly effectInstanceId: string;
+  readonly effectId: string;
+  readonly targetEntityId: string;
+  readonly kind: 'dot' | 'hot';
+  readonly resourceId: string;
+  readonly dueAtMs: number;
+}
+export type EffectPeriodicTickAssessment =
+  | {readonly status: 'due'; readonly reason: 'none'; readonly intent: EffectPeriodicTickIntent}
+  | {readonly status: 'idle'; readonly reason: 'none'; readonly intent: null}
+  | {readonly status: 'blocked'; readonly reason: 'target_dead'; readonly intent: null}
+  | {readonly status: 'rejected'; readonly reason: 'time_regressed'; readonly intent: null};
+export interface EffectPeriodicTickEvent {
+  readonly type: 'tick-completed';
+  readonly effectInstanceId: string;
+  readonly effectId: string;
+  readonly targetEntityId: string;
+  readonly kind: 'dot' | 'hot';
+  readonly atMs: number;
+}
+export type EffectPeriodicCompletionResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly state: EffectPeriodicState;
+      readonly events: readonly EffectPeriodicTickEvent[]}
+  | {readonly status: 'rejected'; readonly reason: 'stale_tick' | 'target_dead' | 'time_regressed';
+      readonly state: null; readonly events: readonly []};
+export type EffectPeriodicTransitionResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly state: EffectPeriodicState}
+  | {readonly status: 'rejected'; readonly reason: 'transition_rejected' | 'stale_transition'
+      | 'capture_required' | 'pending_ticks'; readonly state: null};
+
+function periodicCapture(input: unknown): EffectPeriodicCapture {
+  if (typeof input !== 'object' || input === null) throw new TypeError('Expected periodic capture');
+  const mode = Object.getOwnPropertyDescriptor(input, 'mode');
+  if (!mode || !('value' in mode)) throw new TypeError('Expected own-data periodic mode');
+  if (mode.value === 'none') {effectFields(input, ['mode']); return Object.freeze({mode: 'none'});}
+  const fields = effectFields(input, ['mode', 'kind', 'intervalMs', 'resourceId']);
+  if (fields.mode !== 'periodic' || (fields.kind !== 'dot' && fields.kind !== 'hot')
+    || typeof fields.intervalMs !== 'number' || !Number.isFinite(fields.intervalMs) || fields.intervalMs <= 0) {
+    throw new TypeError('Invalid periodic configuration');
+  }
+  return Object.freeze({mode: 'periodic', kind: fields.kind, intervalMs: fields.intervalMs,
+    resourceId: effectId(fields.resourceId)});
+}
+function periodicNext(atMs: number, intervalMs: number): number {
+  const next = atMs + intervalMs;
+  if (!Number.isFinite(next) || next <= atMs) throw new TypeError('Unrepresentable next tick timestamp');
+  return next;
+}
+function periodicState(lifecycle: EffectLifecycleState, input: EffectPeriodicState): EffectPeriodicState {
+  const fields = effectFields(input, ['entityId', 'observedAtMs', 'entries']);
+  const entityId = effectId(fields.entityId), observedAtMs = lifecycleTime(fields.observedAtMs);
+  const entries = lifecycleArray(fields.entries);
+  if (entityId !== lifecycle.effectState.entityId || observedAtMs !== lifecycle.observedAtMs
+    || entries.length !== lifecycle.effectState.instances.length) throw new TypeError('Periodic/lifecycle association mismatch');
+  const captured = entries.map((entry, index): EffectPeriodicEntry => {
+    if (typeof entry !== 'object' || entry === null) throw new TypeError('Expected periodic entry');
+    const mode = Object.getOwnPropertyDescriptor(entry, 'mode');
+    if (!mode || !('value' in mode)) throw new TypeError('Expected own-data periodic entry mode');
+    const data = effectFields(entry, mode.value === 'none' ? ['effectInstanceId', 'mode']
+      : ['effectInstanceId', 'mode', 'kind', 'intervalMs', 'resourceId', 'nextTickAtMs']);
+    const effectInstanceId = effectId(data.effectInstanceId);
+    if (effectInstanceId !== lifecycle.effectState.instances[index]!.effectInstanceId) throw new TypeError('Periodic identity/order mismatch');
+    if (data.mode === 'none') return Object.freeze({effectInstanceId, mode: 'none'});
+    const capture = periodicCapture({mode: data.mode, kind: data.kind, intervalMs: data.intervalMs, resourceId: data.resourceId});
+    if (capture.mode !== 'periodic') throw new TypeError('Expected periodic mode');
+    const nextTickAtMs = lifecycleTime(data.nextTickAtMs);
+    const first = periodicNext(lifecycle.lifetimes[index]!.startedAtMs, capture.intervalMs);
+    if (nextTickAtMs < first || nextTickAtMs <= observedAtMs) throw new TypeError('Invalid/stale periodic cursor');
+    return Object.freeze({effectInstanceId, ...capture, nextTickAtMs});
+  });
+  return Object.freeze({entityId, observedAtMs, entries: Object.freeze(captured)});
+}
+/** Empty initialization only; never reconstruct periodic history. */
+export function createEffectPeriodicState(lifecycle: EffectLifecycleState): EffectPeriodicState {
+  const canonical = lifecycleSnapshot(lifecycle);
+  if (canonical.effectState.instances.length) throw new TypeError('Periodic initialization requires empty lifecycle');
+  return periodicState(canonical, {entityId: canonical.effectState.entityId, observedAtMs: canonical.observedAtMs, entries: []});
+}
+function periodicDue(lifecycle: EffectLifecycleState, periodic: EffectPeriodicState, horizon: number): EffectPeriodicTickIntent | null {
+  let next: EffectPeriodicTickIntent | null = null;
+  periodic.entries.forEach((entry, index) => {
+    const lifetime = lifecycle.lifetimes[index]!;
+    if (entry.mode !== 'periodic' || entry.nextTickAtMs > horizon
+      || (lifetime.expiresAtMs !== null && entry.nextTickAtMs > lifetime.expiresAtMs)) return;
+    const instance = lifecycle.effectState.instances[index]!;
+    if (!next || entry.nextTickAtMs < next.dueAtMs
+      || (entry.nextTickAtMs === next.dueAtMs && entry.effectInstanceId < next.effectInstanceId)) {
+      next = Object.freeze({effectInstanceId: entry.effectInstanceId, effectId: instance.effectId,
+        targetEntityId: instance.targetEntityId, kind: entry.kind, resourceId: entry.resourceId, dueAtMs: entry.nextTickAtMs});
+    }
+  });
+  return next;
+}
+/** Follow canonical receipts; refusing advancement across unresolved ticks preserves D15.
+ * Non-addition capture is malformed, consistent with the other companion APIs.
+ * L4 commits lifecycle and all companions together. Explicit removal may cancel future work.
+ */
+export function applyEffectPeriodicTransition(current: EffectPeriodicState, previousLifecycle: EffectLifecycleState,
+  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult,
+  capture?: EffectPeriodicCapture): EffectPeriodicTransitionResult {
+  const before = lifecycleSnapshot(previousLifecycle), previous = periodicState(before, current);
+  const payload = capture === undefined ? undefined : periodicCapture(capture);
+  const validated = companionTransition(before, transition, payload !== undefined);
+  if (validated.status === 'rejected') return Object.freeze({status: 'rejected', reason: validated.reason, state: null});
+  const next = validated.state;
+  if (periodicDue(before, previous, next.observedAtMs)) return Object.freeze({status: 'rejected', reason: 'pending_ticks', state: null});
+  const entries = next.effectState.instances.map((instance, index): EffectPeriodicEntry => {
+    const existing = previous.entries.find(entry => entry.effectInstanceId === instance.effectInstanceId);
+    if (existing) return existing;
+    if (!payload) throw new TypeError('Expected explicit periodic capture');
+    return payload.mode === 'none' ? Object.freeze({effectInstanceId: instance.effectInstanceId, mode: 'none'})
+      : Object.freeze({effectInstanceId: instance.effectInstanceId, ...payload,
+        nextTickAtMs: periodicNext(next.lifetimes[index]!.startedAtMs, payload.intervalMs)});
+  });
+  return Object.freeze({status: 'applied', reason: 'none', state: periodicState(next,
+    {entityId: next.effectState.entityId, observedAtMs: next.observedAtMs, entries})});
+}
+function periodicLife(lifecycle: EffectLifecycleState, input: EntityLifeState): EntityLifeStatus {
+  const fields = effectFields(input, ['entityId', 'status']);
+  if (effectId(fields.entityId) !== lifecycle.effectState.entityId || (fields.status !== 'alive' && fields.status !== 'dead')) {
+    throw new TypeError('Invalid periodic target Life binding');
+  }
+  return fields.status;
+}
+/** At most one intent, ordered by timestamp then lexical instance ID; no cursor or Entity mutation. */
+export function getNextDueEffectTick(lifecycle: EffectLifecycleState, periodic: EffectPeriodicState,
+  targetLife: EntityLifeState, context: GameplayExecutionContext): EffectPeriodicTickAssessment {
+  const canonical = lifecycleSnapshot(lifecycle), current = periodicState(canonical, periodic);
+  const status = periodicLife(canonical, targetLife), now = readExecutionTime(context);
+  if (now < canonical.observedAtMs) return Object.freeze({status: 'rejected', reason: 'time_regressed', intent: null});
+  if (status === 'dead') return Object.freeze({status: 'blocked', reason: 'target_dead', intent: null});
+  const intent = periodicDue(canonical, current, now);
+  return intent ? Object.freeze({status: 'due', reason: 'none', intent})
+    : Object.freeze({status: 'idle', reason: 'none', intent: null});
+}
+/** Cursor candidate only, never proof of numerical execution or a cross-request exactly-once guarantee.
+ * targetLife is the pre-execution alive snapshot; L4 atomically commits the corresponding successful
+ * Entity Resource/Life outcomes and cursor (or explicit defeat cleanup), then plans using updated Life.
+ */
+export function completeEffectPeriodicTick(lifecycle: EffectLifecycleState, periodic: EffectPeriodicState,
+  intent: EffectPeriodicTickIntent, targetLife: EntityLifeState,
+  context: GameplayExecutionContext): EffectPeriodicCompletionResult {
+  const canonical = lifecycleSnapshot(lifecycle), current = periodicState(canonical, periodic);
+  const fields = effectFields(intent, ['effectInstanceId', 'effectId', 'targetEntityId', 'kind', 'resourceId', 'dueAtMs']);
+  const tick: EffectPeriodicTickIntent = Object.freeze({effectInstanceId: effectId(fields.effectInstanceId),
+    effectId: effectId(fields.effectId), targetEntityId: effectId(fields.targetEntityId),
+    kind: fields.kind as 'dot' | 'hot', resourceId: effectId(fields.resourceId), dueAtMs: lifecycleTime(fields.dueAtMs)});
+  if (tick.kind !== 'dot' && tick.kind !== 'hot') throw new TypeError('Invalid tick kind');
+  const status = periodicLife(canonical, targetLife), now = readExecutionTime(context);
+  const reason = now < canonical.observedAtMs ? 'time_regressed' : status === 'dead' ? 'target_dead' : null;
+  if (reason) return Object.freeze({status: 'rejected', reason, state: null, events: Object.freeze([] as const)});
+  const expected = periodicDue(canonical, current, now);
+  if (!expected || (Object.keys(tick) as (keyof EffectPeriodicTickIntent)[]).some(key => tick[key] !== expected[key])) {
+    return Object.freeze({status: 'rejected', reason: 'stale_tick', state: null, events: Object.freeze([] as const)});
+  }
+  const entries = current.entries.map(entry => entry.mode === 'periodic' && entry.effectInstanceId === tick.effectInstanceId
+    ? Object.freeze({...entry, nextTickAtMs: periodicNext(entry.nextTickAtMs, entry.intervalMs)}) : entry);
+  const state = periodicState(canonical, {...current, entries});
+  const event: EffectPeriodicTickEvent = Object.freeze({type: 'tick-completed', effectInstanceId: tick.effectInstanceId,
+    effectId: tick.effectId, targetEntityId: tick.targetEntityId, kind: tick.kind, atMs: tick.dueAtMs});
+  return Object.freeze({status: 'applied', reason: 'none', state, events: Object.freeze([event])});
+}

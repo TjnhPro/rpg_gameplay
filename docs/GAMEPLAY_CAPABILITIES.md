@@ -1,3 +1,19 @@
+## Current checkpoint: v0.6.6 Periodic Effects — DoT / HoT
+
+EF31–EF35 IMPLEMENTED: explicit immutable none/dot/hot captures, aligned per-instance
+cursors, one-intent deterministic catch-up, tick at inclusive expiry boundary,
+persistent/independent stack cadences, refresh preservation and exact lifecycle cleanup.
+Installed L4 composition executes fixed pre-resolved DoT/HoT through real Entity/Core
+Resource/Life. Death blocks subsequent ticks; source death remains independent.
+Failed execution preserves cursor; stale completion/pending expiry advancement reject.
+Modifier/status companions and EF01–EF30 remain intact.
+
+Advanced numerical variants DEFERRED_UNSUPPORTED pending canonical capability review;
+no formulas/workarounds, automatic scheduler, runtime, manager or production orchestration.
+v0.6.7 Integration & Closure NOT_STARTED. Phase IN_PROGRESS; acceptance PENDING.
+Framework contracts verified; concrete game profile behavior remains NOT_EVALUATED.
+Earlier checkpoint sections are historical evidence, not current scope.
+
 ## Current checkpoint: v0.6.5 Effect Restrictions & Status
 
 EF26–EF30 adds exact opaque status/restriction IDs, immutable apply-time snapshots,

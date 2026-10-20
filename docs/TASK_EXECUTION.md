@@ -1,3 +1,17 @@
+## Current authorized checkpoint: v0.6.6
+
+The Developer-approved [Periodic Effects task](tasks/active/v0.6.6-periodic-effects.md)
+authorizes EF31–EF35 from actual completed v0.6.5 checkpoint dbcb0d4. Exact-head
+prerequisite push39395794004/PR39395799895 reaudited8/8 PASS (175 runtime/37 groups
+plus3 outer per job). Historical task remote observation is superseded by that audit.
+Use existing feat/v0.6-effect and OPEN Draft PR #11, target main. Scope: four public
+periodic functions/eight types, canonical lifecycle companion, fixed pre-resolved
+Entity/Core Resource/Life execution in installed contracts, no protected owner or
+Core/graph/dependency changes. All local gates and exact-head push+PR matrix8/8 must
+pass before CHECKPOINT_COMPLETE. Preserve previous consumers/reports.
+Stop at v0.6.6; v0.6.7 NOT_STARTED. Phase IN_PROGRESS; acceptance PENDING.
+Do not Ready/merge/tag/publish. Earlier checkpoint sections are historical.
+
 ## Current authorized checkpoint: v0.6.5
 
 The submitted approved [Effect Restrictions & Status task](tasks/active/v0.6.5-effect-restrictions-status.md)

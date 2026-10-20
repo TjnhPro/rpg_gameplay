@@ -1,3 +1,28 @@
+## EF31–EF35 fixed periodic MVP audit — v0.6.6
+
+Actual pinned Core public Kernel source and existing Entity contracts were inspected.
+Core2.0.0 revision04b7239f998c3c688a0dfa3202f11811a9acd775 and SHA-512 lock integrity
+unchanged. calculateResourceTransition supports explicit increase/decrease, bounds,
+normalization and canonical applied magnitude. Entity transitionEntityResource is the
+existing L2 adapter; resolveEntityDefeat owns Life. Installed periodic consumers invoke
+both actual APIs, with literal expected resource outcomes, never a substitute calculator.
+
+Core also exposes calculateResourceRegeneration and existing B0/B1 damage/defense/
+mitigation functions; their presence does not establish arbitrary periodic scaling,
+resistance, healing coefficient or snapshot policy contracts. MVP implements only
+fixed finite nonnegative L3 pre-resolved amounts through Resource transition. Damage
+floors/healing caps and applied magnitude come from Core; Effect performs scheduling
+timestamp addition only. Above-max normalization120->100 with amount10 reports canonical
+applied10, not absolute delta20. No attack/hit/dodge/critical roll for DoT.
+
+FEATURE: percentage/scaling/resistance/critical/variable periodic formulas.
+REQUIRED GAMEPLAY SEMANTICS: explicit numerical policy and canonical owner support.
+EXISTING CORE CAPABILITY: bounded Resource transitions and specific public numerical
+functions above, not a general approved periodic formula contract.
+MISSING CAPABILITY: approved end-to-end contracts for each advanced variant.
+MVP DECISION: DEFERRED_UNSUPPORTED; WORKAROUND: NOT AUTHORIZED.
+FUTURE OWNER: L4 -> L3 -> L2 -> L1 capability review. No Core or Entity changes.
+
 ## EF21–EF25 numerical contract audit — v0.6.4
 
 Read-only inspection of pinned src/kernel/index.ts, contracts/modifiers.ts,

@@ -1,3 +1,21 @@
+## v0.6.6 checkpoint gates
+
+Fresh core:prepare and npm ci --ignore-scripts; unchanged Core2.0.0 pin/lock SHA-512.
+harness:check, harness:selftest, build, typecheck, test:functional and full verify
+must pass. Actual local installed evidence:183 runtime contracts/38 groups plus3
+outer tests, zero fail/cancel/skip/todo. EF31–EF35 eight new contracts and all
+GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30/SK01–SK35/EF01–EF30 regressions retained.
+All required markers, negative controls, root108 functions/182 types, real physical
+Core artifact and private-free declarations remain mandatory. Missing source,
+spaced Node paths and subprocess failure propagation controls stay active.
+
+Exact delivered SHA must pass both push and pull_request Windows/Ubuntu Node22/24
+jobs (8/8). Audit complete logs for counts/new markers/negative controls/zero skips;
+attach immutable-SHA results to existing Draft PR #11 without altering tested commit.
+No completion claim before remote audit; local report initially marks CI PENDING.
+macOS NOT_RUN. No merge/tag/publish/Ready/v0.6.7 authorization. Phase IN_PROGRESS;
+Developer acceptance PENDING; concrete game profiles NOT_EVALUATED.
+
 ## v0.6.5 checkpoint gates
 
 Fresh core:prepare and npm ci --ignore-scripts, harness:check, harness:selftest,

@@ -107,3 +107,8 @@ export {createEffectStatusState, applyEffectStatusTransition, listActiveEffectSt
   listActiveEffectRestrictions, evaluateEffectRestrictionGate} from './modules/effect/index.js';
 export type {EffectStatusCapture, EffectStatusSnapshot, EffectStatusState, EffectStatusView,
   EffectRestrictionView, EffectRestrictionPolicy, EffectRestrictionAssessment, EffectStatusTransitionResult} from './modules/effect/index.js';
+export {createEffectPeriodicState, applyEffectPeriodicTransition, getNextDueEffectTick,
+  completeEffectPeriodicTick} from './modules/effect/index.js';
+export type {EffectPeriodicCapture, EffectPeriodicEntry, EffectPeriodicState, EffectPeriodicTickIntent,
+  EffectPeriodicTickAssessment, EffectPeriodicTickEvent, EffectPeriodicCompletionResult,
+  EffectPeriodicTransitionResult} from './modules/effect/index.js';

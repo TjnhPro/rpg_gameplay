@@ -1,3 +1,18 @@
+## v0.6.6 installed periodic evidence
+
+Actual0.6.6 tarball with unchanged pinned physical Core, independent native ESM
+consumer and strict external NodeNext/skipLibCheck:false. effect-periodic.mjs adds
+eight behavior contracts/eight required markers; effect-periodic.ts checks four
+functions/eight immutable types. All previous consumers/oracles unchanged.
+Negative controls require failures for missing fixtures/exports, wrong version/Core,
+skips/no assertions, malformed TypeScript, expiry exclusion, catch-up omission,
+duplicate completion, death bypass, cadence reset, pending-work loss and real Entity
+bypass/cap violations. Runtime faults mutate the installed artifact, then restore
+and byte-audit original package files. Observed total183 runtime tests/38 installed
+groups plus3 outer gates, zero skips. Counts are evidence, not a test-count KPI.
+Local/full verify and exact-head push+PR Windows/Ubuntu Node22/24 required. Phase
+IN_PROGRESS; Developer acceptance PENDING; gameplay profiles NOT_EVALUATED.
+
 ## v0.6.5 installed restriction evidence
 
 Mandatory effect-restrictions.mjs/.ts run through actual packed/installed0.6.5,

@@ -1,3 +1,145 @@
+## EF31–EF35 Periodic Effects (v0.6.6)
+
+Four functions/eight types, root-only; root108 functions/182 types. Earlier104
+functions/174 types and all existing signatures remain unchanged. Public declarations:
+
+```ts
+export type EffectPeriodicCapture = {
+    readonly mode: 'none';
+} | {
+    readonly mode: 'periodic';
+    readonly kind: 'dot' | 'hot';
+    readonly intervalMs: number;
+    readonly resourceId: string;
+};
+export type EffectPeriodicEntry = {
+    readonly effectInstanceId: string;
+    readonly mode: 'none';
+} | {
+    readonly effectInstanceId: string;
+    readonly mode: 'periodic';
+    readonly kind: 'dot' | 'hot';
+    readonly intervalMs: number;
+    readonly resourceId: string;
+    readonly nextTickAtMs: number;
+};
+/** Progress payload only; canonical lifecycle remains membership/lifetime authority. */
+export interface EffectPeriodicState {
+    readonly entityId: string;
+    readonly observedAtMs: number;
+    readonly entries: readonly EffectPeriodicEntry[];
+}
+export interface EffectPeriodicTickIntent {
+    readonly effectInstanceId: string;
+    readonly effectId: string;
+    readonly targetEntityId: string;
+    readonly kind: 'dot' | 'hot';
+    readonly resourceId: string;
+    readonly dueAtMs: number;
+}
+export type EffectPeriodicTickAssessment = {
+    readonly status: 'due';
+    readonly reason: 'none';
+    readonly intent: EffectPeriodicTickIntent;
+} | {
+    readonly status: 'idle';
+    readonly reason: 'none';
+    readonly intent: null;
+} | {
+    readonly status: 'blocked';
+    readonly reason: 'target_dead';
+    readonly intent: null;
+} | {
+    readonly status: 'rejected';
+    readonly reason: 'time_regressed';
+    readonly intent: null;
+};
+export interface EffectPeriodicTickEvent {
+    readonly type: 'tick-completed';
+    readonly effectInstanceId: string;
+    readonly effectId: string;
+    readonly targetEntityId: string;
+    readonly kind: 'dot' | 'hot';
+    readonly atMs: number;
+}
+export type EffectPeriodicCompletionResult = {
+    readonly status: 'applied';
+    readonly reason: 'none';
+    readonly state: EffectPeriodicState;
+    readonly events: readonly EffectPeriodicTickEvent[];
+} | {
+    readonly status: 'rejected';
+    readonly reason: 'stale_tick' | 'target_dead' | 'time_regressed';
+    readonly state: null;
+    readonly events: readonly [];
+};
+export type EffectPeriodicTransitionResult = {
+    readonly status: 'applied';
+    readonly reason: 'none';
+    readonly state: EffectPeriodicState;
+} | {
+    readonly status: 'rejected';
+    readonly reason: 'transition_rejected' | 'stale_transition' | 'capture_required' | 'pending_ticks';
+    readonly state: null;
+};
+/** Empty initialization only; never reconstruct periodic history. */
+export declare function createEffectPeriodicState(lifecycle: EffectLifecycleState): EffectPeriodicState;
+/** Follow canonical receipts; refusing advancement across unresolved ticks preserves D15.
+ * Non-addition capture is malformed, consistent with the other companion APIs.
+ * L4 commits lifecycle and all companions together. Explicit removal may cancel future work.
+ */
+export declare function applyEffectPeriodicTransition(current: EffectPeriodicState, previousLifecycle: EffectLifecycleState, transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult, capture?: EffectPeriodicCapture): EffectPeriodicTransitionResult;
+/** At most one intent, ordered by timestamp then lexical instance ID; no cursor or Entity mutation. */
+export declare function getNextDueEffectTick(lifecycle: EffectLifecycleState, periodic: EffectPeriodicState, targetLife: EntityLifeState, context: GameplayExecutionContext): EffectPeriodicTickAssessment;
+/** Cursor candidate only, never proof of numerical execution or a cross-request exactly-once guarantee.
+ * targetLife is the pre-execution alive snapshot; L4 atomically commits the corresponding successful
+ * Entity Resource/Life outcomes and cursor (or explicit defeat cleanup), then plans using updated Life.
+ */
+export declare function completeEffectPeriodicTick(lifecycle: EffectLifecycleState, periodic: EffectPeriodicState, intent: EffectPeriodicTickIntent, targetLife: EntityLifeState, context: GameplayExecutionContext): EffectPeriodicCompletionResult;
+```
+
+Every addition requires explicit capture, including mode:none. Initialization is
+empty-only. Capture/entry/state/intent/Life records are closed own-data contracts;
+arrays dense, one entry per canonical instance in the same order, same Entity/time.
+Fields detach and freeze without freezing caller inputs. intervalMs must be finite
+and positive; timestamp addition must be finite and strictly later. IDs opaque.
+Malformed input throws TypeError; rejection never returns a candidate.
+
+Periodic state owns only configuration/cursors, not instances or lifetimes.
+First tick = canonical startedAtMs + intervalMs. A tick is eligible at due<=clock
+and due<=expiresAtMs (inclusive); persistent effects have no expiry ceiling.
+Planning returns one earliest timestamp, then lexical instance ID, with no mutation.
+Clock is caller-supplied Foundation time, read once per plan/completion. Regressed
+time rejects; dead target blocks, including HoT. No automatic revive or source-death
+cleanup. Finish one tick before planning another with updated Life.
+
+Completion validates the exact earliest due intent, advances only that cursor by
+one interval and emits metadata at scheduled dueAtMs. Duplicate/out-of-order/too-early
+completion is stale_tick. Completion uses the pre-execution alive Life snapshot;
+L4 must first execute actual Entity Resource transition and Entity defeat resolution,
+then atomically commit their successful candidates with the cursor (or defeat cleanup).
+The completion API cannot authenticate Entity execution or current authority.
+Reusing an old structural state is not a cross-request exactly-once guarantee.
+Never commit a cursor after failed execution; retry the same intent from unchanged state.
+Successful zero-effective HoT still completes. Applied magnitude comes from Core's
+Resource result, never abs(after-before), especially for above-maximum normalization.
+
+applyEffectPeriodicTransition consumes the existing canonical lifecycle/stack receipts
+through the shared private companion validator. New capture required; refresh preserves
+capture/cadence; consume/remove/expire prune exactly corresponding entries. It rejects
+pending_ticks if advancement crosses an unresolved eligible tick, even on expiry.
+Drain all due ticks, then advance/expire and commit lifecycle plus modifier/status/
+periodic companions together. Explicit removal/defeat cleanup at the previous canonical
+boundary may cancel future work without fake numerical receipts. Capture on a
+non-addition throws TypeError, matching other companions. Receipts are structural,
+not authenticated persistence/concurrency proofs; L4 owns freshness and atomic commit.
+
+L3 supplies periodic configuration and fixed pre-resolved nonnegative tick amount.
+L4 executes dot via Entity decrease, hot via Entity increase with explicit rules;
+Entity/Core own numerical bounds/applied magnitude and Entity owns Life. No attack
+resolution, formula scaling/resistance, timers, hidden RNG, scheduler or new runtime.
+v0.6.7 NOT_STARTED; phase IN_PROGRESS; Developer acceptance PENDING.
+
 ## EF26–EF30 Effect Restrictions & Status (v0.6.5)
 
 Five functions/eight types, root-only. IDs are opaque nonblank exact/case-sensitive

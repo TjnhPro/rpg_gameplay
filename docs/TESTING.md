@@ -1,3 +1,24 @@
+## v0.6.6 periodic contract evidence
+
+effect-periodic.mjs runs eight installed root-only groups: CAPTURE, TIMELINE, STACK,
+RESOURCE, DEATH, RECOVERY, VALIDATION, REPLAY. Literal oracles cover S01–S44:
+first/nonperiodic/short/persistent/fractional ticks; exact expiry/catch-up/lexical ties;
+independent stacks, actual stack-policy refresh/extended expiry, consume/group/remove;
+actual Entity/Core decrease/increase/max/min/no-op/above-max/custom resources; actual
+defeat, same-time HoT blocked, explicit cleanup and source-death independence;
+invalid/missing resources preserve cursor, retry/duplicate/order/horizon/pending guard;
+closed records/dense arrays/getters0/association/overflow/forged receipts; detached
+frozen history and independently built literal replay with modifier/status companions
+and four generic sources. Date.now/Math.random/timers are forbidden during replay.
+No game simulator or resource arithmetic stub.
+
+Strict external NodeNext checks every new public type/function, unions, readonly
+fields, invalid/missing/extra properties and blocked private imports. Runner additionally
+rejects six faulty installed production behaviors plus consumer tampering (Entity
+bypass, cap change, skipped test/no assertions). Actual observed183 runtime contracts
+in38 installed groups plus3 outer tests, zero fail/cancel/skip/todo; historical175
+tests and fixtures retained. Framework evidence only; gameplay profiles NOT_EVALUATED.
+
 ## v0.6.5 status/restriction evidence
 
 Eight installed effect-restrictions.mjs contracts group S01–S37 by invariant:
