@@ -1,3 +1,13 @@
+## v0.7.6 Actor AI lifecycle checkpoint
+
+AI31 reads Entity Life and composes existing target loss. AI32 provides explicit
+metadata reset. AI33 composes disengage with existing FSM and caller World facts.
+AI34 evaluates caller cadence through Foundation Clock. AI35 proves truthful
+feedback/recovery continuity using canonical Combat/Skill and L4 commit fixtures.
+AI01–AI30 remain prior accepted milestones. AI31–AI35 are scoped implementation;
+final checkpoint depends on exact-head PR evidence. AI36–AI40 are OUT_OF_SCOPE.
+No autonomous loop, revival, movement, refund, retry or game-specific policy.
+
 ## v0.7.5 Actor AI integration checkpoint
 
 AI26 canonical Combat; AI27 canonical Skill; AI28 actual Effect restriction AND-gates;

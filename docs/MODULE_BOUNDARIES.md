@@ -1,3 +1,13 @@
+## v0.7.6 lifecycle ownership
+
+Registry/module graph unchanged: Actor AI depends on Entity; Foundation execution
+clock is a shared capability accessed through readExecutionTime, not a new module
+owner. Actor AI reads exact canonical Entity Life and returns immutable reset and
+timing candidates. L3 chooses reset destinations, FSM triggers and cadence. L4 owns
+revival, current-state freshness, atomic commit, scheduling, execution, feedback
+and Effect cleanup. No production Actor AI import of Combat/Skill/Effect/Core.
+Protected production and Core pin are unchanged.
+
 ## v0.7.5 feedback / integration ownership
 
 Graph unchanged: optional actor-ai → entity only. Production changes append only

@@ -1,3 +1,12 @@
+## v0.7.6 — AI Lifecycle & Recovery (AI31–AI35)
+
+Package `@rpg/gameplay@0.7.6`; same `feat/v0.7-actor-ai` / Draft PR #12.
+AI01–AI30 retain their accepted contracts. AI31–AI35 add immutable Life/reset/timing
+candidates and installed L4 recovery evidence. Phase **IN_PROGRESS**, Developer
+acceptance **PENDING**; AI36–AI40 belong to v0.7.7 and remain **OUT_OF_SCOPE**.
+See [checkpoint report](docs/reports/v0.7.6-ai-lifecycle-recovery.md) for actual gates
+and the exact delivered-head CI supplement on PR #12. No merge/tag/publish.
+
 # RPG Gameplay — v0.7.5 Combat / Skill / Effect Integration
 
 **AI01–AI30 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**

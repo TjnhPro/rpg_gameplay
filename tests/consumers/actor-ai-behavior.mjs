@@ -204,7 +204,7 @@ contract('behavior: closed own-data records, dense arrays and fail-closed profil
 contract('behavior: installed execution boundary, immutable owner preservation and independent deterministic replay', assert => {
   // Check actual installed executable dependencies, alongside runtime owner preservation.
   const source = readFileSync(new URL('./modules/actor-ai/index.js', import.meta.resolve('@rpg/gameplay')), 'utf8');
-  assert.deepEqual([...source.matchAll(/from ['"]([^'"]+)['"]/g)].map(m => m[1]), ['../entity/index.js']);
+  assert.deepEqual([...source.matchAll(/from ['"]([^'"]+)['"]/g)].map(m => m[1]), ['../entity/index.js', '../../foundation/execution/index.js']);
   const behavior = source.slice(source.indexOf('function behaviorIds('));
   assert.doesNotMatch(behavior, /\b(?:activateSkill|resolveCombatAttack|applyCombatAttackDamage|applyEffect|transitionEntityResource|dispatchCommand|evaluateActorAITargetSelection|evaluateActorAIPerception)\s*\(/);
   function session() {

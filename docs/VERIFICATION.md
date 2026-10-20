@@ -1,3 +1,14 @@
+## v0.7.6 gates
+
+Run fresh core:prepare and npm ci --ignore-scripts, harness:check, harness:selftest,
+build, typecheck, test:functional and full npm run verify. Physical installed
+@rpg/gameplay@0.7.6 plus pinned Core and strict NodeNext are mandatory. Verify
+historical gates, restored negatives, additive API inventory and protected paths.
+Checkpoint completion also requires both push and pull_request exact-head matrices:
+Windows/Ubuntu x Node22/24, all eight jobs with actual runtime/negative output and
+no skipped assertions. The SHA-bound PR report supplies remote evidence after push.
+See reports/v0.7.6-ai-lifecycle-recovery.md for observed local counts/provenance.
+
 ## v0.7.5 verification delta
 
 Windows targeted installed integration: 10/10 and strict NodeNext PASS.

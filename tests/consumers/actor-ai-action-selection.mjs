@@ -220,7 +220,7 @@ contract('action: installed target/behavior composition and actor-agnostic appli
 
 contract('action: installed execution boundary, owner preservation, immutable snapshots and independent replay', assert => {
   const source = readFileSync(new URL('./modules/actor-ai/index.js', import.meta.resolve('@rpg/gameplay')), 'utf8');
-  assert.deepEqual([...source.matchAll(/from ['"]([^'"]+)['"]/g)].map(m => m[1]), ['../entity/index.js']);
+  assert.deepEqual([...source.matchAll(/from ['"]([^'"]+)['"]/g)].map(m => m[1]), ['../entity/index.js', '../../foundation/execution/index.js']);
   const action = source.slice(source.indexOf('function actionRule('));
   assert.doesNotMatch(action, /\b(?:activateSkill|startSkillCooldown|resolveCombatAttack|applyCombatAttackDamage|applyEffect|transitionEntityResource|dispatchCommand|evaluateActorAIPerception|evaluateActorAITargetSelection|evaluateActorAIBehaviorTransition)\s*\(/);
   function session() {

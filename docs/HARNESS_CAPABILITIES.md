@@ -1,3 +1,13 @@
+## v0.7.6 installed lifecycle evidence
+
+Required physical installed consumer `actor-ai-lifecycle-recovery.mjs` executes
+11 assertion-bearing contracts (L01–L55); its strict NodeNext companion uses root
+exports and skipLibCheck:false. Runner injects 10 installed runtime faults and
+8 L4 fixture faults, skipped/zero-assertion controls, missing fixture/export,
+version/Core/artifact checks and actual interval declaration corruption. Mutations
+are restored, artifact inventory rechecked and clean consumer rerun. Historical
+negative controls remain required. Counts are observed in the checkpoint report.
+
 ## v0.7.5 installed evidence delta
 
 45 installed groups /234 runtime contracts +3 outer tests; skipped/cancelled/todo=0.

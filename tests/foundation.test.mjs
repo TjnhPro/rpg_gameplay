@@ -21,7 +21,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI30, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI35, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -67,7 +67,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.7.5');
+    assertVersion(packageJson.version, '0.7.6');
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
@@ -85,7 +85,7 @@ assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModu
  'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId', 'createEntity',
  'createEntityCollection', 'addEntity', 'getEntity', 'hasEntity', 'listEntities', 'removeEntity', 'replaceEntity',
  'createEntityAttributeState', 'getEntityBaseAttributes', 'setEntityBaseAttribute', 'calculateEntityStats',
- 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback'].sort());
+ 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
@@ -98,7 +98,7 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     // A missing packaged root export must fail the very same runtime consumer.
     const installedRoot = path.join(installed, 'dist/index.js');
     const rootSource = fs.readFileSync(installedRoot, 'utf8');
-    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback']) {
+    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming']) {
       const pattern = new RegExp(`\\b${requiredExport}\\b`);
       assert.match(rootSource, pattern);
       try {
@@ -994,6 +994,66 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     }
     console.log('INSTALLED_ACTOR_AI_INTEGRATION_NEGATIVE_PASS fourteen_L4_faults; four_feedback_faults; missing_fixture_export; version_Core; skipped_zero_assertions; restored_artifacts');
     }
+    { // AI31-AI35 installed lifecycle/recovery evidence, caller orchestration only.
+    for (const extension of ['mjs','ts']) {
+      const required=path.join(temp,'actor-ai-lifecycle-recovery.'+extension);
+      copyRequiredConsumer(path.join(root,'tests/consumers/actor-ai-lifecycle-recovery.'+extension),required);
+      const saved=required+'.saved';try{fs.renameSync(required,saved);assert.throws(()=>copyRequiredConsumer(required,required+'.copy'),{code:'ENOENT'});}finally{fs.renameSync(saved,required);}
+    }
+    assert.throws(()=>assertVersion('0.7.5','0.7.6'),/installed package version/);
+    const markers=['LIFE','RESET','TARGET','DISENGAGE','TIMING','FRESHNESS','CONTINUITY','OWNERS','VALIDATION','ACTORS','REPLAY'].map(x=>'ACTOR_AI_LIFECYCLE_'+x+'_PASS');
+    const evidence=exec(['--test','--test-reporter=tap','actor-ai-lifecycle-recovery.mjs'],temp);
+    assertTapEvidence(evidence,11,markers);for(const marker of markers)console.log(evidence.split(/\r?\n/).find(line=>line.includes(marker)));
+    console.log('INSTALLED_ACTOR_AI_LIFECYCLE_PASS AI31-AI35; consumer_tests=11 skipped=0; canonical_Life_Foundation_clock_L4_commit');
+    const consumerFile=path.join(temp,'actor-ai-lifecycle-recovery.mjs'),consumerBytes=fs.readFileSync(consumerFile),consumerSource=consumerBytes.toString('utf8').replace(/\r\n/g,'\n');
+    const lifecycleStart=aiRuntime.indexOf('function actorLifeStatus(');assert.ok(lifecycleStart>0);
+    const lifecycleRuntime=aiRuntime.slice(lifecycleStart);
+    const runtimeFaults=[
+      ['dead_actor',"if (life === 'dead')\n        return Object.freeze({ status: 'blocked'", "if (false)\n        return Object.freeze({ status: 'blocked'"],
+      ['dead_reset',"if (life === 'dead')\n        return Object.freeze({ status: 'rejected'", "if (false)\n        return Object.freeze({ status: 'rejected'"],
+      ['reset_controller','state: Object.freeze({ ...current, behaviorStateId: destination, targetEntityId: null })',"state: Object.freeze({ ...current, controller:'ai', behaviorStateId: destination, targetEntityId: null })"],
+      ['reset_profile','state: Object.freeze({ ...current, behaviorStateId: destination, targetEntityId: null })',"state: Object.freeze({ ...current, profileId:'changed', behaviorStateId: destination, targetEntityId: null })"],
+      ['manual_timing',"if (gate.status === 'blocked')", "if (false)"],
+      ['hidden_clock','const now = readExecutionTime(context);','const now = Date.now();'],
+      ['time_regressed','if (now < cursor.observedAtMs)','if (false)'],
+      ['time_unrepresentable','if (!Number.isFinite(nextEligibleAtMs) || (intervalMs > 0 && nextEligibleAtMs <= now))','if (false)'],
+      ['life_binding','if (id(data.entityId) !== state.actorId)','if (false)'],
+      ['timing_binding','if (cursor.actorId !== gate.actorId)','if (false)'],
+    ];
+    for(const [name,expected,faulty] of runtimeFaults){
+      assert.ok(lifecycleRuntime.includes(expected),'required lifecycle runtime fault '+name);
+      try{fs.writeFileSync(aiRuntimeFile,aiRuntime.slice(0,lifecycleStart)+lifecycleRuntime.replace(expected,faulty));
+        assert.throws(()=>exec(['--test','--test-reporter=tap','actor-ai-lifecycle-recovery.mjs'],temp),/AssertionError|ERR_ASSERTION/);
+      }finally{fs.writeFileSync(aiRuntimeFile,aiRuntime);}
+      assertPackedFiles();console.log('INSTALLED_ACTOR_AI_LIFECYCLE_RUNTIME_FAULT_DETECTED '+name);
+    }
+    const fixtureFaults=[
+      ['automatic_revival','f.life=g.reviveEntity(f.life,f.resources,lifePolicy).state;',"f.life=g.reviveEntity(f.life,f.resources,lifePolicy).state;f.enabled=true;f.ai=reset(f,'respawn').state;"],
+      ['fake_returning','f.ai=transitioned.state;return transitioned;',"f.ai={...transitioned.state,behaviorStateId:'returning'};return {...transitioned,status:'transitioned'};"],
+      ['reset_mutates_world',"const cleared=reset(f,'disengage',null,policy);","const cleared=reset(f,'disengage',null,policy);f.world.position=0;"],
+      ['manual_proposal',"if(!f.enabled || gate(f).status !== 'allowed')return null;", "if(f.ai.controller==='manual')f.ai={...f.ai,controller:'ai'};if(!f.enabled)return null;"],
+      ['stale_timing_commit','if(staged.baseline !== f.timing)return false;','/* fault: stale second accepted */'],
+      ['accepted_is_completed',"a.equal(activation.status,'accepted');a.deepEqual(f.feedback,[]);", "if(activation.status==='accepted')f.feedback.push({status:'completed'});a.equal(activation.status,'accepted');a.deepEqual(f.feedback,[]);"],
+      ['automatic_retry','f.feedback.push(result);return result;',"f.feedback.push(result);if(status==='failed')f.dispatches++;return result;"],
+      ['duplicate_dispatch',"if(f.attempts.has(attemptId))throw new TypeError('L4 duplicate');",'/* fault: duplicate allowed */'],
+    ];
+    for(const [name,expected,faulty] of fixtureFaults){
+      assert.ok(consumerSource.includes(expected),'required lifecycle fixture fault '+name);
+      try{fs.writeFileSync(consumerFile,consumerSource.replace(expected,faulty));assert.throws(()=>exec(['--test','--test-reporter=tap','actor-ai-lifecycle-recovery.mjs'],temp),/AssertionError|ERR_ASSERTION/);}
+      finally{fs.writeFileSync(consumerFile,consumerBytes);}
+      assertPackedFiles();console.log('INSTALLED_ACTOR_AI_LIFECYCLE_FIXTURE_FAULT_DETECTED '+name);
+    }
+    for(const mode of ['skipped','zero_assertions']){
+      const fault=mode==='skipped'?consumerSource.replace("contract('lifecycle L01", "test.skip('lifecycle L01"):
+        consumerSource.replace('count++;return Reflect.get(t,k)(...args);','return undefined;');
+      assert.notEqual(fault,consumerSource);
+      try{fs.writeFileSync(consumerFile,fault);assert.throws(()=>exec(['--test','--test-reporter=tap','actor-ai-lifecycle-recovery.mjs'],temp),/AssertionError|ERR_ASSERTION/);}
+      finally{fs.writeFileSync(consumerFile,consumerBytes);}
+      console.log('INSTALLED_ACTOR_AI_LIFECYCLE_RUNNER_FAULT_DETECTED '+mode);
+    }
+    assertTapEvidence(exec(['--test','--test-reporter=tap','actor-ai-lifecycle-recovery.mjs'],temp),11,markers);
+    console.log('INSTALLED_ACTOR_AI_LIFECYCLE_NEGATIVE_PASS runtime_faults10; fixture_faults8; fifteen_required_categories; missing_consumers_exports; wrong_version_Core; skipped_zero_assertions; restored_clean_rerun');
+    }
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);
 
@@ -1028,7 +1088,7 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts', 'effect-periodic.ts', 'effect-integration.ts', 'actor-ai-foundation.ts', 'actor-ai-perception.ts', 'actor-ai-target-selection.ts', 'actor-ai-behavior.ts', 'actor-ai-action-selection.ts', 'actor-ai-integration.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts', 'effect-periodic.ts', 'effect-integration.ts', 'actor-ai-foundation.ts', 'actor-ai-perception.ts', 'actor-ai-target-selection.ts', 'actor-ai-behavior.ts', 'actor-ai-action-selection.ts', 'actor-ai-integration.ts','actor-ai-lifecycle-recovery.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
     const aiDeclarationFile = path.join(installed, 'dist/modules/actor-ai/index.d.ts');
     const aiDeclaration = fs.readFileSync(aiDeclarationFile, 'utf8');
@@ -1076,6 +1136,13 @@ void resource; void invalid;
     } finally {fs.writeFileSync(aiDeclarationFile, aiDeclaration);}
     assertPackedFiles();
     console.log('INSTALLED_ACTOR_AI_INTEGRATION_DECLARATION_NEGATIVE_PASS wrong_attempt_type; real_strict_NodeNext_failure; restored');
+    const timingDeclarationStart=aiDeclaration.indexOf('export interface ActorAIDecisionTimingPolicy');
+    assert.ok(timingDeclarationStart>0);
+    const timingDeclaration=aiDeclaration.slice(timingDeclarationStart);assert.ok(timingDeclaration.includes('readonly intervalMs: number'));
+    try{fs.writeFileSync(aiDeclarationFile,aiDeclaration.slice(0,timingDeclarationStart)+timingDeclaration.replace('readonly intervalMs: number','readonly intervalMs: string'));
+      assert.throws(()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','tsconfig.json'],temp),/TS\d+/);
+    }finally{fs.writeFileSync(aiDeclarationFile,aiDeclaration);}
+    assertPackedFiles();console.log('INSTALLED_ACTOR_AI_LIFECYCLE_DECLARATION_NEGATIVE_PASS wrong_interval_type; real_strict_NodeNext_failure; restored');
     const declarationFile = path.join(installed, 'dist/modules/effect/index.d.ts');
     const declarationBytes = fs.readFileSync(declarationFile, 'utf8');
     assert.ok(declarationBytes.includes("readonly kind: 'dot' | 'hot';"));

@@ -1,3 +1,26 @@
+## v0.7.6 additive root API
+
+Four functions: `evaluateActorAILifeGate(state, entities, actorLife)`,
+`evaluateActorAIReset(state, entities, actorLife, behaviorPolicy, request)`,
+`createActorAIDecisionTimingState(state, executionContext)`, and
+`evaluateActorAIDecisionTiming(state, entities, actorLife, timing, policy, executionContext)`.
+Seven types: `ActorAILifeGateResult`, `ActorAIResetReason`, `ActorAIResetRequest`,
+`ActorAIResetResult`, `ActorAIDecisionTimingState`, `ActorAIDecisionTimingPolicy`,
+`ActorAIDecisionTimingResult`. Root inventory: **130 functions / 222 types**.
+
+Life gate validates canonical Entity membership and exact bound Life, with dead
+preceding manual. Reset reasons respawn/session_reset require an allowed behavior
+state; disengage requires null destination and preserves current behavior. All
+clear target, preserve actor/profile/controller, reject dead Life. L4 commits.
+Timing companion has actorId/observedAtMs/nextEligibleAtMs. Interval is a nonnegative
+safe integer. Foundation opaque context supplies one clock sample per live AI
+evaluation; dead/manual consume none. Initial cursor is immediately eligible.
+Ready returns an immutable candidate; not_due/blocked return null state. Time
+regression and unrepresentable advance fail closed. Zero interval is explicitly due
+at the same timestamp, without a loop. Candidates are observations, never execution
+authority or a durable reservation; L4 rechecks current Life/controller and baseline.
+Existing ActorAIState and AI01–AI30 signatures remain unchanged. Root-only exports.
+
 ## v0.7.5 terminal feedback — AI26–AI30
 
 One additive root function/type; total **126 functions /215 types**:

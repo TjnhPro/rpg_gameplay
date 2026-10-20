@@ -581,3 +581,87 @@ export function validateActorAIActionExecutionFeedback(selection: ActorAIActionS
   }
   throw new TypeError('Invalid Actor AI terminal feedback');
 }
+import {readExecutionTime, type GameplayExecutionContext} from '../../foundation/execution/index.js';
+import type {EntityLifeState} from '../entity/index.js';
+
+export type ActorAILifeGateResult =
+  | {readonly status: 'allowed'; readonly reason: 'none'; readonly actorId: string}
+  | {readonly status: 'blocked'; readonly reason: 'actor_dead' | 'manual_control'; readonly actorId: string};
+export type ActorAIResetReason = 'respawn' | 'session_reset' | 'disengage';
+export interface ActorAIResetRequest {
+  readonly reason: ActorAIResetReason;
+  readonly resetBehaviorStateId: string | null;
+}
+export type ActorAIResetResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly action: ActorAIResetReason; readonly state: ActorAIState}
+  | {readonly status: 'rejected'; readonly reason: 'actor_dead'; readonly action: ActorAIResetReason; readonly state: null};
+export interface ActorAIDecisionTimingState {
+  readonly actorId: string;
+  readonly observedAtMs: number;
+  readonly nextEligibleAtMs: number;
+}
+export interface ActorAIDecisionTimingPolicy {readonly intervalMs: number}
+export type ActorAIDecisionTimingResult =
+  | {readonly status: 'ready'; readonly reason: 'none'; readonly state: ActorAIDecisionTimingState}
+  | {readonly status: 'not_due'; readonly reason: 'interval_active'; readonly state: null}
+  | {readonly status: 'blocked'; readonly reason: 'manual_control' | 'actor_dead' | 'time_regressed' | 'time_unrepresentable'; readonly state: null};
+
+function actorLifeStatus(state: ActorAIState, input: EntityLifeState): EntityLifeStatus {
+  const data = fields(input, ['entityId', 'status']);
+  if (id(data.entityId) !== state.actorId) throw new TypeError('Actor AI Life binding mismatch');
+  return perceptionLife(data.status);
+}
+/** Read-only current facts, never a durable execution authorization. */
+export function evaluateActorAILifeGate(state: ActorAIState, entities: EntityCollection,
+  actorLife: EntityLifeState): ActorAILifeGateResult {
+  const current = validateActorAIState(state, entities), life = actorLifeStatus(current, actorLife);
+  if (life === 'dead') return Object.freeze({status: 'blocked', reason: 'actor_dead', actorId: current.actorId});
+  if (current.controller === 'manual') return Object.freeze({status: 'blocked', reason: 'manual_control', actorId: current.actorId});
+  return Object.freeze({status: 'allowed', reason: 'none', actorId: current.actorId});
+}
+/** Explicit metadata maintenance only; Entity revival and authoritative commit belong to L4. */
+export function evaluateActorAIReset(state: ActorAIState, entities: EntityCollection, actorLife: EntityLifeState,
+  behaviorPolicy: ActorAIBehaviorPolicy, request: ActorAIResetRequest): ActorAIResetResult {
+  const current = validateActorAIState(state, entities), life = actorLifeStatus(current, actorLife);
+  const rules = createActorAIBehaviorPolicy(behaviorPolicy), data = fields(request, ['reason', 'resetBehaviorStateId']);
+  if (rules.profileId !== current.profileId || !rules.stateIds.includes(current.behaviorStateId)) {
+    throw new TypeError('Actor AI reset behavior binding mismatch');
+  }
+  const action = data.reason;
+  if (action !== 'respawn' && action !== 'session_reset' && action !== 'disengage') throw new TypeError('Invalid Actor AI reset reason');
+  const destination = action === 'disengage' ? current.behaviorStateId : id(data.resetBehaviorStateId);
+  if ((action === 'disengage' && data.resetBehaviorStateId !== null) || !rules.stateIds.includes(destination)) {
+    throw new TypeError('Invalid Actor AI reset destination');
+  }
+  if (life === 'dead') return Object.freeze({status: 'rejected', reason: 'actor_dead', action, state: null});
+  return Object.freeze({status: 'applied', reason: 'none', action,
+    state: Object.freeze({...current, behaviorStateId: destination, targetEntityId: null})});
+}
+function timingSnapshot(input: ActorAIDecisionTimingState): ActorAIDecisionTimingState {
+  const data = fields(input, ['actorId', 'observedAtMs', 'nextEligibleAtMs']);
+  const observedAtMs = perceptionTime(data.observedAtMs), nextEligibleAtMs = perceptionTime(data.nextEligibleAtMs);
+  if (nextEligibleAtMs < observedAtMs) throw new TypeError('Invalid Actor AI timing order');
+  return Object.freeze({actorId: id(data.actorId), observedAtMs, nextEligibleAtMs});
+}
+/** Initialization does not consume a turn, enable AI or schedule work. */
+export function createActorAIDecisionTimingState(state: ActorAIState, context: GameplayExecutionContext): ActorAIDecisionTimingState {
+  const current = stateSnapshot(state), now = readExecutionTime(context);
+  return Object.freeze({actorId: current.actorId, observedAtMs: now, nextEligibleAtMs: now});
+}
+/** One caller-invoked cadence evaluation; L4 owns cursor storage/freshness/commit. */
+export function evaluateActorAIDecisionTiming(state: ActorAIState, entities: EntityCollection, actorLife: EntityLifeState,
+  timing: ActorAIDecisionTimingState, policy: ActorAIDecisionTimingPolicy, context: GameplayExecutionContext): ActorAIDecisionTimingResult {
+  const gate = evaluateActorAILifeGate(state, entities, actorLife), cursor = timingSnapshot(timing);
+  const data = fields(policy, ['intervalMs']), intervalMs = data.intervalMs;
+  if (cursor.actorId !== gate.actorId) throw new TypeError('Actor AI timing binding mismatch');
+  if (typeof intervalMs !== 'number' || !Number.isSafeInteger(intervalMs) || intervalMs < 0) throw new TypeError('Invalid Actor AI decision interval');
+  if (gate.status === 'blocked') return Object.freeze({status: 'blocked', reason: gate.reason, state: null});
+  const now = readExecutionTime(context);
+  if (now < cursor.observedAtMs) return Object.freeze({status: 'blocked', reason: 'time_regressed', state: null});
+  if (now < cursor.nextEligibleAtMs) return Object.freeze({status: 'not_due', reason: 'interval_active', state: null});
+  const nextEligibleAtMs = now + intervalMs;
+  if (!Number.isFinite(nextEligibleAtMs) || (intervalMs > 0 && nextEligibleAtMs <= now)) {
+    return Object.freeze({status: 'blocked', reason: 'time_unrepresentable', state: null});
+  }
+  return Object.freeze({status: 'ready', reason: 'none', state: Object.freeze({actorId: cursor.actorId, observedAtMs: now, nextEligibleAtMs})});
+}

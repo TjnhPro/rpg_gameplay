@@ -1,3 +1,14 @@
+## v0.7.6 lifecycle/recovery tests
+
+Installed root consumers add 11 actual contracts: dead/manual precedence and pending
+execution recheck; canonical revival versus explicit reset; target death/loss;
+staged disengage/FSM/World arrival; exact cadence; stale timing/canceled commits;
+Combat/Skill terminal continuity; untouched Effect/World ownership; closed input
+validation; seven Entity kinds; independent literal replay without hidden providers.
+Negative faults distinguish production validation from L4 orchestration safeguards.
+Two historical dependency-inventory assertions now explicitly permit the approved
+Foundation execution import; existing behavioral assertions are preserved.
+
 ## v0.7.5 canonical integration evidence
 
 `tests/consumers/actor-ai-integration.mjs` has ten assertion-bearing installed

@@ -1,3 +1,14 @@
+## v0.7.6 authorized checkpoint
+
+Approved task: tasks/active/v0.7.6-ai-lifecycle-recovery.md (D01–D05 all A).
+Continue feat/v0.7-actor-ai / Draft PR #12 from accepted v0.7.5 b5bb3e7894f7f392156941b9e741890bcb3411dc.
+Production scope: Actor AI/root additive API and package0.7.6 only. Focused installed
+consumers, required harness wiring, and affected docs are authorized. Preserve all
+protected owners, Core pin, architecture and historical evidence. Complete local
+gates, commit/push and exact-head eight-job CI; append SHA-bound PR evidence.
+Stop at v0.7.6; phase IN_PROGRESS, Developer acceptance PENDING. No v0.7.7,
+merge/tag/publish/Ready/new PR. Report: reports/v0.7.6-ai-lifecycle-recovery.md.
+
 ## Current authorized checkpoint: v0.7.5 Combat / Skill / Effect Integration
 
 Developer supplied approved [task](tasks/active/v0.7.5-combat-skill-effect-integration.md); D01–D05 remain ALL A.

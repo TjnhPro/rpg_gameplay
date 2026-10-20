@@ -133,3 +133,8 @@ export type {ActorAIActionKind, ActorAIActionTargetMode, ActorAIActionRule, Acto
 
 export {validateActorAIActionExecutionFeedback} from './modules/actor-ai/index.js';
 export type {ActorAIActionExecutionFeedback} from './modules/actor-ai/index.js';
+
+export {evaluateActorAILifeGate, evaluateActorAIReset, createActorAIDecisionTimingState,
+  evaluateActorAIDecisionTiming} from './modules/actor-ai/index.js';
+export type {ActorAILifeGateResult, ActorAIResetReason, ActorAIResetRequest, ActorAIResetResult,
+  ActorAIDecisionTimingState, ActorAIDecisionTimingPolicy, ActorAIDecisionTimingResult} from './modules/actor-ai/index.js';
