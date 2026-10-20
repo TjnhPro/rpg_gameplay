@@ -1,3 +1,19 @@
+## Current authorized checkpoint: v0.7.2 Target Acquisition & Selection
+
+Developer supplied the approved [task](tasks/active/v0.7.2-target-acquisition-selection.md).
+Start from v0.7.1 CHECKPOINT_COMPLETE at108c81d9a84293ed5e2ed3d3b961201e03e214e0,
+same feat/v0.7-actor-ai / existing Draft PR #12/main. D01–D05 ALL A preserved.
+Implement AI11–AI15 only: explicit policy, acquisition/retention/switch/loss and
+immutable target-state candidates. One function/three types; package0.7.2.
+Production restricted to Actor AI and additive root exports. Protect Core, all
+other owners, registry/dependencies and accepted AI01–AI10 fixtures/reports.
+Require local gates plus exact-head push AND pull_request Windows/Ubuntu Node22/24
+8/8 before CHECKPOINT_COMPLETE. Final SHA-bound PR supplement completes the
+[report](reports/v0.7.2-target-acquisition-selection.md) without changing tested HEAD.
+Keep Draft; phase IN_PROGRESS, acceptance PENDING. Stop at v0.7.2.
+No Ready/merge/tag/publish/new branch/PR or automatic v0.7.3.
+All earlier authorizations/statuses below are historical.
+
 ## Current authorized checkpoint: v0.7.1 AI Perception & Context
 
 Developer supplied the approved [task](tasks/active/v0.7.1-ai-perception-context.md).

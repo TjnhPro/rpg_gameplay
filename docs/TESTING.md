@@ -1,3 +1,18 @@
+## v0.7.2 target-selection evidence
+
+actor-ai-target-selection.mjs/.ts exercise S01–S41 through six cohesive groups:
+acquisition/priority/lexical fallback; retention/switch/reordering; all seven
+canonical exclusion-loss reasons plus absent target; manual control; complete
+closed assessment/policy validation/getters0; actor-agnostic immutable replay.
+Literal outcomes are independent of implementation. No second eligibility gate:
+facts explicitly permitted by AI09 remain selectable. Reordered candidates and
+changed caller priorities prove no insertion-order/locale/cache dependence.
+Targeted installed 6/6 + strict NodeNext PASS. Full 209 runtime /42 groups +3
+outer, zero skips; all 203 prior contracts retained. Seven actual runtime faults
+plus skipped/zero-assertion/declaration/fixture/export/version/Core controls are
+caught and restored. [Report](reports/v0.7.2-target-acquisition-selection.md).
+Earlier counts below are historical.
+
 ## v0.7.1 perception evidence
 
 New installed consumers actor-ai-perception.mjs/.ts cover task P01–P43 through six

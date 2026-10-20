@@ -1,3 +1,14 @@
+## v0.7.2 installed evidence delta
+
+New target-selection consumer adds six assertion-bearing runtime groups and a
+strict external NodeNext fixture. Actual full coverage: 209 runtime /42 installed
+groups +3 outer; all 203 prior contracts retained, zero skips/fail/cancel/todo.
+Seven actual installed runtime faults, skipped/zero-assertion groups and corrupt
+declarations fail closed, alongside missing fixture/export/version/Core controls.
+All injections restore original packed bytes. Both exact-head push/pull_request
+Windows/Ubuntu Node22/24 matrices must pass 8/8. See
+[report](reports/v0.7.2-target-acquisition-selection.md); earlier counts are historical.
+
 ## v0.7.1 installed evidence delta
 
 Actor AI AI06–AI10 adds six assertion-bearing installed runtime contracts and a

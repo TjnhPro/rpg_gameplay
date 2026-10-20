@@ -1,3 +1,13 @@
+## v0.7.2 checkpoint delta
+
+AI11 Target Selection Policy, AI12 Acquisition, AI13 Retention, AI14 Switching
+and AI15 Loss/Outcomes are IMPLEMENTED. AI01–AI10 preserved. Explicit preferences
+and lexical fallback determine selection; immutable candidate is not L4 commit.
+AI16–AI40 remain OUT_OF_SCOPE. No behavior/action execution, Threat Engine or
+World/Spatial implementation. Phase IN_PROGRESS; acceptance PENDING; profiles
+NOT_EVALUATED. [Report](reports/v0.7.2-target-acquisition-selection.md).
+Earlier status below is historical.
+
 ## v0.7.1 checkpoint delta
 
 AI06 Perception Snapshot, AI07 Target Facts, AI08 Awareness Validation,

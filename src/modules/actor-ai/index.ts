@@ -235,3 +235,86 @@ export function evaluateActorAIPerception(state: ActorAIState, entities: EntityC
     reason: eligible.length > 0 ? 'none' : snapshot.candidates.length === 0 ? 'no_perceived_entities' : 'no_eligible_candidates',
     eligible: Object.freeze(eligible), excluded: Object.freeze(excluded)});
 }
+
+/** L3 preferences; L4 resolves World-dependent ranking into explicit IDs. */
+export interface ActorAITargetSelectionPolicy {
+  readonly retention: 'retain_if_eligible' | 'prefer_priority';
+  readonly preferredTargetIds: readonly string[];
+}
+export type ActorAITargetLossReason = 'not_perceived' | ActorAIPerceptionExclusionReason;
+export type ActorAITargetSelectionResult =
+  | {readonly status: 'selected'; readonly reason: 'acquired' | 'retained' | 'switched';
+      readonly previousTargetEntityId: string | null; readonly selectedTargetEntityId: string;
+      readonly lossReason: ActorAITargetLossReason | null; readonly state: ActorAIState}
+  | {readonly status: 'no_target'; readonly reason: 'no_candidates' | 'target_lost';
+      readonly previousTargetEntityId: string | null; readonly selectedTargetEntityId: null;
+      readonly lossReason: ActorAITargetLossReason | null; readonly state: ActorAIState}
+  | {readonly status: 'blocked'; readonly reason: 'manual_control';
+      readonly previousTargetEntityId: string | null; readonly selectedTargetEntityId: null;
+      readonly lossReason: null; readonly state: null};
+
+function perceptionExclusion(input: unknown): ActorAIPerceptionExclusion {
+  const data = fields(input, ['entityId', 'reason']);
+  const reasons: readonly ActorAIPerceptionExclusionReason[] = ['entity_not_found', 'self_not_allowed', 'target_life_not_allowed',
+    'relation_not_allowed', 'target_not_visible', 'target_out_of_range', 'target_not_reachable'];
+  if (!reasons.some(reason => reason === data.reason)) throw new TypeError('Invalid Actor AI perception exclusion');
+  return Object.freeze({entityId: id(data.entityId), reason: data.reason as ActorAIPerceptionExclusionReason});
+}
+/** Structural integrity only; no re-filtering or claim of fresh World evidence. */
+function perceptionAssessment(input: ActorAIPerceptionAssessment): ActorAIPerceptionAssessment {
+  const data = fields(input, ['actorId', 'observedAtMs', 'status', 'reason', 'eligible', 'excluded']);
+  const actorId = id(data.actorId), observedAtMs = perceptionTime(data.observedAtMs);
+  const eligible = perceptionArray(data.eligible, perceivedEntity), excluded = perceptionArray(data.excluded, perceptionExclusion);
+  const seen = new Set<string>();
+  for (const candidate of [...eligible, ...excluded]) {
+    if (seen.has(candidate.entityId)) throw new TypeError('Duplicate assessed Entity ID');
+    seen.add(candidate.entityId);
+  }
+  const status = eligible.length > 0 ? 'candidates_available' : 'no_candidates';
+  const reason = eligible.length > 0 ? 'none' : excluded.length > 0 ? 'no_eligible_candidates' : 'no_perceived_entities';
+  if (data.status !== status || data.reason !== reason) throw new TypeError('Inconsistent Actor AI perception outcome');
+  return Object.freeze({actorId, observedAtMs, status, reason, eligible, excluded});
+}
+function targetSelectionPolicy(input: ActorAITargetSelectionPolicy): ActorAITargetSelectionPolicy {
+  const data = fields(input, ['retention', 'preferredTargetIds']);
+  if (data.retention !== 'retain_if_eligible' && data.retention !== 'prefer_priority') {
+    throw new TypeError('Invalid Actor AI target retention');
+  }
+  const seen = new Set<string>();
+  const preferredTargetIds = perceptionArray(data.preferredTargetIds, value => {
+    const preferred = id(value);
+    if (seen.has(preferred)) throw new TypeError('Duplicate preferred Entity ID');
+    seen.add(preferred);
+    return preferred;
+  });
+  return Object.freeze({retention: data.retention, preferredTargetIds});
+}
+
+/** Pure selection candidate; L4 revalidates freshness/controller and commits. */
+export function evaluateActorAITargetSelection(state: ActorAIState, entities: EntityCollection,
+  perception: ActorAIPerceptionAssessment, policy: ActorAITargetSelectionPolicy): ActorAITargetSelectionResult {
+  const current = validateActorAIState(state, entities), assessment = perceptionAssessment(perception);
+  if (assessment.actorId !== current.actorId) throw new TypeError('Actor AI assessment binding mismatch');
+  const rules = targetSelectionPolicy(policy), previousTargetEntityId = current.targetEntityId;
+  if (current.controller === 'manual') {
+    return Object.freeze({status: 'blocked', reason: 'manual_control', previousTargetEntityId,
+      selectedTargetEntityId: null, lossReason: null, state: null});
+  }
+  const eligibleIds = assessment.eligible.map(candidate => candidate.entityId);
+  const previousEligible = previousTargetEntityId !== null && eligibleIds.includes(previousTargetEntityId);
+  const lossReason = previousTargetEntityId === null || previousEligible ? null
+    : assessment.excluded.find(candidate => candidate.entityId === previousTargetEntityId)?.reason ?? 'not_perceived';
+  const preferred = rules.preferredTargetIds.find(candidate => eligibleIds.includes(candidate));
+  // String comparison is locale-independent UTF-16 lexical order, not localeCompare.
+  const fallback = eligibleIds.reduce<string | null>((best, candidate) => best === null || candidate < best ? candidate : best, null);
+  const selectedTargetEntityId = rules.retention === 'retain_if_eligible' && previousEligible
+    ? previousTargetEntityId : preferred ?? fallback;
+  const next = Object.freeze({...current, targetEntityId: selectedTargetEntityId});
+  if (selectedTargetEntityId === null) {
+    return Object.freeze({status: 'no_target', reason: previousTargetEntityId === null ? 'no_candidates' : 'target_lost',
+      previousTargetEntityId, selectedTargetEntityId, lossReason, state: next});
+  }
+  return Object.freeze({status: 'selected', reason: previousTargetEntityId === null ? 'acquired'
+    : previousTargetEntityId === selectedTargetEntityId ? 'retained' : 'switched',
+    previousTargetEntityId, selectedTargetEntityId, lossReason, state: next});
+}

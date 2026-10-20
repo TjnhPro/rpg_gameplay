@@ -1,3 +1,49 @@
+## v0.7.2 Target Acquisition & Selection — AI11–AI15
+
+Additive root API: one function/three types; total **119 functions /200 types**.
+Existing AI01–AI10 and all historical signatures/semantics preserved.
+
+```ts
+evaluateActorAITargetSelection(state: ActorAIState, entities: EntityCollection,
+  perception: ActorAIPerceptionAssessment,
+  policy: ActorAITargetSelectionPolicy): ActorAITargetSelectionResult
+```
+
+ActorAITargetSelectionPolicy has required readonly retention:
+'retain_if_eligible'|'prefer_priority' and preferredTargetIds:readonly string[].
+Duplicate/nonblank-invalid IDs reject; absent/excluded preferences cannot win.
+retain_if_eligible preserves an eligible current target over every preference;
+otherwise prefer supplied IDs in order, then minimum remaining ID using
+locale-independent UTF-16 lexical comparison. Perception order does not break ties.
+
+ActorAITargetLossReason is 'not_perceived'|ActorAIPerceptionExclusionReason.
+ActorAITargetSelectionResult is a readonly discriminated union:
+
+| status | reason | selectedTargetEntityId | state |
+| --- | --- | --- | --- |
+| selected | acquired / retained / switched | string | ActorAIState |
+| no_target | no_candidates / target_lost | null | ActorAIState |
+| blocked | manual_control | null | null |
+
+Every envelope also contains previousTargetEntityId:string|null and
+lossReason:ActorAITargetLossReason|null. Loss is null without a previous target
+or when it remains eligible, including priority-only switches. Otherwise use the
+exact exclusion reason, or not_perceived if absent from both lists. A lost target
+without replacement yields a candidate with null target. All nonblocked candidates
+are detached/frozen; only targetEntityId may differ. Manual control never receives
+a candidate and never clears its original target.
+
+Processing validates state/canonical actor, closed assessment and actor binding,
+then policy before checking manual control. Assessment validates time, exact
+status/reason/count agreement, accepted facts/exclusion reasons and unique IDs
+within/across both dense own-data lists. Closed records/accessors/symbols/inherited
+fields reject without getters. Shared perception validators are reused; AI09 is
+never rerun and its policy gates are not duplicated.
+Structural integrity does not establish provenance/freshness. L4 supplies genuine
+assessment evidence and rechecks current state/controller/world before commit and
+execution. No World query, distance/threat score, behavior transition or action
+execution is performed. See [report](reports/v0.7.2-target-acquisition-selection.md).
+
 ## v0.7.1 AI Perception & Context — AI06–AI10
 
 Additive root API: three functions/six types; total **118 functions /197 types**.

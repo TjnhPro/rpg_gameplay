@@ -1,3 +1,14 @@
+## v0.7.2 target-selection ownership
+
+Graph unchanged: optional actor-ai → entity only. Existing perception validators
+capture assessment structure; AI09 eligibility is not recalculated. L2 Actor AI
+owns selection decisions and immutable state candidates, L3 owns retention/order,
+L4 owns World ranking inputs, freshness/controller checks and authoritative commit.
+Entity remains canonical identity/Life owner. No target registry, threat score,
+store, scheduler, World/Spatial calculation or Combat/Skill/Effect dependency.
+All other production owners/Core/registry unchanged. [API](API.md).
+Earlier milestone statements below are historical.
+
 ## v0.7.1 perception ownership
 
 Optional actor-ai → entity remains the only Actor AI dependency; registry unchanged.

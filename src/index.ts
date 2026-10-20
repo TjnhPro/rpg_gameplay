@@ -121,3 +121,5 @@ export type {ActorAIProfileReference, ActorAIControllerMode, ActorAIInitialState
 export {createActorAIPerceptionSnapshot, validateActorAIPerceptionSnapshot, evaluateActorAIPerception} from './modules/actor-ai/index.js';
 export type {ActorAIPerceivedEntity, ActorAIPerceptionSnapshot, ActorAIPerceptionPolicy,
   ActorAIPerceptionExclusionReason, ActorAIPerceptionExclusion, ActorAIPerceptionAssessment} from './modules/actor-ai/index.js';
+export {evaluateActorAITargetSelection} from './modules/actor-ai/index.js';
+export type {ActorAITargetSelectionPolicy, ActorAITargetLossReason, ActorAITargetSelectionResult} from './modules/actor-ai/index.js';

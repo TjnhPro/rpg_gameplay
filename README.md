@@ -1,3 +1,18 @@
+# RPG Gameplay — v0.7.2 Target Acquisition & Selection
+
+**AI01–AI15 implemented; Actor AI phase IN_PROGRESS; Developer acceptance PENDING.**
+Target selection consumes a validated perception assessment and explicit L3
+retention/preference policy. It acquires, retains, switches or clears only an
+immutable state candidate; L4 retains authoritative commit and freshness checks.
+One function/three types added: root **119 functions /200 types**.
+Actual installed coverage: **209 runtime contracts /42 groups +3 outer**, zero
+skips; all 203 prior contracts retained. Core pin/other owners/graph unchanged.
+Existing [Draft PR #12](https://github.com/TjnhPro/rpg_gameplay/pull/12) continues
+on feat/v0.7-actor-ai. Stop at v0.7.2; no Ready/merge/tag/publish/v0.7.3.
+[Task](docs/tasks/active/v0.7.2-target-acquisition-selection.md) /
+[Report](docs/reports/v0.7.2-target-acquisition-selection.md) / [API](docs/API.md).
+Concrete gameplay profiles remain NOT_EVALUATED. Earlier status is historical.
+
 # RPG Gameplay — v0.7.1 AI Perception & Context
 
 **AI01–AI10 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**

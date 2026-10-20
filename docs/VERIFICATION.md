@@ -1,3 +1,17 @@
+## v0.7.2 verification delta
+
+Preparation/install, harness checks/self-tests, build/typecheck, targeted installed
+consumer/strict NodeNext, test:functional and npm run verify are required.
+Observed 209 installed runtime contracts /42 groups +3 outer, zero fail/cancel/
+skip/todo. Historical 203 contracts preserved. New consumer cannot be missing,
+skipped or assertion-free. Missing root export/version/Core and actual excluded
+selection/manual/retention/priority/lexical/loss-clear/input-mutation faults fail.
+Corrupt retention declarations fail real strict NodeNext, then original artifacts
+are restored. Both push/pull_request exact delivered SHA Windows/Ubuntu Node22/24
+matrices 8/8 required; final SHA-bound PR supplement completes the
+[34-section report](reports/v0.7.2-target-acquisition-selection.md) after push.
+Earlier status below is historical.
+
 ## v0.7.1 verification delta
 
 Run core:prepare, npm ci --ignore-scripts, harness:check, harness:selftest, build,
