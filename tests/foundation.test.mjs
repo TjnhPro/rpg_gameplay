@@ -21,7 +21,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI35, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -67,7 +67,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.7.6');
+    assertVersion(packageJson.version, '0.7.7');
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
@@ -1054,6 +1054,81 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     assertTapEvidence(exec(['--test','--test-reporter=tap','actor-ai-lifecycle-recovery.mjs'],temp),11,markers);
     console.log('INSTALLED_ACTOR_AI_LIFECYCLE_NEGATIVE_PASS runtime_faults10; fixture_faults8; fifteen_required_categories; missing_consumers_exports; wrong_version_Core; skipped_zero_assertions; restored_clean_rerun');
     }
+    { // AI36-AI40: physical installed closure plus actual fail-closed controls.
+    for(const extension of ['mjs','ts'])copyRequiredConsumer(path.join(root,'tests/consumers/actor-ai-integration-closure.'+extension),path.join(temp,'actor-ai-integration-closure.'+extension));
+    const file=path.join(temp,'actor-ai-integration-closure.mjs'),bytes=fs.readFileSync(file),source=bytes.toString('utf8').replaceAll('\r\n','\n');
+    const scenarioIds=[...Array.from({length:41},(_,i)=>'E'+String(i+1).padStart(2,'0')),'E44','E45','E49','E50','E53','E55'];
+    const markers=scenarioIds.map(id=>'ACTOR_AI_CLOSURE_'+id+'_PASS');
+    const run=()=>exec(['--test','--test-reporter=tap','actor-ai-integration-closure.mjs'],temp);
+    const validate=evidence=>assertTapEvidence(evidence,14,[...markers,'ACTOR_AI_FIX01_DUPLICATE_ATTEMPT_PASS','ACTOR_AI_FIX01_DUPLICATE_DECISION_PASS','ACTOR_AI_FIX01_FEEDBACK_TIMING_PASS']);
+    const evidence=run();validate(evidence);
+    for(const marker of markers)console.log(evidence.split(/\r?\n/).find(line=>line.includes(marker)));
+    console.log(evidence.split(/\r?\n/).find(line=>line.includes('ACTOR_AI_CLOSURE_REPLAY_SHA256')));
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_PASS AI36-AI40; consumer_tests=14 skipped=0; runtime_scenarios47; external_gates13');
+    function fixtureFault(name,expected,faulty){assert.ok(source.includes(expected),'required closure fault '+name);
+      try{fs.writeFileSync(file,source.replace(expected,faulty));assert.throws(run,/AssertionError|ERR_ASSERTION/);}
+      finally{fs.writeFileSync(file,bytes);}assertPackedFiles();console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED '+name);}
+    fixtureFault('outcome_provenance',"if(phase==='execution' && f.receipts.get(attemptId)!==status)throw new TypeError('L4 outcome provenance');",'');
+    // FIX01: require a real failing run of the dedicated fresh-decision test.
+    const ledger="if(f.attempts.has(attemptId) || f.decisions.has(intent.decisionId)) throw new TypeError('L4 duplicate attempt/decision');";
+    assert.ok(source.includes(ledger));
+    try {
+      fs.writeFileSync(file,source.replace(ledger,''));
+      const env={...process.env};delete env.NODE_TEST_CONTEXT;
+      for(const scenario of ['duplicate_attempt','duplicate_decision']){
+        const result=spawnSync(process.execPath,['--test','--test-reporter=tap','--test-name-pattern=closure FIX01 '+scenario,'actor-ai-integration-closure.mjs'],{cwd:temp,shell:false,encoding:'utf8',env});
+        assert.equal(result.error,undefined);assert.equal(result.signal,null);assert.equal(result.status,1,result.stdout+result.stderr);
+        assert.match(result.stdout,new RegExp('not ok 1 - closure FIX01 '+scenario));
+        assert.match(result.stdout,new RegExp('FIX01 '+scenario+' ledger must reject before second commit'));
+        assert.match(result.stdout,/# tests 1/);assert.match(result.stdout,/# fail 1/);assert.match(result.stdout,/# skipped 0/);
+        if(scenario==='duplicate_decision')assert.match(result.stdout,/Missing expected exception/);
+        console.log('ACTOR_AI_FIX01_MUTANT_KILLED '+scenario+'; expected_ledger_assertion; exit=1');
+        console.log(result.stdout.split(/\r?\n/).filter(line=>/not ok 1|ledger must reject|Missing expected exception/.test(line)).join('\n'));
+      }
+    } finally {fs.writeFileSync(file,bytes);}
+    assert.deepEqual(fs.readFileSync(file),bytes);assertPackedFiles();validate(run());
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED duplicate_commit');
+    fixtureFault('duplicate_feedback',"if(f.feedback.some(x=>x.attemptId===attemptId))throw new TypeError('L4 duplicate feedback');",'');
+    fixtureFault('stale_turn',"if(bound.timing!==f.timing || bound.life!==f.life)return rejected('stale_turn');",'');
+    fixtureFault('manual_stale',"if(f.ai.controller !== 'ai') return rejected('controller_changed');",'');
+    fixtureFault('dead_actor',"if(lifeGate.status!=='allowed')return rejected(lifeGate.reason);",'');
+    fixtureFault('dead_target',"const validation=g.evaluateCombatTargetValidation(admission,f.entities,f.targetLife,targetPolicy(relation));","const validation=g.evaluateCombatTargetValidation(admission,f.entities,g.createEntityLifeState(f.target,{status:'alive'}),targetPolicy(relation));");
+    fixtureFault('effect_bypass',"if(restriction.status === 'blocked') return rejected('effect_blocked');",'');
+    fixtureFault('skill_admission',"owned:options.owned ?? true","owned:true");
+    fixtureFault('skill_resource',"amount:25","amount:0");
+    fixtureFault('skill_cooldown',"const ready=g.evaluateSkillCooldownReady(f.instance,f.cooldown,f.context);","f.cooldown=g.createSkillCooldownState(f.instance);const ready=g.evaluateSkillCooldownReady(f.instance,f.cooldown,f.context);");
+    fixtureFault('action_priority',"...(mode==='passive'?[]:rules.slice(0,2))","...(mode==='passive'?[]:rules.slice(0,2).reverse())");
+    fixtureFault('fsm_priority',"f.profile.behavior);","{...f.profile.behavior,rules:[...f.profile.behavior.rules].reverse()});");
+    fixtureFault('lifecycle_timing',"if(f.due.status!=='ready')return null;",'');
+    fixtureFault('stale_cursor',"if(staged.baseline!==f.timing)return false;",'');
+    fixtureFault('zero_assertions','assertions++;','');
+    try{fs.writeFileSync(file,source.replace('test(name, () =>','test.skip(name, () =>'));assert.throws(run,/TAP skipped|ERR_ASSERTION/);}
+    finally{fs.writeFileSync(file,bytes);}console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED skipped');
+    try{fs.writeFileSync(file,source.replace('E38 E41','E38'));assert.throws(()=>validate(run()),/E41/);}
+    finally{fs.writeFileSync(file,bytes);}console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED omitted_scenario');
+    const rootFile=path.join(installed,'dist/index.js'),rootBytes=fs.readFileSync(rootFile);
+    try{fs.writeFileSync(rootFile,rootBytes.toString('utf8').replace('evaluateActorAILifeGate,','evaluateActorAILifeGate as missingLifeGate,'));assert.throws(run,/ERR_ASSERTION/);}
+    finally{fs.writeFileSync(rootFile,rootBytes);}assertPackedFiles();console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED missing_export');
+    const runtimeFile=path.join(installed,'dist/modules/actor-ai/index.js'),runtimeBytes=fs.readFileSync(runtimeFile),runtime=runtimeBytes.toString('utf8');
+    const correlation="if (report.actorId !== intent.actorId || report.decisionId !== intent.decisionId";assert.ok(runtime.includes(correlation));
+    try{fs.writeFileSync(runtimeFile,runtime.replace(correlation,"if (false && (report.actorId !== intent.actorId || report.decisionId !== intent.decisionId").replace('report.targetEntityId !== intent.targetEntityId) {','report.targetEntityId !== intent.targetEntityId)) {'));assert.throws(run,/ERR_ASSERTION/);}
+    finally{fs.writeFileSync(runtimeFile,runtimeBytes);}assertPackedFiles();console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED feedback_correlation');
+    try{fs.appendFileSync(runtimeFile,'\n// closure deliberate drift\n');assert.throws(assertPackedFiles,/installed artifact content/);}
+    finally{fs.writeFileSync(runtimeFile,runtimeBytes);}assertPackedFiles();console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED dist_drift');
+    // Accepted canonical source and historical fixtures: normalize checkout EOL only.
+    const protectedFiles=[".github/workflows/harness.yml","ARCHITECTURE.md","docs/CORE_INTEGRATION.md","docs/DECISIONS.md","harness/core-pin.json","harness/modules.json","src/foundation/execution/index.ts","src/foundation/messaging/index.ts","src/foundation/modules/index.ts","src/foundation/runtime/index.ts","src/index.ts","src/modules/actor-ai/index.ts","src/modules/combat/index.ts","src/modules/effect/index.ts","src/modules/entity/index.ts","src/modules/progression/index.ts","src/modules/skill/index.ts","tests/consumers/actor-ai-action-selection.mjs","tests/consumers/actor-ai-action-selection.ts","tests/consumers/actor-ai-behavior.mjs","tests/consumers/actor-ai-behavior.ts","tests/consumers/actor-ai-foundation.mjs","tests/consumers/actor-ai-foundation.ts","tests/consumers/actor-ai-integration.mjs","tests/consumers/actor-ai-integration.ts","tests/consumers/actor-ai-lifecycle-recovery.mjs","tests/consumers/actor-ai-lifecycle-recovery.ts","tests/consumers/actor-ai-perception.mjs","tests/consumers/actor-ai-perception.ts","tests/consumers/actor-ai-target-selection.mjs","tests/consumers/actor-ai-target-selection.ts","tests/consumers/advancement.mjs","tests/consumers/advancement.ts","tests/consumers/attribute-points.mjs","tests/consumers/attribute-points.ts","tests/consumers/combat-admission.mjs","tests/consumers/combat-admission.ts","tests/consumers/combat-attack.mjs","tests/consumers/combat-attack.ts","tests/consumers/combat-damage.mjs","tests/consumers/combat-damage.ts","tests/consumers/combat-integration.mjs","tests/consumers/combat-integration.ts","tests/consumers/combat-target.mjs","tests/consumers/combat-target.ts","tests/consumers/combat.mjs","tests/consumers/combat.ts","tests/consumers/composition.mjs","tests/consumers/composition.ts","tests/consumers/effect-application.mjs","tests/consumers/effect-application.ts","tests/consumers/effect-foundation.mjs","tests/consumers/effect-foundation.ts","tests/consumers/effect-integration.mjs","tests/consumers/effect-integration.ts","tests/consumers/effect-lifecycle.mjs","tests/consumers/effect-lifecycle.ts","tests/consumers/effect-modifiers.mjs","tests/consumers/effect-modifiers.ts","tests/consumers/effect-periodic.mjs","tests/consumers/effect-periodic.ts","tests/consumers/effect-restrictions.mjs","tests/consumers/effect-restrictions.ts","tests/consumers/effect-stacking.mjs","tests/consumers/effect-stacking.ts","tests/consumers/entity-collection.mjs","tests/consumers/entity-collection.ts","tests/consumers/entity-integration.mjs","tests/consumers/entity-integration.ts","tests/consumers/entity-life.mjs","tests/consumers/entity-life.ts","tests/consumers/entity-resources.mjs","tests/consumers/entity-resources.ts","tests/consumers/entity-stats.mjs","tests/consumers/entity-stats.ts","tests/consumers/entity.mjs","tests/consumers/entity.ts","tests/consumers/execution.mjs","tests/consumers/execution.ts","tests/consumers/experience.mjs","tests/consumers/experience.ts","tests/consumers/messaging.mjs","tests/consumers/messaging.ts","tests/consumers/modules.mjs","tests/consumers/modules.ts","tests/consumers/progression-integration.mjs","tests/consumers/progression-integration.ts","tests/consumers/progression.mjs","tests/consumers/progression.ts","tests/consumers/runtime.mjs","tests/consumers/runtime.ts","tests/consumers/skill-activation.mjs","tests/consumers/skill-activation.ts","tests/consumers/skill-admission.mjs","tests/consumers/skill-admission.ts","tests/consumers/skill-combat-handoff.mjs","tests/consumers/skill-cooldown.mjs","tests/consumers/skill-cooldown.ts","tests/consumers/skill-foundation.mjs","tests/consumers/skill-foundation.ts","tests/consumers/skill-integration.mjs","tests/consumers/skill-integration.ts","tests/consumers/skill-loadout.mjs","tests/consumers/skill-loadout.ts","tests/consumers/skill-progression.mjs","tests/consumers/skill-progression.ts","tests/consumers/skill-resource-costs.mjs","tests/consumers/skill-resource-costs.ts"];
+    const digest=entries=>createHash('sha256').update(JSON.stringify(entries)).digest('hex');
+    const captured=protectedFiles.map(name=>[name,fs.readFileSync(path.join(root,name),'utf8').replaceAll('\r\n','\n')]);
+    const assertProtected=entries=>assert.equal(digest(entries),'6b71e71ff40973efb3056e104c59934f1d025bf946a12ad4de5e38bc397619be','closure protected source/Core/registry/history guard');
+    assertProtected(captured);
+    for(const name of ['src/modules/entity/index.ts','harness/core-pin.json','harness/modules.json']){
+      const fault=captured.map(([file,text])=>[file,text+(file===name?'\n// deliberate scope fault':'')]);assert.throws(()=>assertProtected(fault),/protected source/);
+    }
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED protected_scope');
+    validate(run());assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_NEGATIVE_PASS runtime_and_fixture_faults; source_Core_registry_guard; scenario_inventory; restored_clean_rerun');
+    }
+
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);
 
@@ -1088,7 +1163,7 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts', 'effect-periodic.ts', 'effect-integration.ts', 'actor-ai-foundation.ts', 'actor-ai-perception.ts', 'actor-ai-target-selection.ts', 'actor-ai-behavior.ts', 'actor-ai-action-selection.ts', 'actor-ai-integration.ts','actor-ai-lifecycle-recovery.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts', 'effect-periodic.ts', 'effect-integration.ts', 'actor-ai-foundation.ts', 'actor-ai-perception.ts', 'actor-ai-target-selection.ts', 'actor-ai-behavior.ts', 'actor-ai-action-selection.ts', 'actor-ai-integration.ts','actor-ai-lifecycle-recovery.ts','actor-ai-integration-closure.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
     const aiDeclarationFile = path.join(installed, 'dist/modules/actor-ai/index.d.ts');
     const aiDeclaration = fs.readFileSync(aiDeclarationFile, 'utf8');
@@ -1143,6 +1218,15 @@ void resource; void invalid;
       assert.throws(()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','tsconfig.json'],temp),/TS\d+/);
     }finally{fs.writeFileSync(aiDeclarationFile,aiDeclaration);}
     assertPackedFiles();console.log('INSTALLED_ACTOR_AI_LIFECYCLE_DECLARATION_NEGATIVE_PASS wrong_interval_type; real_strict_NodeNext_failure; restored');
+    try{fs.writeFileSync(aiDeclarationFile,aiDeclaration.replace('readonly intervalMs: number','readonly intervalMs: string'));assert.throws(()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','tsconfig.json'],temp),/TS\d+/);}
+    finally{fs.writeFileSync(aiDeclarationFile,aiDeclaration);}assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED installed_declaration');
+    const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
+    try{const broken=JSON.parse(manifestBytes);broken.exports['.'].types='./dist/missing.d.ts';fs.writeFileSync(manifestFile,JSON.stringify(broken));assert.throws(()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','tsconfig.json'],temp),/TS\d+/);}
+    finally{fs.writeFileSync(manifestFile,manifestBytes);}assertPackedFiles();
+    exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','tsconfig.json'],temp);
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED export_map');
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_DECLARATION_PASS strict_NodeNext; skipLibCheck_false; restored');
     const declarationFile = path.join(installed, 'dist/modules/effect/index.d.ts');
     const declarationBytes = fs.readFileSync(declarationFile, 'utf8');
     assert.ok(declarationBytes.includes("readonly kind: 'dot' | 'hot';"));
