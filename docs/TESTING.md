@@ -362,3 +362,16 @@ types, required closed readonly policy/result shapes, rank union and no any/deep
 imports. All104 previous runtime contracts remain unchanged; actual current108
 installed contracts +2 outer gates, zero skips. No game/simulator/profile matrix.
 See the v0.5.1 report for requirement mapping and limitations.
+
+## v0.5.2 installed resource-cost evidence
+
+Five coherent skill-resource-costs.mjs tests cover numerical literal oracles and
+actual Core diagnostics; all-or-nothing/order/missing/stale state; zero/free no-op;
+full malformed matrix before rejection without getters; immutable replay and
+caller ownership. S01–S20 are mapped in the checkpoint report, including health
+minimum without Life mutation and all old regressions. Expectations are literal
+contract values, never regenerated using the implementation under test.
+skill-resource-costs.ts checks seven types, signatures/readonly/canonical diagnostic
+integration, discriminated outcomes and invalid/missing/deep imports. Runner packs
+actual0.5.2, installs independently with real pinned Core, requires5 pass/0 skips,
+and compiles strict NodeNext/skipLibCheck:false. No simulator or count KPI.

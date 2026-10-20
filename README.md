@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.5.1 Skill Availability & Admission
+# RPG Gameplay — v0.5.2 Skill Resource Costs
 
-> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK10 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
+> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK15 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK10 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK15 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Skill identity foundation
@@ -54,7 +54,7 @@ const instance = createSkillInstance(definition, actor, {instanceId: 'skill-inst
 Optional `skill` requires explicitly selected `entity`, independently of Progression
 and Combat. These are detached structural identities, not learned/unlocked/eligible
 or activated skills. L3 supplies concrete content; Progression remains the rank
-owner. There is no catalog, resource/cooldown/loadout or execution implementation.
+owner. These initial identity operations do not implement a catalog or perform resource/cooldown/loadout/execution operations.
 See [API](docs/API.md#sk01sk05-skill-foundation-v050) and
 [checkpoint report](docs/reports/v0.5.0-skill-foundation.md).
 Later milestone sections below retain their original historical status.
@@ -539,3 +539,16 @@ snapshots/policies, scheduling, persistence and replay/concurrency consistency.
 Text/Realtime/TurnBased labels prove shared API semantics, not concrete games.
 Gameplay profiles NOT_EVALUATED; acceptance PENDING; phase REVIEW_PENDING.
 See [closure report](docs/reports/v0.4.5-combat-integration-closure.md).
+
+## Skill resource costs (v0.5.2)
+
+evaluateSkillResourceCosts(admission, resources, request) assesses full payment;
+applySkillResourceCosts(admission, resources, request) re-evaluates current Entity
+resources and returns one immutable candidate state plus canonical diagnostics.
+L3 supplies costs and explicit bounds/policy. Positive costs use Entity/Core
+transitions; zero/free costs do not normalize. First missing/insufficient cost
+rejects the entire candidate with state:null and no partial receipts. No resource
+reservation, life mutation, activation or runtime commit occurs.
+See [API](docs/API.md#sk11sk15-skill-resource-costs-v052) and
+[report](docs/reports/v0.5.2-skill-resource-costs.md). This checkpoint supersedes
+historical scope statements above; phase IN_PROGRESS, PR #10 DRAFT, acceptance PENDING.

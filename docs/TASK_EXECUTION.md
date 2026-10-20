@@ -103,3 +103,14 @@ contracts. No accepted owner/Core/dependency/schema changes or activation/cost/
 cooldown/loadout. Required local and exact-head push+PR CI precede checkpoint
 completion. Phase IN_PROGRESS, PR DRAFT, acceptance PENDING; no v0.5.2/merge/tag/
 publish/Ready transition implied.
+
+## Active Skill resource-cost checkpoint (v0.5.2)
+
+Submitted task tasks/active/v0.5.2-skill-resource-costs.md authorizes SK11–SK15 on
+feat/v0.5-skill/existing Draft PR #10 from c762a4d92b43d3b5ecc5e74a7654d93fa801543e.
+Two public functions/seven proposed types, canonical Entity/Core transitions,
+all-or-nothing candidate state, installed contracts and same-head CI. No protected
+owner/Core/dependency/architecture changes or activation/cooldown/execution.
+Required fresh baseline/local gates, self-review and exact-head push+PR CI precede
+CHECKPOINT_COMPLETE. Phase IN_PROGRESS, acceptance PENDING, PR remains DRAFT;
+no v0.5.3/merge/tag/publish/Ready authorization.

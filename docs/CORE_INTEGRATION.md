@@ -198,3 +198,13 @@ CB20 resolution also supplies20 for above-max140->100/applied20/delta40.
 No numerical reimplementation or new runtime dependencies. Existing artifact-byte
 integrity and public Kernel consumers remain mandatory. Consumer literal oracles
 are independent expectations, not values regenerated from implementation output.
+
+## SK11–SK15 canonical cost transitions (v0.5.2)
+
+Skill delegates positive costs through Entity transitionEntityResource(decrease),
+with caller bounds/policy and allowIncreaseFromMinimum:false. Exact canonical
+applied determines full payment; no subtraction, clamping, tolerance or rounding.
+Core140->100 for cost20 preserves applied20/delta40. Above-max reject and other
+canonical errors propagate without fallback. Zero/free performs no numerical
+operation; full-state validation still uses Entity lookup. Installed package
+literal oracles and unchanged artifact SHA-512 prove real pinned Core integration.

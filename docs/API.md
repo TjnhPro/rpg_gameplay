@@ -1,4 +1,4 @@
-# Public API — v0.5.1 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK10)
+# Public API — v0.5.2 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK15)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -1367,4 +1367,65 @@ execution or committed state. Assessment is not an authorization token/execution
 receipt. No spending, scheduling, event, ID, Clock/RNG, rank/Life mutation, cache
 or global store occurs. L4 supplies authoritative current snapshots and coordinates
 later checks/persistence/concurrency. Optional skill -> entity remains unchanged;
-Combat stays independent. v0.5.2+ mechanisms remain unimplemented.
+Combat stays independent. Resource costs are added below in v0.5.2; later Skill mechanisms remain unimplemented.
+
+## SK11–SK15 Skill resource costs (v0.5.2)
+
+Root adds evaluateSkillResourceCosts(admission: SkillAdmissionResult,
+resources: EntityResourceState, request: SkillResourceCostRequest): SkillResourceCostAssessment
+and applySkillResourceCosts with the same arguments returning SkillResourceCostApplicationResult.
+
+```ts
+interface SkillResourceCost {readonly resourceId: string; readonly amount: number}
+interface SkillResourceCostBounds {
+  readonly resourceId: string;
+  readonly minimum: number;
+  readonly maximum: number;
+  readonly currentAboveMaximum: 'allow' | 'reject';
+}
+interface SkillResourceCostRequest {
+  readonly costs: readonly SkillResourceCost[];
+  readonly bounds: readonly SkillResourceCostBounds[];
+}
+type SkillResourceCostStatus = 'payable' | 'rejected';
+type SkillResourceCostRejectionReason = 'none' | 'resource_not_found' | 'insufficient_resource';
+interface SkillResourceCostAssessment {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly entityId: string;
+  readonly status: SkillResourceCostStatus;
+  readonly reason: SkillResourceCostRejectionReason;
+  readonly rejectedResourceId: string | null;
+}
+type SkillResourceCostApplicationResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly assessment: SkillResourceCostAssessment;
+      readonly state: EntityResourceState;
+      readonly transitions: readonly EntityResourceTransitionResult['transition'][]}
+  | {readonly status: 'rejected'; readonly reason: 'resource_not_found' | 'insufficient_resource';
+      readonly assessment: SkillResourceCostAssessment; readonly state: null; readonly transitions: readonly []};
+```
+
+Admission must be exact own-data admitted/none with nonblank identities and match
+resources.entityId. All request records/arrays are closed own-data; no unknown,
+symbol/accessor/inherited required fields, sparse/extra array fields or coercion.
+Amounts finite >=0, fractions accepted, IDs exact case/whitespace-sensitive.
+Cost/bounds IDs unique and matched one-to-one; finite minimum<=maximum and explicit
+policy required. Entire request and canonical resource state validate before an
+ordinary rejection. Malformed data/preconditions throw TypeError; canonical
+Entity/Core errors propagate, including positive cost with above-max reject.
+
+Presence uses getEntityResourceCurrent. Each positive amount calls canonical
+transitionEntityResource(decrease) and succeeds only when its applied exactly
+equals cost. Fixed allowIncreaseFromMinimum:false; no numerical math/rounding/
+epsilon. Caller order controls first missing/insufficient rejection. Above-max
+allow may yield140->100 for cost20 with canonical applied20; diagnostics remain
+unchanged. Zero requires presence but does not transition/normalize even above
+maximum; free/all-zero returns detached equivalent state and empty transitions.
+
+Success exposes only final candidate plus scalar canonical diagnostics, no interim
+state. Failure exposes state:null/transitions:[]/rejectedResourceId. Every output
+is detached/frozen; input remains unchanged/unfrozen. Evaluation exposes no state
+or reservation; application resolves again against supplied current state. Bounds,
+amounts and policies belong to L3; authoritative commits/concurrency belong to L4.
+HP reaching minimum never changes Life or emits events. No activation/cooldown/
+execution or new store/engine. skill->[entity] only; root70 functions/110 types.

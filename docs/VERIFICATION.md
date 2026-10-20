@@ -1,4 +1,4 @@
-# Verification gates — v0.5.1
+# Verification gates — v0.5.2
 
 Prepare the pinned Core artifact with `npm run core:prepare`, then install using
 `npm ci --ignore-scripts`. See CORE_INTEGRATION.md for tool versions and pin.
@@ -300,3 +300,14 @@ Windows/Ubuntu Node22/24 jobs PASS before CHECKPOINT_COMPLETE. Final SHA/CI link
 are attached to existing Draft PR #10 and ignored local evidence, preserving the
 tested SHA. Phase IN_PROGRESS; Developer acceptance PENDING. No merge/tag/publish
 or v0.5.2 implementation; macOS NOT_RUN, gameplay profiles NOT_EVALUATED.
+
+## v0.5.2 current Skill resource-cost gates
+
+SK11–SK15 joins unchanged GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30/SK01–SK10.
+Actual0.5.2 installed ESM/root-only consumer adds5 runtime tests and strict
+NodeNext contracts; all108 prior runtime tests remain. Required state/source/gate
+checks still fail closed, no silent skips. Fresh core:prepare and npm ci precede
+verification. Exact delivered SHA must pass both push/PR Windows+Ubuntu Node22/24
+matrix (8 jobs). Local PASS does not imply remote PASS. Final SHA/CI evidence is
+recorded on Draft PR #10 without changing tested commit. macOS NOT_RUN; gameplay
+profiles NOT_EVALUATED; phase IN_PROGRESS and Developer acceptance PENDING.

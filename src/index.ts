@@ -1,7 +1,10 @@
-export {createSkillDefinition, createSkillInstance, evaluateSkillActivationAdmission} from './modules/skill/index.js';
+export {createSkillDefinition, createSkillInstance, evaluateSkillActivationAdmission,
+  evaluateSkillResourceCosts, applySkillResourceCosts} from './modules/skill/index.js';
 export type {SkillDefinition, SkillInstanceInitialState, SkillInstanceState,
   SkillRankAdmissionPolicy, SkillAdmissionPolicy, SkillAdmissionStatus,
-  SkillAdmissionReason, SkillAdmissionResult} from './modules/skill/index.js';
+  SkillAdmissionReason, SkillAdmissionResult, SkillResourceCost, SkillResourceCostBounds,
+  SkillResourceCostRequest, SkillResourceCostStatus, SkillResourceCostRejectionReason,
+  SkillResourceCostAssessment, SkillResourceCostApplicationResult} from './modules/skill/index.js';
 export {
   validateModuleDefinition, createModuleRegistry, registerModule,
   getModule, listModules, configureModules, isModuleEnabled,

@@ -1,4 +1,6 @@
-import {createEntity, getEntity, type EntitySnapshot, type EntityCollection, type EntityLifeState} from '../entity/index.js';
+import {createEntity, getEntity, getEntityResourceCurrent, transitionEntityResource,
+  type EntitySnapshot, type EntityCollection, type EntityLifeState,
+  type EntityResourceState, type EntityResourceTransitionResult} from '../entity/index.js';
 
 /** Reusable identity only; concrete skill content and policies belong to L3. */
 export interface SkillDefinition {
@@ -152,4 +154,123 @@ export function evaluateSkillActivationAdmission(
             : !assessment.eligible ? 'actor_ineligible' : 'none';
   return Object.freeze({instanceId, skillId, actorEntityId: actorId,
     status: reason === 'none' ? 'admitted' : 'rejected', reason});
+}
+
+/** Caller-resolved costs and live bounds; no formula, default resource or policy. */
+export interface SkillResourceCost {
+  readonly resourceId: string;
+  readonly amount: number;
+}
+export interface SkillResourceCostBounds {
+  readonly resourceId: string;
+  readonly minimum: number;
+  readonly maximum: number;
+  readonly currentAboveMaximum: 'allow' | 'reject';
+}
+export interface SkillResourceCostRequest {
+  readonly costs: readonly SkillResourceCost[];
+  readonly bounds: readonly SkillResourceCostBounds[];
+}
+export type SkillResourceCostStatus = 'payable' | 'rejected';
+export type SkillResourceCostRejectionReason = 'none' | 'resource_not_found' | 'insufficient_resource';
+export interface SkillResourceCostAssessment {
+  readonly instanceId: string;
+  readonly skillId: string;
+  readonly entityId: string;
+  readonly status: SkillResourceCostStatus;
+  readonly reason: SkillResourceCostRejectionReason;
+  readonly rejectedResourceId: string | null;
+}
+/** Canonical diagnostics only; interim candidate states are never exposed. */
+export type SkillResourceCostApplicationResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly assessment: SkillResourceCostAssessment;
+      readonly state: EntityResourceState;
+      readonly transitions: readonly EntityResourceTransitionResult['transition'][]}
+  | {readonly status: 'rejected'; readonly reason: Exclude<SkillResourceCostRejectionReason, 'none'>;
+      readonly assessment: SkillResourceCostAssessment; readonly state: null; readonly transitions: readonly []};
+
+function costArray(input: unknown): unknown[] {
+  if (!Array.isArray(input) || Reflect.ownKeys(input).length !== input.length + 1) {
+    throw new TypeError('Expected dense cost arrays without extra properties');
+  }
+  return Array.from({length: input.length}, (_, index) => {
+    const field = Object.getOwnPropertyDescriptor(input, String(index));
+    if (!field || !('value' in field)) throw new TypeError('Cost entries must be own data');
+    return field.value as unknown;
+  });
+}
+
+function costNumber(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('Expected a finite cost number');
+  return value;
+}
+
+function resolveResourceCosts(admission: SkillAdmissionResult, resources: EntityResourceState,
+  request: SkillResourceCostRequest): SkillResourceCostApplicationResult {
+  const receipt = admissionFields(admission, ['instanceId', 'skillId', 'actorEntityId', 'status', 'reason']);
+  const instanceId = admissionId(receipt.instanceId), skillId = admissionId(receipt.skillId);
+  const entityId = admissionId(receipt.actorEntityId);
+  if (receipt.status !== 'admitted' || receipt.reason !== 'none') {
+    throw new TypeError('Resource costs require an admitted Skill assessment');
+  }
+  const input = admissionFields(request, ['costs', 'bounds']);
+  const costs = costArray(input.costs).map(value => {
+    const data = admissionFields(value, ['resourceId', 'amount']);
+    const resourceId = admissionId(data.resourceId), amount = costNumber(data.amount);
+    if (amount < 0) throw new TypeError('Cost amount must be nonnegative');
+    return {resourceId, amount};
+  });
+  const bounds = new Map<string, SkillResourceCostBounds>();
+  for (const value of costArray(input.bounds)) {
+    const data = admissionFields(value, ['resourceId', 'minimum', 'maximum', 'currentAboveMaximum']);
+    const resourceId = admissionId(data.resourceId);
+    const minimum = costNumber(data.minimum), maximum = costNumber(data.maximum);
+    const currentAboveMaximum = data.currentAboveMaximum;
+    if (minimum > maximum || (currentAboveMaximum !== 'allow' && currentAboveMaximum !== 'reject')
+      || bounds.has(resourceId)) throw new TypeError('Invalid or duplicate cost bounds');
+    bounds.set(resourceId, {resourceId, minimum, maximum, currentAboveMaximum});
+  }
+  if (new Set(costs.map(cost => cost.resourceId)).size !== costs.length || bounds.size !== costs.length
+    || costs.some(cost => !bounds.has(cost.resourceId))) throw new TypeError('Costs and bounds must match one-to-one');
+
+  // Canonical lookup validates the entire Entity state even for free requests.
+  // The fallback is only a lookup key, never a default resource or numerical operation.
+  getEntityResourceCurrent(resources, costs[0]?.resourceId ?? entityId);
+  if (resources.entityId !== entityId) throw new TypeError('Admission and Resource Entity IDs must match');
+  // Copy already Entity-validated own data, including nonenumerable resource keys.
+  // No second Resource validator, normalization or mutation of caller-owned objects.
+  let state: EntityResourceState = Object.freeze({entityId, current: Object.freeze(Object.fromEntries(
+    Object.getOwnPropertyNames(resources.current).map(key => [key, resources.current[key]!])))});
+  const transitions: EntityResourceTransitionResult['transition'][] = [];
+  const assessment = (reason: SkillResourceCostRejectionReason, rejectedResourceId: string | null): SkillResourceCostAssessment =>
+    Object.freeze({instanceId, skillId, entityId, status: reason === 'none' ? 'payable' : 'rejected', reason, rejectedResourceId});
+  for (const cost of costs) {
+    let reason: Exclude<SkillResourceCostRejectionReason, 'none'> | undefined;
+    if (getEntityResourceCurrent(state, cost.resourceId) === undefined) reason = 'resource_not_found';
+    else if (cost.amount !== 0) {
+      const bound = bounds.get(cost.resourceId)!; // Validated one-to-one above.
+      const result = transitionEntityResource(state, cost.resourceId, {
+        maximum: bound.maximum, amount: cost.amount, operation: 'decrease',
+        rule: {minimum: bound.minimum, currentAboveMaximum: bound.currentAboveMaximum, allowIncreaseFromMinimum: false},
+      });
+      if (result.transition.applied !== cost.amount) reason = 'insufficient_resource';
+      else {state = result.state; transitions.push(result.transition);}
+    }
+    if (reason !== undefined) return Object.freeze({status: 'rejected', reason,
+      assessment: assessment(reason, cost.resourceId), state: null, transitions: Object.freeze([] as const)});
+  }
+  return Object.freeze({status: 'applied', reason: 'none', assessment: assessment('none', null),
+    state, transitions: Object.freeze(transitions)});
+}
+
+/** Trial canonical transitions only; payable is a snapshot, never a reservation. */
+export function evaluateSkillResourceCosts(admission: SkillAdmissionResult, resources: EntityResourceState,
+  request: SkillResourceCostRequest): SkillResourceCostAssessment {
+  return resolveResourceCosts(admission, resources, request).assessment;
+}
+
+/** Re-evaluate supplied current resources; return one final all-or-nothing candidate. */
+export function applySkillResourceCosts(admission: SkillAdmissionResult, resources: EntityResourceState,
+  request: SkillResourceCostRequest): SkillResourceCostApplicationResult {
+  return resolveResourceCosts(admission, resources, request);
 }

@@ -167,3 +167,12 @@ No learning/unlocking, costs, cooldown, execution, loadout, effects or global
 state. Prior v0.5.0 availability/NOT_STARTED statements are historical.
 Skill phase IN_PROGRESS; PR DRAFT; Developer acceptance PENDING.
 v0.5.2–v0.5.6 NOT_STARTED. Game profiles NOT_EVALUATED.
+
+## v0.5.2 current Skill checkpoint
+
+Group05 now implements SK01–SK15: identities, availability and reusable explicit
+Resource Costs. Sufficiency/application reuse Entity/Core and return an immutable
+all-or-nothing candidate; no activation/execution, reservation, cooldown or store.
+L3 owns cost/bounds policy; L4 owns runtime commit/concurrency. This supersedes
+historical Skill scope above. Phase IN_PROGRESS, PR #10 DRAFT, acceptance PENDING;
+v0.5.3+ requires separately submitted tasks. Gameplay profiles NOT_EVALUATED.

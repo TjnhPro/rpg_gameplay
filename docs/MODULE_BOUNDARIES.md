@@ -219,3 +219,13 @@ owners/Core pin are untouched. No second ownership/rank/Life store, calculator,
 generic admission engine, cache or execution session. L3 supplies booleans and rank
 requirements; L4 supplies freshness/authority and coordinates later execution.
 Current root68 functions/103 types; registry4 modules/9 sources unchanged.
+
+## SK11–SK15 resource-cost boundary (v0.5.2)
+
+Skill imports getEntityResourceCurrent/transitionEntityResource and Resource types
+from public Entity only. Full-state validation stays canonical Entity; copied
+validated data supports detached free snapshots without normalization. Positive
+amounts delegate to Entity->Core; Skill only compares canonical applied to cost.
+No resource arithmetic, direct Core import, interim state authority or new store.
+Optional skill->[entity] unchanged. Protected owners/registry/Core pin/deps remain
+unchanged. Root adds two functions/seven types:70 functions/110 types total.
