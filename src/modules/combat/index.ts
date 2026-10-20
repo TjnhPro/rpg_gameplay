@@ -1,4 +1,7 @@
-import {getEntity, type EntityCollection, type EntityLifeState, type EntityLifeStatus} from '../entity/index.js';
+import {getEntity, getEntityResourceCurrent, transitionEntityResource, resolveEntityDefeat,
+  type EntityCollection, type EntityLifeState, type EntityLifeStatus,
+  type EntityResourceState, type EntityResourceTransitionInput, type EntityResourceTransitionResult,
+  type EntityLifeResourcePolicy, type EntityLifeTransitionResult} from '../entity/index.js';
 import {nextExecutionRandom, type GameplayExecutionContext} from '../../foundation/execution/index.js';
 import {calculateHit, calculateCritical, calculateDamageB0, calculateDamageB1, calculateMitigation,
   type HitCalculationInput, type HitCalculationResult, type CriticalCalculationInput,
@@ -336,4 +339,141 @@ export function resolveCombatAttack(
   const mitigation = diagnosticSnapshot(calculateMitigation({...input.mitigation, damage: b1.beforeDefense}));
   if (mitigation.status === 'missing_config') throw new TypeError(`Mitigation missing_config: ${mitigation.missing.join(', ')}`);
   return Object.freeze({context, outcome: 'landed', hit, critical, b0, b1, mitigation, finalDamage: mitigation.finalDamage});
+}
+
+/** One caller-selected life resource/bounds policy for both canonical operations. */
+export interface CombatDamageApplicationPolicy extends EntityLifeResourcePolicy {
+  readonly currentAboveMaximum: EntityResourceTransitionInput['rule']['currentAboveMaximum'];
+}
+
+export type CombatDamageApplicationOutcome = 'dodged' | 'zero_damage' | 'processed';
+
+export type CombatDamageApplicationResult = {
+  readonly context: CombatActionContext;
+  readonly outcome: 'dodged' | 'zero_damage';
+  readonly calculatedDamage: 0;
+  readonly appliedDamage: 0;
+  readonly resourceResult: null;
+  readonly lifeResult: null;
+} | {
+  readonly context: CombatActionContext;
+  readonly outcome: 'processed';
+  readonly calculatedDamage: number;
+  readonly appliedDamage: number;
+  readonly resourceResult: EntityResourceTransitionResult;
+  readonly lifeResult: EntityLifeTransitionResult;
+};
+
+function numericDiagnostics(input: unknown, numbers: readonly string[], other: readonly string[] = []) {
+  const data = dataFields(input, [...numbers, ...other]);
+  for (const key of numbers) finite(data[key]);
+  return data;
+}
+
+function receiptRoll(input: unknown): number | null {
+  if (input === null) return null;
+  const value = finite(input);
+  if (value < 0 || value >= 1) throw new TypeError('Invalid attack receipt roll');
+  return value;
+}
+
+// Validate the published CB20 schema and redundant stage links, never recalculate
+// numerical formulas. Structural consistency does not authenticate a receipt.
+function damageReceipt(input: CombatAttackResolutionResult) {
+  const header = dataFields(input, ['context', 'outcome', 'hit', 'finalDamage'],
+    ['critical', 'b0', 'b1', 'mitigation']);
+  const context = createCombatActionContext(header.context as CombatActionContext);
+  const damage = finite(header.finalDamage);
+  if (damage < 0) throw new TypeError('Negative attack damage');
+  const hit = numericDiagnostics(header.hit, ['chance'], ['hit', 'dodged', 'onHitSuccess', 'eligible', 'enabled', 'roll']);
+  const landed = flag(hit.hit), dodged = flag(hit.dodged);
+  const eligible = flag(hit.eligible), enabled = flag(hit.enabled), roll = receiptRoll(hit.roll);
+  if (landed === dodged || flag(hit.onHitSuccess) !== landed
+    || ((!eligible || !enabled) && hit.chance !== 0)
+    || ((finite(hit.chance) > 0) !== (roll !== null)) || (dodged && roll === null)) {
+    throw new TypeError('Inconsistent hit receipt');
+  }
+  if (header.outcome === 'dodged') {
+    dataFields(input, ['context', 'outcome', 'hit', 'finalDamage']);
+    if (!dodged || damage !== 0) throw new TypeError('Inconsistent dodge receipt');
+    return {context, outcome: 'dodged' as const, damage};
+  }
+  if (header.outcome !== 'landed' || !landed) throw new TypeError('Invalid landed receipt');
+  const complete = dataFields(input, ['context', 'outcome', 'hit', 'finalDamage', 'critical', 'b0', 'b1', 'mitigation']);
+  const critical = numericDiagnostics(complete.critical, ['chance', 'bonus', 'multiplier'], ['roll', 'isCritical']);
+  const criticalRoll = receiptRoll(critical.roll), isCritical = flag(critical.isCritical);
+  if ((isCritical && criticalRoll === null) || (criticalRoll === null && critical.chance !== 0)
+    || finite(critical.bonus) < 0 || finite(critical.multiplier) < 1
+    || (!isCritical && (critical.bonus !== 0 || critical.multiplier !== 1))) {
+    throw new TypeError('Inconsistent critical receipt');
+  }
+  const b0 = numericDiagnostics(complete.b0, ['base', 'flat', 'raw'], ['scaling']);
+  const sources = attackArray(b0.scaling).map(value => {
+    const term = numericDiagnostics(value, ['value'], ['source']);
+    return identifier(term.source);
+  });
+  if (new Set(sources).size !== sources.length) throw new TypeError('Duplicate receipt scaling source');
+  const b1 = numericDiagnostics(complete.b1, ['criticalBonus', 'totalBonus', 'beforeDefense']);
+  const mitigation = numericDiagnostics(complete.mitigation,
+    ['rawReduction', 'reduction', 'inputDamage', 'preventedDamage', 'finalDamage'],
+    ['ruleKey', 'status', 'missing', 'levelGap', 'levelScalingEnabled', 'effectiveK']);
+  identifier(mitigation.ruleKey); flag(mitigation.levelScalingEnabled);
+  const missing = attackArray(mitigation.missing).map(value => {
+    if (!['baseK', 'levelPenalty', 'source/target level'].includes(value as string)) {
+      throw new TypeError('Invalid mitigation missing diagnostic');
+    }
+    return value;
+  });
+  if (new Set(missing).size !== missing.length
+    || (mitigation.status !== 'applied' && mitigation.status !== 'disabled')
+    || (mitigation.status === 'applied' && missing.length !== 0)
+    || (mitigation.levelGap !== null && finite(mitigation.levelGap) < 0)
+    || (mitigation.effectiveK !== null && finite(mitigation.effectiveK) <= 0)
+    || ((missing.length > 0) !== (mitigation.effectiveK === null))
+    || (mitigation.status === 'disabled' && (mitigation.reduction !== 0 || mitigation.preventedDamage !== 0))
+    || b1.criticalBonus !== critical.bonus || finite(b1.beforeDefense) < 0
+    || mitigation.inputDamage !== b1.beforeDefense || mitigation.finalDamage !== damage) {
+    throw new TypeError('Inconsistent damage diagnostics');
+  }
+  return {context, outcome: 'landed' as const, damage};
+}
+
+/** Immutable orchestration only; Entity owns resource arithmetic and defeat. */
+export function applyCombatAttackDamage(
+  attack: CombatAttackResolutionResult,
+  resources: EntityResourceState,
+  life: EntityLifeState,
+  policy: CombatDamageApplicationPolicy,
+): CombatDamageApplicationResult {
+  const receipt = damageReceipt(attack);
+  const targetId = receipt.context.target.entityId;
+  readLife(life, targetId);
+  if (![Object.prototype, null].includes(Object.getPrototypeOf(life))) {
+    throw new TypeError('Expected canonical own-data Life state');
+  }
+  const config = dataFields(policy, ['resourceId', 'minimum', 'maximum', 'currentAboveMaximum']);
+  const resourceId = identifier(config.resourceId), minimum = finite(config.minimum), maximum = finite(config.maximum);
+  const currentAboveMaximum = config.currentAboveMaximum;
+  if (minimum > maximum || (currentAboveMaximum !== 'allow' && currentAboveMaximum !== 'reject')) {
+    throw new TypeError('Invalid damage application policy');
+  }
+  // Public Entity read validates the complete resource snapshot, including all
+  // unrelated entries, without normalization or a fabricated transition.
+  const current = getEntityResourceCurrent(resources, resourceId);
+  const resourceData = dataFields(resources, ['entityId', 'current']);
+  if (resourceData.entityId !== targetId || current === undefined || current < minimum) {
+    throw new TypeError('Invalid target resource identity/current');
+  }
+  const context = receipt.context;
+  if (receipt.outcome === 'dodged' || receipt.damage === 0) {
+    return Object.freeze({context, outcome: receipt.outcome === 'dodged' ? 'dodged' : 'zero_damage',
+      calculatedDamage: 0, appliedDamage: 0, resourceResult: null, lifeResult: null});
+  }
+  const resourceResult = transitionEntityResource(resources, resourceId, {
+    maximum, amount: receipt.damage, operation: 'decrease',
+    rule: {minimum, currentAboveMaximum, allowIncreaseFromMinimum: false},
+  });
+  const lifeResult = resolveEntityDefeat(life, resourceResult.state, {resourceId, minimum, maximum});
+  return Object.freeze({context, outcome: 'processed', calculatedDamage: receipt.damage,
+    appliedDamage: resourceResult.transition.applied, resourceResult, lifeResult});
 }

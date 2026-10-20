@@ -175,3 +175,15 @@ without retry/default/rollback. Enabled mitigation requires complete valid confi
 missing_config never succeeds. Every numerical diagnostic must be finite, copied
 and frozen without mutating Kernel results. Disabled mitigation preserves actual
 missing diagnostics. Core2.0.0 pin/revision/artifact integrity remain unchanged.
+
+## CB21–CB25 canonical resource semantics (v0.4.4)
+
+Combat calls Entity transitionEntityResource with amount=actual CB20 finalDamage,
+operation=decrease, caller resource/bounds/currentAboveMaximum and fixed
+allowIncreaseFromMinimum:false. Then resolveEntityDefeat uses its updated state.
+No direct resource arithmetic or second Core damage calculation. appliedDamage
+is exactly resourceResult.transition.applied. Pinned Kernel permits above-max
+140->100 after requested20 while applied=20 and delta=40; Combat preserves this.
+Above-max reject propagates the canonical Entity/Core error, with originals intact.
+No-op paths never transition/normalize/evaluate defeat. Core pin/artifact/deps
+remain unchanged; real installed integrity and numerical regressions are required.

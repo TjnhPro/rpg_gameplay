@@ -300,3 +300,15 @@ clock access, engine, event, HP/Life mutation or Skill/Effect implementation.
 All result diagnostics are newly detached and recursively frozen. Stage receipts
 are structural data, not provenance/freshness/concurrency authority. Registry and
 Group A owners remain unchanged; no persistent Combat state is introduced.
+
+## CB21–CB25 Damage application and death (v0.4.4)
+
+Combat validates a CB20 calculation receipt and exact target Resource/Life identity,
+then orchestrates one canonical Entity transitionEntityResource decrease and one
+resolveEntityDefeat using the updated Resource State and identical caller bounds.
+Entity/Core retain resource arithmetic; Entity retains death evaluation. Combat
+projects transition.applied verbatim, never resource delta/reachedMinimum as death.
+Dodge/zero validate first and return null transitions without normalization or
+Life evaluation. Combined immutable results reuse canonical Entity snapshots;
+there is no Combat health/Life store, duplicate calculator, event or reward engine.
+Caller owns current authority, persistence and replay/idempotency/concurrency.

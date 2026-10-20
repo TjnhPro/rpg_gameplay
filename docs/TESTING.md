@@ -295,3 +295,20 @@ readonly diagnostics, mandatory stage/execution inputs, no any and closed deep
 exports with strict NodeNext/skipLibCheck:false. Existing83 contracts/oracles stay
 unchanged; current total90 installed contracts plus2 outer gates, zero skips.
 See v0.4.3 report for A–T/R01–R33 evidence and CI delivery references.
+
+## CB21–CB25 installed application evidence (v0.4.4)
+
+combat-damage.mjs adds eight cohesive groups, always using actual CB03/CB09/CB15/
+CB20 for positive integration. Independent literal oracles:100->70/applied30;
+100->0/request150/applied100/defeated;10->0/request25/applied10; above-max140->100/
+request20/applied20/delta40; vitality80->50; mana50/stamina30 unchanged. Positive
+attempt at minimum can defeat alive with applied0; already dead remains unchanged.
+Dodge/zero no-op has null transitions, preserves above-max140 and HP0/alive.
+Malformed nested receipts, target states/identity and explicit policies fail with
+getter_calls0, including before no-op. Canonical above-max reject propagates.
+Deep immutability and two independent lethal replay sessions match literal
+calculated75/applied60; reverse actor kinds agree. No mocks/source imports.
+combat-damage.ts checks exact Entity type reuse, readonly diagnostics, null no-op
+fields/discrimination, required inputs/policy, no any/deep imports with strict
+NodeNext/skipLibCheck:false. Existing90 contracts/oracles unchanged; total98
+installed contracts plus2 outer gates, no skips. Report maps scenarios A–R/R01–R35.

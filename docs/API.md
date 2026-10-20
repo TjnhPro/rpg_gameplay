@@ -1205,3 +1205,54 @@ missing fields. Original inputs/Kernel results are never frozen or mutated.
 No HP/Life writes, automatic events, clock access, global store, Skill/Effect
 execution or supported-action catalog. Caller explicitly invokes resolution and
 owns current state, numerical snapshots and execution dependencies.
+
+## CB21–CB25 Combat Damage Application
+
+Package0.4.4 adds one root function and three types (65 functions/95 types total).
+
+```ts
+interface CombatDamageApplicationPolicy extends EntityLifeResourcePolicy {
+  readonly currentAboveMaximum: EntityResourceTransitionInput['rule']['currentAboveMaximum'];
+}
+type CombatDamageApplicationOutcome = 'dodged' | 'zero_damage' | 'processed';
+function applyCombatAttackDamage(
+  attack: CombatAttackResolutionResult, resources: EntityResourceState,
+  life: EntityLifeState, policy: CombatDamageApplicationPolicy,
+): CombatDamageApplicationResult;
+```
+
+Policy requires resourceId/minimum/maximum/currentAboveMaximum with no default
+health key, rounding, minimum damage or multiplier. Attack is the complete actual
+CB20 dodged/landed shape with finite nonnegative finalDamage, canonical context,
+closed own-data records/dense arrays and valid nested diagnostics. Redundant
+hit/outcome, Critical/B1 and B1/mitigation/finalDamage links must agree. Numerical
+stages are never recalculated. Validation is structural, not receipt authentication.
+
+Exact target IDs must match Resource/Life IDs. Canonical Entity resource read
+validates every map entry; Life schema/prototype/identity and explicit finite
+ordered policy bounds/resource selection validate before no-op. Unknown IDs,
+current below minimum, getters, inherited required/unknown fields, malformed
+states/receipts/policy throw TypeError without invoking getters. Positive damage
+with above-max reject propagates the canonical Entity/Core error.
+
+CombatDamageApplicationResult is a readonly discriminated union. Both variants
+include detached frozen context and calculatedDamage/appliedDamage. dodged or
+zero_damage has both damage fields0 and resourceResult/lifeResult:null; caller
+keeps its current snapshots. These paths do not transition, normalize above-max
+resources or evaluate defeat, even at minimum. Above-max behavior applies only
+when an actual positive resource transition runs.
+
+processed contains exact EntityResourceTransitionResult and EntityLifeTransitionResult.
+One transitionEntityResource decrease uses finalDamage, selected bounds/above-max
+and allowIncreaseFromMinimum:false. One resolveEntityDefeat uses its UPDATED
+resource state and the same resourceId/minimum/maximum. appliedDamage is exactly
+transition.applied, never HP delta (140->100/request20 gives applied20/delta40).
+Positive damage at minimum is processed even if applied0; alive may be defeated,
+while already dead remains unchanged. Life outcome, not reachedMinimum/final dead
+status alone, identifies a new defeat. All nested canonical results are frozen;
+caller originals remain untouched/unfrozen, without mutable aliases.
+
+No damage recalculation, blanket dead-target ban, automatic events/rewards,
+Skill/Effect/Encounter feature, healing/revival, ledger or global state. Caller
+owns trusted/current snapshots, authorization, durable writes, replay/exactly-once
+and concurrent consistency. A receipt can be reused on independent state branches.

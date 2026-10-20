@@ -41,12 +41,13 @@ export {
   createEntityLifeState, resolveEntityDefeat, reviveEntity,
 } from './modules/entity/index.js';
 export {createCombatActionContext, evaluateCombatActionAdmission, evaluateCombatTargetValidation,
-  resolveCombatAttack} from './modules/combat/index.js';
+  resolveCombatAttack, applyCombatAttackDamage} from './modules/combat/index.js';
 export type {CombatEntityTarget, CombatActionRequest, CombatActionContext,
   CombatActorEligibilityPolicy, CombatAdmissionStatus, CombatAdmissionReason, CombatAdmissionResult,
   CombatTargetRelation, CombatTargetPolicy, CombatTargetValidationStatus,
   CombatTargetRejectionReason, CombatTargetValidationResult,
-  CombatAttackInput, CombatAttackOutcome, CombatAttackResolutionResult} from './modules/combat/index.js';
+  CombatAttackInput, CombatAttackOutcome, CombatAttackResolutionResult,
+  CombatDamageApplicationPolicy, CombatDamageApplicationOutcome, CombatDamageApplicationResult} from './modules/combat/index.js';
 export {createProgressionState, gainExperience, adjustExperience,
   evaluateLevelAdvancement, advanceProgressionLevel,
   createAttributePointState, grantAttributePointRewards, allocateAttributePoints,

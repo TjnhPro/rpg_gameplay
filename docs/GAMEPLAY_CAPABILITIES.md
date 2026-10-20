@@ -121,3 +121,14 @@ calculated only. No HP/death/events/Skill/Effect implementation or persistent
 Combat state. GF/EC/PG and CB01–CB15 remain intact. Phase IN_PROGRESS, PR #9 DRAFT,
 Developer acceptance PENDING; v0.4.4/v0.4.5 NOT_STARTED. Gameplay profile behavior
 remains NOT_EVALUATED. Earlier sections are historical checkpoint descriptions.
+
+## v0.4.4 current checkpoint: Damage Application & Death
+
+Group04 CB21–CB25 accepts actual CB20 receipts, caller target Resource/Life and
+explicit life-resource/bounds/above-max policy. Positive damage runs canonical
+Entity reduction then defeat with updated resources; calculated/applied damage
+and Life transition outcomes remain distinct. Dodge/zero are validated no-ops.
+No heal/revive/Skill/Effect/Encounter, automatic events/rewards, persistent Combat
+state or exactly-once authority. Custom resources and player/monster parity work.
+Prior sections are historical. Phase IN_PROGRESS; PR #9 DRAFT; acceptance PENDING;
+v0.4.5 NOT_STARTED. Gameplay profiles NOT_EVALUATED.

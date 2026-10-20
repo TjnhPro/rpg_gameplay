@@ -171,3 +171,14 @@ Root adds resolveCombatAttack and CombatAttackInput/CombatAttackOutcome/
 CombatAttackResolutionResult (64 functions/92 types). No deep exports or helper
 exports. Combat never writes resource/Life state or publishes events. Kernel
 owns Hit, Critical, B0, B1 and Mitigation; caller owns numerical snapshots/policy.
+
+## CB21–CB25 damage/death boundary (v0.4.4)
+
+Same Combat owner reuses public Entity getEntityResourceCurrent (full snapshot
+validation without mutation), transitionEntityResource and resolveEntityDefeat.
+It reuses the existing private Life shape/identity helper plus canonical Life
+prototype validation. No Entity/Foundation/Progression, Core, registry/dependency
+or CI changes. Root adds applyCombatAttackDamage and CombatDamageApplicationPolicy/
+CombatDamageApplicationOutcome/CombatDamageApplicationResult:65 functions/95 types.
+No new modules/deep exports or validators exported. Damage/Life calculations are
+not duplicated; no automatic publish, Skill/Effect/Encounter or reward coupling.

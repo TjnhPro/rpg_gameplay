@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.4.3 Combat Attack Resolution
+# RPG Gameplay — v0.4.4 Damage Application & Death
 
-> **Status: Group A baseline merged through PR #8; CB01–CB20 implemented. Combat phase IN_PROGRESS; Draft PR; Developer acceptance PENDING.**
+> **Status: Group A baseline merged through PR #8; CB01–CB25 implemented. Combat phase IN_PROGRESS; Draft PR; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB20 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB25 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -475,3 +475,16 @@ Installed90 contracts and2 outer gates cover existing and new behavior. Combat
 phase IN_PROGRESS; PR #9 DRAFT; Developer acceptance PENDING. Damage application
 and death (v0.4.4), phase closure (v0.4.5) are NOT_STARTED. Earlier milestone
 sections describe their own historical scopes. Gameplay profiles NOT_EVALUATED.
+
+## v0.4.4 Damage Application & Death
+
+`applyCombatAttackDamage(attack, resources, life, policy)` validates actual CB20
+receipts/exact target identity and explicit caller life-resource policy. Positive
+damage runs Entity Resource reduction then Entity defeat using updated resources.
+Results preserve calculated damage vs canonical applied damage and Life outcomes.
+Dodge/zero return null transitions without normalization/defeat. No automatic
+events/rewards or replay/concurrency authority. See [API](docs/API.md#cb21cb25-combat-damage-application)
+and [report](docs/reports/v0.4.4-combat-damage-death.md).
+Installed98 contracts plus2 outer gates cover current behavior. Earlier milestone
+sections are historical. Combat phase IN_PROGRESS; PR #9 DRAFT; Developer acceptance
+PENDING; v0.4.5 NOT_STARTED. Gameplay profiles NOT_EVALUATED.

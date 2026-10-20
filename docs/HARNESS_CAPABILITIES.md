@@ -138,3 +138,15 @@ integrity and closed exports are mandatory. Source/diff audit proves no new stat
 events, formulas or Group A/Core/registry changes. Exact-head Windows/Ubuntu
 Node22/24 push+PR jobs remain the checkpoint delivery gate. Profile gameplay
 behavior NOT_EVALUATED; phase IN_PROGRESS; Developer acceptance PENDING.
+
+## v0.4.4 current evidence
+
+CB21–CB25 adds eight focused installed runtime groups plus strict public-type
+checks: normal/custom resources; lethal/overkill/minimum/dead; above-max applied;
+dodge/zero no-op; malformed receipt; state/policy/identity validation; immutability;
+independent actual end-to-end replay/parity. Total98 installed contracts
+(90 retained +8),2 outer gates, zero skips. Literal independent oracles supplement
+canonical Entity result comparisons. Actual0.4.4/Core artifacts, SHA-512 integrity,
+strict external NodeNext and closed exports remain mandatory. Source/diff review
+covers canonical ownership/no hidden events or state. Exact-head Windows/Ubuntu
+Node22/24 push+PR CI required; profiles NOT_EVALUATED, acceptance PENDING.

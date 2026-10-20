@@ -239,3 +239,15 @@ is attached to PR #9; the tracked report records its pre-push snapshot.
 macOS NOT_RUN; gameplay profiles NOT_EVALUATED. Phase IN_PROGRESS, PR DRAFT,
 Developer acceptance PENDING. v0.4.4/v0.4.5 NOT_STARTED. Historical scopes above
 remain records of their own checkpoints, not current feature limitations.
+
+## v0.4.4 current verification scope
+
+Artifact0.4.4: GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB25. Registry3 modules/
+8 sources unchanged; root65 functions/95 types. Total98 installed contracts
+(90 retained +8) plus2 outer gates; zero skips. All targeted gates and full verify
+must run, with real tarball installation, strict external NodeNext and pinned
+Core integrity. CB21–CB25 proves explicit damage application/canonical defeat,
+not a completed game/Combat phase. Exact-head push and PR Windows/Ubuntu Node22/24
+CI evidence is attached to PR #9; tracked report records the pre-push snapshot.
+macOS NOT_RUN; profiles NOT_EVALUATED. Phase IN_PROGRESS, PR DRAFT, Developer
+acceptance PENDING; v0.4.5 NOT_STARTED. Earlier scopes are historical records.
