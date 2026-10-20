@@ -1,3 +1,17 @@
+## v0.6.2 checkpoint gates
+
+Run fresh core:prepare/install, harness:check, harness:selftest, build, typecheck,
+test:functional and full npm run verify with installed EF01–EF15 and every prior
+GF/EC/PG/CB/SK consumer. Require strict NodeNext, byte provenance, all four new
+root exports, actual wrong-expiry/order negative controls and zero skipped tests.
+Audit exact four-function/seven-type API delta, unchanged EF01–EF10/protected
+owners/Core/registry/dependency versions, version-only metadata, git diff --check.
+Same Draft PR #11 must pass Windows/Ubuntu Node22/24 for push and pull_request at
+the exact delivered SHA (8 jobs). Final CI/SHA supplements the tracked pre-push
+[report](reports/v0.6.2-effect-duration-lifecycle.md) in that PR's body. Pending CI
+is not completion. Stop at 0.6.2; no Ready/merge/tag/publish/automatic 0.6.3.
+Earlier checkpoint gates below describe historical requirements.
+
 ## v0.6.1 checkpoint gates
 
 Fresh core:prepare and npm ci --ignore-scripts precede harness:check,

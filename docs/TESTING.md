@@ -1,3 +1,18 @@
+## v0.6.2 lifecycle contract evidence
+
+Seven installed runtime tests prove distinct EF11–EF15 invariants: empty/timed/
+persistent/fractional starts and EF09 value binding; exact/delayed expiration and
+lexical tie order; timeline/stale application rejections; all explicit removal
+reasons/terminal uniqueness; malformed schemas/clock/overflow/getter rejection;
+two independent literal replay histories with implicit providers blocked; real
+Entity death and caller cleanup with sibling snapshots unchanged and optional
+Entity+Effect composition. S01–S32 map to these tests; S33 uses all prior consumers.
+Strict NodeNext companion proves all seven new types/four signatures, discriminated
+duration/results/events, nested readonly state, null/empty rejection, no any and
+closed private/deep exports. Runtime negative controls deliberately corrupt expected
+expiry/order in the installed consumer; unchanged prior fixtures/oracles remain
+mandatory. No simulator, gameplay-profile claim or test-count quota.
+
 ## v0.6.1 Effect application evidence
 
 Six installed runtime tests in effect-application.mjs prove literal source/life

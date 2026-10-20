@@ -1,3 +1,13 @@
+## v0.6.2 installed lifecycle evidence
+
+Mandatory effect-lifecycle.mjs/.ts consumers use actual installed 0.6.2 tarball and
+pinned Core, root-only ESM/strict NodeNext. Seven runtime tests cover EF11–EF15;
+TAP counts/markers and zero skips are required. Installed bytes match fresh dist.
+Missing any of four lifecycle root exports fails the actual consumer. Deliberate
+wrong expiry and event-order expectations fail that same installed test runner.
+Existing fixture/version/Core/compiler/zero-test/skipped controls stay mandatory.
+See [report](reports/v0.6.2-effect-duration-lifecycle.md); earlier evidence is historical.
+
 ## v0.6.1 installed application evidence
 
 Required effect-application.mjs/.ts consumers execute against actual independently

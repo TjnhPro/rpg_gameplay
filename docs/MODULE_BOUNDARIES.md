@@ -1,3 +1,17 @@
+## v0.6.2 lifecycle ownership
+
+Same Effect owner imports public Entity and Foundation execution entrypoints only.
+Graph unchanged: entity[]; progression/combat/skill/effect[entity], all optional.
+Foundation readExecutionTime owns clock validation; Effect owns timing association,
+expiry bookkeeping and single removal, not numerical gameplay. No cooldown reuse.
+One embedded canonical EffectState holds instances; matching lifetime records hold
+IDs/timestamps only. Transient sets/arrays select a returned candidate, never a
+second live store. No global state/registry/engine, timers, scheduler, listeners or
+Messaging publication. Skill/Combat/Progression owners and Core pin unchanged.
+L3 chooses durations; L4 owns authoritative state, simulation advance and commit.
+D15 future ticks precede expiration; D17 death cleanup stays caller-mediated.
+Earlier milestone boundary descriptions below are historical.
+
 ## v0.6.1 Effect application boundary
 
 Effect remains a single owner at src/modules/effect/index.ts, importing only public

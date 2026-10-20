@@ -1,3 +1,6 @@
+export {createEffectLifecycleState, startEffectLifetime, advanceEffectLifecycle, removeEffectLifetime} from './modules/effect/index.js';
+export type {EffectDuration, EffectLifetimeState, EffectLifecycleState, EffectRemovalReason, EffectLifecycleEvent,
+  EffectLifecycleStartResult, EffectLifecycleTransitionResult} from './modules/effect/index.js';
 export {evaluateEffectApplyAdmission, applyEffect} from './modules/effect/index.js';
 export type {EffectApplyRequest, EffectApplyPolicy, EffectApplyAdmissionStatus, EffectApplyAdmissionReason,
   EffectApplyAdmissionResult, EffectApplyResult} from './modules/effect/index.js';

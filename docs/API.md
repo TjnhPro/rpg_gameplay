@@ -1,3 +1,92 @@
+## v0.6.2 Effect Duration & Lifecycle (EF11–EF15)
+
+Four new root functions; EF01–EF10 schemas/signatures remain unchanged:
+
+```ts
+type EffectDuration =
+  | {readonly mode: 'timed'; readonly durationMs: number}
+  | {readonly mode: 'persistent'};
+/** Timing references only; the embedded EffectState remains the sole instance collection. */
+interface EffectLifetimeState {
+  readonly effectInstanceId: string;
+  readonly mode: 'timed' | 'persistent';
+  readonly startedAtMs: number;
+  readonly expiresAtMs: number | null;
+}
+interface EffectLifecycleState {
+  readonly effectState: EffectState;
+  readonly lifetimes: readonly EffectLifetimeState[];
+  readonly observedAtMs: number;
+}
+type EffectRemovalReason = 'explicit' | 'dispel' | 'target_defeated' | 'source_removed' | 'session_cleanup';
+type EffectLifecycleEvent =
+  | {readonly type: 'started'; readonly effectInstanceId: string; readonly effectId: string;
+      readonly targetEntityId: string; readonly atMs: number}
+  | {readonly type: 'expired'; readonly effectInstanceId: string; readonly effectId: string;
+      readonly targetEntityId: string; readonly atMs: number}
+  | {readonly type: 'removed'; readonly effectInstanceId: string; readonly effectId: string;
+      readonly targetEntityId: string; readonly atMs: number; readonly reason: EffectRemovalReason};
+type EffectLifecycleStartResult =
+  | {readonly status: 'started'; readonly reason: 'none'; readonly state: EffectLifecycleState;
+      readonly events: readonly EffectLifecycleEvent[]}
+  | {readonly status: 'rejected'; readonly reason: 'application_rejected' | 'stale_application'
+      | 'lifecycle_not_advanced' | 'time_regressed'; readonly state: null; readonly events: readonly []};
+type EffectLifecycleTransitionResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly state: EffectLifecycleState;
+      readonly events: readonly EffectLifecycleEvent[]}
+  | {readonly status: 'rejected'; readonly reason: 'effect_not_found' | 'time_regressed';
+      readonly state: null; readonly events: readonly []};
+function createEffectLifecycleState(state: EffectState, context: GameplayExecutionContext): EffectLifecycleState;
+function startEffectLifetime(lifecycle: EffectLifecycleState, application: EffectApplyResult,
+  duration: EffectDuration, context: GameplayExecutionContext): EffectLifecycleStartResult;
+function advanceEffectLifecycle(lifecycle: EffectLifecycleState,
+  context: GameplayExecutionContext): EffectLifecycleTransitionResult;
+function removeEffectLifetime(lifecycle: EffectLifecycleState, effectInstanceId: string,
+  reason: EffectRemovalReason): EffectLifecycleTransitionResult;
+```
+
+Initialization requires an empty EffectState; populated structural instances have
+no history to infer. Foundation readExecutionTime supplies finite nonnegative
+milliseconds, once per initialize/start/advance. No epoch assumption or default clock.
+Removal uses observedAtMs without reading time.
+
+There is one canonical embedded EffectState. Lifetimes contain IDs/timing only,
+exactly one per instance in matching order. Active lifetime start <= observedAtMs;
+timed expiry > start and > observedAtMs; persistent expiry is exactly null. All
+records are closed own-data snapshots; sparse/extra/accessor/symbol/inherited
+required fields, duplicate/orphaned IDs and wrong associations throw TypeError
+without invoking getters. Inputs remain caller-owned and unfrozen.
+
+Timed duration is positive finite milliseconds, including fractions. Expiry is
+now + duration without rounding/clamping; overflow or representational loss that
+makes expiry <= now throws. Persistent carries no durationMs. No instant mode.
+
+Start validates the complete lifecycle, application, duration, Foundation context
+and expiry arithmetic before rejection. Applied/none must have admitted/none and
+a candidate ending in the exact validated request instance. Valid rejected EF09
+results have rejected matching non-none admission reason and null state.
+Candidate baseline comparison uses every ordered instance field/source field,
+not references: same target, unchanged full prefix and exactly one appended ID.
+Malformed result consistency throws; a valid candidate from another baseline
+returns stale_application without merge. Inputs are assessments, not credentials.
+Rejection priority after validation: time_regressed, lifecycle_not_advanced,
+application_rejected, stale_application. Newer time requires explicit advance.
+
+Advance requires now >= observedAtMs. Expiry <= now removes timed instances and
+their lifetime metadata together. Events sort by actual deadline then lexical
+instance ID (code-unit string comparison, no locale); atMs is deadline even when
+observation is delayed. Survivors preserve input order. Persistent never expires;
+same-time repeat returns applied/none with no repeated terminal events. D15:
+future due periodic intent belongs before this expiration boundary; no ticks now.
+
+Remove affects one exact ID only, with an explicit reason at observedAtMs.
+Unknown/already removed/expired IDs reject effect_not_found, with no terminal
+event. Source death never triggers cleanup; target defeat cleanup is requested by
+L4. Events are returned values, never published. Successful results are detached
+and deeply frozen; rejected results always state=null/events=[]. No resources,
+life, stats, ranks, Skill or Combat state is changed. No scheduler/active store,
+stack/refresh, modifiers, restrictions or periodic execution.
+
 ## v0.6.1 Effect Application & Admission (EF06–EF10)
 
 Two root functions take the same complete, explicit context:

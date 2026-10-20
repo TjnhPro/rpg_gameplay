@@ -1,3 +1,15 @@
+## Current checkpoint: v0.6.2 Effect Duration & Lifecycle
+
+EF11–EF15 implement timed/persistent duration, initialization from accepted EF09,
+explicit Foundation-clock advancement, deterministic expiration, single-instance
+removal and immutable returned events/candidates. One embedded EffectState remains
+the instance owner; lifetime records contain timing references only. L3 supplies
+duration, L4 advances/commits and requests external death cleanup.
+Stack/refresh, buff/debuff, restrictions and DoT/HoT remain OUT_OF_SCOPE for this
+checkpoint. No timer, scheduler, global store, numerical calculation or publication.
+v0.6.x IN_PROGRESS; v0.6.3 NOT_STARTED; Developer acceptance PENDING. Gameplay
+profile behavior remains NOT_EVALUATED. All sections below are checkpoint history.
+
 ## Current checkpoint: v0.6.1 Effect Application & Admission
 
 EF06–EF10 add source-agnostic apply requests, canonical Entity lookup, explicit

@@ -1,3 +1,15 @@
+## Current authorized checkpoint: v0.6.2
+
+The Developer-approved [duration/lifecycle task](tasks/active/v0.6.2-effect-duration-lifecycle.md)
+authorizes EF11–EF15 after verified 0.6.1 checkpoint cf87420 (both exact-head CI
+workflows PASS). Continue feat/v0.6-effect / existing Draft PR #11 to main.
+Preserve D01–D18, Core-first ownership, EF01–EF10 contracts, protected owners and
+graph. Add only four lifecycle APIs/seven types, explicit clock/state candidates,
+installed evidence/docs/version 0.6.2. Required local and exact-head eight-job CI
+gates precede CHECKPOINT_COMPLETE. Stop there; phase IN_PROGRESS, acceptance
+PENDING. No new PR/branch, Ready, merge, tag, publish or automatic 0.6.3.
+Earlier authorization sections below are historical.
+
 ## Current authorized checkpoint: v0.6.1
 
 The Developer-approved [application/admission task](tasks/active/v0.6.1-effect-application-admission.md)
