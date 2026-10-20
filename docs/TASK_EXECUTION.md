@@ -1,4 +1,18 @@
-## Current authorized task: v0.6.7 final Effect closure
+## Current authorized task: v0.6.7-FIX01
+
+Developer-approved Target Defeat Cleanup & Event Timeline Consistency patch starts
+at reviewed HEAD432e99e8a0551929520b3605d7d370652eb18aaf, same feat/v0.6-effect
+and PR #11, package0.6.7. Only Effect implementation/root exports may change in
+production: one explicit cleanup function/two types and narrow companion support.
+Preserve Entity/Core/protected owners, D01–D18, graph, dependencies and all previous
+contracts. Add installed FIX01–FIX16 regressions and ten actual negative controls.
+PR is Draft during the fix. After required local gates and both exact-head
+Windows/Ubuntu Node22/24 matrices8/8 PASS, return it to Ready for Review and append
+the SHA-bound CI supplement to PR #11. The pre-push [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md)
+is completed by that immutable-SHA supplement. Developer approval PENDING.
+Stop at FIX01. No merge/tag/publish/new branch/new PR/version bump/next phase.
+
+## v0.6.7 final Effect closure (historical authorization)
 
 The Developer-approved [Effect Integration & Closure task](tasks/active/v0.6.7-effect-integration-closure.md)
 authorizes EF36–EF40 from completed v0.6.6 checkpoint

@@ -1,4 +1,19 @@
-## v0.6.7 final closure gates
+## v0.6.7-FIX01 gates
+
+Repeat all local commands listed below, plus targeted installed integration9/9
+and strict external NodeNext. The patch adds three tests to the original suite:
+require192 runtime contracts /39 installed groups plus3 outer tests, zero
+fail/cancel/skip/todo. Require FIX01–FIX16 coverage, all ten actual defeat-fault
+controls, unchanged GF/EC/PG/CB/SK/EF contracts and restored installed bytes.
+Audit one-function/two-type additive API delta (109/184), only allowed production
+paths, unchanged package0.6.7/Core pin/metadata/dependencies/module graph/protected
+owners. Actual simulation death time2000 must survive horizon6000 without event
+rewriting. Both new-head push/pull_request Windows/Ubuntu Node22/24 matrices8/8
+must pass before PR #11 becomes Ready. Historical432e99e8 CI cannot close FIX01.
+See [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md) and its SHA-bound
+PR supplement for final CI evidence. Developer approval PENDING; no merge/tag/publish.
+
+## v0.6.7 final closure gates (historical checkpoint)
 
 Required final local commands: core:prepare; npm ci --ignore-scripts;
 harness:check; harness:selftest; build; typecheck; test:functional; verify;

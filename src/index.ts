@@ -112,3 +112,5 @@ export {createEffectPeriodicState, applyEffectPeriodicTransition, getNextDueEffe
 export type {EffectPeriodicCapture, EffectPeriodicEntry, EffectPeriodicState, EffectPeriodicTickIntent,
   EffectPeriodicTickAssessment, EffectPeriodicTickEvent, EffectPeriodicCompletionResult,
   EffectPeriodicTransitionResult} from './modules/effect/index.js';
+export {cleanupDefeatedTargetEffects} from './modules/effect/index.js';
+export type {EffectTargetDefeatCleanupRequest, EffectTargetDefeatCleanupResult} from './modules/effect/index.js';

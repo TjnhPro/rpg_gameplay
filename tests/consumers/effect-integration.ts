@@ -45,5 +45,24 @@ if (transition.status === 'applied' && modifiers.status === 'applied' && statuse
 }
 // @ts-expect-error No Effect runtime facade or new orchestration namespace.
 g.EffectEngine;
+const cleanupRequest: g.EffectTargetDefeatCleanupRequest = {defeatedAtMs: 2000};
+const cleanup: g.EffectTargetDefeatCleanupResult = g.cleanupDefeatedTargetEffects(
+  current.lifecycle, current.periodic, current.life, cleanupRequest, context);
+g.applyEffectModifierTransition(current.modifiers, cleanup);
+g.applyEffectStatusTransition(current.statuses, current.lifecycle, cleanup);
+g.applyEffectPeriodicTransition(current.periodic, current.lifecycle, cleanup);
+if (cleanup.status === 'applied') {
+  const action: 'target_defeated' = cleanup.action;
+  // @ts-expect-error Cleanup snapshots are readonly.
+  cleanup.state.observedAtMs = 1;
+  // @ts-expect-error Dedicated cleanup does not widen the historical stack union.
+  const historical: g.EffectStackMutationResult = cleanup;
+  void action; void historical;
+} else {
+  const empty: null = cleanup.state;
+  void empty;
+}
+// @ts-expect-error Explicit simulation death timestamp is required.
+g.cleanupDefeatedTargetEffects(current.lifecycle, current.periodic, current.life, {}, context);
 // @ts-expect-error No private/deep package entry.
 import {} from '@rpg/gameplay/dist/modules/effect/index.js';

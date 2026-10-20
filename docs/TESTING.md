@@ -1,4 +1,23 @@
-## v0.6.7 integrated Effect closure evidence
+## v0.6.7-FIX01 target-defeat cleanup evidence
+
+effect-integration.mjs retains its six original contracts and adds three grouped
+FIX01–FIX16 contracts: atomic lethal cleanup/literal chronology/independent replay;
+time/Life/context/earlier-work validation; malformed/stale companion receipts.
+Actual Entity/Core takes HP5→0 and Life alive→dead. Horizon6000 and exact-expiry2000
+both produce the same terminal timeline at2000. HoT B never executes; all four
+Effect snapshots align, prior snapshots remain frozen and failed numerical work
+or stale/invalid candidates cannot publish. Earlier ticks/expiry reject explicitly.
+Strict installed NodeNext covers new request/result and all companion calls,
+readonly state, missing timestamp and the unchanged historical stack result union.
+
+Runner requires9 integration tests/no skips/all9 markers. Ten independently restored
+faults cover backdating, horizon substitution, dead HoT permission, earlier tick
+loss, normal pending guard bypass, alive cleanup, wrong Life binding, stale
+companion after cleanup, duplicate terminal events and failed numerical commit.
+Each must make the actual installed consumer fail; artifact bytes are rechecked
+after every mutation. Historical regression coverage remains required.
+
+## v0.6.7 integrated Effect closure evidence (original checkpoint)
 
 tests/consumers/effect-integration.mjs adds six installed contracts: complete
 Resource/stat E2E; actual Skill/Combat/Effect admissions; independent stack and

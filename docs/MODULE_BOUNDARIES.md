@@ -1,4 +1,13 @@
-## v0.6.7 closure audit
+## v0.6.7-FIX01 boundary audit
+
+Production delta is confined to src/modules/effect/index.ts and root exports:
+explicit cleanup plus narrow existing companion support. No new module/dependency
+edge/store/runtime owner. Entity decides death, Core owns numerical work and L4
+binds death timestamp, stages complete candidates and commits against its baseline.
+The same canonical lifecycle remains sole membership authority; protected owners,
+module graph and Core pin stay unchanged. See [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md).
+
+## v0.6.7 original closure audit
 
 No source or module graph delta from v0.6.6. Five optional modules remain:
 Entity -> []; Progression/Combat/Skill/Effect -> [Entity]. Effect production imports

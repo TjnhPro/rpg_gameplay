@@ -84,7 +84,7 @@ assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModu
  'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId', 'createEntity',
  'createEntityCollection', 'addEntity', 'getEntity', 'hasEntity', 'listEntities', 'removeEntity', 'replaceEntity',
  'createEntityAttributeState', 'getEntityBaseAttributes', 'setEntityBaseAttribute', 'calculateEntityStats',
- 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick'].sort());
+ 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
@@ -97,7 +97,7 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     // A missing packaged root export must fail the very same runtime consumer.
     const installedRoot = path.join(installed, 'dist/index.js');
     const rootSource = fs.readFileSync(installedRoot, 'utf8');
-    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick']) {
+    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects']) {
       const pattern = new RegExp(`\\b${requiredExport}\\b`);
       assert.match(rootSource, pattern);
       try {
@@ -599,11 +599,12 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     console.log('INSTALLED_EFFECT_PERIODIC_RUNNER_NEGATIVE_PASS all_four_exports; missing_fixtures; wrong_version; expiry_tick; catchup; duplicate_completion; target_death; refresh_cadence; pending_tick_loss; Entity_bypass; HoT_maximum; skipped; no_assertions; runtime_faults6');
     copyRequiredConsumer(path.join(root, 'tests/consumers/effect-integration.mjs'), path.join(temp, 'effect-integration.mjs'));
     copyRequiredConsumer(path.join(root, 'tests/consumers/effect-integration.ts'), path.join(temp, 'effect-integration.ts'));
-    const integrationMarkers = ['E2E', 'ADMISSION', 'STACK', 'SOURCES', 'SAFETY', 'REPLAY'].map(x => 'EFFECT_INTEGRATION_' + x + '_PASS');
+    const integrationMarkers = ['E2E', 'ADMISSION', 'STACK', 'SOURCES', 'SAFETY', 'REPLAY',
+      'DEFEAT_TIMELINE', 'DEFEAT_VALIDATION', 'DEFEAT_COMPANIONS'].map(x => 'EFFECT_INTEGRATION_' + x + '_PASS');
     const effectIntegrationEvidence = exec(['--test', '--test-reporter=tap', 'effect-integration.mjs'], temp);
-    assertTapEvidence(effectIntegrationEvidence, 6, integrationMarkers);
+    assertTapEvidence(effectIntegrationEvidence, 9, integrationMarkers);
     for (const marker of integrationMarkers) console.log(effectIntegrationEvidence.split(/\r?\n/).find(line => line.includes(marker)));
-    console.log('INSTALLED_EFFECT_INTEGRATION_PASS EF36-EF40; consumer_tests=6 skipped=0; actual_Entity_Core_Skill_Combat; independent_literal_replay');
+    console.log('INSTALLED_EFFECT_INTEGRATION_PASS EF36-EF40 + FIX01-FIX16; consumer_tests=9 skipped=0; actual_Entity_Core_Skill_Combat; independent_literal_replay');
     for (const extension of ['mjs', 'ts']) {
       const required = path.join(temp, 'effect-integration.' + extension), saved = required + '.saved';
       try {fs.renameSync(required, saved); assert.throws(() => copyRequiredConsumer(required, required + '.copy'), {code: 'ENOENT'});}
@@ -635,6 +636,35 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     } finally {fs.writeFileSync(effectFile, periodicRuntime);}
     assertPackedFiles();
     console.log('INSTALLED_EFFECT_INTEGRATION_RUNNER_NEGATIVE_PASS missing_fixtures; wrong_version; stale_companion; stale_L4_baseline; skipped; no_assertions; restored_artifacts');
+    const cleanupStart = periodicRuntime.indexOf('export function cleanupDefeatedTargetEffects(');
+    assert.ok(cleanupStart > 0);
+    const cleanupRuntime = periodicRuntime.slice(cleanupStart);
+    for (const [name, scope, expected, faulty] of [
+      ['backdated_removal', 'cleanup', 'atMs: defeatedAtMs', 'atMs: current.observedAtMs'],
+      ['horizon_instead_of_death', 'cleanup', 'lifecycleTime(fields.defeatedAtMs)', 'readExecutionTime(context)'],
+      ['HoT_after_death', 'runtime', "if (status === 'dead')", 'if (false)'],
+      ['earlier_tick_discarded', 'cleanup', 'due && due.dueAtMs < defeatedAtMs', 'false'],
+      ['normal_pending_guard_bypassed', 'runtime', 'if (periodicDue(before, previous, next.observedAtMs))', 'if (false)'],
+      ['alive_cleanup_accepted', 'cleanup', "status !== 'dead'", 'false'],
+      ['wrong_Life_binding', 'runtime', 'effectId(fields.entityId) !== lifecycle.effectState.entityId', 'false'],
+      ['stale_companion_after_cleanup', 'runtime', 'const next = validated.state, newInstances = next.effectState.instances;',
+        "if (validated.action === 'target_defeated') return Object.freeze({status: 'applied', reason: 'none', state: previous}); const next = validated.state, newInstances = next.effectState.instances;"],
+      ['duplicate_terminal', 'cleanup', 'events: Object.freeze(events)', 'events: Object.freeze([...events, ...events])'],
+      ['failed_numerical_commit', 'consumer', 'const resource=g.transitionEntityResource(',
+        'f.current=Object.freeze({...baseline,periodic:g.completeEffectPeriodicTick(baseline.lifecycle,baseline.periodic,intent,baseline.life,f.context).state}); const resource=g.transitionEntityResource('],
+    ]) {
+      const original = scope === 'cleanup' ? cleanupRuntime : scope === 'runtime' ? periodicRuntime : integrationSource;
+      assert.ok(original.includes(expected), 'required FIX01 fault anchor: ' + name);
+      const file = scope === 'consumer' ? integrationFile : effectFile;
+      const saved = scope === 'consumer' ? integrationSource : periodicRuntime;
+      try {
+        fs.writeFileSync(file, (scope === 'cleanup' ? periodicRuntime.slice(0, cleanupStart) : '') + original.replace(expected, faulty));
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'effect-integration.mjs'], temp), /AssertionError|ERR_ASSERTION|Invalid target-defeat cleanup delta|Canonical event identity\/time mismatch/);
+      } finally {fs.writeFileSync(file, saved);}
+      assertPackedFiles();
+      console.log('INSTALLED_EFFECT_DEFEAT_FAULT_DETECTED ' + name);
+    }
+    console.log('INSTALLED_EFFECT_DEFEAT_NEGATIVE_PASS faults=10 restored_artifacts');
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);
 

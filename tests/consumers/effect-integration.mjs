@@ -233,7 +233,7 @@ contract('EF38: failed canonical execution, stale baseline guard, companion reje
   assert.deepEqual(tick(dead),[2000,'A',5,0,5,'dead']);
   assert.deepEqual(plan(dead),{status:'blocked',reason:'target_dead',intent:null});
   const blocked=dead.current; assert.equal(dead.current.periodic.entries.find(e=>e.effectInstanceId==='B').nextTickAtMs,2000);
-  for(const id of ['A','B']) remove(dead,id,'target_defeated'); advance(dead,2000);
+  commit(dead,g.cleanupDefeatedTargetEffects(dead.current.lifecycle,dead.current.periodic,dead.current.life,{defeatedAtMs:2000},dead.context));
   assert.deepEqual(dead.current.periodic.entries,[]); assert.equal(dead.current.resources.current.health,0); assert.equal(blocked.life.status,'dead');
   aligned(dead.current); frozen(dead.current);
   console.log('EFFECT_INTEGRATION_SAFETY_PASS');
@@ -277,4 +277,112 @@ contract('EF38/40: complete independent literal timeline, event ordering and his
   assert.deepEqual(a,b); assert.notEqual(a.final,b.final); assert.notEqual(a.history[1].periodic.entries,b.history[1].periodic.entries);
   assert.notEqual(a.history[1].resources.current,b.history[1].resources.current);
   console.log('EFFECT_INTEGRATION_REPLAY_PASS');
+});
+
+// L4 stages numerical/Life/cursor/cleanup outcomes and publishes only the complete candidate.
+function defeatCandidate(f, amount = 10) {
+  const baseline=f.current, intent=plan(f).intent;
+  const resource=g.transitionEntityResource(baseline.resources,intent.resourceId,{maximum:100,amount,operation:'decrease',
+    rule:{minimum:0,currentAboveMaximum:'allow',allowIncreaseFromMinimum:false}});
+  const life=g.resolveEntityDefeat(baseline.life,resource.state,f.bounds);
+  const completed=g.completeEffectPeriodicTick(baseline.lifecycle,baseline.periodic,intent,baseline.life,f.context);
+  assert.equal(life.after,'dead'); assert.equal(completed.status,'applied');
+  const staged={...f,current:Object.freeze({...baseline,resources:resource.state,life:life.state,periodic:completed.state})};
+  assert.deepEqual(plan(staged),{status:'blocked',reason:'target_dead',intent:null});
+  const cleanup=g.cleanupDefeatedTargetEffects(staged.current.lifecycle,staged.current.periodic,staged.current.life,
+    {defeatedAtMs:intent.dueAtMs},f.context);
+  assert.equal(cleanup.status,'applied');
+  const companions=stage(staged,cleanup);
+  return {baseline,next:companions.next,events:[...completed.events,...cleanup.events],cleanup};
+}
+
+contract('FIX01/03/04/06/12/13/14/15: atomic lethal cleanup, exact timeline and independent replay', assert => {
+  function session(horizon=6000,duration=timed(5000)) {
+    const f=fixture('victim',5), capture=payload({periodic:dot(),modifiers:[modifier(2,'add_flat')],statusIds:['poisoned'],restrictionIds:['stun']});
+    add(f,'A',capture,duration); add(f,'B',payload({periodic:hot()}),duration);
+    const history=f.current,saved=JSON.stringify(history); f.clock.time=horizon;
+    assert.throws(()=>defeatCandidate(f,NaN),TypeError); assert.equal(f.current,history); assert.equal(JSON.stringify(history),saved);
+    const candidate=defeatCandidate(f);
+    assert.equal(f.current,history); assert.equal(history.resources.current.health,5);
+    assert.equal(publish(f,candidate),true); assert.equal(publish(f,candidate),false);
+    assert.deepEqual(f.events.map(e=>e.type==='removed'?[e.type,e.effectInstanceId,e.atMs,e.reason]:[e.type,e.effectInstanceId,e.atMs]),[
+      ['started','A',1000],['started','B',1000],['tick-completed','A',2000],
+      ['removed','A',2000,'target_defeated'],['removed','B',2000,'target_defeated']]);
+    assert.equal(f.current.resources.current.health,0); assert.equal(f.current.life.status,'dead');
+    assert.equal(f.current.lifecycle.observedAtMs,2000); assert.deepEqual(f.current.lifecycle.effectState.instances,[]);
+    assert.deepEqual(f.current.lifecycle.lifetimes,[]); assert.deepEqual(f.current.modifiers.snapshots,[]);
+    assert.deepEqual(f.current.statuses.snapshots,[]); assert.deepEqual(f.current.periodic.entries,[]);
+    assert.equal(stats(f),100); assert.equal(gate(f,['stun']).status,'allowed');
+    assert.equal(plan(f).reason,'target_dead'); assert.equal(JSON.stringify(history),saved);
+    aligned(f.current); frozen(f.current); frozen(candidate.cleanup); frozen(history);
+    return {events:f.events,state:f.current,history};
+  }
+  const old=[Date.now,Math.random,globalThis.setTimeout,globalThis.setInterval]; let a,b,tie;
+  try {Date.now=Math.random=globalThis.setTimeout=globalThis.setInterval=()=>{throw Error('hidden runtime');};
+    a=session();b=session();tie=session(2000,timed(1000));}
+  finally {[Date.now,Math.random,globalThis.setTimeout,globalThis.setInterval]=old;}
+  assert.deepEqual(a,b); assert.notEqual(a.state,b.state); assert.notEqual(a.history.periodic,b.history.periodic);
+  assert.deepEqual(tie.events,a.events); assert.deepEqual(tie.state,a.state);
+  console.log('EFFECT_INTEGRATION_DEFEAT_TIMELINE_PASS');
+});
+
+contract('FIX02/05/07/08/09/10/11: defeat validation preserves earlier work and Entity binding', assert => {
+  const f=fixture(),dead=g.createEntityLifeState(f.target,{status:'dead'}); add(f,'A',payload({periodic:{...dot(),intervalMs:500}}));
+  const before=f.current,saved=JSON.stringify(before); f.clock.time=2000;
+  const cleanup=(time,life=dead,periodic=f.current.periodic,context=f.context,request={defeatedAtMs:time})=>
+    g.cleanupDefeatedTargetEffects(f.current.lifecycle,periodic,life,request,context);
+  for(const [time,life,reason] of [[2000,before.life,'target_alive'],[500,dead,'time_regressed'],[3000,dead,'time_after_horizon'],[2000,dead,'pending_ticks_before_defeat']]) {
+    const rejected=cleanup(time,life); assert.deepEqual(rejected,{status:'rejected',reason,state:null,events:[]}); frozen(rejected);
+    assert.equal(stage(f,rejected).next,null);
+  }
+  const sourceDead=g.createEntityLifeState(f.caster,{status:'dead'});
+  assert.throws(()=>cleanup(2000,sourceDead),TypeError); assert.equal(plan(f).status,'due');
+  for(const time of [-1,NaN,Infinity,'2000']) assert.throws(()=>cleanup(time),TypeError);
+  for(const request of [null,{}, {defeatedAtMs:2000,extra:true},{get defeatedAtMs(){throw Error('accessor invoked');}}])
+    assert.throws(()=>cleanup(2000,dead,before.periodic,f.context,request),TypeError);
+  assert.throws(()=>cleanup(2000,dead,before.periodic,{}),TypeError);
+  assert.throws(()=>cleanup(2000,dead,{...before.periodic,observedAtMs:1500}),TypeError);
+  assert.throws(()=>cleanup(2000,{...dead,status:'unknown'}),TypeError);
+  assert.equal(f.current,before); assert.equal(JSON.stringify(before),saved);
+  const emptyState={effectState:{entityId:f.target.id,instances:[]},lifetimes:[],observedAtMs:2000};
+  const forged={status:'applied',reason:'none',action:'target_defeated',state:emptyState,
+    events:[{type:'removed',effectInstanceId:'A',effectId:'poison',targetEntityId:f.target.id,atMs:2000,reason:'target_defeated'}]};
+  assert.equal(g.applyEffectPeriodicTransition(before.periodic,before.lifecycle,forged).reason,'pending_ticks');
+  const expiry=fixture(); add(expiry,'earlier',payload(),timed(500)); expiry.clock.time=2000;
+  const expiryDead=g.createEntityLifeState(expiry.target,{status:'dead'});
+  assert.equal(g.cleanupDefeatedTargetEffects(expiry.current.lifecycle,expiry.current.periodic,expiryDead,{defeatedAtMs:2000},expiry.context).reason,'pending_expiration_before_defeat');
+  advance(expiry,1500); expiry.clock.time=2000;
+  const empty=g.cleanupDefeatedTargetEffects(expiry.current.lifecycle,expiry.current.periodic,expiryDead,{defeatedAtMs:2000},expiry.context);
+  commit(expiry,empty); assert.deepEqual(empty.events,[]); assert.equal(expiry.current.lifecycle.observedAtMs,2000);
+  assert.equal(g.cleanupDefeatedTargetEffects(expiry.current.lifecycle,expiry.current.periodic,expiryDead,{defeatedAtMs:1500},expiry.context).reason,'time_regressed');
+  assert.deepEqual(expiry.events.map(e=>[e.type,e.atMs]),[['started',1000],['expired',1500]]);
+  // Ordinary advancement still cannot discard due ticks.
+  assert.equal(stage(f,g.advanceEffectLifecycle(f.current.lifecycle,f.context)).reason,'pending_ticks');
+  console.log('EFFECT_INTEGRATION_DEFEAT_VALIDATION_PASS');
+});
+
+contract('FIX12/13/16: defeat companion receipts reject malformed or stale candidates without publication', assert => {
+  const f=fixture('victim',5); add(f,'B',payload({periodic:hot()})); add(f,'A',payload({periodic:dot()})); f.clock.time=2000;
+  const before=f.current,candidate=defeatCandidate(f),receipt=candidate.cleanup;
+  assert.deepEqual(receipt.events.map(e=>e.effectInstanceId),['A','B']);
+  for(const malformed of [
+    {...receipt,events:[receipt.events[0],receipt.events[0]]}, {...receipt,events:[...receipt.events].reverse()},
+    {...receipt,events:receipt.events.slice(1)}, {...receipt,events:[...receipt.events,{...receipt.events[0]}]},
+    {...receipt,events:receipt.events.map(e=>({...e,atMs:1000}))},
+    {...receipt,events:receipt.events.map(e=>({...e,reason:'explicit'}))},
+    {...receipt,events:receipt.events.map(e=>({...e,targetEntityId:'other'}))},
+    {...receipt,state:before.lifecycle},
+  ]) {
+    assert.throws(()=>stage(f,malformed),TypeError); assert.equal(f.current,before);
+  }
+  assert.equal(stage(f,{...receipt,state:{...receipt.state,effectState:{entityId:'other',instances:[]}}}).next,null);
+  assert.throws(()=>g.applyEffectModifierTransition(before.modifiers,receipt,payload().modifier),TypeError);
+  assert.throws(()=>g.applyEffectStatusTransition(before.statuses,before.lifecycle,receipt,payload().status),TypeError);
+  assert.throws(()=>g.applyEffectPeriodicTransition(before.periodic,before.lifecycle,receipt,{mode:'none'}),TypeError);
+  assert.equal(publish(f,candidate),true);
+  assert.throws(()=>g.listActiveEffectStatuses(f.current.lifecycle,before.statuses),TypeError);
+  assert.throws(()=>g.getNextDueEffectTick(f.current.lifecycle,before.periodic,f.current.life,f.context),TypeError);
+  assert.throws(()=>g.applyEffectModifierTransition(f.current.modifiers,receipt),TypeError);
+  assert.equal(publish(f,candidate),false); aligned(f.current);
+  console.log('EFFECT_INTEGRATION_DEFEAT_COMPANIONS_PASS');
 });

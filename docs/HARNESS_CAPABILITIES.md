@@ -1,4 +1,14 @@
-## v0.6.7 closure verification
+## v0.6.7-FIX01 verification
+
+Installed integration now requires9 contracts: six retained plus three grouped
+FIX01–FIX16 regressions. Full suite requires192 runtime contracts /39 groups plus3
+outer tests, no skips. All ten independently injected cleanup faults must fail the
+installed consumer and restore artifact bytes. Strict NodeNext proves new cleanup
+types/companion calls and the preserved stack union. Current public inventory109
+functions/184 types; one function/two types added. Scope and both exact-head matrices
+are recorded in [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md) / PR #11.
+
+## v0.6.7 original closure verification
 
 Observed 189 runtime contracts / 39 installed groups plus 3 outer tests, all pass,
 zero failures/cancellations/skips/todos. All historical 183 contracts stay active.

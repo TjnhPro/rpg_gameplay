@@ -1,4 +1,42 @@
-## v0.6.7 closure: unchanged public API
+## v0.6.7-FIX01: explicit target-defeat cleanup
+
+One additive function and two types: root109 functions /184 types. Historical
+stack action unions, removal reasons and existing function behavior are unchanged.
+
+```ts
+export interface EffectTargetDefeatCleanupRequest { readonly defeatedAtMs: number }
+export function cleanupDefeatedTargetEffects(
+  lifecycle: EffectLifecycleState, periodic: EffectPeriodicState,
+  targetLife: EntityLifeState, request: EffectTargetDefeatCleanupRequest,
+  context: GameplayExecutionContext
+): EffectTargetDefeatCleanupResult;
+```
+
+The result is `applied / none / action: target_defeated` with an empty canonical
+lifecycle aligned at `defeatedAtMs`, and lexical instance-ID ordered
+`removed / target_defeated` events at that time. Or it is `rejected`, null state,
+empty events, and reason `target_alive`, `time_regressed`, `time_after_horizon`,
+`pending_ticks_before_defeat` or `pending_expiration_before_defeat`.
+All three existing companion transition functions accept this dedicated result;
+no capture is allowed. Modifier/Status snapshots and Periodic entries become empty.
+
+Caller supplies canonical dead Entity Life and the actual simulation death time
+(lethal tick intent's `dueAtMs`, never automatically the current horizon).
+Require `observedAtMs <= defeatedAtMs <= readExecutionTime(context)`.
+Invalid shapes/nonfinite/negative time, wrong Life binding, invalid context or
+misaligned periodic state throw TypeError. Earlier unresolved ticks/expiry reject;
+same-time/future ticks are canceled. Cleanup takes precedence over same-time
+expiration: one terminal removal per instance, no synthetic tick or expiry event.
+Empty dead-target cleanup succeeds without events and aligns observation time.
+Ordinary advancement/refresh/consume/group removal retain pending-tick guards.
+
+L4 stages canonical Entity Resource/Life, completed cursor, cleanup and all three
+companions before publishing one complete candidate against its current baseline.
+Structural receipts/Life are caller evidence, not committed-persistence proofs;
+there is no transaction manager or distributed exactly-once guarantee.
+See [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md).
+
+## v0.6.7 original closure checkpoint (historical)
 
 No production behavior or public API additions/removals relative to v0.6.6:
 108 root functions / 182 root types. EF36–EF40 is integration evidence, not a new

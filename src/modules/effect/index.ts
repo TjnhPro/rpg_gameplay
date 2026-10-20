@@ -731,7 +731,7 @@ type CompanionTransition =
 
 /** Validate canonical receipt deltas only; lifecycle/stack owners still execute transitions. */
 function companionTransition(before: EffectLifecycleState,
-  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult,
+  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult | EffectTargetDefeatCleanupResult,
   hasCapture: boolean): CompanionTransition {
   const hasAction = typeof transition === 'object' && transition !== null && Object.hasOwn(transition, 'action');
   const fields = effectFields(transition, ['status', 'reason', 'state', 'events', ...(hasAction ? ['action'] : [])]);
@@ -739,9 +739,10 @@ function companionTransition(before: EffectLifecycleState,
   const reject = (reason: 'transition_rejected' | 'stale_transition' | 'capture_required'): CompanionTransition =>
     Object.freeze({status: 'rejected', reason, state: null});
   if (fields.status === 'rejected') {
-    const reasons: readonly EffectStackRejectionReason[] = ['application_rejected', 'stale_application', 'lifecycle_not_advanced',
+    const reasons: readonly string[] = ['application_rejected', 'stale_application', 'lifecycle_not_advanced',
       'time_regressed', 'pending_expiry', 'source_identity_conflict', 'group_policy_conflict', 'max_stacks_reached',
-      'duration_mode_conflict', 'persistent_already_present', 'effect_not_found', 'not_timed', 'group_not_found', 'insufficient_stacks'];
+      'duration_mode_conflict', 'persistent_already_present', 'effect_not_found', 'not_timed', 'group_not_found', 'insufficient_stacks',
+      'target_alive', 'time_after_horizon', 'pending_ticks_before_defeat', 'pending_expiration_before_defeat'];
     if (hasAction || fields.state !== null || events.length || !reasons.includes(fields.reason as EffectStackRejectionReason)) {
       throw new TypeError('Invalid rejected canonical transition');
     }
@@ -749,7 +750,7 @@ function companionTransition(before: EffectLifecycleState,
   }
   if ((fields.status !== 'started' && fields.status !== 'applied') || fields.reason !== 'none'
     || (fields.status === 'started' && hasAction)
-    || (hasAction && !(['added', 'refreshed', 'consumed', 'group_removed'] as readonly unknown[]).includes(fields.action))) {
+    || (hasAction && !(['added', 'refreshed', 'consumed', 'group_removed', 'target_defeated'] as readonly unknown[]).includes(fields.action))) {
     throw new TypeError('Invalid canonical transition result');
   }
   const next = lifecycleSnapshot(fields.state as EffectLifecycleState);
@@ -770,8 +771,16 @@ function companionTransition(before: EffectLifecycleState,
     const lifetime = next.lifetimes.find(entry => entry.effectInstanceId === instance.effectInstanceId)!;
     return old && !sameLifetime(old, lifetime);
   });
-  if (action !== 'advanced' && next.observedAtMs !== before.observedAtMs) return reject('stale_transition');
-  if (action === 'added') {
+  if (action !== 'advanced' && action !== 'target_defeated' && next.observedAtMs !== before.observedAtMs) return reject('stale_transition');
+  if (action === 'target_defeated') {
+    const ordered = [...oldInstances].sort((a, b) => a.effectInstanceId < b.effectInstanceId ? -1 : a.effectInstanceId > b.effectInstanceId ? 1 : 0);
+    if (hasCapture || newInstances.length || next.lifetimes.length || events.length !== ordered.length
+      || before.lifetimes.some(lifetime => lifetime.expiresAtMs !== null && lifetime.expiresAtMs < next.observedAtMs)
+      || events.some((event, index) => event.type !== 'removed' || event.reason !== 'target_defeated'
+        || event.effectInstanceId !== ordered[index]!.effectInstanceId)) {
+      throw new TypeError('Invalid target-defeat cleanup delta');
+    }
+  } else if (action === 'added') {
     if (added.length !== 1 || removed.length || changed.length || newInstances[newInstances.length - 1] !== added[0]
       || events.length !== 1 || events[0]!.type !== 'started'
       || events[0]!.effectInstanceId !== added[0]!.effectInstanceId) throw new TypeError('Invalid canonical addition delta');
@@ -835,7 +844,7 @@ function companionTransition(before: EffectLifecycleState,
  * Capture on an existing-instance transition is malformed and throws TypeError.
  */
 export function applyEffectModifierTransition(current: EffectModifierState,
-  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult,
+  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult | EffectTargetDefeatCleanupResult,
   capture?: EffectModifierCapture): EffectModifierTransitionResult {
   const previous = modifierState(current), payload = capture === undefined ? undefined : modifierCapture(capture);
   const validated = companionTransition(previous.lifecycle, transition, payload !== undefined);
@@ -932,7 +941,7 @@ export function createEffectStatusState(lifecycle: EffectLifecycleState): Effect
  * A replacement capture on refresh or another non-addition is malformed (TypeError).
  */
 export function applyEffectStatusTransition(current: EffectStatusState, previousLifecycle: EffectLifecycleState,
-  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult,
+  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult | EffectTargetDefeatCleanupResult,
   capture?: EffectStatusCapture): EffectStatusTransitionResult {
   const before = lifecycleSnapshot(previousLifecycle, true), previous = statusState(before, current);
   const payload = capture === undefined ? undefined : statusCapture(capture);
@@ -1090,14 +1099,17 @@ function periodicDue(lifecycle: EffectLifecycleState, periodic: EffectPeriodicSt
  * L4 commits lifecycle and all companions together. Explicit removal may cancel future work.
  */
 export function applyEffectPeriodicTransition(current: EffectPeriodicState, previousLifecycle: EffectLifecycleState,
-  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult,
+  transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult | EffectTargetDefeatCleanupResult,
   capture?: EffectPeriodicCapture): EffectPeriodicTransitionResult {
   const before = lifecycleSnapshot(previousLifecycle), previous = periodicState(before, current);
   const payload = capture === undefined ? undefined : periodicCapture(capture);
   const validated = companionTransition(before, transition, payload !== undefined);
   if (validated.status === 'rejected') return Object.freeze({status: 'rejected', reason: validated.reason, state: null});
   const next = validated.state;
-  if (periodicDue(before, previous, next.observedAtMs)) return Object.freeze({status: 'rejected', reason: 'pending_ticks', state: null});
+  if (validated.action === 'target_defeated') {
+    const due = periodicDue(before, previous, next.observedAtMs);
+    if (due && due.dueAtMs < next.observedAtMs) return Object.freeze({status: 'rejected', reason: 'pending_ticks', state: null});
+  } else if (periodicDue(before, previous, next.observedAtMs)) return Object.freeze({status: 'rejected', reason: 'pending_ticks', state: null});
   const entries = next.effectState.instances.map((instance, index): EffectPeriodicEntry => {
     const existing = previous.entries.find(entry => entry.effectInstanceId === instance.effectInstanceId);
     if (existing) return existing;
@@ -1153,4 +1165,42 @@ export function completeEffectPeriodicTick(lifecycle: EffectLifecycleState, peri
   const event: EffectPeriodicTickEvent = Object.freeze({type: 'tick-completed', effectInstanceId: tick.effectInstanceId,
     effectId: tick.effectId, targetEntityId: tick.targetEntityId, kind: tick.kind, atMs: tick.dueAtMs});
   return Object.freeze({status: 'applied', reason: 'none', state, events: Object.freeze([event])});
+}
+
+export interface EffectTargetDefeatCleanupRequest {
+  readonly defeatedAtMs: number;
+}
+export type EffectTargetDefeatCleanupResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly action: 'target_defeated';
+      readonly state: EffectLifecycleState; readonly events: readonly EffectLifecycleEvent[]}
+  | {readonly status: 'rejected'; readonly reason: 'target_alive' | 'time_regressed' | 'time_after_horizon'
+      | 'pending_ticks_before_defeat' | 'pending_expiration_before_defeat'; readonly state: null; readonly events: readonly []};
+
+/** Explicit terminal policy after Entity confirms death. The caller binds defeatedAtMs to the
+ * actual death (for periodic execution, the lethal intent's dueAtMs), not the simulation horizon.
+ * Same-time/future ticks are canceled; earlier unresolved work must be processed first.
+ * L4 stages this candidate and all companions with Entity outcomes before authoritative commit.
+ */
+export function cleanupDefeatedTargetEffects(lifecycle: EffectLifecycleState, periodic: EffectPeriodicState,
+  targetLife: EntityLifeState, request: EffectTargetDefeatCleanupRequest,
+  context: GameplayExecutionContext): EffectTargetDefeatCleanupResult {
+  const current = lifecycleSnapshot(lifecycle), cursor = periodicState(current, periodic);
+  const status = periodicLife(current, targetLife), fields = effectFields(request, ['defeatedAtMs']);
+  const defeatedAtMs = lifecycleTime(fields.defeatedAtMs), horizon = readExecutionTime(context);
+  const due = periodicDue(current, cursor, defeatedAtMs);
+  const reason = status !== 'dead' ? 'target_alive'
+    : defeatedAtMs < current.observedAtMs ? 'time_regressed'
+      : defeatedAtMs > horizon ? 'time_after_horizon'
+        : current.lifetimes.some(lifetime => lifetime.expiresAtMs !== null && lifetime.expiresAtMs < defeatedAtMs)
+          ? 'pending_expiration_before_defeat'
+          : due && due.dueAtMs < defeatedAtMs ? 'pending_ticks_before_defeat' : null;
+  if (reason) return Object.freeze({status: 'rejected', reason, state: null, events: Object.freeze([] as const)});
+  const state = lifecycleSnapshot({effectState: {entityId: current.effectState.entityId, instances: []},
+    lifetimes: [], observedAtMs: defeatedAtMs});
+  const ordered = [...current.effectState.instances].sort((a, b) =>
+    a.effectInstanceId < b.effectInstanceId ? -1 : a.effectInstanceId > b.effectInstanceId ? 1 : 0);
+  const events = ordered.map((instance): EffectLifecycleEvent => Object.freeze({type: 'removed',
+    effectInstanceId: instance.effectInstanceId, effectId: instance.effectId,
+    targetEntityId: instance.targetEntityId, atMs: defeatedAtMs, reason: 'target_defeated'}));
+  return Object.freeze({status: 'applied', reason: 'none', action: 'target_defeated', state, events: Object.freeze(events)});
 }

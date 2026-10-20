@@ -1,4 +1,14 @@
-## Current closure candidate: v0.6.7 — EF01–EF40
+## Current patch candidate: v0.6.7-FIX01
+
+EF01–EF40 remains the baseline. One explicit canonical Effect cleanup operation
+now accepts caller-bound target death time, rejects unresolved earlier work and
+cancels same-time/future ticks after Entity death; existing companion owners align.
+This adds one public function/two types without new gameplay policy/module/engine.
+Actual installed regression evidence and exact-head readiness are tracked in
+[patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md) / PR #11.
+Developer acceptance PENDING; no merge/tag/publish; game profiles NOT_EVALUATED.
+
+## Original closure candidate: v0.6.7 — EF01–EF40 (historical)
 
 EF01–EF35 reusable capabilities preserved; EF36 full E2E, EF37 five generic source
 origins and target isolation, EF38 independent literal replay/recovery, EF39 full

@@ -1,4 +1,12 @@
-## v0.6.7 closure provenance and numerical ownership
+## v0.6.7-FIX01 numerical ownership
+
+Only Effect cleanup/root exports change in production. Actual installed Entity/Core
+transitions resolve HP5→0/Life dead at lethal intent time2000; cleanup consumes that
+structural evidence, never calculates Resource or decides death. Core2.0.0 pin,
+revision/integrity/dependencies and Entity implementation stay unchanged.
+See [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md).
+
+## v0.6.7 original closure provenance and numerical ownership
 
 Core remains 2.0.0 / revision 04b7239f998c3c688a0dfa3202f11811a9acd775.
 Fresh preparation/install and lock SHA-512 audit prove the actual artifact.

@@ -15,12 +15,17 @@ timed/persistent lifecycle, stack/refresh/consume, Entity/Core modifiers, generi
 Skill/Combat restrictions and fixed pre-resolved periodic DoT/HoT. Six new E2E
 contracts include five generic source origins, target isolation, immutable
 companions, failed-tick recovery and two independent literal replay sessions.
-Observed 189 runtime contracts / 39 installed groups plus 3 outer tests, no skips.
-Public API/production source unchanged from v0.6.6 (108 functions / 182 types);
-package version 0.6.7. Core2.0.0 remains pinned. No scheduler or second engine.
+FIX01 adds explicit target-defeat cleanup at the actual death timestamp, including
+aligned companions and cancellation of same-time/future ticks after Entity death.
+Earlier unresolved ticks/expiry reject cleanup. Ordinary pending-tick guards remain.
+The installed suite now includes three additional FIX01–FIX16 regression contracts.
+Public API adds one function/two types (109 functions / 184 types); production
+changes are confined to Effect and root exports. Package remains 0.6.7; Core2.0.0
+remains pinned. No scheduler or second engine.
 
-[Final report](docs/reports/v0.6.7-effect-final-review.md) and
-[PR #11](https://github.com/TjnhPro/rpg_gameplay/pull/11) track exact-head CI and
+[FIX01 report](docs/reports/v0.6.7-fix01-target-defeat-cleanup.md) supersedes the
+[historical final report](docs/reports/v0.6.7-effect-final-review.md).
+[PR #11](https://github.com/TjnhPro/rpg_gameplay/pull/11) tracks exact-head CI and
 review readiness. Draft -> Ready is authorized only after all final gates pass;
 Developer acceptance PENDING. No merge/tag/publish. Advanced numerical mechanics
 remain deferred; concrete game profiles NOT_EVALUATED. Older checkpoint statements
