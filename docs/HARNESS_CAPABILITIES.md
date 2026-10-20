@@ -1,3 +1,111 @@
+## v0.6.7-FIX01 verification
+
+Installed integration now requires9 contracts: six retained plus three grouped
+FIX01–FIX16 regressions. Full suite requires192 runtime contracts /39 groups plus3
+outer tests, no skips. All ten independently injected cleanup faults must fail the
+installed consumer and restore artifact bytes. Strict NodeNext proves new cleanup
+types/companion calls and the preserved stack union. Current public inventory109
+functions/184 types; one function/two types added. Scope and both exact-head matrices
+are recorded in [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md) / PR #11.
+
+## v0.6.7 original closure verification
+
+Observed 189 runtime contracts / 39 installed groups plus 3 outer tests, all pass,
+zero failures/cancellations/skips/todos. All historical 183 contracts stay active.
+Six new assertion-bearing integration contracts execute the actual 0.6.7 tarball
+and physical pinned Core, with strict external NodeNext / skipLibCheck:false.
+Independent sessions assert literal Resource/stat/event/lifetime outcomes.
+
+New controls reject stale installed Status companions, stale L4 publication,
+missing consumers, wrong version, skipped/no-assertion tests and wrong installed
+declarations. Existing controls retain wrong Core integrity/root export, periodic
+boundary/duplicate completion, zero tests and failed strict TS coverage. Mutations
+are temporary; original installed dist bytes are checked after restoration.
+No source import, symlink, alternate engine or scheduler. Final push/PR CI and
+Ready gate are tracked in [final review report](reports/v0.6.7-effect-final-review.md) / PR #11; Developer acceptance PENDING.
+Concrete game profiles NOT_EVALUATED. Older sections describe historical evidence.
+
+## v0.6.6 installed periodic evidence
+
+Actual0.6.6 tarball with unchanged pinned physical Core, independent native ESM
+consumer and strict external NodeNext/skipLibCheck:false. effect-periodic.mjs adds
+eight behavior contracts/eight required markers; effect-periodic.ts checks four
+functions/eight immutable types. All previous consumers/oracles unchanged.
+Negative controls require failures for missing fixtures/exports, wrong version/Core,
+skips/no assertions, malformed TypeScript, expiry exclusion, catch-up omission,
+duplicate completion, death bypass, cadence reset, pending-work loss and real Entity
+bypass/cap violations. Runtime faults mutate the installed artifact, then restore
+and byte-audit original package files. Observed total183 runtime tests/38 installed
+groups plus3 outer gates, zero skips. Counts are evidence, not a test-count KPI.
+Local/full verify and exact-head push+PR Windows/Ubuntu Node22/24 required. Phase
+IN_PROGRESS; Developer acceptance PENDING; gameplay profiles NOT_EVALUATED.
+
+## v0.6.5 installed restriction evidence
+
+Mandatory effect-restrictions.mjs/.ts run through actual packed/installed0.6.5,
+physical pinned Core, native ESM root-only and strict NodeNext/skipLibCheck:false.
+Eight behavior tests/eight markers cover EF26–EF30, including actual unchanged
+Skill/Combat/EF08 admissions and coordinated modifier/status candidates. Required
+fixtures, five root exports, version, artifact provenance/integrity, compiler and
+TAP guards fail closed. Six installed JS faults (duplicates, wrong Entity, stale
+expiry boundary, refresh overwrite, expired blocker, collapsed provenance), real
+Skill/Combat bypass, skipped and no-assertion consumers must fail. Full prior
+GF/EC/PG/CB/SK/EF contracts retained; no gameplay-profile PASS inferred. Phase
+IN_PROGRESS, Developer acceptance PENDING; v0.6.6 NOT_STARTED. Earlier sections
+are historical checkpoints.
+
+## v0.6.4 installed numerical modifier evidence
+
+The mandatory packed-package consumer now includes EF21–EF25 beside prior
+GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30/SK01–SK35/EF01–EF20. Real package/Core bytes,
+root-only ESM, strict NodeNext declarations and negative controls are verified.
+Effect captures and projects; unchanged Entity/Core calculate. This proves shared
+function contracts, not a game runtime or full Text/2D/2.5D gameplay profile.
+Phase IN_PROGRESS, Developer acceptance PENDING; v0.6.5 NOT_STARTED.
+
+## v0.6.3 installed stacking evidence
+
+Mandatory effect-stacking.mjs/.ts use actual installed0.6.3 tarball and pinned
+Core, native ESM/root exports and strict NodeNext/skipLibCheck:false. Seven
+behavior tests prove EF16–EF20; exact TAP counts and seven markers forbid silent
+skips. All six missing root exports fail the actual consumer. Three independent
+fault injections into installed Effect JS (overflow, partial consume, replacement
+identity) fail the same stacking consumer, then bytes are restored and checked.
+Previous artifact, fixture, compiler, version, Core and TAP controls remain required.
+See [report](reports/v0.6.3-effect-stacking-refresh.md); older sections are history.
+
+## v0.6.2 installed lifecycle evidence
+
+Mandatory effect-lifecycle.mjs/.ts consumers use actual installed 0.6.2 tarball and
+pinned Core, root-only ESM/strict NodeNext. Seven runtime tests cover EF11–EF15;
+TAP counts/markers and zero skips are required. Installed bytes match fresh dist.
+Missing any of four lifecycle root exports fails the actual consumer. Deliberate
+wrong expiry and event-order expectations fail that same installed test runner.
+Existing fixture/version/Core/compiler/zero-test/skipped controls stay mandatory.
+See [report](reports/v0.6.2-effect-duration-lifecycle.md); earlier evidence is historical.
+
+## v0.6.1 installed application evidence
+
+Required effect-application.mjs/.ts consumers execute against actual independently
+installed @rpg/gameplay@0.6.1 plus pinned Core. Six runtime groups of behavior
+cover EF06–EF10/S01–S27; all previous consumers cover S28 regressions. The runner
+requires exact TAP execution/markers, strict NodeNext with skipLibCheck:false,
+both new root exports and exact installed JS/declaration bytes matching fresh dist.
+A deliberate installed Effect artifact change is rejected then restored. Existing
+missing fixture/export/version/Core integrity/compiler/zero/skipped controls remain
+required. See [checkpoint report](reports/v0.6.1-effect-application-admission.md).
+
+## v0.6.0 installed Effect evidence
+
+The actual packed @rpg/gameplay@0.6.0 plus pinned Core is independently installed.
+Five required runtime tests cover EF01–EF05/S01–S22; the strict NodeNext companion
+checks root signatures, readonly nested state, discriminated sources and private
+export denial. Existing GF/EC/PG/CB/SK consumers supply S23 regression coverage.
+The runner checks exact TAP totals/markers and rejects zero/skipped tests; missing
+consumer, wrong version, absent Effect root export, invalid artifact and compiler
+errors fail closed. No gameplay simulation/profile PASS is implied.
+See [checkpoint evidence](reports/v0.6.0-effect-foundation.md).
+
 # Harness Features H01–H16 — scope vs. implementation
 
 ## v0.5.6 installed integration and fail-closed evidence

@@ -1,3 +1,138 @@
+## v0.6.7-FIX01 gates
+
+Repeat all local commands listed below, plus targeted installed integration9/9
+and strict external NodeNext. The patch adds three tests to the original suite:
+require192 runtime contracts /39 installed groups plus3 outer tests, zero
+fail/cancel/skip/todo. Require FIX01–FIX16 coverage, all ten actual defeat-fault
+controls, unchanged GF/EC/PG/CB/SK/EF contracts and restored installed bytes.
+Audit one-function/two-type additive API delta (109/184), only allowed production
+paths, unchanged package0.6.7/Core pin/metadata/dependencies/module graph/protected
+owners. Actual simulation death time2000 must survive horizon6000 without event
+rewriting. Both new-head push/pull_request Windows/Ubuntu Node22/24 matrices8/8
+must pass before PR #11 becomes Ready. Historical432e99e8 CI cannot close FIX01.
+See [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md) and its SHA-bound
+PR supplement for final CI evidence. Developer approval PENDING; no merge/tag/publish.
+
+## v0.6.7 final closure gates (historical checkpoint)
+
+Required final local commands: core:prepare; npm ci --ignore-scripts;
+harness:check; harness:selftest; build; typecheck; test:functional; verify;
+git diff --check. Installed package must be 0.6.7 with physical Core2.0.0,
+closed root exports, actual dist bytes and strict NodeNext/skipLibCheck:false.
+Observed functional evidence: 189 runtime contracts / 39 groups plus 3 outer
+tests, zero fail/cancel/skip/todo; six EF36–EF40 contracts preserve all earlier
+183. Negative controls include missing fixture/version/Core/export, expiry tick,
+stale companion, duplicate completion, wrong installed declaration, strict TS
+failure, skipped/no-assertion/zero-test execution and stale L4 baseline publication.
+
+Only after both push and pull_request exact-head Windows/Ubuntu Node22/24 jobs
+(8/8) complete successfully may existing PR #11 change Draft -> Ready for Review.
+The immutable-SHA PR delivery/CI supplement completes the committed pre-push
+report without a recursive documentation commit invalidating the audited SHA.
+See [final review report](reports/v0.6.7-effect-final-review.md). Developer acceptance PENDING; merge/tag/publish NOT AUTHORIZED.
+macOS NOT_RUN; concrete gameplay profiles NOT_EVALUATED. Earlier checkpoint
+statuses/counts are historical.
+
+## v0.6.6 checkpoint gates
+
+Fresh core:prepare and npm ci --ignore-scripts; unchanged Core2.0.0 pin/lock SHA-512.
+harness:check, harness:selftest, build, typecheck, test:functional and full verify
+must pass. Actual local installed evidence:183 runtime contracts/38 groups plus3
+outer tests, zero fail/cancel/skip/todo. EF31–EF35 eight new contracts and all
+GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30/SK01–SK35/EF01–EF30 regressions retained.
+All required markers, negative controls, root108 functions/182 types, real physical
+Core artifact and private-free declarations remain mandatory. Missing source,
+spaced Node paths and subprocess failure propagation controls stay active.
+
+Exact delivered SHA must pass both push and pull_request Windows/Ubuntu Node22/24
+jobs (8/8). Audit complete logs for counts/new markers/negative controls/zero skips;
+attach immutable-SHA results to existing Draft PR #11 without altering tested commit.
+No completion claim before remote audit; local report initially marks CI PENDING.
+macOS NOT_RUN. No merge/tag/publish/Ready/v0.6.7 authorization. Phase IN_PROGRESS;
+Developer acceptance PENDING; concrete game profiles NOT_EVALUATED.
+
+## v0.6.5 checkpoint gates
+
+Fresh core:prepare and npm ci --ignore-scripts, harness:check, harness:selftest,
+build, typecheck, test:functional, full verify and git diff --check are required.
+Actual installed0.6.5/pinned Core, strict NodeNext, root exports/private closure,
+byte provenance and real negative faults must pass with zero skips. Inventory:
+104 runtime functions/174 types, five static gameplay modules/10 source files.
+Required regressions GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30/SK01–SK35/EF01–EF30.
+Audit additive five-function/eight-type delta, preserved EF01–EF25 declarations,
+shared private receipt validation, unchanged protected owners/Core/graph/deps and
+version-only metadata. Both delivered-head push and PR matrices must pass
+Windows/Ubuntu Node22/24 (eight jobs). Pending CI is not CHECKPOINT_COMPLETE.
+The committed report records pre-push evidence; final SHA/job links supplement it
+on existing Draft PR #11 without a new tracked commit invalidating tested HEAD.
+Stop at0.6.5; phase IN_PROGRESS, acceptance PENDING. No Ready/merge/tag/publish or
+v0.6.6. Earlier checkpoint counts/statuses are historical. macOS NOT_RUN;
+concrete gameplay profiles NOT_EVALUATED.
+
+## v0.6.4 checkpoint gates
+
+Fresh core:prepare and npm ci --ignore-scripts; harness:check, harness:selftest,
+build, typecheck, test:functional and full verify must pass. Installed EF01–EF25
+and all prior GF/EC/PG/CB/SK, strict NodeNext, byte provenance, required exports and
+negative controls run with zero skips. Audit exact three-function/six-type delta,
+unchanged EF01–EF20 declarations/helpers and protected owners/Core/graph/dependency
+pins, version-only package metadata and git diff --check. Both exact-head events
+require Windows/Ubuntu Node22/24 (eight jobs). Final SHA/CI supplements the committed
+pre-push report in existing Draft PR #11. Pending CI is not CHECKPOINT_COMPLETE.
+Stop at0.6.4; no Ready/merge/tag/publish/0.6.5. Earlier gates are historical.
+
+## v0.6.3 checkpoint gates
+
+Fresh core:prepare and npm ci --ignore-scripts; harness:check, harness:selftest,
+build, typecheck, test:functional and full verify are required. Actual installed
+EF01–EF20/GF/EC/PG/CB/SK, strict NodeNext, byte provenance and runner fault controls
+must pass with zero skips. Audit six-function/nine-type delta, protected paths,
+unchanged Core/graph/dependency pins, version-only metadata and git diff --check.
+Both exact-head events require Windows/Ubuntu Node22/24 (eight jobs). Record final
+SHA/CI in Draft PR #11 as the supplement to the committed pre-push report.
+Pending CI is not completion. Stop at0.6.3; no Ready/merge/tag/publish/0.6.4.
+Earlier checkpoint gates are historical.
+
+## v0.6.2 checkpoint gates
+
+Run fresh core:prepare/install, harness:check, harness:selftest, build, typecheck,
+test:functional and full npm run verify with installed EF01–EF15 and every prior
+GF/EC/PG/CB/SK consumer. Require strict NodeNext, byte provenance, all four new
+root exports, actual wrong-expiry/order negative controls and zero skipped tests.
+Audit exact four-function/seven-type API delta, unchanged EF01–EF10/protected
+owners/Core/registry/dependency versions, version-only metadata, git diff --check.
+Same Draft PR #11 must pass Windows/Ubuntu Node22/24 for push and pull_request at
+the exact delivered SHA (8 jobs). Final CI/SHA supplements the tracked pre-push
+[report](reports/v0.6.2-effect-duration-lifecycle.md) in that PR's body. Pending CI
+is not completion. Stop at 0.6.2; no Ready/merge/tag/publish/automatic 0.6.3.
+Earlier checkpoint gates below describe historical requirements.
+
+## v0.6.1 checkpoint gates
+
+Fresh core:prepare and npm ci --ignore-scripts precede harness:check,
+harness:selftest, build, typecheck, test:functional and full verify. Required
+consumers now include EF01–EF10 alongside unchanged GF01–GF16/EC01–EC18/PG01–PG19/
+CB01–CB30/SK01–SK35. Installed source/declaration byte provenance, required exports,
+strict NodeNext and runner rejection controls must pass with zero skipped tests.
+Audit EF01–EF05 preservation, two-function/six-type delta, version-only metadata,
+unchanged graph/Core/protected owners, and git diff --check before commit/push.
+Existing Draft PR #11 requires exact-head Windows/Linux × Node22/24 for both push
+and pull_request (eight jobs). Final SHA/CI evidence supplements the pre-push
+[report](reports/v0.6.1-effect-application-admission.md) in that same PR body.
+Do not declare completion while CI is pending; no Ready/merge/tag/publish/0.6.2.
+
+## v0.6.0 checkpoint gates
+
+Run core:prepare, npm ci --ignore-scripts, harness:check, harness:selftest, build,
+typecheck, test:functional, full verify and git diff --check. verify includes the
+required EF01–EF05 installed group plus all previous GF01–GF16, EC01–EC18,
+PG01–PG19, CB01–CB30 and SK01–SK35 consumers. Required TAP counts, markers,
+strict installed TypeScript and runner negative controls must pass without skips.
+The unchanged CI matrix must pass at the delivered SHA for both push and
+pull_request: Windows/Linux × Node22/24 (eight jobs). Pending CI is not completion.
+Draft PR only; no Ready/merge/tag/publish or next milestone. Delivery SHA and final
+CI links are recorded in the same PR after the report's pre-push snapshot.
+
 # Verification gates — v0.5.6
 
 ## Current release candidate — v0.5.6

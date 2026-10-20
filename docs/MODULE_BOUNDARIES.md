@@ -1,3 +1,117 @@
+## v0.6.7-FIX01 boundary audit
+
+Production delta is confined to src/modules/effect/index.ts and root exports:
+explicit cleanup plus narrow existing companion support. No new module/dependency
+edge/store/runtime owner. Entity decides death, Core owns numerical work and L4
+binds death timestamp, stages complete candidates and commits against its baseline.
+The same canonical lifecycle remains sole membership authority; protected owners,
+module graph and Core pin stay unchanged. See [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md).
+
+## v0.6.7 original closure audit
+
+No source or module graph delta from v0.6.6. Five optional modules remain:
+Entity -> []; Progression/Combat/Skill/Effect -> [Entity]. Effect production imports
+only Entity, Foundation execution and public Core Kernel types; no dependency on
+Skill, Combat, Progression, L3 or L4. Installed consumers demonstrate Entity+Effect
+and Entity+Skill+Effect compositions and rejection when Entity is absent.
+
+Canonical lifecycle is the only active membership/lifetime authority. Modifier,
+Status and Periodic states are aligned immutable companions, not competing stores.
+The test's local application snapshot stages existing owner candidates and checks
+baseline identity; it is L4 orchestration evidence, not production runtime code.
+Phase diff against main adds only Effect owner/root exports in production; all
+protected owners, Core pin and accepted historical fixtures remain unchanged.
+
+## v0.6.6 periodic ownership
+
+The existing optional Effect owner adds configuration/cursor payloads and tick
+planning/completion only. Canonical Effect lifecycle remains sole membership/time
+authority. One aligned periodic entry per instance; no copied lifetime/instance store.
+Imports/graph unchanged: Effect -> Entity/Foundation/public Kernel only. L3 supplies
+fixed resolved amount; L4 invokes Entity Resource/Life and atomically commits all
+companion candidates. Core owns arithmetic; Entity owns bounds/applied amount/death.
+Planning never executes resources, Skill or Combat. No reverse edges, second
+engine, scheduler, timer, manager, globals, dependency or protected-owner changes.
+Refresh preserves cadence; pending work must drain before expiry advancement;
+explicit cleanup at the old boundary can cancel work. v0.6.7 remains out of scope.
+
+## v0.6.5 status/restriction ownership
+
+EffectStatusState is a companion payload index, not another active store. The
+separate canonical lifecycle owns membership/time/effectId; snapshots store only
+instance ID and status/restriction arrays. Every boundary validates exact Entity,
+time, ordered one-to-one membership and complete own-data values. A shared private
+receipt validator follows canonical lifecycle/stack deltas for both companions,
+without reexecuting expiration, stacking or admission. Existing public schemas
+remain intact. L4 must accept/reject and commit all companions with the same
+lifecycle candidate, without partial authoritative commit. L3 owns all meanings;
+L4 binds Entity IDs and combines independent eligibility before existing public
+Skill, Combat and EF08 admission. No sibling import/change or second admission
+engine. Core alone owns numerics. Module graph/dependency/pin unchanged:
+entity[]; progression/combat/skill/effect[entity], all optional. No scheduler,
+mutable cache, global status registry or automatic interrupt/death cleanup.
+
+## v0.6.4 modifier ownership
+
+Effect adds type-only ModifierOperation/NumericalModifier imports from the public
+Kernel. Its three companion functions validate/capture/project only; Entity's
+unchanged calculateEntityStats remains the numerical boundary and Core owns
+selection/conflicts/filtering/arithmetic. Existing lifecycle/stack APIs alone
+create membership/time transitions; companion synchronization consumes their
+structural result values. L3 supplies classification/concrete values, L4 composes
+sources and owns freshness, namespaces and commit. Graph unchanged: entity[];
+progression/combat/skill/effect[entity]. No sibling dependency, second instance
+store, effective-stat cache, global gameplay state or new module.
+
+## v0.6.3 stack ownership
+
+The existing optional Effect owner still imports only public Entity/Foundation
+execution. Graph stays entity[]; progression/combat/skill/effect[entity]. Group
+views/counts derive from canonical instances, with no catalog, cache or second
+active store. EF12 and stack addition share one private start implementation;
+time-sensitive boundaries read the caller Foundation clock once. Group removal
+coordinates EF14; consumption removes membership without fake removal reasons.
+L3 owns stack/refresh/maxStacks; L4 owns consistency, sourceKey allocation,
+authority and commit. No numerical calculation, Legacy usage, scheduler,
+event publication or sibling dependency. Existing public schemas remain intact.
+
+## v0.6.2 lifecycle ownership
+
+Same Effect owner imports public Entity and Foundation execution entrypoints only.
+Graph unchanged: entity[]; progression/combat/skill/effect[entity], all optional.
+Foundation readExecutionTime owns clock validation; Effect owns timing association,
+expiry bookkeeping and single removal, not numerical gameplay. No cooldown reuse.
+One embedded canonical EffectState holds instances; matching lifetime records hold
+IDs/timestamps only. Transient sets/arrays select a returned candidate, never a
+second live store. No global state/registry/engine, timers, scheduler, listeners or
+Messaging publication. Skill/Combat/Progression owners and Core pin unchanged.
+L3 chooses durations; L4 owns authoritative state, simulation advance and commit.
+D15 future ticks precede expiration; D17 death cleanup stays caller-mediated.
+Earlier milestone boundary descriptions below are historical.
+
+## v0.6.1 Effect application boundary
+
+Effect remains a single owner at src/modules/effect/index.ts, importing only public
+Entity createEntity/getEntity and canonical identity/collection/life types. Existing
+Effect validators serve admission and application; applyEffect calls admission
+rather than implementing another gate. Life shape/status/binding are checked at
+the Effect boundary using EntityLifeStatus; no new life enum, inference/transition,
+collection scan or Combat relation validator exists. Collection validation and
+lookup remain inside getEntity, including missing-target/system-source contexts.
+Registry/graph and protected owners are unchanged. Source/target eligibility are
+caller assertions; L4 retains authority/commit. No Skill/Combat/Progression import,
+Core numerical operation, Legacy usage, global store or lifecycle engine.
+
+## v0.6.0 Effect owner
+
+src/modules/effect/index.ts is the single optional Effect owner. Its only production
+import is the public Entity entry (createEntity and EntitySnapshot). Registry graph:
+entity []; progression [entity]; combat [entity]; skill [entity]; effect [entity].
+All remain optional. Effect does not auto-enable Entity; selecting Effect alone
+fails missing-dependency validation. Entity+Effect works with Skill, Combat and
+Progression disabled; Entity+Skill+Effect composes independently. No new dependency,
+Core/Legacy import, store, engine or future-module placeholder is introduced.
+
 # Module Registry Contract
 
 ## v0.5.6 closure audit boundary

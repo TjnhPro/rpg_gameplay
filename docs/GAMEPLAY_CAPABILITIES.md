@@ -1,3 +1,120 @@
+## Current patch candidate: v0.6.7-FIX01
+
+EF01–EF40 remains the baseline. One explicit canonical Effect cleanup operation
+now accepts caller-bound target death time, rejects unresolved earlier work and
+cancels same-time/future ticks after Entity death; existing companion owners align.
+This adds one public function/two types without new gameplay policy/module/engine.
+Actual installed regression evidence and exact-head readiness are tracked in
+[patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md) / PR #11.
+Developer acceptance PENDING; no merge/tag/publish; game profiles NOT_EVALUATED.
+
+## Original closure candidate: v0.6.7 — EF01–EF40 (historical)
+
+EF01–EF35 reusable capabilities preserved; EF36 full E2E, EF37 five generic source
+origins and target isolation, EF38 independent literal replay/recovery, EF39 full
+regression/audit and EF40 actual installed package/strict declarations are
+IMPLEMENTED and locally verified. No new production source or public API.
+
+Supported MVP: fixed pre-resolved DoT/HoT, timed/persistent independent stacks,
+refresh/consume/remove, apply-time modifiers through Entity/Core and generic
+restrictions handed to actual Skill/Combat/Effect admission. Skill activation uses
+the existing caller dispatch; Item/Equipment are generic references, not new modules.
+Environment/System use system sources without fake Entities. L4 owns cleanup and
+atomic local publication. Advanced numerical variants remain DEFERRED_UNSUPPORTED
+pending canonical capability/policy review, with no substitute formulas.
+
+Final exact-head CI/readiness: [final review report](reports/v0.6.7-effect-final-review.md) and PR #11. Developer acceptance PENDING;
+no merge/tag/publish. Concrete game profiles NOT_EVALUATED. Earlier sections are
+historical checkpoint evidence, superseded by this closure candidate.
+
+## Current checkpoint: v0.6.6 Periodic Effects — DoT / HoT
+
+EF31–EF35 IMPLEMENTED: explicit immutable none/dot/hot captures, aligned per-instance
+cursors, one-intent deterministic catch-up, tick at inclusive expiry boundary,
+persistent/independent stack cadences, refresh preservation and exact lifecycle cleanup.
+Installed L4 composition executes fixed pre-resolved DoT/HoT through real Entity/Core
+Resource/Life. Death blocks subsequent ticks; source death remains independent.
+Failed execution preserves cursor; stale completion/pending expiry advancement reject.
+Modifier/status companions and EF01–EF30 remain intact.
+
+Advanced numerical variants DEFERRED_UNSUPPORTED pending canonical capability review;
+no formulas/workarounds, automatic scheduler, runtime, manager or production orchestration.
+v0.6.7 Integration & Closure NOT_STARTED. Phase IN_PROGRESS; acceptance PENDING.
+Framework contracts verified; concrete game profile behavior remains NOT_EVALUATED.
+Earlier checkpoint sections are historical evidence, not current scope.
+
+## Current checkpoint: v0.6.5 Effect Restrictions & Status
+
+EF26–EF30 adds exact opaque status/restriction IDs, immutable apply-time snapshots,
+ordered active contributor views and explicit exact-match restriction assessment.
+L3 defines meaning/applicable actions; L4 binds the assessed Entity, ANDs existing
+eligibility and passes unchanged Skill/Combat/EF08 policies. Installed examples
+prove Stun/Silence/immunity through those canonical admissions. Assessment alone
+is not full authorization. Lifecycle remains the sole membership/time authority;
+status companion contains only Entity/time and per-instance payloads. Refresh
+preserves capture; expiration/removal/consumption prune it. No numerical operation,
+status vocabulary, action engine, periodic runtime or global registry. Foundation,
+Application, Lifecycle, Stacking, Modifiers and Restrictions through0.6.5 are
+IMPLEMENTED. DoT/HoT0.6.6 and Closure0.6.7 OUT_OF_SCOPE. Phase IN_PROGRESS,
+acceptance PENDING; gameplay profiles NOT_EVALUATED. Earlier sections are history.
+
+## Current checkpoint: v0.6.4 Buff / Debuff & Stat Modifiers
+
+EF21–EF25 adds explicit buff/debuff/neutral metadata, immutable apply-time payload
+snapshots and canonical Core modifier projection. A companion embeds the existing
+lifecycle as its only instance authority and stores exactly one payload per active
+instance. L4 synchronizes accepted lifecycle results and composes numerical sources;
+Entity/Core calculate stats. Refresh retains payloads; consume/remove/expire prune
+them. No stat cache/rollback, new math, catalog, restriction or periodic runtime.
+Phase IN_PROGRESS, Developer acceptance PENDING; v0.6.5 NOT_STARTED. Gameplay
+profile behavior NOT_EVALUATED. Earlier milestone sections are historical.
+
+## Current checkpoint: v0.6.3 Effect Stacking & Refresh
+
+EF16–EF20 add exact target/effect/sourceKey group views, source identity collision
+checks, explicit stack/refresh policy and capacity, nonshortening single-anchor
+renewal, exact-N consumption and whole-group removal. Membership/counts derive
+from the existing canonical EffectState; lifetimes remain independent metadata.
+L3 supplies policy; L4 owns freshness, clock advance and commit. Historical policy
+changes cannot all be inferred without stored policy; L4 must preserve consistency.
+Buff/Debuff modifiers, restrictions and DoT/HoT remain OUT_OF_SCOPE. Phase
+IN_PROGRESS, Developer acceptance PENDING; v0.6.4 NOT_STARTED. Gameplay profile
+behavior NOT_EVALUATED. Earlier checkpoint sections are historical.
+
+## Current checkpoint: v0.6.2 Effect Duration & Lifecycle
+
+EF11–EF15 implement timed/persistent duration, initialization from accepted EF09,
+explicit Foundation-clock advancement, deterministic expiration, single-instance
+removal and immutable returned events/candidates. One embedded EffectState remains
+the instance owner; lifetime records contain timing references only. L3 supplies
+duration, L4 advances/commits and requests external death cleanup.
+Stack/refresh, buff/debuff, restrictions and DoT/HoT remain OUT_OF_SCOPE for this
+checkpoint. No timer, scheduler, global store, numerical calculation or publication.
+v0.6.x IN_PROGRESS; v0.6.3 NOT_STARTED; Developer acceptance PENDING. Gameplay
+profile behavior remains NOT_EVALUATED. All sections below are checkpoint history.
+
+## Current checkpoint: v0.6.1 Effect Application & Admission
+
+EF06–EF10 add source-agnostic apply requests, canonical Entity lookup, explicit
+caller life/eligibility policy, deterministic admission and immutable appended
+EffectState candidates. Applied is structural acceptance, without active-timed
+semantics or authoritative commit. Entity/System/Skill/Equipment/Environment
+handoffs use the same API; no sibling module dependency is added.
+Duration, active lifecycle, stack/refresh, modifiers, restrictions and DoT/HoT
+remain NOT_IMPLEMENTED. v0.6.x IN_PROGRESS, v0.6.2 NOT_STARTED, Developer acceptance
+PENDING. Existing gameplay profile behavior remains NOT_EVALUATED. Earlier
+checkpoint sections below retain their historical scope.
+
+## Current checkpoint: v0.6.0 Effect Foundation
+
+EF01 identity, EF02 definition, EF03 instance, EF04 immutable structural state and
+EF05 optional module integration are implemented for review. Effect IDs are
+independent of Skill; entity/system source references preserve caller sourceKey.
+No gameplay profile is evaluated by this structural milestone. Application,
+active lifecycle, stack/refresh, modifiers, restrictions and DoT/HoT are
+NOT_IMPLEMENTED. v0.6.x IN_PROGRESS; v0.6.1 NOT_STARTED; acceptance PENDING.
+Skill PR #10 is the merged baseline. Earlier milestone status below is historical.
+
 # L2 Gameplay Foundation — 14 accepted capability groups
 
 ## Skill v0.5.6 closure candidate

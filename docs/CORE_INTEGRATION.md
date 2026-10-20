@@ -1,3 +1,79 @@
+## v0.6.7-FIX01 numerical ownership
+
+Only Effect cleanup/root exports change in production. Actual installed Entity/Core
+transitions resolve HP5→0/Life dead at lethal intent time2000; cleanup consumes that
+structural evidence, never calculates Resource or decides death. Core2.0.0 pin,
+revision/integrity/dependencies and Entity implementation stay unchanged.
+See [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md).
+
+## v0.6.7 original closure provenance and numerical ownership
+
+Core remains 2.0.0 / revision 04b7239f998c3c688a0dfa3202f11811a9acd775.
+Fresh preparation/install and lock SHA-512 audit prove the actual artifact.
+No Core/Entity/Combat/Skill source or dependency change. Installed integration
+consumers call transitionEntityResource (decrease/increase) and resolveEntityDefeat,
+and calculateEntityStats with Effect modifier snapshots. Core determines applied
+magnitude, bounds and numerical composition; no Effect damage/healing calculator.
+
+Literal evidence includes HP100->50 for five DoT ticks, HoT70->80->90->100->100,
+buff/debuff108->120->100 and independent replay final HP40/stat100. Lifecycle
+timestamp arithmetic only controls intent order. Generic restriction policy remains
+L3/caller input. Advanced scaling/percentage/resistance/conversion/live-source rules
+remain deferred until canonical numerical and snapshot policies are approved;
+existing specific Core APIs do not imply arbitrary end-to-end mechanic support.
+
+## EF31–EF35 fixed periodic MVP audit — v0.6.6
+
+Actual pinned Core public Kernel source and existing Entity contracts were inspected.
+Core2.0.0 revision04b7239f998c3c688a0dfa3202f11811a9acd775 and SHA-512 lock integrity
+unchanged. calculateResourceTransition supports explicit increase/decrease, bounds,
+normalization and canonical applied magnitude. Entity transitionEntityResource is the
+existing L2 adapter; resolveEntityDefeat owns Life. Installed periodic consumers invoke
+both actual APIs, with literal expected resource outcomes, never a substitute calculator.
+
+Core also exposes calculateResourceRegeneration and existing B0/B1 damage/defense/
+mitigation functions; their presence does not establish arbitrary periodic scaling,
+resistance, healing coefficient or snapshot policy contracts. MVP implements only
+fixed finite nonnegative L3 pre-resolved amounts through Resource transition. Damage
+floors/healing caps and applied magnitude come from Core; Effect performs scheduling
+timestamp addition only. Above-max normalization120->100 with amount10 reports canonical
+applied10, not absolute delta20. No attack/hit/dodge/critical roll for DoT.
+
+FEATURE: percentage/scaling/resistance/critical/variable periodic formulas.
+REQUIRED GAMEPLAY SEMANTICS: explicit numerical policy and canonical owner support.
+EXISTING CORE CAPABILITY: bounded Resource transitions and specific public numerical
+functions above, not a general approved periodic formula contract.
+MISSING CAPABILITY: approved end-to-end contracts for each advanced variant.
+MVP DECISION: DEFERRED_UNSUPPORTED; WORKAROUND: NOT AUTHORIZED.
+FUTURE OWNER: L4 -> L3 -> L2 -> L1 capability review. No Core or Entity changes.
+
+## EF21–EF25 numerical contract audit — v0.6.4
+
+Read-only inspection of pinned src/kernel/index.ts, contracts/modifiers.ts,
+modifiers/modifier-resolution.ts and stats/stat-calculation.ts confirmed public
+ModifierOperation/NumericalModifier and selectCanonicalModifiers,
+prepareNumericalModifiers, calculateEffectiveValue, calculateStats. Effect reuses
+the actual types; only add_flat/add_percent/add_percentage_points are accepted.
+Projection binds effect / effectInstanceId / modifierId without arithmetic or
+filtering. Entity validates configured targets and delegates to Core. Core selects
+enabled entries, deduplicates equivalent identity tuples, rejects conflicts and
+calculates (base + flat) * (1 + percent) + points. This formula is an oracle only;
+none is copied into Effect. Installed consumer oracles include120,90,108,114,
+110,115 and source-isolated103, using explicit caller precision8 through Core.
+Core2.0.0 revision04b7239f998c3c688a0dfa3202f11811a9acd775 and artifact/lock integrity
+are unchanged. No Core/Entity modification or unsupported operation is needed.
+
+## Effect Foundation v0.6.0 capability audit
+
+Core stays 2.0.0 at 04b7239f998c3c688a0dfa3202f11811a9acd775, with unchanged
+lockfile integrity and harness/core-pin.json. Effect identity and immutable
+structural association require no numerical calculation. Public Kernel types
+cover numerical stats/modifiers/resources/damage/defense/cooldown; historical
+Core ./effects is outside the allowed Kernel surface and is neither imported nor
+copied. No Core implementation/pin/dependency change is needed. Future numerical
+work must inventory Kernel support first; unsupported capabilities are deferred
+from MVP, never reimplemented in L2.
+
 # Core Kernel integration
 
 ## v0.5.6 closure verification

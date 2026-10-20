@@ -1,3 +1,684 @@
+## v0.6.7-FIX01: explicit target-defeat cleanup
+
+One additive function and two types: root109 functions /184 types. Historical
+stack action unions, removal reasons and existing function behavior are unchanged.
+
+```ts
+export interface EffectTargetDefeatCleanupRequest { readonly defeatedAtMs: number }
+export function cleanupDefeatedTargetEffects(
+  lifecycle: EffectLifecycleState, periodic: EffectPeriodicState,
+  targetLife: EntityLifeState, request: EffectTargetDefeatCleanupRequest,
+  context: GameplayExecutionContext
+): EffectTargetDefeatCleanupResult;
+```
+
+The result is `applied / none / action: target_defeated` with an empty canonical
+lifecycle aligned at `defeatedAtMs`, and lexical instance-ID ordered
+`removed / target_defeated` events at that time. Or it is `rejected`, null state,
+empty events, and reason `target_alive`, `time_regressed`, `time_after_horizon`,
+`pending_ticks_before_defeat` or `pending_expiration_before_defeat`.
+All three existing companion transition functions accept this dedicated result;
+no capture is allowed. Modifier/Status snapshots and Periodic entries become empty.
+
+Caller supplies canonical dead Entity Life and the actual simulation death time
+(lethal tick intent's `dueAtMs`, never automatically the current horizon).
+Require `observedAtMs <= defeatedAtMs <= readExecutionTime(context)`.
+Invalid shapes/nonfinite/negative time, wrong Life binding, invalid context or
+misaligned periodic state throw TypeError. Earlier unresolved ticks/expiry reject;
+same-time/future ticks are canceled. Cleanup takes precedence over same-time
+expiration: one terminal removal per instance, no synthetic tick or expiry event.
+Empty dead-target cleanup succeeds without events and aligns observation time.
+Ordinary advancement/refresh/consume/group removal retain pending-tick guards.
+
+L4 stages canonical Entity Resource/Life, completed cursor, cleanup and all three
+companions before publishing one complete candidate against its current baseline.
+Structural receipts/Life are caller evidence, not committed-persistence proofs;
+there is no transaction manager or distributed exactly-once guarantee.
+See [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md).
+
+## v0.6.7 original closure checkpoint (historical)
+
+No production behavior or public API additions/removals relative to v0.6.6:
+108 root functions / 182 root types. EF36–EF40 is integration evidence, not a new
+facade. Installed L4 callers compose the existing Effect application, canonical
+lifecycle and Modifier/Status/Periodic companions with actual Entity Resource/Life,
+Entity/Core stats and independent Skill/Combat admissions. L3 supplies fixed
+amounts, modifier captures and generic restriction policy. All candidates stage
+from the same baseline; a caller publishes the complete immutable local snapshot
+only on success and only if that baseline is still current. Failure preserves the
+pending tick. This is not database atomicity or distributed exactly-once proof.
+
+See [final review report](reports/v0.6.7-effect-final-review.md) and PR #11 for final exact-head CI/readiness. Earlier checkpoint
+statuses below are historical. Developer approval PENDING; no merge/tag/publish.
+Concrete game profile behavior NOT_EVALUATED.
+
+## EF31–EF35 Periodic Effects (v0.6.6)
+
+Four functions/eight types, root-only; root108 functions/182 types. Earlier104
+functions/174 types and all existing signatures remain unchanged. Public declarations:
+
+```ts
+export type EffectPeriodicCapture = {
+    readonly mode: 'none';
+} | {
+    readonly mode: 'periodic';
+    readonly kind: 'dot' | 'hot';
+    readonly intervalMs: number;
+    readonly resourceId: string;
+};
+export type EffectPeriodicEntry = {
+    readonly effectInstanceId: string;
+    readonly mode: 'none';
+} | {
+    readonly effectInstanceId: string;
+    readonly mode: 'periodic';
+    readonly kind: 'dot' | 'hot';
+    readonly intervalMs: number;
+    readonly resourceId: string;
+    readonly nextTickAtMs: number;
+};
+/** Progress payload only; canonical lifecycle remains membership/lifetime authority. */
+export interface EffectPeriodicState {
+    readonly entityId: string;
+    readonly observedAtMs: number;
+    readonly entries: readonly EffectPeriodicEntry[];
+}
+export interface EffectPeriodicTickIntent {
+    readonly effectInstanceId: string;
+    readonly effectId: string;
+    readonly targetEntityId: string;
+    readonly kind: 'dot' | 'hot';
+    readonly resourceId: string;
+    readonly dueAtMs: number;
+}
+export type EffectPeriodicTickAssessment = {
+    readonly status: 'due';
+    readonly reason: 'none';
+    readonly intent: EffectPeriodicTickIntent;
+} | {
+    readonly status: 'idle';
+    readonly reason: 'none';
+    readonly intent: null;
+} | {
+    readonly status: 'blocked';
+    readonly reason: 'target_dead';
+    readonly intent: null;
+} | {
+    readonly status: 'rejected';
+    readonly reason: 'time_regressed';
+    readonly intent: null;
+};
+export interface EffectPeriodicTickEvent {
+    readonly type: 'tick-completed';
+    readonly effectInstanceId: string;
+    readonly effectId: string;
+    readonly targetEntityId: string;
+    readonly kind: 'dot' | 'hot';
+    readonly atMs: number;
+}
+export type EffectPeriodicCompletionResult = {
+    readonly status: 'applied';
+    readonly reason: 'none';
+    readonly state: EffectPeriodicState;
+    readonly events: readonly EffectPeriodicTickEvent[];
+} | {
+    readonly status: 'rejected';
+    readonly reason: 'stale_tick' | 'target_dead' | 'time_regressed';
+    readonly state: null;
+    readonly events: readonly [];
+};
+export type EffectPeriodicTransitionResult = {
+    readonly status: 'applied';
+    readonly reason: 'none';
+    readonly state: EffectPeriodicState;
+} | {
+    readonly status: 'rejected';
+    readonly reason: 'transition_rejected' | 'stale_transition' | 'capture_required' | 'pending_ticks';
+    readonly state: null;
+};
+/** Empty initialization only; never reconstruct periodic history. */
+export declare function createEffectPeriodicState(lifecycle: EffectLifecycleState): EffectPeriodicState;
+/** Follow canonical receipts; refusing advancement across unresolved ticks preserves D15.
+ * Non-addition capture is malformed, consistent with the other companion APIs.
+ * L4 commits lifecycle and all companions together. Explicit removal may cancel future work.
+ */
+export declare function applyEffectPeriodicTransition(current: EffectPeriodicState, previousLifecycle: EffectLifecycleState, transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult, capture?: EffectPeriodicCapture): EffectPeriodicTransitionResult;
+/** At most one intent, ordered by timestamp then lexical instance ID; no cursor or Entity mutation. */
+export declare function getNextDueEffectTick(lifecycle: EffectLifecycleState, periodic: EffectPeriodicState, targetLife: EntityLifeState, context: GameplayExecutionContext): EffectPeriodicTickAssessment;
+/** Cursor candidate only, never proof of numerical execution or a cross-request exactly-once guarantee.
+ * targetLife is the pre-execution alive snapshot; L4 atomically commits the corresponding successful
+ * Entity Resource/Life outcomes and cursor (or explicit defeat cleanup), then plans using updated Life.
+ */
+export declare function completeEffectPeriodicTick(lifecycle: EffectLifecycleState, periodic: EffectPeriodicState, intent: EffectPeriodicTickIntent, targetLife: EntityLifeState, context: GameplayExecutionContext): EffectPeriodicCompletionResult;
+```
+
+Every addition requires explicit capture, including mode:none. Initialization is
+empty-only. Capture/entry/state/intent/Life records are closed own-data contracts;
+arrays dense, one entry per canonical instance in the same order, same Entity/time.
+Fields detach and freeze without freezing caller inputs. intervalMs must be finite
+and positive; timestamp addition must be finite and strictly later. IDs opaque.
+Malformed input throws TypeError; rejection never returns a candidate.
+
+Periodic state owns only configuration/cursors, not instances or lifetimes.
+First tick = canonical startedAtMs + intervalMs. A tick is eligible at due<=clock
+and due<=expiresAtMs (inclusive); persistent effects have no expiry ceiling.
+Planning returns one earliest timestamp, then lexical instance ID, with no mutation.
+Clock is caller-supplied Foundation time, read once per plan/completion. Regressed
+time rejects; dead target blocks, including HoT. No automatic revive or source-death
+cleanup. Finish one tick before planning another with updated Life.
+
+Completion validates the exact earliest due intent, advances only that cursor by
+one interval and emits metadata at scheduled dueAtMs. Duplicate/out-of-order/too-early
+completion is stale_tick. Completion uses the pre-execution alive Life snapshot;
+L4 must first execute actual Entity Resource transition and Entity defeat resolution,
+then atomically commit their successful candidates with the cursor (or defeat cleanup).
+The completion API cannot authenticate Entity execution or current authority.
+Reusing an old structural state is not a cross-request exactly-once guarantee.
+Never commit a cursor after failed execution; retry the same intent from unchanged state.
+Successful zero-effective HoT still completes. Applied magnitude comes from Core's
+Resource result, never abs(after-before), especially for above-maximum normalization.
+
+applyEffectPeriodicTransition consumes the existing canonical lifecycle/stack receipts
+through the shared private companion validator. New capture required; refresh preserves
+capture/cadence; consume/remove/expire prune exactly corresponding entries. It rejects
+pending_ticks if advancement crosses an unresolved eligible tick, even on expiry.
+Drain all due ticks, then advance/expire and commit lifecycle plus modifier/status/
+periodic companions together. Explicit removal/defeat cleanup at the previous canonical
+boundary may cancel future work without fake numerical receipts. Capture on a
+non-addition throws TypeError, matching other companions. Receipts are structural,
+not authenticated persistence/concurrency proofs; L4 owns freshness and atomic commit.
+
+L3 supplies periodic configuration and fixed pre-resolved nonnegative tick amount.
+L4 executes dot via Entity decrease, hot via Entity increase with explicit rules;
+Entity/Core own numerical bounds/applied magnitude and Entity owns Life. No attack
+resolution, formula scaling/resistance, timers, hidden RNG, scheduler or new runtime.
+v0.6.7 NOT_STARTED; phase IN_PROGRESS; Developer acceptance PENDING.
+
+## EF26–EF30 Effect Restrictions & Status (v0.6.5)
+
+Five functions/eight types, root-only. IDs are opaque nonblank exact/case-sensitive
+strings with no interpretation, defaults or registry. Both capture arrays required,
+empty allowed, duplicates within each array rejected. The same identity across
+instances retains all contributor provenance. Values/order detach and freeze;
+closed own-data records/dense arrays reject accessors without invoking getters.
+
+createEffectStatusState requires empty canonical lifecycle. Status state contains
+entityId/observedAtMs/snapshots only, not instances or embedded lifecycle. Every
+query/assessment validates Entity/time/order and one snapshot per active instance,
+including strict unresolved-expiry rejection. Queries never advance lifecycle.
+Status views use first-appearance order; restriction views use canonical instance
+then capture order, resolving effectId from the lifecycle.
+
+applyEffectStatusTransition(current, previousLifecycle, transition, capture?)
+consumes actual EF12–EF20 results and validates canonical deltas through the same
+private validator as modifiers. New appended instance requires explicit capture,
+even empty. Refresh/no-membership changes preserve snapshots; cleanup follows
+exact removed membership. All outputs detached/frozen. Rejected canonical receipts
+return transition_rejected/null, mismatched delta baseline stale_transition/null,
+missing new capture capture_required/null. Malformed values and capture on
+refresh/another non-addition throw TypeError, as in the accepted modifier API;
+the proposed capture_not_allowed outcome is finalized as this malformed-input
+rule, not an unused union placeholder. Receipts do not authenticate freshness.
+
+L4 must coordinate modifier/status candidates from the same previous lifecycle
+and commit all with the canonical next lifecycle, or commit none. Companion
+validation cannot prove authoritative freshness for equivalent structural history;
+L4 owns current authority/concurrency. No second lifetime/transaction manager.
+
+evaluateEffectRestrictionGate exact-matches caller blockedByRestrictionIds and
+returns allowed/none/[] or blocked/active_restriction/all matching provenance.
+It does not authorize a Skill, Combat action or Effect. L4 must first bind
+assessment.entityId to the actor or target being assessed, then AND its existing
+eligibility with assessment.status === 'allowed', and call the existing canonical
+admission. Skill owned/rank/life and Combat source/target checks remain independent.
+CombatTargetPolicy relation/life fields are not a generic immunity API. Any future
+target-restriction API is a separate capability gap, not implemented here.
+
+Public declarations:
+
+```ts
+/** Opaque, case-sensitive L3 identities; no built-in status/restriction vocabulary. */
+export interface EffectStatusCapture {
+    readonly statusIds: readonly string[];
+    readonly restrictionIds: readonly string[];
+}
+export interface EffectStatusSnapshot extends EffectStatusCapture {
+    readonly effectInstanceId: string;
+}
+/** Payload index only. Active membership is supplied separately by the canonical lifecycle. */
+export interface EffectStatusState {
+    readonly entityId: string;
+    readonly observedAtMs: number;
+    readonly snapshots: readonly EffectStatusSnapshot[];
+}
+export interface EffectStatusView {
+    readonly statusId: string;
+    readonly effectInstanceIds: readonly string[];
+}
+export interface EffectRestrictionView {
+    readonly effectInstanceId: string;
+    readonly effectId: string;
+    readonly restrictionId: string;
+}
+export interface EffectRestrictionPolicy {
+    readonly blockedByRestrictionIds: readonly string[];
+}
+/** Restriction assessment only; never full Skill/Combat/Effect authorization. */
+export interface EffectRestrictionAssessment {
+    readonly entityId: string;
+    readonly status: 'allowed' | 'blocked';
+    readonly reason: 'none' | 'active_restriction';
+    readonly matches: readonly EffectRestrictionView[];
+}
+export type EffectStatusTransitionResult = {
+    readonly status: 'applied';
+    readonly reason: 'none';
+    readonly state: EffectStatusState;
+} | {
+    readonly status: 'rejected';
+    readonly reason: 'transition_rejected' | 'stale_transition' | 'capture_required';
+    readonly state: null;
+};
+/** Empty initialization only; no historical capture backfill. */
+export declare function createEffectStatusState(lifecycle: EffectLifecycleState): EffectStatusState;
+/** Follow validated canonical membership deltas, without executing another lifetime or admission engine.
+ * L4 must atomically commit all companions with the same lifecycle candidate.
+ * A replacement capture on refresh or another non-addition is malformed (TypeError).
+ */
+export declare function applyEffectStatusTransition(current: EffectStatusState, previousLifecycle: EffectLifecycleState, transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult, capture?: EffectStatusCapture): EffectStatusTransitionResult;
+/** First-appearance status order and canonical contributor order, with no counters or caches. */
+export declare function listActiveEffectStatuses(lifecycle: EffectLifecycleState, state: EffectStatusState): readonly EffectStatusView[];
+/** Per-instance provenance; effectId comes exclusively from canonical membership. */
+export declare function listActiveEffectRestrictions(lifecycle: EffectLifecycleState, state: EffectStatusState): readonly EffectRestrictionView[];
+/** Exact caller-selected identities only. L3 interprets meaning; L4 composes existing admission policies. */
+export declare function evaluateEffectRestrictionGate(lifecycle: EffectLifecycleState, state: EffectStatusState, policy: EffectRestrictionPolicy): EffectRestrictionAssessment;
+```
+
+Root104 functions/174 types. EF01–EF25 public declarations preserved. D01–D18,
+Core pin, protected owners and graph unchanged; DoT/HoT/Closure deferred. Phase
+IN_PROGRESS, acceptance PENDING. Earlier API sections describe historical scopes.
+
+## EF21–EF25 Buff / Debuff & Stat Modifiers (v0.6.4)
+
+`createEffectModifierState(lifecycle)` initializes an empty canonical lifecycle
+only. `applyEffectModifierTransition(current, transition, capture?)` consumes
+EF12–EF20 result values, validates entity/survivor/order/lifetime/event/membership
+deltas and returns a frozen candidate. Exactly one newly appended instance needs
+an explicit capture, including zero modifiers; refresh/advance/remove/consume
+cannot receive a new capture (TypeError). Rejected canonical result maps to
+transition_rejected/null; mismatched baseline to stale_transition/null; missing
+new-instance capture to capture_required/null. Malformed structures throw
+TypeError. The proposed capture_not_allowed result reason is finalized as TypeError
+for every non-addition capture, preserving the approved refresh rule. These are
+structural values, not authorization tokens; L4 supplies current authority/commit.
+
+Snapshot classification is metadata: buff/debuff/neutral do not infer signs or
+change calculation. Specs use actual Core ModifierOperation, finite values and
+explicit enabled; modifierId is unique within an instance. Closed own-data records
+and dense arrays reject extra/missing/inherited/accessor fields without invoking
+getters. Values/order/IDs are exact, detached and deeply frozen. Lifecycle stays
+the single instance owner; one ordered snapshot must match every active instance.
+No backfill of unknown history, cached stats or implicit synchronization.
+
+`listActiveEffectModifiers(state)` projects frozen detached Core NumericalModifier[]
+in canonical instance/spec order with identity `effect / effectInstanceId / modifierId`.
+Disabled entries remain disabled; Core owns filtering, conflicts and equivalent
+dedup. Due-but-unresolved lifetimes reject projection; advance canonical lifecycle
+first. Refresh preserves captures; expire/remove/consume/group cleanup prune them.
+Entity owns target catalogs and stat calculation. No new stat helper or math.
+
+```ts
+import {listActiveEffectModifiers, calculateEntityStats} from '@rpg/gameplay';
+// L4: one canonical modifier input, never also inject into flatContributions.
+const modifiers = [...equipmentModifiers, ...listActiveEffectModifiers(effectState)];
+const effective = calculateEntityStats(attributes, {...statConfiguration, modifiers});
+```
+
+Public additions (Core types imported from @rpg/core/kernel):
+
+```ts
+/** L3 metadata only; classification never changes numerical semantics. */
+export type EffectClassification = 'buff' | 'debuff' | 'neutral';
+export interface EffectModifierSpec {
+    readonly modifierId: string;
+    readonly target: string;
+    readonly operation: ModifierOperation;
+    readonly value: number;
+    readonly enabled: boolean;
+}
+export interface EffectModifierCapture {
+    readonly classification: EffectClassification;
+    readonly modifiers: readonly EffectModifierSpec[];
+}
+export interface EffectModifierSnapshot extends EffectModifierCapture {
+    readonly effectInstanceId: string;
+}
+/** Payload companion; lifecycle remains the only active instance authority. */
+export interface EffectModifierState {
+    readonly lifecycle: EffectLifecycleState;
+    readonly snapshots: readonly EffectModifierSnapshot[];
+}
+export type EffectModifierTransitionResult = {
+    readonly status: 'applied';
+    readonly reason: 'none';
+    readonly state: EffectModifierState;
+} | {
+    readonly status: 'rejected';
+    readonly reason: 'transition_rejected' | 'stale_transition' | 'capture_required';
+    readonly state: null;
+};
+/** Never fabricate payload history for already-active instances. */
+export declare function createEffectModifierState(lifecycle: EffectLifecycleState): EffectModifierState;
+/** Associate payloads with validated canonical deltas; never execute lifecycle/stack policy here.
+ * Structural receipts are not authorization tokens. L4 owns freshness and commit.
+ * Capture on an existing-instance transition is malformed and throws TypeError.
+ */
+export declare function applyEffectModifierTransition(current: EffectModifierState, transition: EffectLifecycleStartResult | EffectLifecycleTransitionResult | EffectStackMutationResult, capture?: EffectModifierCapture): EffectModifierTransitionResult;
+/** Structural projection only. Core owns enabled filtering, identity resolution and all math. */
+export declare function listActiveEffectModifiers(state: EffectModifierState): readonly NumericalModifier[];
+```
+
+Prior EF01–EF20 APIs and root-only package boundary remain unchanged. Root inventory:
+99 runtime functions /166 types. Restrictions/DoT/HoT remain deferred; phase
+IN_PROGRESS, Developer acceptance PENDING. Earlier API sections are historical.
+
+## v0.6.3 Effect Stacking & Refresh (EF16–EF20)
+
+Six root functions in the same optional Effect owner; EF01–EF15 schemas/signatures
+and existing removal/event unions are unchanged.
+
+```ts
+export interface EffectStackGroupKey {
+  readonly targetEntityId: string;
+  readonly effectId: string;
+  readonly sourceKey: string;
+}
+/** Derived view, never an additional active instance collection or policy store. */
+export interface EffectStackGroupView {
+  readonly key: EffectStackGroupKey;
+  readonly source: EffectSourceReference;
+  readonly instanceIds: readonly string[];
+  readonly stackCount: number;
+}
+export type EffectStackPolicy =
+  | {readonly mode: 'refresh'; readonly maxStacks: 1}
+  | {readonly mode: 'stack'; readonly maxStacks: number};
+export type EffectStackRejectionReason = 'application_rejected' | 'stale_application'
+  | 'lifecycle_not_advanced' | 'time_regressed' | 'pending_expiry' | 'source_identity_conflict'
+  | 'group_policy_conflict' | 'max_stacks_reached' | 'duration_mode_conflict'
+  | 'persistent_already_present' | 'effect_not_found' | 'not_timed' | 'group_not_found' | 'insufficient_stacks';
+export type EffectStackAdmissionResult =
+  | {readonly status: 'admitted'; readonly reason: 'none'; readonly operation: 'add' | 'refresh'; readonly group: EffectStackGroupKey}
+  | {readonly status: 'rejected'; readonly reason: EffectStackRejectionReason; readonly operation: null; readonly group: EffectStackGroupKey};
+export interface EffectStackConsumeRequest {readonly group: EffectStackGroupKey; readonly count: number}
+export interface EffectStackConsumedEvent {
+  readonly type: 'stack-consumed';
+  readonly group: EffectStackGroupKey;
+  readonly consumedInstanceIds: readonly string[];
+  readonly remainingStacks: number;
+  readonly atMs: number;
+}
+export type EffectStackEvent = EffectLifecycleEvent | EffectStackConsumedEvent
+  | {readonly type: 'refreshed'; readonly effectInstanceId: string; readonly effectId: string;
+      readonly targetEntityId: string; readonly atMs: number; readonly expiresAtMs: number};
+export type EffectStackMutationResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly action: 'added' | 'refreshed' | 'consumed' | 'group_removed';
+      readonly state: EffectLifecycleState; readonly events: readonly EffectStackEvent[]}
+  | {readonly status: 'rejected'; readonly reason: EffectStackRejectionReason; readonly state: null; readonly events: readonly []};
+function inspectEffectStackGroups(lifecycle: EffectLifecycleState): readonly EffectStackGroupView[];
+function evaluateEffectStackAdmission(lifecycle: EffectLifecycleState, application: EffectApplyResult,
+  duration: EffectDuration, policy: EffectStackPolicy, context: GameplayExecutionContext): EffectStackAdmissionResult;
+function applyEffectStack(lifecycle: EffectLifecycleState, application: EffectApplyResult,
+  duration: EffectDuration, policy: EffectStackPolicy, context: GameplayExecutionContext): EffectStackMutationResult;
+function refreshEffectStackLifetime(lifecycle: EffectLifecycleState, effectInstanceId: string,
+  duration: EffectDuration, context: GameplayExecutionContext): EffectStackMutationResult;
+function consumeEffectStacks(lifecycle: EffectLifecycleState, request: EffectStackConsumeRequest): EffectStackMutationResult;
+function removeEffectStackGroup(lifecycle: EffectLifecycleState, group: EffectStackGroupKey,
+  reason: EffectRemovalReason): EffectStackMutationResult;
+```
+
+D06 key is exact targetEntityId/effectId/sourceKey. Groups preserve first appearance
+and instance input order; stackCount derives from IDs. Same-group existing origins
+must match source.kind/sourceId or throw TypeError. Incoming collisions reject
+source_identity_conflict. Opaque case-sensitive IDs and __proto__/constructor work.
+Views are detached and deeply frozen; no maxStacks/policy is persisted.
+
+Policies are closed own-data: refresh/maxStacks1 or stack/positive-safe-integer.
+Stack/1 rejects a second stack; refresh/1 renews an existing timed anchor. Both add
+to an empty group. Accepted EF09 candidate must match the entire ordered current
+EffectState plus exactly one incoming instance. It is a structural receipt, not
+an authenticated token; L4 owns freshness/concurrency/commit.
+
+All structure, groups, application, duration, policy, Foundation context and expiry
+arithmetic validate before ordinary rejection. Priority: application_rejected,
+stale_application, time_regressed, lifecycle_not_advanced, pending_expiry,
+source_identity_conflict, group_policy_conflict, duration_mode_conflict,
+persistent_already_present, max_stacks_reached. Assessment returns no candidate.
+Time-sensitive calls read the supplied clock exactly once. Addition shares EF12's
+canonical private implementation; no additional clock/provider is manufactured.
+
+Refresh preserves the original instance and startedAtMs; expiry becomes
+max(previousExpiry, now+duration). Overflow/precision loss throws TypeError before
+rejection. Automatic refresh with multiple anchors rejects group_policy_conflict;
+different duration modes reject duration_mode_conflict; existing persistent plus
+persistent rejects persistent_already_present. Explicit renewal requires a timed
+existing lifetime and timed duration (otherwise not_timed); missing ID rejects
+effect_not_found. Persistent stacks retain null expiry and stack within capacity.
+
+Mutation boundaries reject due membership at observedAtMs as pending_expiry,
+without hidden expiration. A caller must advance the last valid canonical snapshot
+through EF13 and rebuild its EF09 receipt; manually editing observedAtMs is not
+advancement. Earlier EF11–EF15 keep their strict active-snapshot validation.
+Inspection can describe due membership but never resolves it.
+
+Consume validates exact group/positive safe count and removes exactly N or rejects
+insufficient_stacks/group_not_found. Selection: earliest timed deadline, code-unit
+lexical ID ties, persistent last with lexical ties. Survivors preserve input order.
+One stack-consumed event carries selected IDs/remaining count; no fake removed
+reason. Whole-group removal coordinates EF14, returning one removed event per
+instance in the same deterministic selection order and caller-supplied reason.
+Consume/remove read no clock and operate at observedAtMs; all rejections return
+state:null/events:[]. No event publication, numerical changes or automatic commit.
+
+L3 owns policy; L4 must keep policy consistent. Detectable conflicts are rejected,
+but arbitrary historical policy changes cannot be inferred without a catalog.
+No modifier aggregation, restrictions, periodic intents, scheduler or second store.
+
+## v0.6.2 Effect Duration & Lifecycle (EF11–EF15)
+
+Four new root functions; EF01–EF10 schemas/signatures remain unchanged:
+
+```ts
+type EffectDuration =
+  | {readonly mode: 'timed'; readonly durationMs: number}
+  | {readonly mode: 'persistent'};
+/** Timing references only; the embedded EffectState remains the sole instance collection. */
+interface EffectLifetimeState {
+  readonly effectInstanceId: string;
+  readonly mode: 'timed' | 'persistent';
+  readonly startedAtMs: number;
+  readonly expiresAtMs: number | null;
+}
+interface EffectLifecycleState {
+  readonly effectState: EffectState;
+  readonly lifetimes: readonly EffectLifetimeState[];
+  readonly observedAtMs: number;
+}
+type EffectRemovalReason = 'explicit' | 'dispel' | 'target_defeated' | 'source_removed' | 'session_cleanup';
+type EffectLifecycleEvent =
+  | {readonly type: 'started'; readonly effectInstanceId: string; readonly effectId: string;
+      readonly targetEntityId: string; readonly atMs: number}
+  | {readonly type: 'expired'; readonly effectInstanceId: string; readonly effectId: string;
+      readonly targetEntityId: string; readonly atMs: number}
+  | {readonly type: 'removed'; readonly effectInstanceId: string; readonly effectId: string;
+      readonly targetEntityId: string; readonly atMs: number; readonly reason: EffectRemovalReason};
+type EffectLifecycleStartResult =
+  | {readonly status: 'started'; readonly reason: 'none'; readonly state: EffectLifecycleState;
+      readonly events: readonly EffectLifecycleEvent[]}
+  | {readonly status: 'rejected'; readonly reason: 'application_rejected' | 'stale_application'
+      | 'lifecycle_not_advanced' | 'time_regressed'; readonly state: null; readonly events: readonly []};
+type EffectLifecycleTransitionResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly state: EffectLifecycleState;
+      readonly events: readonly EffectLifecycleEvent[]}
+  | {readonly status: 'rejected'; readonly reason: 'effect_not_found' | 'time_regressed';
+      readonly state: null; readonly events: readonly []};
+function createEffectLifecycleState(state: EffectState, context: GameplayExecutionContext): EffectLifecycleState;
+function startEffectLifetime(lifecycle: EffectLifecycleState, application: EffectApplyResult,
+  duration: EffectDuration, context: GameplayExecutionContext): EffectLifecycleStartResult;
+function advanceEffectLifecycle(lifecycle: EffectLifecycleState,
+  context: GameplayExecutionContext): EffectLifecycleTransitionResult;
+function removeEffectLifetime(lifecycle: EffectLifecycleState, effectInstanceId: string,
+  reason: EffectRemovalReason): EffectLifecycleTransitionResult;
+```
+
+Initialization requires an empty EffectState; populated structural instances have
+no history to infer. Foundation readExecutionTime supplies finite nonnegative
+milliseconds, once per initialize/start/advance. No epoch assumption or default clock.
+Removal uses observedAtMs without reading time.
+
+There is one canonical embedded EffectState. Lifetimes contain IDs/timing only,
+exactly one per instance in matching order. Active lifetime start <= observedAtMs;
+timed expiry > start and > observedAtMs; persistent expiry is exactly null. All
+records are closed own-data snapshots; sparse/extra/accessor/symbol/inherited
+required fields, duplicate/orphaned IDs and wrong associations throw TypeError
+without invoking getters. Inputs remain caller-owned and unfrozen.
+
+Timed duration is positive finite milliseconds, including fractions. Expiry is
+now + duration without rounding/clamping; overflow or representational loss that
+makes expiry <= now throws. Persistent carries no durationMs. No instant mode.
+
+Start validates the complete lifecycle, application, duration, Foundation context
+and expiry arithmetic before rejection. Applied/none must have admitted/none and
+a candidate ending in the exact validated request instance. Valid rejected EF09
+results have rejected matching non-none admission reason and null state.
+Candidate baseline comparison uses every ordered instance field/source field,
+not references: same target, unchanged full prefix and exactly one appended ID.
+Malformed result consistency throws; a valid candidate from another baseline
+returns stale_application without merge. Inputs are assessments, not credentials.
+Rejection priority after validation: time_regressed, lifecycle_not_advanced,
+application_rejected, stale_application. Newer time requires explicit advance.
+
+Advance requires now >= observedAtMs. Expiry <= now removes timed instances and
+their lifetime metadata together. Events sort by actual deadline then lexical
+instance ID (code-unit string comparison, no locale); atMs is deadline even when
+observation is delayed. Survivors preserve input order. Persistent never expires;
+same-time repeat returns applied/none with no repeated terminal events. D15:
+future due periodic intent belongs before this expiration boundary; no ticks now.
+
+Remove affects one exact ID only, with an explicit reason at observedAtMs.
+Unknown/already removed/expired IDs reject effect_not_found, with no terminal
+event. Source death never triggers cleanup; target defeat cleanup is requested by
+L4. Events are returned values, never published. Successful results are detached
+and deeply frozen; rejected results always state=null/events=[]. No resources,
+life, stats, ranks, Skill or Combat state is changed. No scheduler/active store,
+stack/refresh, modifiers, restrictions or periodic execution.
+
+## v0.6.1 Effect Application & Admission (EF06–EF10)
+
+Two root functions take the same complete, explicit context:
+
+```ts
+interface EffectApplyRequest {readonly instance: EffectInstanceState}
+interface EffectApplyPolicy {
+  readonly sourceEligible: boolean;
+  readonly targetEligible: boolean;
+  readonly allowedTargetLifeStatuses: readonly EntityLifeStatus[];
+}
+type EffectApplyAdmissionStatus = 'admitted' | 'rejected';
+type EffectApplyAdmissionReason = 'none' | 'source_not_found' | 'target_not_found'
+  | 'target_life_not_allowed' | 'source_ineligible' | 'target_ineligible'
+  | 'instance_already_present';
+interface EffectApplyAdmissionResult {
+  readonly request: EffectApplyRequest;
+  readonly status: EffectApplyAdmissionStatus;
+  readonly reason: EffectApplyAdmissionReason;
+}
+type EffectApplyResult =
+  | {readonly status: 'applied'; readonly reason: 'none';
+      readonly admission: EffectApplyAdmissionResult; readonly state: EffectState}
+  | {readonly status: 'rejected'; readonly reason: Exclude<EffectApplyAdmissionReason, 'none'>;
+      readonly admission: EffectApplyAdmissionResult; readonly state: null};
+function evaluateEffectApplyAdmission(definition: EffectDefinition, request: EffectApplyRequest,
+  state: EffectState, entities: EntityCollection, targetLife: EntityLifeState,
+  policy: EffectApplyPolicy): EffectApplyAdmissionResult;
+function applyEffect(definition: EffectDefinition, request: EffectApplyRequest,
+  state: EffectState, entities: EntityCollection, targetLife: EntityLifeState,
+  policy: EffectApplyPolicy): EffectApplyResult;
+```
+
+All records are closed own-data contracts. Full structural validation and exact
+Definition/Instance/State/Life identity binding precede ordinary rejection.
+allowedTargetLifeStatuses must be nonempty, dense, unique alive/dead values; there
+is no implicit alive policy. Malformed input throws TypeError without getters.
+Entity sources and targets use canonical getEntity; systems never require a fake
+Entity. Source life/permission and target relations remain caller eligibility.
+Reason priority is the order above, with none last; admitted iff reason=none.
+
+applyEffect reevaluates admission (no receipt input), appends an accepted instance
+in supplied state order and returns a detached deeply frozen candidate. Rejection
+always returns state=null; previous inputs stay unchanged/unfrozen. Duplicate IDs
+are checked only in the supplied target state, including retries with conflicting
+payloads. Different IDs for the same effect are allowed; no stacking is implied.
+
+L3 supplies policies. L4 resolves current authoritative context and decides commit,
+concurrency/freshness/retry semantics. Eligibility booleans and admission snapshots
+are assertions, not credentials. Applied means admitted into a structural candidate;
+it does not activate duration/modifiers/ticks, emit events or alter resources/life.
+EF01–EF05 signatures remain unchanged. Earlier milestone sections are historical.
+
+## v0.6.0 Effect Foundation (EF01–EF05)
+
+Root-only additions, with readonly public records:
+
+```ts
+type EffectSourceReference =
+  | {readonly kind: 'entity'; readonly sourceId: string; readonly sourceKey: string}
+  | {readonly kind: 'system'; readonly sourceId: string; readonly sourceKey: string};
+interface EffectDefinition {readonly effectId: string}
+interface EffectInstanceInitialState {
+  readonly effectInstanceId: string;
+  readonly source: EffectSourceReference;
+}
+interface EffectInstanceState extends EffectInstanceInitialState {
+  readonly effectId: string;
+  readonly targetEntityId: string;
+}
+interface EffectState {
+  readonly entityId: string;
+  readonly instances: readonly EffectInstanceState[];
+}
+function createEffectDefinition(definition: EffectDefinition): EffectDefinition;
+function createEffectInstance(definition: EffectDefinition, target: EntitySnapshot,
+  initial: EffectInstanceInitialState): EffectInstanceState;
+function createEffectState(target: EntitySnapshot): EffectState;
+function validateEffectState(state: EffectState): EffectState;
+```
+
+All outputs are detached and deeply frozen. IDs are caller-supplied, nonblank,
+opaque strings, preserved exactly. Closed own-data records reject missing/extra,
+symbol, accessor and inherited required fields with TypeError without invoking
+getters. Instance arrays must be dense own-data arrays without extra properties.
+State validation preserves order, requires unique effectInstanceId per state and
+exact targetEntityId === entityId; repeated effectId/sourceKey are allowed.
+Factories reuse public createEntity for target validation. Sources are structural
+references: entity/system only, with no lookup, life, authorization or ownership
+checks. Equipment can use entity sourceId plus equipment-instance sourceKey.
+
+```ts
+const definition = createEffectDefinition({effectId: 'poison'});
+const target = {id: 'monster-1', kind: 'monster'};
+const instance = createEffectInstance(definition, target, {
+  effectInstanceId: 'effect-instance-001',
+  source: {kind: 'entity', sourceId: 'player-1', sourceKey: 'equipment/sword-instance-001'},
+});
+const state = validateEffectState({entityId: target.id, instances: [instance]});
+```
+
+This is immutable structural state, without applied/active semantics, insertion,
+registry, duration, stacking, modifiers, restrictions or execution. L3 owns content;
+L4 allocates/resolves identities and retains authoritative state. Existing APIs
+remain unchanged. Historical milestone sections below retain their original scope.
+
 # Public API — v0.5.6 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK35)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.

@@ -1,12 +1,35 @@
-# RPG Gameplay — v0.5.6 Skill Integration & Closure
+# RPG Gameplay — v0.6.7 Effect Integration & Closure
 
-> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK30 implemented; SK31–SK35 closure evidence prepared for Developer review, acceptance PENDING.**
+> **Status: Skill baseline merged through PR #10. Effect EF01–EF40 implemented and locally verified; v0.6.7 closure candidate, Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
 > coordination, explicit command routing, synchronous event pub/sub and injected
 > clock/RNG/ID execution dependencies are available.
 > **Optional Entity supports identity, immutable collections/base attributes and caller-configured Kernel stats/resources and explicit life transitions.**
+
+## Current Effect closure candidate — v0.6.7
+
+EF01–EF40 now have installed function-level evidence: application/admission,
+timed/persistent lifecycle, stack/refresh/consume, Entity/Core modifiers, generic
+Skill/Combat restrictions and fixed pre-resolved periodic DoT/HoT. Six new E2E
+contracts include five generic source origins, target isolation, immutable
+companions, failed-tick recovery and two independent literal replay sessions.
+FIX01 adds explicit target-defeat cleanup at the actual death timestamp, including
+aligned companions and cancellation of same-time/future ticks after Entity death.
+Earlier unresolved ticks/expiry reject cleanup. Ordinary pending-tick guards remain.
+The installed suite now includes three additional FIX01–FIX16 regression contracts.
+Public API adds one function/two types (109 functions / 184 types); production
+changes are confined to Effect and root exports. Package remains 0.6.7; Core2.0.0
+remains pinned. No scheduler or second engine.
+
+[FIX01 report](docs/reports/v0.6.7-fix01-target-defeat-cleanup.md) supersedes the
+[historical final report](docs/reports/v0.6.7-effect-final-review.md).
+[PR #11](https://github.com/TjnhPro/rpg_gameplay/pull/11) tracks exact-head CI and
+review readiness. Draft -> Ready is authorized only after all final gates pass;
+Developer acceptance PENDING. No merge/tag/publish. Advanced numerical mechanics
+remain deferred; concrete game profiles NOT_EVALUATED. Older checkpoint statements
+below are historical.
 
 ## Mục tiêu
 

@@ -1,3 +1,16 @@
+export {inspectEffectStackGroups, evaluateEffectStackAdmission, applyEffectStack, refreshEffectStackLifetime,
+  consumeEffectStacks, removeEffectStackGroup} from './modules/effect/index.js';
+export type {EffectStackGroupKey, EffectStackGroupView, EffectStackPolicy, EffectStackAdmissionResult,
+  EffectStackRejectionReason, EffectStackConsumeRequest, EffectStackConsumedEvent, EffectStackEvent,
+  EffectStackMutationResult} from './modules/effect/index.js';
+export {createEffectLifecycleState, startEffectLifetime, advanceEffectLifecycle, removeEffectLifetime} from './modules/effect/index.js';
+export type {EffectDuration, EffectLifetimeState, EffectLifecycleState, EffectRemovalReason, EffectLifecycleEvent,
+  EffectLifecycleStartResult, EffectLifecycleTransitionResult} from './modules/effect/index.js';
+export {evaluateEffectApplyAdmission, applyEffect} from './modules/effect/index.js';
+export type {EffectApplyRequest, EffectApplyPolicy, EffectApplyAdmissionStatus, EffectApplyAdmissionReason,
+  EffectApplyAdmissionResult, EffectApplyResult} from './modules/effect/index.js';
+export {createEffectDefinition, createEffectInstance, createEffectState, validateEffectState} from './modules/effect/index.js';
+export type {EffectSourceReference, EffectDefinition, EffectInstanceInitialState, EffectInstanceState, EffectState} from './modules/effect/index.js';
 export {createSkillDefinition, createSkillInstance, evaluateSkillActivationAdmission,
   evaluateSkillResourceCosts, applySkillResourceCosts, createSkillCooldownState,
   evaluateSkillCooldownReady, startSkillCooldown, activateSkill, reportSkillExecutionOutcome,
@@ -87,3 +100,17 @@ export type {
   EntityLifeStatus, EntityLifeState, EntityLifeResourcePolicy,
   EntityLifeTransitionOutcome, EntityLifeTransitionResult,
 } from './modules/entity/index.js';
+export {createEffectModifierState, applyEffectModifierTransition, listActiveEffectModifiers} from './modules/effect/index.js';
+export type {EffectClassification, EffectModifierSpec, EffectModifierCapture, EffectModifierSnapshot,
+  EffectModifierState, EffectModifierTransitionResult} from './modules/effect/index.js';
+export {createEffectStatusState, applyEffectStatusTransition, listActiveEffectStatuses,
+  listActiveEffectRestrictions, evaluateEffectRestrictionGate} from './modules/effect/index.js';
+export type {EffectStatusCapture, EffectStatusSnapshot, EffectStatusState, EffectStatusView,
+  EffectRestrictionView, EffectRestrictionPolicy, EffectRestrictionAssessment, EffectStatusTransitionResult} from './modules/effect/index.js';
+export {createEffectPeriodicState, applyEffectPeriodicTransition, getNextDueEffectTick,
+  completeEffectPeriodicTick} from './modules/effect/index.js';
+export type {EffectPeriodicCapture, EffectPeriodicEntry, EffectPeriodicState, EffectPeriodicTickIntent,
+  EffectPeriodicTickAssessment, EffectPeriodicTickEvent, EffectPeriodicCompletionResult,
+  EffectPeriodicTransitionResult} from './modules/effect/index.js';
+export {cleanupDefeatedTargetEffects} from './modules/effect/index.js';
+export type {EffectTargetDefeatCleanupRequest, EffectTargetDefeatCleanupResult} from './modules/effect/index.js';

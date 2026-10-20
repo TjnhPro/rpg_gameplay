@@ -1,3 +1,158 @@
+## v0.6.7-FIX01 target-defeat cleanup evidence
+
+effect-integration.mjs retains its six original contracts and adds three grouped
+FIX01–FIX16 contracts: atomic lethal cleanup/literal chronology/independent replay;
+time/Life/context/earlier-work validation; malformed/stale companion receipts.
+Actual Entity/Core takes HP5→0 and Life alive→dead. Horizon6000 and exact-expiry2000
+both produce the same terminal timeline at2000. HoT B never executes; all four
+Effect snapshots align, prior snapshots remain frozen and failed numerical work
+or stale/invalid candidates cannot publish. Earlier ticks/expiry reject explicitly.
+Strict installed NodeNext covers new request/result and all companion calls,
+readonly state, missing timestamp and the unchanged historical stack result union.
+
+Runner requires9 integration tests/no skips/all9 markers. Ten independently restored
+faults cover backdating, horizon substitution, dead HoT permission, earlier tick
+loss, normal pending guard bypass, alive cleanup, wrong Life binding, stale
+companion after cleanup, duplicate terminal events and failed numerical commit.
+Each must make the actual installed consumer fail; artifact bytes are rechecked
+after every mutation. Historical regression coverage remains required.
+
+## v0.6.7 integrated Effect closure evidence (original checkpoint)
+
+tests/consumers/effect-integration.mjs adds six installed contracts: complete
+Resource/stat E2E; actual Skill/Combat/Effect admissions; independent stack and
+refresh captures; actual Skill caller handoff plus five origins/two targets;
+failed execution/stale state/death cleanup; two independent literal timeline
+sessions with historical immutable snapshots. effect-integration.ts composes the
+same public candidates under strict external NodeNext, skipLibCheck:false.
+
+Observed full suite: 189 runtime contracts / 39 installed groups plus 3 outer
+tests, zero fail/cancel/skip/todo. Previous 183 remain unchanged. Mandatory runner
+checks exact counts/markers, missing fixtures and version, real stale-companion
+acceptance mutation, wrong declaration, skipped tests, no assertions and stale
+baseline publication. Existing integrity/export/periodic/zero-test controls remain.
+All temporary mutations restored and installed package bytes rechecked.
+
+These are reusable library contracts. No UI/simulator, live game content, balance,
+database atomicity or cross-process exactly-once behavior is claimed.
+
+## v0.6.6 periodic contract evidence
+
+effect-periodic.mjs runs eight installed root-only groups: CAPTURE, TIMELINE, STACK,
+RESOURCE, DEATH, RECOVERY, VALIDATION, REPLAY. Literal oracles cover S01–S44:
+first/nonperiodic/short/persistent/fractional ticks; exact expiry/catch-up/lexical ties;
+independent stacks, actual stack-policy refresh/extended expiry, consume/group/remove;
+actual Entity/Core decrease/increase/max/min/no-op/above-max/custom resources; actual
+defeat, same-time HoT blocked, explicit cleanup and source-death independence;
+invalid/missing resources preserve cursor, retry/duplicate/order/horizon/pending guard;
+closed records/dense arrays/getters0/association/overflow/forged receipts; detached
+frozen history and independently built literal replay with modifier/status companions
+and four generic sources. Date.now/Math.random/timers are forbidden during replay.
+No game simulator or resource arithmetic stub.
+
+Strict external NodeNext checks every new public type/function, unions, readonly
+fields, invalid/missing/extra properties and blocked private imports. Runner additionally
+rejects six faulty installed production behaviors plus consumer tampering (Entity
+bypass, cap change, skipped test/no assertions). Actual observed183 runtime contracts
+in38 installed groups plus3 outer tests, zero fail/cancel/skip/todo; historical175
+tests and fixtures retained. Framework evidence only; gameplay profiles NOT_EVALUATED.
+
+## v0.6.5 status/restriction evidence
+
+Eight installed effect-restrictions.mjs contracts group S01–S37 by invariant:
+
+| Contract group | Independent evidence |
+| --- | --- |
+| Capture (S01–S06/S10–S12/S31–S32) | Explicit empty/independent arrays, exact custom/case/special IDs, literal snapshots, detached deep freeze |
+| Provenance (S09/S20–S22) | Literal ordered views, two matching sources, one removal leaves other blocking |
+| Cleanup (S14–S19) | Both refresh paths retain capture, replacement TypeError, exact-N selection, group isolation, persistent and exact expiry |
+| Validation (S07–S08/S28–S30) | Closed own-data records, dense arrays, duplicates/getters0, wrong Entity/order/time, unresolved expiry fails closed |
+| Transitions (S13/S29–S30) | Missing capture/null, canonical rejected receipts, forged deltas/events, stale baseline and joint-commit refusal |
+| Admissions (S02–S03/S23–S24/S27–S28) | Actual Skill/Combat calls, ownership/rank/life/existence/eligibility retained, actor binding, target relation still independent |
+| Immunity (S04/S25–S26) | Actual EF08 rejection, unrelated Effect policy accepted, all independent gates, multiple immunity identities |
+| Replay (S33–S35) | Two independent literal traces, shared modifier lifecycle, actual Entity source death, unchanged resources/ranks/stats/cooldown, blocked implicit providers |
+| Artifact/types/regression (S36–S37) | Physical tarballs, strict external NodeNext, all prior consumers |
+
+Six installed JS faults plus real caller admission-bypass faults must fail the
+same consumer. Skip/no-assertion/missing fixture/export/wrong version/Core/TAP/TS
+controls remain mandatory. Previous expected values and fixtures are unchanged;
+old modifier fault anchors alone follow the extracted private validator metadata.
+Test counts describe observed execution, not a quota. No full gameplay profile
+acceptance, periodic behavior, runtime scheduler or automatic events are claimed.
+
+## v0.6.4 modifier contract evidence
+
+Seven installed effect-modifiers.mjs contracts cover classification/snapshot/identity;
+actual Entity/Core math, attributes, disabled/points, collision and target ownership;
+stack/consume/refresh; expiry/removal/group/persistence/pending expiry; complete
+closed-data/membership/capture validation; forged transition/action/event deltas;
+and independent literal replays with implicit time/RNG/timers blocked and three
+source origins. Strict effect-modifiers.ts checks six types, three signatures,
+Core operation/output reuse, readonly nesting and result discrimination. Assertion
+counters fail empty contracts; emitted markers follow real assertions. All prior
+fixtures/oracles remain unchanged. New negative controls exercise wrong numerical
+expected, stale expiry, consumed contribution, overwritten refresh payload,
+unsupported-op acceptance, skipped test and no assertions. Existing missing fixture,
+export/version/Core-integrity/TS/TAP controls remain mandatory. No count quota or
+gameplay-profile acceptance is claimed.
+
+## v0.6.3 stacking contract evidence
+
+Seven installed tests cover distinct contracts: exact derived grouping/source
+isolation; admission/baseline/capacity/priority; anchor-preserving nonshortening
+renewal/independent expiry/persistent rules; exact-N/group removal/order; explicit
+pending-expiry boundary; malformed closed records/getters/arithmetic/isolation;
+and two independent literal replays with implicit providers blocked. S01–S29 map
+to these observable assertions; S30 uses all prior consumers; S31 is the installed
+tarball and strict NodeNext gate. No historical fixtures or expected values change.
+Compiler evidence checks all nine types/six signatures, discriminants, readonly
+nesting and closed private/deep exports. Real installed JS fault injections prove
+overflow, partial consume and identity-replacement regressions cannot pass.
+No numerical modifier/periodic or gameplay-profile PASS is implied.
+
+## v0.6.2 lifecycle contract evidence
+
+Seven installed runtime tests prove distinct EF11–EF15 invariants: empty/timed/
+persistent/fractional starts and EF09 value binding; exact/delayed expiration and
+lexical tie order; timeline/stale application rejections; all explicit removal
+reasons/terminal uniqueness; malformed schemas/clock/overflow/getter rejection;
+two independent literal replay histories with implicit providers blocked; real
+Entity death and caller cleanup with sibling snapshots unchanged and optional
+Entity+Effect composition. S01–S32 map to these tests; S33 uses all prior consumers.
+Strict NodeNext companion proves all seven new types/four signatures, discriminated
+duration/results/events, nested readonly state, null/empty rejection, no any and
+closed private/deep exports. Runtime negative controls deliberately corrupt expected
+expiry/order in the installed consumer; unchanged prior fixtures/oracles remain
+mandatory. No simulator, gameplay-profile claim or test-count quota.
+
+## v0.6.1 Effect application evidence
+
+Six installed runtime tests in effect-application.mjs prove literal source/life
+outcomes, overlapping rejection priority, ordered candidates/retry conflicts,
+complete closed/nested validation before rejection, replay/isolation with guarded
+time/RNG/timers, and actual accepted Skill execution plus equipment/environment
+handoffs. Entity HP/mana/stats/life, Progression ranks, Skill and Combat snapshots
+stay unchanged by Effect. Actual Entity+Effect composition excludes sibling modules.
+Strict effect-application.ts verifies all six new types, both function signatures,
+readonly nesting, explicit policies, result discrimination, null rejected state,
+reason narrowing and closed/private exports. Existing fixtures remain unchanged.
+The same installed runner requires this group and rejects missing exports and
+deliberately changed installed artifact bytes. Test totals are observed in the
+report; no simulator, test-count target or full gameplay-profile claim is added.
+
+## v0.6.0 Effect contract evidence
+
+Required installed consumers: effect-foundation.mjs (five substantive runtime
+tests) and effect-foundation.ts (strict NodeNext, skipLibCheck:false). They are
+registered in tests/foundation.test.mjs against the real npm tarball, never source
+imports or symlinks. Literal expected snapshots are independent of implementation.
+Tests cover exact identities/sourceKey, equipment/system origins, canonical target
+rejection, dense ordered closed state, duplicate IDs, mismatched binding, zero
+getter invocation, detached deep freeze, mutable caller inputs, two independent
+replays and actual registry composition. No hidden time/random/scheduler calls;
+Entity resource/life/attributes, Skill and Progression snapshots remain unchanged.
+Full suite retains every previous consumer/oracle. See report for observed totals.
+
 # Function-First Testing Policy — evidence over count
 
 ## v0.5.6 Skill integration evidence

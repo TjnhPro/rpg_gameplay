@@ -1,3 +1,121 @@
+## Current authorized task: v0.6.7-FIX01
+
+Developer-approved Target Defeat Cleanup & Event Timeline Consistency patch starts
+at reviewed HEAD432e99e8a0551929520b3605d7d370652eb18aaf, same feat/v0.6-effect
+and PR #11, package0.6.7. Only Effect implementation/root exports may change in
+production: one explicit cleanup function/two types and narrow companion support.
+Preserve Entity/Core/protected owners, D01–D18, graph, dependencies and all previous
+contracts. Add installed FIX01–FIX16 regressions and ten actual negative controls.
+PR is Draft during the fix. After required local gates and both exact-head
+Windows/Ubuntu Node22/24 matrices8/8 PASS, return it to Ready for Review and append
+the SHA-bound CI supplement to PR #11. The pre-push [patch report](reports/v0.6.7-fix01-target-defeat-cleanup.md)
+is completed by that immutable-SHA supplement. Developer approval PENDING.
+Stop at FIX01. No merge/tag/publish/new branch/new PR/version bump/next phase.
+
+## v0.6.7 final Effect closure (historical authorization)
+
+The Developer-approved [Effect Integration & Closure task](tasks/active/v0.6.7-effect-integration-closure.md)
+authorizes EF36–EF40 from completed v0.6.6 checkpoint
+4842a5220bc88ba08059ebc866357f106b3e5bf9 on feat/v0.6-effect / existing PR #11.
+Production behavior/API changes default ZERO; version-only 0.6.7 metadata,
+installed integration evidence, minimal runner wiring and final documentation.
+Protected owners/Core/graph/dependencies and previous oracles remain unchanged.
+
+Final local verification, scope audit and both exact-head Windows/Linux Node22/24
+matrices must pass. Then mark PR #11 Ready for Review and report READY_FOR_REVIEW,
+with Developer acceptance PENDING. No new PR, merge, tag, publish, task archive or
+next phase. The SHA-bound PR CI supplement is explicitly permitted to complete the
+pre-push report without changing tested HEAD. Earlier checkpoint instructions are
+historical and do not override this approved final task.
+
+## Current authorized checkpoint: v0.6.6
+
+The Developer-approved [Periodic Effects task](tasks/active/v0.6.6-periodic-effects.md)
+authorizes EF31–EF35 from actual completed v0.6.5 checkpoint dbcb0d4. Exact-head
+prerequisite push39395794004/PR39395799895 reaudited8/8 PASS (175 runtime/37 groups
+plus3 outer per job). Historical task remote observation is superseded by that audit.
+Use existing feat/v0.6-effect and OPEN Draft PR #11, target main. Scope: four public
+periodic functions/eight types, canonical lifecycle companion, fixed pre-resolved
+Entity/Core Resource/Life execution in installed contracts, no protected owner or
+Core/graph/dependency changes. All local gates and exact-head push+PR matrix8/8 must
+pass before CHECKPOINT_COMPLETE. Preserve previous consumers/reports.
+Stop at v0.6.6; v0.6.7 NOT_STARTED. Phase IN_PROGRESS; acceptance PENDING.
+Do not Ready/merge/tag/publish. Earlier checkpoint sections are historical.
+
+## Current authorized checkpoint: v0.6.5
+
+The submitted approved [Effect Restrictions & Status task](tasks/active/v0.6.5-effect-restrictions-status.md)
+authorizes EF26–EF30 after actual v0.6.4 checkpoint ad7e411. Rechecked exact-head
+push39393620706 and PR39393628233: eight Windows/Ubuntu Node22/24 jobs PASS.
+Continue feat/v0.6-effect / existing Draft PR #11 to main. Five functions/eight
+types, version0.6.5, installed contracts and affected documentation only. Preserve
+EF01–EF25 schemas, protected owners, graph, Core and dependencies. Internal receipt
+validation is shared by modifier/status companions; canonical lifecycle executes
+membership/time. L4 coordinates all candidate commits atomically. Required local
+and exact-head push/PR gates precede CHECKPOINT_COMPLETE. Stop there: phase
+IN_PROGRESS, Developer acceptance PENDING; v0.6.6 NOT_STARTED. No Ready, new PR,
+merge, tag or publish. All earlier checkpoint sections describe history.
+
+## Current authorized checkpoint: v0.6.4
+
+The Developer-approved [Buff/Debuff/modifier task](tasks/active/v0.6.4-buff-debuff-stat-modifiers.md)
+authorizes EF21–EF25 after v0.6.3 checkpoint102db5e (exact-head CI8/8 verified).
+Continue feat/v0.6-effect / Draft PR #11. Add three functions/six types inside
+Effect/root, installed evidence and version0.6.4; preserve EF01–EF20, protected
+owners, Core pin, graph and dependencies. Effect captures payloads; existing
+lifecycle owns membership/time; Entity/Core own stat calculation. Required local
+gates and exact-head push/PR Windows/Ubuntu Node22/24 precede CHECKPOINT_COMPLETE.
+Stop there; phase IN_PROGRESS, acceptance PENDING; v0.6.5 NOT_STARTED. No Ready,
+merge, tag or publish. Earlier authorization/status sections are historical.
+
+## Current authorized checkpoint: v0.6.3
+
+The Developer-approved [stacking/refresh task](tasks/active/v0.6.3-effect-stacking-refresh.md)
+authorizes EF16–EF20 after v0.6.2 checkpoint98ec890 (eight exact-head CI jobs PASS).
+Continue feat/v0.6-effect / Draft PR #11 to main. Six functions/nine types, explicit
+L3 stack policy, canonical lifecycle candidates, installed evidence, docs and
+version0.6.3 only. Keep EF01–EF15, protected owners, Core pin and graph intact.
+Full local gates and exact-head push/PR Windows/Ubuntu Node22/24 are mandatory.
+Stop at CHECKPOINT_COMPLETE; phase IN_PROGRESS, acceptance PENDING. No new PR,
+Ready, merge, tag, publish or automatic v0.6.4. Earlier sections are historical.
+
+## Current authorized checkpoint: v0.6.2
+
+The Developer-approved [duration/lifecycle task](tasks/active/v0.6.2-effect-duration-lifecycle.md)
+authorizes EF11–EF15 after verified 0.6.1 checkpoint cf87420 (both exact-head CI
+workflows PASS). Continue feat/v0.6-effect / existing Draft PR #11 to main.
+Preserve D01–D18, Core-first ownership, EF01–EF10 contracts, protected owners and
+graph. Add only four lifecycle APIs/seven types, explicit clock/state candidates,
+installed evidence/docs/version 0.6.2. Required local and exact-head eight-job CI
+gates precede CHECKPOINT_COMPLETE. Stop there; phase IN_PROGRESS, acceptance
+PENDING. No new PR/branch, Ready, merge, tag, publish or automatic 0.6.3.
+Earlier authorization sections below are historical.
+
+## Current authorized checkpoint: v0.6.1
+
+The Developer-approved [application/admission task](tasks/active/v0.6.1-effect-application-admission.md)
+authorizes EF06–EF10 after v0.6.0 CHECKPOINT_COMPLETE at4fc09f8. Continue existing
+feat/v0.6-effect and Draft PR #11 to main; no new branch/PR or baseline rewrite.
+D01–D18, Core-first ownership, EF01–EF05 signatures, protected owners and graph stay
+intact. Full installed evidence/local gates and exact-head eight-job CI are required.
+Stop at v0.6.1 CHECKPOINT_COMPLETE. Phase IN_PROGRESS; Developer acceptance PENDING.
+No Ready/merge/tag/publish or automatic v0.6.2. Earlier milestone authorization
+sections below are historical and do not limit this newly approved checkpoint.
+See [report](reports/v0.6.1-effect-application-admission.md).
+
+## Active approved phase: v0.6.x Effect System
+
+The Developer-approved [v0.6.0 task](tasks/active/v0.6.0-effect-foundation.md)
+authorizes EF01–EF05 only, from merged Skill PR #10 main baseline. Execute on
+feat/v0.6-effect with one Draft phase PR to main. D01–D18 and Core-first MVP are
+fixed; no design reapproval is needed. Preserve protected owners, Core pin,
+dependency versions, existing fixtures/oracles and CI. Completion requires
+installed-package/strict NodeNext evidence, all local gates and exact-head eight
+CI jobs. Stop at CHECKPOINT_COMPLETE; phase IN_PROGRESS, Developer acceptance
+PENDING. Do not mark Ready, merge, publish, tag or implement v0.6.1.
+See [checkpoint report](reports/v0.6.0-effect-foundation.md).
+Earlier workflow sections below retain historical milestone scope.
+
 # Approved Task Execution — ChatGPT → Agent
 
 ## Current Skill closure handoff — v0.5.6
