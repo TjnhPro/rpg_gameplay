@@ -1,3 +1,19 @@
+## v0.6.7 closure provenance and numerical ownership
+
+Core remains 2.0.0 / revision 04b7239f998c3c688a0dfa3202f11811a9acd775.
+Fresh preparation/install and lock SHA-512 audit prove the actual artifact.
+No Core/Entity/Combat/Skill source or dependency change. Installed integration
+consumers call transitionEntityResource (decrease/increase) and resolveEntityDefeat,
+and calculateEntityStats with Effect modifier snapshots. Core determines applied
+magnitude, bounds and numerical composition; no Effect damage/healing calculator.
+
+Literal evidence includes HP100->50 for five DoT ticks, HoT70->80->90->100->100,
+buff/debuff108->120->100 and independent replay final HP40/stat100. Lifecycle
+timestamp arithmetic only controls intent order. Generic restriction policy remains
+L3/caller input. Advanced scaling/percentage/resistance/conversion/live-source rules
+remain deferred until canonical numerical and snapshot policies are approved;
+existing specific Core APIs do not imply arbitrary end-to-end mechanic support.
+
 ## EF31–EF35 fixed periodic MVP audit — v0.6.6
 
 Actual pinned Core public Kernel source and existing Entity contracts were inspected.

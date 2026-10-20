@@ -1,3 +1,19 @@
+## v0.6.7 closure: unchanged public API
+
+No production behavior or public API additions/removals relative to v0.6.6:
+108 root functions / 182 root types. EF36–EF40 is integration evidence, not a new
+facade. Installed L4 callers compose the existing Effect application, canonical
+lifecycle and Modifier/Status/Periodic companions with actual Entity Resource/Life,
+Entity/Core stats and independent Skill/Combat admissions. L3 supplies fixed
+amounts, modifier captures and generic restriction policy. All candidates stage
+from the same baseline; a caller publishes the complete immutable local snapshot
+only on success and only if that baseline is still current. Failure preserves the
+pending tick. This is not database atomicity or distributed exactly-once proof.
+
+See [final review report](reports/v0.6.7-effect-final-review.md) and PR #11 for final exact-head CI/readiness. Earlier checkpoint
+statuses below are historical. Developer approval PENDING; no merge/tag/publish.
+Concrete game profile behavior NOT_EVALUATED.
+
 ## EF31–EF35 Periodic Effects (v0.6.6)
 
 Four functions/eight types, root-only; root108 functions/182 types. Earlier104

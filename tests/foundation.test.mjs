@@ -21,7 +21,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF35, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -66,7 +66,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.6.6');
+    assertVersion(packageJson.version, '0.6.7');
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
@@ -597,6 +597,44 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     }
     assertPackedFiles();
     console.log('INSTALLED_EFFECT_PERIODIC_RUNNER_NEGATIVE_PASS all_four_exports; missing_fixtures; wrong_version; expiry_tick; catchup; duplicate_completion; target_death; refresh_cadence; pending_tick_loss; Entity_bypass; HoT_maximum; skipped; no_assertions; runtime_faults6');
+    copyRequiredConsumer(path.join(root, 'tests/consumers/effect-integration.mjs'), path.join(temp, 'effect-integration.mjs'));
+    copyRequiredConsumer(path.join(root, 'tests/consumers/effect-integration.ts'), path.join(temp, 'effect-integration.ts'));
+    const integrationMarkers = ['E2E', 'ADMISSION', 'STACK', 'SOURCES', 'SAFETY', 'REPLAY'].map(x => 'EFFECT_INTEGRATION_' + x + '_PASS');
+    const effectIntegrationEvidence = exec(['--test', '--test-reporter=tap', 'effect-integration.mjs'], temp);
+    assertTapEvidence(effectIntegrationEvidence, 6, integrationMarkers);
+    for (const marker of integrationMarkers) console.log(effectIntegrationEvidence.split(/\r?\n/).find(line => line.includes(marker)));
+    console.log('INSTALLED_EFFECT_INTEGRATION_PASS EF36-EF40; consumer_tests=6 skipped=0; actual_Entity_Core_Skill_Combat; independent_literal_replay');
+    for (const extension of ['mjs', 'ts']) {
+      const required = path.join(temp, 'effect-integration.' + extension), saved = required + '.saved';
+      try {fs.renameSync(required, saved); assert.throws(() => copyRequiredConsumer(required, required + '.copy'), {code: 'ENOENT'});}
+      finally {fs.renameSync(saved, required);}
+    }
+    assert.throws(() => assertVersion('0.6.6', '0.6.7'), /installed package version/);
+    const integrationFile = path.join(temp, 'effect-integration.mjs'), integrationSource = fs.readFileSync(integrationFile, 'utf8');
+    for (const [expected, faulty] of [
+      ["contract('EF36: complete", "test.skip('EF36: complete"],
+      ["candidate.baseline !== f.current", 'false'],
+      ['assert.', 'unchecked.'],
+    ]) {
+      assert.ok(integrationSource.includes(expected), 'required integration consumer fault: ' + expected);
+      try {
+        const fault = expected === 'assert.'
+          ? "const unchecked = new Proxy(() => {}, {get: () => () => {}});\n" + integrationSource.replaceAll('assert.', 'unchecked.')
+            .replace("unchecked.ok(assertions > 0, 'integration requires actual assertions')", "assert.ok(assertions > 0, 'integration requires actual assertions')")
+          : integrationSource.replace(expected, faulty);
+        fs.writeFileSync(integrationFile, fault);
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'effect-integration.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(integrationFile, integrationSource);}
+    }
+    const staleGuard = 'const current = statusState(lifecycleSnapshot(lifecycle), state);';
+    assert.ok(periodicRuntime.includes(staleGuard));
+    try {
+      // Installed implementation mutation: accept a stale companion instead of validating it.
+      fs.writeFileSync(effectFile, periodicRuntime.replace(staleGuard, 'const current = state;'));
+      assert.throws(() => exec(['--test', '--test-reporter=tap', 'effect-integration.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+    } finally {fs.writeFileSync(effectFile, periodicRuntime);}
+    assertPackedFiles();
+    console.log('INSTALLED_EFFECT_INTEGRATION_RUNNER_NEGATIVE_PASS missing_fixtures; wrong_version; stale_companion; stale_L4_baseline; skipped; no_assertions; restored_artifacts');
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);
 
@@ -631,8 +669,17 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts', 'effect-periodic.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts', 'effect-periodic.ts', 'effect-integration.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
+    const declarationFile = path.join(installed, 'dist/modules/effect/index.d.ts');
+    const declarationBytes = fs.readFileSync(declarationFile, 'utf8');
+    assert.ok(declarationBytes.includes("readonly kind: 'dot' | 'hot';"));
+    try {
+      fs.writeFileSync(declarationFile, declarationBytes.replaceAll("readonly kind: 'dot' | 'hot';", "readonly kind: 'hot';"));
+      assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp), /TS\d+/);
+    } finally {fs.writeFileSync(declarationFile, declarationBytes);}
+    assertPackedFiles();
+    console.log('INSTALLED_EFFECT_INTEGRATION_DECLARATION_NEGATIVE_PASS wrong_installed_kind; strict_NodeNext_failure; restored_declarations');
     fs.writeFileSync(path.join(temp, 'broken.ts'), "import type {SkillActivationInput} from '@rpg/gameplay';const invalid: SkillActivationInput = {};void invalid;");
     fs.writeFileSync(path.join(temp, 'negative-tsconfig.json'), JSON.stringify({extends: './tsconfig.json', files: ['broken.ts']}));
     assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'negative-tsconfig.json'], temp), /TS\d+/);

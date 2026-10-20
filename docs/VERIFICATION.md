@@ -1,3 +1,23 @@
+## v0.6.7 final closure gates
+
+Required final local commands: core:prepare; npm ci --ignore-scripts;
+harness:check; harness:selftest; build; typecheck; test:functional; verify;
+git diff --check. Installed package must be 0.6.7 with physical Core2.0.0,
+closed root exports, actual dist bytes and strict NodeNext/skipLibCheck:false.
+Observed functional evidence: 189 runtime contracts / 39 groups plus 3 outer
+tests, zero fail/cancel/skip/todo; six EF36–EF40 contracts preserve all earlier
+183. Negative controls include missing fixture/version/Core/export, expiry tick,
+stale companion, duplicate completion, wrong installed declaration, strict TS
+failure, skipped/no-assertion/zero-test execution and stale L4 baseline publication.
+
+Only after both push and pull_request exact-head Windows/Ubuntu Node22/24 jobs
+(8/8) complete successfully may existing PR #11 change Draft -> Ready for Review.
+The immutable-SHA PR delivery/CI supplement completes the committed pre-push
+report without a recursive documentation commit invalidating the audited SHA.
+See [final review report](reports/v0.6.7-effect-final-review.md). Developer acceptance PENDING; merge/tag/publish NOT AUTHORIZED.
+macOS NOT_RUN; concrete gameplay profiles NOT_EVALUATED. Earlier checkpoint
+statuses/counts are historical.
+
 ## v0.6.6 checkpoint gates
 
 Fresh core:prepare and npm ci --ignore-scripts; unchanged Core2.0.0 pin/lock SHA-512.

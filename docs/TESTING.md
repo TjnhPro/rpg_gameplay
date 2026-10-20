@@ -1,3 +1,22 @@
+## v0.6.7 integrated Effect closure evidence
+
+tests/consumers/effect-integration.mjs adds six installed contracts: complete
+Resource/stat E2E; actual Skill/Combat/Effect admissions; independent stack and
+refresh captures; actual Skill caller handoff plus five origins/two targets;
+failed execution/stale state/death cleanup; two independent literal timeline
+sessions with historical immutable snapshots. effect-integration.ts composes the
+same public candidates under strict external NodeNext, skipLibCheck:false.
+
+Observed full suite: 189 runtime contracts / 39 installed groups plus 3 outer
+tests, zero fail/cancel/skip/todo. Previous 183 remain unchanged. Mandatory runner
+checks exact counts/markers, missing fixtures and version, real stale-companion
+acceptance mutation, wrong declaration, skipped tests, no assertions and stale
+baseline publication. Existing integrity/export/periodic/zero-test controls remain.
+All temporary mutations restored and installed package bytes rechecked.
+
+These are reusable library contracts. No UI/simulator, live game content, balance,
+database atomicity or cross-process exactly-once behavior is claimed.
+
 ## v0.6.6 periodic contract evidence
 
 effect-periodic.mjs runs eight installed root-only groups: CAPTURE, TIMELINE, STACK,

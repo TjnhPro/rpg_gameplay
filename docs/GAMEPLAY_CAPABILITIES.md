@@ -1,3 +1,22 @@
+## Current closure candidate: v0.6.7 — EF01–EF40
+
+EF01–EF35 reusable capabilities preserved; EF36 full E2E, EF37 five generic source
+origins and target isolation, EF38 independent literal replay/recovery, EF39 full
+regression/audit and EF40 actual installed package/strict declarations are
+IMPLEMENTED and locally verified. No new production source or public API.
+
+Supported MVP: fixed pre-resolved DoT/HoT, timed/persistent independent stacks,
+refresh/consume/remove, apply-time modifiers through Entity/Core and generic
+restrictions handed to actual Skill/Combat/Effect admission. Skill activation uses
+the existing caller dispatch; Item/Equipment are generic references, not new modules.
+Environment/System use system sources without fake Entities. L4 owns cleanup and
+atomic local publication. Advanced numerical variants remain DEFERRED_UNSUPPORTED
+pending canonical capability/policy review, with no substitute formulas.
+
+Final exact-head CI/readiness: [final review report](reports/v0.6.7-effect-final-review.md) and PR #11. Developer acceptance PENDING;
+no merge/tag/publish. Concrete game profiles NOT_EVALUATED. Earlier sections are
+historical checkpoint evidence, superseded by this closure candidate.
+
 ## Current checkpoint: v0.6.6 Periodic Effects — DoT / HoT
 
 EF31–EF35 IMPLEMENTED: explicit immutable none/dot/hot captures, aligned per-instance

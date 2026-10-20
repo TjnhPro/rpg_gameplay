@@ -1,3 +1,18 @@
+## v0.6.7 closure audit
+
+No source or module graph delta from v0.6.6. Five optional modules remain:
+Entity -> []; Progression/Combat/Skill/Effect -> [Entity]. Effect production imports
+only Entity, Foundation execution and public Core Kernel types; no dependency on
+Skill, Combat, Progression, L3 or L4. Installed consumers demonstrate Entity+Effect
+and Entity+Skill+Effect compositions and rejection when Entity is absent.
+
+Canonical lifecycle is the only active membership/lifetime authority. Modifier,
+Status and Periodic states are aligned immutable companions, not competing stores.
+The test's local application snapshot stages existing owner candidates and checks
+baseline identity; it is L4 orchestration evidence, not production runtime code.
+Phase diff against main adds only Effect owner/root exports in production; all
+protected owners, Core pin and accepted historical fixtures remain unchanged.
+
 ## v0.6.6 periodic ownership
 
 The existing optional Effect owner adds configuration/cursor payloads and tick

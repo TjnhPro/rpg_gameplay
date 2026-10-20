@@ -1,12 +1,30 @@
-# RPG Gameplay — v0.6.0 Effect Foundation
+# RPG Gameplay — v0.6.7 Effect Integration & Closure
 
-> **Status: Skill baseline merged through PR #10. Effect EF01–EF05 structural foundation implemented; v0.6.x IN_PROGRESS, Developer acceptance PENDING.**
+> **Status: Skill baseline merged through PR #10. Effect EF01–EF40 implemented and locally verified; v0.6.7 closure candidate, Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
 > coordination, explicit command routing, synchronous event pub/sub and injected
 > clock/RNG/ID execution dependencies are available.
 > **Optional Entity supports identity, immutable collections/base attributes and caller-configured Kernel stats/resources and explicit life transitions.**
+
+## Current Effect closure candidate — v0.6.7
+
+EF01–EF40 now have installed function-level evidence: application/admission,
+timed/persistent lifecycle, stack/refresh/consume, Entity/Core modifiers, generic
+Skill/Combat restrictions and fixed pre-resolved periodic DoT/HoT. Six new E2E
+contracts include five generic source origins, target isolation, immutable
+companions, failed-tick recovery and two independent literal replay sessions.
+Observed 189 runtime contracts / 39 installed groups plus 3 outer tests, no skips.
+Public API/production source unchanged from v0.6.6 (108 functions / 182 types);
+package version 0.6.7. Core2.0.0 remains pinned. No scheduler or second engine.
+
+[Final report](docs/reports/v0.6.7-effect-final-review.md) and
+[PR #11](https://github.com/TjnhPro/rpg_gameplay/pull/11) track exact-head CI and
+review readiness. Draft -> Ready is authorized only after all final gates pass;
+Developer acceptance PENDING. No merge/tag/publish. Advanced numerical mechanics
+remain deferred; concrete game profiles NOT_EVALUATED. Older checkpoint statements
+below are historical.
 
 ## Mục tiêu
 

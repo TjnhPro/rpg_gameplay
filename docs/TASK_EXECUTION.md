@@ -1,3 +1,19 @@
+## Current authorized task: v0.6.7 final Effect closure
+
+The Developer-approved [Effect Integration & Closure task](tasks/active/v0.6.7-effect-integration-closure.md)
+authorizes EF36–EF40 from completed v0.6.6 checkpoint
+4842a5220bc88ba08059ebc866357f106b3e5bf9 on feat/v0.6-effect / existing PR #11.
+Production behavior/API changes default ZERO; version-only 0.6.7 metadata,
+installed integration evidence, minimal runner wiring and final documentation.
+Protected owners/Core/graph/dependencies and previous oracles remain unchanged.
+
+Final local verification, scope audit and both exact-head Windows/Linux Node22/24
+matrices must pass. Then mark PR #11 Ready for Review and report READY_FOR_REVIEW,
+with Developer acceptance PENDING. No new PR, merge, tag, publish, task archive or
+next phase. The SHA-bound PR CI supplement is explicitly permitted to complete the
+pre-push report without changing tested HEAD. Earlier checkpoint instructions are
+historical and do not override this approved final task.
+
 ## Current authorized checkpoint: v0.6.6
 
 The Developer-approved [Periodic Effects task](tasks/active/v0.6.6-periodic-effects.md)

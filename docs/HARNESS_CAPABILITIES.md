@@ -1,3 +1,20 @@
+## v0.6.7 closure verification
+
+Observed 189 runtime contracts / 39 installed groups plus 3 outer tests, all pass,
+zero failures/cancellations/skips/todos. All historical 183 contracts stay active.
+Six new assertion-bearing integration contracts execute the actual 0.6.7 tarball
+and physical pinned Core, with strict external NodeNext / skipLibCheck:false.
+Independent sessions assert literal Resource/stat/event/lifetime outcomes.
+
+New controls reject stale installed Status companions, stale L4 publication,
+missing consumers, wrong version, skipped/no-assertion tests and wrong installed
+declarations. Existing controls retain wrong Core integrity/root export, periodic
+boundary/duplicate completion, zero tests and failed strict TS coverage. Mutations
+are temporary; original installed dist bytes are checked after restoration.
+No source import, symlink, alternate engine or scheduler. Final push/PR CI and
+Ready gate are tracked in [final review report](reports/v0.6.7-effect-final-review.md) / PR #11; Developer acceptance PENDING.
+Concrete game profiles NOT_EVALUATED. Older sections describe historical evidence.
+
 ## v0.6.6 installed periodic evidence
 
 Actual0.6.6 tarball with unchanged pinned physical Core, independent native ESM
