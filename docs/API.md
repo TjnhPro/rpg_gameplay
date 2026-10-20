@@ -1256,3 +1256,20 @@ No damage recalculation, blanket dead-target ban, automatic events/rewards,
 Skill/Effect/Encounter feature, healing/revival, ledger or global state. Caller
 owns trusted/current snapshots, authorization, durable writes, replay/exactly-once
 and concurrent consistency. A receipt can be reused on independent state branches.
+
+## CB26–CB30 installed composition (v0.4.5)
+
+No public API/type additions or signature changes:65 root functions/95 types.
+Root-only exports remain closed. Caller creates contexts, evaluates admission and
+target, explicitly stops on rejection, resolves through Kernel with Foundation RNG,
+then calls applyCombatAttackDamage. For processed outcomes, retain both
+resourceResult.state and lifeResult.state together for the next attempt; no-op
+outcomes retain caller states. resourceResult/lifeResult are canonical Entity
+results, not Combat-specific state. Strict external combat-integration.ts verifies
+this continuation, discriminated nulls, readonly snapshots and absence of facades.
+
+The same calculated75 can apply75 to HP100, then25 to HP25. Caller must not infer
+applied magnitude from HP delta (above-max140->100/request20 still applied20).
+Structural receipts are not authenticated/fresh authorization. Reusing old state
+branches again; no persistent exactly-once, transaction or concurrency authority.
+No Skill/Effect/AI/Encounter integration is provided. See closure report.

@@ -150,3 +150,14 @@ canonical Entity result comparisons. Actual0.4.4/Core artifacts, SHA-512 integri
 strict external NodeNext and closed exports remain mandatory. Source/diff review
 covers canonical ownership/no hidden events or state. Exact-head Windows/Ubuntu
 Node22/24 push+PR CI required; profiles NOT_EVALUATED, acceptance PENDING.
+
+## v0.4.5 current installed closure evidence
+
+CB26–CB30 adds3 cross-stage installed contracts; all98 earlier contracts retained:
+101 installed runtime contracts +2 outer gates, zero failures/skips. Strict external
+NodeNext checks complete typed continuation/readonly/discriminated results and
+closed exports. Actual0.4.5/Core tarball install and SHA-512 integrity remain gates.
+Full phase source/diff review supplements lexical checks; no production delta in
+this milestone, no skipped gate or gameplay profile PASS claim. Final exact-head
+Windows/Ubuntu Node22/24 push+PR evidence and self-contained review handoff resolve
+tracked report's CI-pending snapshot. Developer acceptance PENDING.

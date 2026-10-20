@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.4.4 Damage Application & Death
+# RPG Gameplay — v0.4.5 Combat Integration & Closure
 
-> **Status: Group A baseline merged through PR #8; CB01–CB25 implemented. Combat phase IN_PROGRESS; Draft PR; Developer acceptance PENDING.**
+> **Status: Group A baseline merged through PR #8; CB01–CB30 implemented. Combat phase REVIEW_PENDING; final review gates required; Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB25 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB30 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Entity identity and classification
@@ -488,3 +488,19 @@ and [report](docs/reports/v0.4.4-combat-damage-death.md).
 Installed98 contracts plus2 outer gates cover current behavior. Earlier milestone
 sections are historical. Combat phase IN_PROGRESS; PR #9 DRAFT; Developer acceptance
 PENDING; v0.4.5 NOT_STARTED. Gameplay profiles NOT_EVALUATED.
+
+## v0.4.5 Combat integration and review readiness
+
+CB01–CB30 implementation is ready for final Developer review after final exact-head
+gates. Existing root APIs compose a Basic Attack without Skill/Effect/AI/Encounter:
+context -> admission -> target -> Kernel resolution -> Entity resource/death.
+Two independent installed sessions each match the literal HP100->25->0 oracle,
+calculated75/75, applied75/25, alive->alive->dead, with exactly2 critical RNG draws.
+Rejected callers stop before downstream work; dodge/zero expose null transitions.
+Above-max140->100/request20 preserves canonical applied20, not HP delta40.
+
+No new production API in0.4.5: root65 functions/95 types. Caller owns current
+snapshots/policies, scheduling, persistence and replay/concurrency consistency.
+Text/Realtime/TurnBased labels prove shared API semantics, not concrete games.
+Gameplay profiles NOT_EVALUATED; acceptance PENDING; phase REVIEW_PENDING.
+See [closure report](docs/reports/v0.4.5-combat-integration-closure.md).

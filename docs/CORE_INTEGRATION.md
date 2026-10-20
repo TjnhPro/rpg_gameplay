@@ -187,3 +187,14 @@ is exactly resourceResult.transition.applied. Pinned Kernel permits above-max
 Above-max reject propagates the canonical Entity/Core error, with originals intact.
 No-op paths never transition/normalize/evaluate defeat. Core pin/artifact/deps
 remain unchanged; real installed integrity and numerical regressions are required.
+
+## v0.4.5 full-flow integration evidence
+
+Pinned Core2.0.0/revision04b7239f998c3c688a0dfa3202f11811a9acd775 and locked
+SHA-512 remain unchanged. Two installed sessions independently assert raw100,
+critical bonus.5, B1=150, reduction.5, final75; application threads HP100->25->0
+with applied75/25. Dodge chance0 consumes0; Critical consumes2 total. Real positive
+CB20 resolution also supplies20 for above-max140->100/applied20/delta40.
+No numerical reimplementation or new runtime dependencies. Existing artifact-byte
+integrity and public Kernel consumers remain mandatory. Consumer literal oracles
+are independent expectations, not values regenerated from implementation output.

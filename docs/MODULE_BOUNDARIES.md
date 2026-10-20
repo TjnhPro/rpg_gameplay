@@ -182,3 +182,14 @@ or CI changes. Root adds applyCombatAttackDamage and CombatDamageApplicationPoli
 CombatDamageApplicationOutcome/CombatDamageApplicationResult:65 functions/95 types.
 No new modules/deep exports or validators exported. Damage/Life calculations are
 not duplicated; no automatic publish, Skill/Effect/Encounter or reward coupling.
+
+## CB26–CB30 closure boundary (v0.4.5)
+
+No production changes in this milestone. Full phase audit: Combat owner/root
+exports only; Group A owners byte-identical to merged PR #8 baseline. Registry
+adds only optional combat depending on entity; progression remains optional and
+independent. Static owner checks cover3 modules/8 sources. Installed tests select
+entity+combat without progression; combat-only fails without auto-enablement.
+Canonical numerical/resource/life delegation and absence of stores/formulas/events
+are reviewed in reports/v0.4.5-combat-integration-closure.md. Lexical checks alone
+are not architectural proof; source review plus installed behavior supply evidence.

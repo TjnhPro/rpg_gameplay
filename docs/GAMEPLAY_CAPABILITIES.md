@@ -132,3 +132,15 @@ No heal/revive/Skill/Effect/Encounter, automatic events/rewards, persistent Comb
 state or exactly-once authority. Custom resources and player/monster parity work.
 Prior sections are historical. Phase IN_PROGRESS; PR #9 DRAFT; acceptance PENDING;
 v0.4.5 NOT_STARTED. Gameplay profiles NOT_EVALUATED.
+
+## v0.4.5 current Combat review scope
+
+Group04 CB01–CB30 implementation complete for review; phase REVIEW_PENDING,
+Developer acceptance PENDING. Earlier sections describe milestone history.
+CB26 full public Basic Attack/updated-state continuation; CB27 independent literal
+replay/RNG/snapshot isolation; CB28 rejection and prior contract regression;
+CB29 installed/root-only/strict types and ownership; CB30 full phase audit/review
+handoff. No new mechanics/API/module. No Skill/Effect/AI/Encounter, spatial/turn/
+realtime controller, automatic events/rewards, persistence or global authority.
+Combat core function semantics VERIFIED; concrete game-mode integrations and
+gameplay profiles NOT_EVALUATED. Agent does not close/accept the phase.

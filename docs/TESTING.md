@@ -312,3 +312,19 @@ combat-damage.ts checks exact Entity type reuse, readonly diagnostics, null no-o
 fields/discrimination, required inputs/policy, no any/deep imports with strict
 NodeNext/skipLibCheck:false. Existing90 contracts/oracles unchanged; total98
 installed contracts plus2 outer gates, no skips. Report maps scenarios A–R/R01–R35.
+
+## CB26–CB30 Combat closure evidence (v0.4.5)
+
+combat-integration.mjs adds3 cohesive installed tests: (1) two actual attacks,
+independent sessions each matching literal75/75 calculated,75/25 applied and
+HP100->25->0; role parity, mode-neutral labels, optional composition, no events
+and unchanged domains; (2) rejection-stage trace, wrong receipts/numerical policy,
+dodge with overflow poison downstream input, invalid/missing/throwing RNG;
+(3) actual CB20 final20 with authoritative above-max applied20/delta40,
+zero/minimum/dead edges and mutable detached handoffs. No previous oracle changes.
+Dropped groups lose distinct continuation, failure boundary or accounting evidence.
+combat-integration.ts checks actual cross-stage root signatures under strict
+NodeNext/skipLibCheck:false, readonly Entity results and discriminated nulls.
+101 installed contracts (98 retained +3) and2 outer gate tests, zero skips.
+R01–R40/N01–N20 mapping and source audit are in the closure report. Text/Realtime/
+TurnBased labels assert identical shared APIs, not renderer/scheduler/game execution.

@@ -251,3 +251,16 @@ not a completed game/Combat phase. Exact-head push and PR Windows/Ubuntu Node22/
 CI evidence is attached to PR #9; tracked report records the pre-push snapshot.
 macOS NOT_RUN; profiles NOT_EVALUATED. Phase IN_PROGRESS, PR DRAFT, Developer
 acceptance PENDING; v0.4.5 NOT_STARTED. Earlier scopes are historical records.
+
+## v0.4.5 current verification scope
+
+Actual installed0.4.5: GF01–GF16, EC01–EC18, PG01–PG19 and CB01–CB30.
+101 installed runtime contracts +2 outer gates, zero failures/skips. Run
+harness:check, harness:selftest, build, typecheck, test:functional, full verify and
+git diff --check. Root65 functions/95 types,3 registered modules/8 sources.
+Strict external NodeNext/closed exports, tarball install and pinned Core integrity
+remain mandatory. No production delta in0.4.5; full phase diff audit required.
+Exact-head push+PR Windows/Ubuntu Node22/24 must PASS before PR readiness. Final
+results go into ignored .artifacts/combat-v0.4-final-review.md and PR #9, avoiding
+a post-CI tracked commit. Phase REVIEW_PENDING/acceptance PENDING after gates;
+macOS NOT_RUN, concrete game-mode integrations/gameplay profiles NOT_EVALUATED.

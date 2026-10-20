@@ -312,3 +312,16 @@ Dodge/zero validate first and return null transitions without normalization or
 Life evaluation. Combined immutable results reuse canonical Entity snapshots;
 there is no Combat health/Life store, duplicate calculator, event or reward engine.
 Caller owns current authority, persistence and replay/idempotency/concurrency.
+
+## CB26–CB30 integration/closure (v0.4.5)
+
+Integration is installed consumer evidence, with no production facade or API delta.
+Combat sequences; actual public Kernel calculates Hit/Critical/B0/B1/Mitigation;
+Entity owns current resources and defeat; Foundation supplies lazy caller RNG.
+Consumer explicitly threads updated immutable Resource/Life snapshots between two
+attempts. Rejection branching belongs to caller; resolver also rejects invalid
+stage receipts before numerical work. Application preserves Entity.applied verbatim.
+Full PR audit from Group A confirms unchanged Foundation/Entity/Progression owners,
+Core pin, dependency versions and CI. Only optional combat->entity was added to
+registry; no store/ledger/Skill/Effect/Encounter or scheduler. Review/acceptance
+remain separate; see the v0.4.5 closure report and ignored final review handoff.
