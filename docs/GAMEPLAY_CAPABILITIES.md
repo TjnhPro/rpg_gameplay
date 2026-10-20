@@ -1,3 +1,78 @@
+## v0.7.6 Actor AI lifecycle checkpoint
+
+AI31 reads Entity Life and composes existing target loss. AI32 provides explicit
+metadata reset. AI33 composes disengage with existing FSM and caller World facts.
+AI34 evaluates caller cadence through Foundation Clock. AI35 proves truthful
+feedback/recovery continuity using canonical Combat/Skill and L4 commit fixtures.
+AI01–AI30 remain prior accepted milestones. AI31–AI35 are scoped implementation;
+final checkpoint depends on exact-head PR evidence. AI36–AI40 are OUT_OF_SCOPE.
+No autonomous loop, revival, movement, refund, retry or game-specific policy.
+
+## v0.7.5 Actor AI integration checkpoint
+
+AI26 canonical Combat; AI27 canonical Skill; AI28 actual Effect restriction AND-gates;
+AI29 immutable terminal feedback/correlation; AI30 caller-explicit fresh fallback:
+IMPLEMENTED with installed fixture evidence. AI01–AI25 retained. Production adds
+only feedback capture/validation; no AI execution authority or domain dependency.
+AI31–AI40 OUT_OF_SCOPE. Phase IN_PROGRESS, Developer acceptance PENDING.
+Concrete gameplay profiles NOT_EVALUATED. [report](reports/v0.7.5-combat-skill-effect-integration.md); previous statements historical.
+
+## v0.7.4 Actor AI checkpoint
+
+AI01–AI20 retained; AI21 Basic Attack Intent, AI22 Skill Use Intent, AI23 Movement
+Intent (Approach/Return only), AI24 Priority & Fallback, AI25 Decision Outcomes
+IMPLEMENTED as advisory data selection. L3 supplies behavior/action priority;
+L4 supplies correlated availability and retains canonical admission/execution.
+Explicit wait supported; missing availability fails closed per rule, no implicit wait.
+AI26–AI40 OUT_OF_SCOPE. Phase IN_PROGRESS, acceptance PENDING. [report](reports/v0.7.4-ai-action-selection-intent.md).
+Concrete gameplay profiles remain NOT_EVALUATED; earlier statements are historical.
+
+## v0.7.3 Actor AI behavior checkpoint
+
+AI16 generic state/profile policy, AI17 ordered FSM/guards, AI18 Idle/Guard,
+AI19 configurable Aggressive/Defensive/Passive and AI20 Disengage/Return:
+IMPLEMENTED with installed contract evidence. AI01–AI15 preserved.
+L3 examples are test data, not framework presets. L4 supplies triggers and commits
+behavior-only candidates. No target mutation/actions/World/spatial/automatic reset.
+AI21–AI25(v0.7.4), AI26–AI30(v0.7.5), AI31–AI35(v0.7.6), AI36–AI40(v0.7.7)
+remain OUT_OF_SCOPE. Phase IN_PROGRESS, acceptance PENDING. [Report](reports/v0.7.3-ai-behavior-state-transitions.md).
+Concrete gameplay profiles NOT_EVALUATED; older statements are historical.
+
+## v0.7.2 checkpoint delta
+
+AI11 Target Selection Policy, AI12 Acquisition, AI13 Retention, AI14 Switching
+and AI15 Loss/Outcomes are IMPLEMENTED. AI01–AI10 preserved. Explicit preferences
+and lexical fallback determine selection; immutable candidate is not L4 commit.
+AI16–AI40 remain OUT_OF_SCOPE. No behavior/action execution, Threat Engine or
+World/Spatial implementation. Phase IN_PROGRESS; acceptance PENDING; profiles
+NOT_EVALUATED. [Report](reports/v0.7.2-target-acquisition-selection.md).
+Earlier status below is historical.
+
+## v0.7.1 checkpoint delta
+
+AI06 Perception Snapshot, AI07 Target Facts, AI08 Awareness Validation,
+AI09 Candidate Filtering and AI10 Perception Outcomes are IMPLEMENTED.
+AI01–AI05 preserved. AI11–AI40 remain OUT_OF_SCOPE (v0.7.2–v0.7.7).
+L4 supplies observation facts/time; L3 supplies all eligibility gates; L2 captures,
+validates and filters only. No target selection or World/Spatial implementation.
+Actor AI phase IN_PROGRESS; Developer acceptance PENDING; profiles NOT_EVALUATED.
+See [report](reports/v0.7.1-ai-perception-context.md). Earlier status is historical.
+
+## Current checkpoint: v0.7.0 — Actor AI Foundation
+
+Effect PR #11 is merged at baseline be716c4. AI01–AI05 implement actor identity,
+opaque L3 profile references, immutable AI state, structural decision/action
+contracts and an optional Entity-only module. Player, Monster, NPC, Pet, Summon,
+Companion and arbitrary Entity kinds use the same six functions.
+Manual states reject AI proposals; no_action reasons are controller-bound.
+Target references do not imply target validity or action admission.
+AI06–AI40 remain OUT_OF_SCOPE at this checkpoint: no perception, evaluator, target
+selection, FSM transitions, priorities, execution, feedback, lifecycle or scheduler.
+Actor AI phase IN_PROGRESS; Developer acceptance PENDING.
+[Task](tasks/active/v0.7.0-actor-ai-foundation.md) /
+[report](reports/v0.7.0-actor-ai-foundation.md). Concrete game profiles NOT_EVALUATED.
+Earlier candidate statuses below are historical.
+
 ## Current patch candidate: v0.6.7-FIX01
 
 EF01–EF40 remains the baseline. One explicit canonical Effect cleanup operation

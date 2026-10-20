@@ -1,3 +1,84 @@
+## v0.7.6 installed lifecycle evidence
+
+Required physical installed consumer `actor-ai-lifecycle-recovery.mjs` executes
+11 assertion-bearing contracts (L01–L55); its strict NodeNext companion uses root
+exports and skipLibCheck:false. Runner injects 10 installed runtime faults and
+8 L4 fixture faults, skipped/zero-assertion controls, missing fixture/export,
+version/Core/artifact checks and actual interval declaration corruption. Mutations
+are restored, artifact inventory rechecked and clean consumer rerun. Historical
+negative controls remain required. Counts are observed in the checkpoint report.
+
+## v0.7.5 installed evidence delta
+
+45 installed groups /234 runtime contracts +3 outer tests; skipped/cancelled/todo=0.
+Ten new integration contracts exercise actual canonical owners through caller-owned
+fixtures. Strict NodeNext consumes real root declarations and rejects deep imports.
+Required-file/version/Core/export/declaration and TAP gates fail closed. Fourteen L4
+faults, four feedback runtime faults and skipped/zero-assertion faults are detected
+and restored. All224 prior contracts and historical mutation gates retained.
+[report](reports/v0.7.5-combat-skill-effect-integration.md); exact-head remote results belong to the SHA-bound PR supplement.
+
+## v0.7.4 installed evidence delta
+
+Eight assertion-bearing installed groups cover AI21–AI25 with actual npm tarball,
+root/native ESM and strict external NodeNext. Observed 224 runtime contracts /
+44 groups +3 outer; all 216 prior contracts retained, no skips/fail/cancel/todo.
+Twelve executable faults, actual validator-delegation/bypass probe, missing fixture/
+export/version/Core, skip/zero-assertion and corrupted self-target declaration
+controls are required. Every injected byte restored against packed inventory.
+Exact-head push AND pull_request Windows/Ubuntu Node22/24 require 8/8 PASS.
+[report](reports/v0.7.4-ai-action-selection-intent.md); prior counts/status are historical.
+
+## v0.7.3 installed behavior evidence
+
+New actor-ai-behavior.mjs/.ts adds seven assertion-bearing runtime groups plus
+strict external NodeNext. Observed216 runtime /43 installed groups +3 outer;
+all209 prior contracts retained, zero fail/cancel/skip/todo.
+Eight installed executable faults are detected: manual, ordering, profile,
+state reference, guard, target mutation, input mutation and forbidden canonical
+execution. Execution prohibition has a compiled dependency/call assertion alongside
+runtime owner preservation; no claim of an implemented World/Movement system.
+Missing fixtures/exports/version/Core, skip/zero assertions and wrong declarations
+also fail; every injected byte restored. Both exact-head CI matrices8/8 required.
+[Report](reports/v0.7.3-ai-behavior-state-transitions.md); prior status below is historical.
+
+## v0.7.2 installed evidence delta
+
+New target-selection consumer adds six assertion-bearing runtime groups and a
+strict external NodeNext fixture. Actual full coverage: 209 runtime /42 installed
+groups +3 outer; all 203 prior contracts retained, zero skips/fail/cancel/todo.
+Seven actual installed runtime faults, skipped/zero-assertion groups and corrupt
+declarations fail closed, alongside missing fixture/export/version/Core controls.
+All injections restore original packed bytes. Both exact-head push/pull_request
+Windows/Ubuntu Node22/24 matrices must pass 8/8. See
+[report](reports/v0.7.2-target-acquisition-selection.md); earlier counts are historical.
+
+## v0.7.1 installed evidence delta
+
+Actor AI AI06–AI10 adds six assertion-bearing installed runtime contracts and a
+strict external NodeNext consumer. Total observed203 runtime /41 groups +3 outer;
+197 prior contracts retained, zero skip/fail/cancel/todo. Runtime faults cover
+duplicate/binding/precedence/order/state mutation/automatic selection; missing
+fixtures/exports/version/Core, skipped tests and declaration faults fail closed.
+Real packed/installed dist bytes are verified and every injected fault restored.
+Both exact-head push/pull_request Windows/Ubuntu Node22/24 matrices are required.
+See [report](reports/v0.7.1-ai-perception-context.md); earlier status is historical.
+
+## v0.7.0 Actor AI verification
+
+Installed package0.7.0 adds five assertion-bearing contract groups, covering
+AI01–AI05 and the task's AI01–AI33 acceptance scenarios. Full observed coverage:
+197 runtime contracts /40 installed groups plus3 outer tests; zero failures,
+skips, cancellations or todos. All192 historical runtime contracts remain active,
+including Effect FIX01. Root inventory115 functions/191 types.
+Native ESM and strict NodeNext/skipLibCheck:false use the real tarball and pinned
+physical Core2.0.0. Controls require both AI fixtures, each of six root exports,
+correct version/Core integrity, actual assertions/no skips, manual rejection,
+actor existence, strict declarations and installed dist-byte provenance.
+Injection is restored before final verification.
+Exact-head push + pull_request Windows/Ubuntu Node22/24 require8/8 success.
+[Report](reports/v0.7.0-actor-ai-foundation.md); phase IN_PROGRESS, acceptance PENDING.
+
 ## v0.6.7-FIX01 verification
 
 Installed integration now requires9 contracts: six retained plus three grouped

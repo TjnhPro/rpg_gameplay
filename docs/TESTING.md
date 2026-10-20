@@ -1,3 +1,101 @@
+## v0.7.6 lifecycle/recovery tests
+
+Installed root consumers add 11 actual contracts: dead/manual precedence and pending
+execution recheck; canonical revival versus explicit reset; target death/loss;
+staged disengage/FSM/World arrival; exact cadence; stale timing/canceled commits;
+Combat/Skill terminal continuity; untouched Effect/World ownership; closed input
+validation; seven Entity kinds; independent literal replay without hidden providers.
+Negative faults distinguish production validation from L4 orchestration safeguards.
+Two historical dependency-inventory assertions now explicitly permit the approved
+Foundation execution import; existing behavioral assertions are preserved.
+
+## v0.7.5 canonical integration evidence
+
+`tests/consumers/actor-ai-integration.mjs` has ten assertion-bearing installed
+contracts: Combat/rejections, Skill/rejections, Effect, feedback/validation,
+freshness, explicit fallback and independent literal replay. C01–C47 traceability
+is in [report](reports/v0.7.5-combat-skill-effect-integration.md). `actor-ai-integration.ts` checks strict NodeNext, readonly values,
+terminal discriminants, exact attemptId typing and root-only declarations.
+Fourteen caller fixture mutations and four actual installed feedback mutations
+must fail; skipped/zero-assertion consumers and declaration corruption must fail.
+Artifacts restored after every mutation. Existing 224 runtime contracts retained:
+observed total234 /45 groups +3 outer; zero skips/cancelled/todo.
+Fixture duplicate ledger is local to each caller session, never a durable guarantee.
+
+## v0.7.4 action evidence
+
+A01–A47 map to eight installed consumer groups: CAPTURE; INTENTS; PRIORITY;
+DIAGNOSTICS; MANUAL; VALIDATION; COMPOSITION; REPLAY. Literal expected envelopes,
+targets/rejections, configured order reversal and availability reordering prove
+contracts. Seven actor kinds share one evaluator; explicit target→behavior→action
+composition is caller wiring, with no automatic orchestration/execution.
+Runtime owner snapshots plus installed executable dependency/call boundaries guard
+no execution; opaque World fixture is not a Movement implementation.
+Actual installed validator probe observes delegation, then detects a bypass fault.
+Targeted 8/8 + strict NodeNext PASS; full 224/44+3, zero skips; all 216 historical
+contracts retained. Negative controls restore every installed byte. [report](reports/v0.7.4-ai-action-selection-intent.md).
+
+## v0.7.3 behavior evidence
+
+S01–S46 map to seven installed groups: generic capture; ordered transitions and
+guards/outcomes; actor-agnostic profile differences; explicit target-selection
+and full idle/guard return timelines; manual gate; closed fail-closed validation;
+snapshot isolation/replay/owner and compiled execution boundaries.
+Literal outcomes independent of evaluator implementation; no-transition/self-rule
+and duplicate-guard fallback are explicit. Unknown trigger is a valid no-match.
+Runtime owners include canonical Entity Resource/Life, Skill cooldown and Effect
+state. World position is opaque caller fixture, not a World implementation.
+Throwing implicit clock/RNG/timers, independent captures/sessions and unchanged
+inputs prove deterministic isolation. Targeted7/7 plus strict NodeNext PASS.
+Full216/43+3, historical209 intact; eight executable faults and skip/zero/assertion/
+declaration/fixture/export/version/Core controls fail and restore original bytes.
+[Report](reports/v0.7.3-ai-behavior-state-transitions.md); earlier counts are historical.
+
+## v0.7.2 target-selection evidence
+
+actor-ai-target-selection.mjs/.ts exercise S01–S41 through six cohesive groups:
+acquisition/priority/lexical fallback; retention/switch/reordering; all seven
+canonical exclusion-loss reasons plus absent target; manual control; complete
+closed assessment/policy validation/getters0; actor-agnostic immutable replay.
+Literal outcomes are independent of implementation. No second eligibility gate:
+facts explicitly permitted by AI09 remain selectable. Reordered candidates and
+changed caller priorities prove no insertion-order/locale/cache dependence.
+Targeted installed 6/6 + strict NodeNext PASS. Full 209 runtime /42 groups +3
+outer, zero skips; all 203 prior contracts retained. Seven actual runtime faults
+plus skipped/zero-assertion/declaration/fixture/export/version/Core controls are
+caught and restored. [Report](reports/v0.7.2-target-acquisition-selection.md).
+Earlier counts below are historical.
+
+## v0.7.1 perception evidence
+
+New installed consumers actor-ai-perception.mjs/.ts cover task P01–P43 through six
+cohesive assertion-bearing groups: capture/binding/time, closed validation/no
+getters, policy/manual advisory use, seven-way precedence, stable outcomes/order,
+actor-agnostic isolation/replay/owner preservation. Literal independent expected
+envelopes and all player/monster/npc/pet/summon/companion/custom actors are used.
+Targeted tarball6/6 and strict NodeNext PASS. Full203 runtime /41 groups +3 outer,
+zero skips; negative controls mutate actual installed dist/declarations, restore
+in finally, and verify original packed bytes. Existing197 contracts unchanged.
+See [report](reports/v0.7.1-ai-perception-context.md); earlier counts are historical.
+
+## v0.7.0 Actor AI Foundation evidence
+
+`tests/consumers/actor-ai-foundation.mjs` has five installed contract groups:
+actor-agnostic canonical binding; correlated proposals/controller exclusivity;
+closed records/no getters; optional Entity-only composition; detached immutable
+snapshots/independent replay/canonical Resource and Life preservation.
+Literal expected states and envelopes are independent of implementation.
+Same APIs cover Player/Monster/NPC/Pet/Summon/Companion/custom kinds.
+Replay runs with Date.now/Math.random/timers replaced by throwing providers.
+Strict installed `actor-ai-foundation.ts` imports six functions/seven types and
+proves readonly/discriminated contracts and closed package paths.
+Runner detects missing fixtures, each missing new export, bad version/Core,
+skips/zero assertions, actual manual-proposal/unknown-actor runtime faults,
+installed declaration failure and artifact drift; all mutations restored.
+Observed full197 runtime /40 groups +3 outer; retained192 historical runtime
+contracts include all GF/EC/PG/CB/SK/EF and Effect FIX01.
+[Checkpoint report](reports/v0.7.0-actor-ai-foundation.md).
+
 ## v0.6.7-FIX01 target-defeat cleanup evidence
 
 effect-integration.mjs retains its six original contracts and adds three grouped

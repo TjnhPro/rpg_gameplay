@@ -114,3 +114,27 @@ export type {EffectPeriodicCapture, EffectPeriodicEntry, EffectPeriodicState, Ef
   EffectPeriodicTransitionResult} from './modules/effect/index.js';
 export {cleanupDefeatedTargetEffects} from './modules/effect/index.js';
 export type {EffectTargetDefeatCleanupRequest, EffectTargetDefeatCleanupResult} from './modules/effect/index.js';
+export {createActorAIProfileReference, createActorAIState, validateActorAIState,
+  createActorAIDecisionContext, createActorAIActionIntent, validateActorAIDecisionResult} from './modules/actor-ai/index.js';
+export type {ActorAIProfileReference, ActorAIControllerMode, ActorAIInitialState, ActorAIState,
+  ActorAIDecisionContext, ActorAIActionIntent, ActorAIDecisionResult} from './modules/actor-ai/index.js';
+export {createActorAIPerceptionSnapshot, validateActorAIPerceptionSnapshot, evaluateActorAIPerception} from './modules/actor-ai/index.js';
+export type {ActorAIPerceivedEntity, ActorAIPerceptionSnapshot, ActorAIPerceptionPolicy,
+  ActorAIPerceptionExclusionReason, ActorAIPerceptionExclusion, ActorAIPerceptionAssessment} from './modules/actor-ai/index.js';
+export {evaluateActorAITargetSelection} from './modules/actor-ai/index.js';
+export type {ActorAITargetSelectionPolicy, ActorAITargetLossReason, ActorAITargetSelectionResult} from './modules/actor-ai/index.js';
+export {createActorAIBehaviorPolicy, createActorAIBehaviorObservation, evaluateActorAIBehaviorTransition} from './modules/actor-ai/index.js';
+export type {ActorAIBehaviorTargetRequirement, ActorAIBehaviorRule, ActorAIBehaviorPolicy,
+  ActorAIBehaviorObservation, ActorAIBehaviorTransitionResult} from './modules/actor-ai/index.js';
+export {createActorAIActionSelectionPolicy, createActorAIActionObservation, evaluateActorAIActionSelection} from './modules/actor-ai/index.js';
+export type {ActorAIActionKind, ActorAIActionTargetMode, ActorAIActionRule, ActorAIActionSelectionPolicy,
+  ActorAIActionAvailability, ActorAIActionObservation, ActorAIActionRuleRejectionReason,
+  ActorAIActionRuleRejection, ActorAIActionSelectionResult} from './modules/actor-ai/index.js';
+
+export {validateActorAIActionExecutionFeedback} from './modules/actor-ai/index.js';
+export type {ActorAIActionExecutionFeedback} from './modules/actor-ai/index.js';
+
+export {evaluateActorAILifeGate, evaluateActorAIReset, createActorAIDecisionTimingState,
+  evaluateActorAIDecisionTiming} from './modules/actor-ai/index.js';
+export type {ActorAILifeGateResult, ActorAIResetReason, ActorAIResetRequest, ActorAIResetResult,
+  ActorAIDecisionTimingState, ActorAIDecisionTimingPolicy, ActorAIDecisionTimingResult} from './modules/actor-ai/index.js';

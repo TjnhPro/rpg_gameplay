@@ -21,7 +21,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -33,6 +33,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     const packed = Array.isArray(packedResult) ? packedResult[0] : packedResult['@rpg/gameplay'];
     console.log(`INSTALLED_PACKAGE_SHA256 ${packed.filename} ${createHash('sha256').update(fs.readFileSync(path.join(temp, packed.filename))).digest('hex')}`);
     assert.deepEqual(packed.files.map(x => x.path).sort(), [
+      'dist/modules/actor-ai/index.d.ts', 'dist/modules/actor-ai/index.js',
       'README.md', 'dist/foundation/execution/index.d.ts', 'dist/foundation/execution/index.js',
       'dist/foundation/messaging/index.d.ts', 'dist/foundation/messaging/index.js',
       'dist/foundation/modules/index.d.ts', 'dist/foundation/modules/index.js',
@@ -66,7 +67,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.6.7');
+    assertVersion(packageJson.version, '0.7.7');
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
@@ -84,7 +85,7 @@ assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModu
  'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId', 'createEntity',
  'createEntityCollection', 'addEntity', 'getEntity', 'hasEntity', 'listEntities', 'removeEntity', 'replaceEntity',
  'createEntityAttributeState', 'getEntityBaseAttributes', 'setEntityBaseAttribute', 'calculateEntityStats',
- 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects'].sort());
+ 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
@@ -97,7 +98,7 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     // A missing packaged root export must fail the very same runtime consumer.
     const installedRoot = path.join(installed, 'dist/index.js');
     const rootSource = fs.readFileSync(installedRoot, 'utf8');
-    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects']) {
+    for (const requiredExport of ['activateSkill', 'createEffectInstance', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming']) {
       const pattern = new RegExp(`\\b${requiredExport}\\b`);
       assert.match(rootSource, pattern);
       try {
@@ -239,6 +240,7 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
       {id: 'combat', optional: true, dependencies: ['entity']},
       {id: 'skill', optional: true, dependencies: ['entity']},
       {id: 'effect', optional: true, dependencies: ['entity']},
+      {id: 'actor-ai', optional: true, dependencies: ['entity']},
     ]);
     fs.copyFileSync(path.join(root, 'tests/consumers/combat.mjs'), path.join(temp, 'combat.mjs'));
     const combatEvidence = exec(['--test', '--test-reporter=tap', 'combat.mjs'], temp);
@@ -665,6 +667,468 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
       console.log('INSTALLED_EFFECT_DEFEAT_FAULT_DETECTED ' + name);
     }
     console.log('INSTALLED_EFFECT_DEFEAT_NEGATIVE_PASS faults=10 restored_artifacts');
+    copyRequiredConsumer(path.join(root, 'tests/consumers/actor-ai-foundation.mjs'), path.join(temp, 'actor-ai-foundation.mjs'));
+    copyRequiredConsumer(path.join(root, 'tests/consumers/actor-ai-foundation.ts'), path.join(temp, 'actor-ai-foundation.ts'));
+    fs.copyFileSync(path.join(root, 'harness/modules.json'), path.join(temp, 'actor-ai-modules.json'));
+    const aiMarkers = ['IDENTITY', 'DECISION', 'VALIDATION', 'MODULE', 'REPLAY'].map(x => 'ACTOR_AI_' + x + '_PASS');
+    const aiEvidence = exec(['--test', '--test-reporter=tap', 'actor-ai-foundation.mjs'], temp);
+    assertTapEvidence(aiEvidence, 5, aiMarkers);
+    for (const marker of aiMarkers) console.log(aiEvidence.split(/\r?\n/).find(line => line.includes(marker)));
+    console.log('INSTALLED_ACTOR_AI_FOUNDATION_PASS AI01-AI05; consumer_tests=5 skipped=0; structural_only');
+    for (const extension of ['mjs', 'ts']) {
+      const required = path.join(temp, 'actor-ai-foundation.' + extension), saved = required + '.saved';
+      try {fs.renameSync(required, saved); assert.throws(() => copyRequiredConsumer(required, required + '.copy'), {code: 'ENOENT'});}
+      finally {fs.renameSync(saved, required);}
+    }
+    assert.throws(() => assertVersion('0.7.0', '0.7.1'), /installed package version/);
+    const aiFile = path.join(temp, 'actor-ai-foundation.mjs'), aiSource = fs.readFileSync(aiFile, 'utf8');
+    for (const [expected, faulty] of [
+      ["contract('AI foundation: actor-agnostic", "test.skip('AI foundation: actor-agnostic"],
+      ['assert.', 'unchecked.'],
+    ]) {
+      assert.ok(aiSource.includes(expected));
+      try {
+        const fault = expected === 'assert.'
+          ? "const unchecked = new Proxy(() => {}, {get: () => () => {}});\n" + aiSource.replaceAll('assert.', 'unchecked.')
+            .replace("unchecked.ok(assertions>0,'Actor AI contract requires actual assertions')", "assert.ok(assertions>0,'Actor AI contract requires actual assertions')")
+          : aiSource.replace(expected, faulty);
+        fs.writeFileSync(aiFile, fault);
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'actor-ai-foundation.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(aiFile, aiSource);}
+    }
+    const aiRuntimeFile = path.join(installed, 'dist/modules/actor-ai/index.js'), aiRuntime = fs.readFileSync(aiRuntimeFile, 'utf8');
+    try {
+      fs.appendFileSync(aiRuntimeFile, '\n// deliberate installed Actor AI drift\n');
+      assert.throws(assertPackedFiles, /installed artifact content/);
+    } finally {fs.writeFileSync(aiRuntimeFile, aiRuntime);}
+    assertPackedFiles();
+    for (const [name, expected, faulty] of [
+      ['manual_proposal', "current.controller !== 'ai'", 'false'],
+      ['unknown_actor', 'if (!getEntity(entities, current.actorId))', 'if (false)'],
+    ]) {
+      assert.ok(aiRuntime.includes(expected), 'required installed AI fault: ' + name);
+      try {
+        fs.writeFileSync(aiRuntimeFile, aiRuntime.replace(expected, faulty));
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'actor-ai-foundation.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(aiRuntimeFile, aiRuntime);}
+      assertPackedFiles();
+      console.log('INSTALLED_ACTOR_AI_FAULT_DETECTED ' + name);
+    }
+    assert.doesNotMatch(fs.readFileSync(path.join(installed, 'dist/modules/actor-ai/index.d.ts'), 'utf8'),
+      /(?<!['"])\bany\b(?!['"])|\b(?:fields|stateSnapshot|contextSnapshot|intentSnapshot|Map|WeakMap|AIManager|AIRuntime|AIEngine)\b/);
+    assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_NEGATIVE_PASS missing_fixtures; all_six_root_exports; wrong_version; skipped; no_assertions; manual_proposal; unknown_actor; Core_integrity; artifact_provenance; restored');
+    // AI06–AI10 always run against the installed tarball, never source imports.
+    for (const extension of ['mjs', 'ts']) {
+      const required = path.join(temp, 'actor-ai-perception.' + extension);
+      copyRequiredConsumer(path.join(root, 'tests/consumers/actor-ai-perception.' + extension), required);
+      const saved = required + '.saved';
+      try {fs.renameSync(required, saved); assert.throws(() => copyRequiredConsumer(required, required + '.copy'), {code: 'ENOENT'});}
+      finally {fs.renameSync(saved, required);}
+    }
+    const perceptionMarkers = ['CAPTURE', 'VALIDATION', 'POLICY', 'PRECEDENCE', 'ORDER', 'REPLAY'].map(x => 'ACTOR_AI_PERCEPTION_' + x + '_PASS');
+    const perceptionEvidence = exec(['--test', '--test-reporter=tap', 'actor-ai-perception.mjs'], temp);
+    assertTapEvidence(perceptionEvidence, 6, perceptionMarkers);
+    for (const marker of perceptionMarkers) console.log(perceptionEvidence.split(/\r?\n/).find(line => line.includes(marker)));
+    console.log('INSTALLED_ACTOR_AI_PERCEPTION_PASS AI06-AI10; consumer_tests=6 skipped=0; advisory_only');
+    const perceptionFile = path.join(temp, 'actor-ai-perception.mjs'), perceptionSource = fs.readFileSync(perceptionFile, 'utf8');
+    assert.ok(perceptionSource.includes("contract('perception: explicit capture"));
+    try {
+      fs.writeFileSync(perceptionFile, perceptionSource.replace("contract('perception: explicit capture", "test.skip('perception: explicit capture"));
+      assert.throws(() => exec(['--test', '--test-reporter=tap', 'actor-ai-perception.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+    } finally {fs.writeFileSync(perceptionFile, perceptionSource);}
+    for (const [name, expected, faulty] of [
+      ['duplicate', 'if (seen.has(candidate.entityId))', 'if (false)'],
+      ['actor_binding', 'if (snapshot.actorId !== actorId)', 'if (false)'],
+      ['precedence', "reason = 'target_life_not_allowed';", "reason = 'relation_not_allowed';"],
+      ['order', 'eligible: Object.freeze(eligible)', 'eligible: Object.freeze(eligible.reverse())'],
+      ['state_mutation', 'const current = validateActorAIState(state, entities);', "state.targetEntityId = 'C'; const current = validateActorAIState(state, entities);"],
+      ['target_selection', 'eligible: Object.freeze(eligible)', "selectedTarget: eligible[0]?.entityId ?? null, eligible: Object.freeze(eligible)"],
+    ]) {
+      assert.ok(aiRuntime.includes(expected), 'required installed perception fault: ' + name);
+      try {
+        fs.writeFileSync(aiRuntimeFile, aiRuntime.replace(expected, faulty));
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'actor-ai-perception.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(aiRuntimeFile, aiRuntime);}
+      assertPackedFiles();
+      console.log('INSTALLED_ACTOR_AI_PERCEPTION_FAULT_DETECTED ' + name);
+    }
+    console.log('INSTALLED_ACTOR_AI_PERCEPTION_NEGATIVE_PASS missing_fixtures; all_three_root_exports; wrong_version; Core_integrity; skipped; six_runtime_faults; restored_artifacts');
+    // AI11–AI15: the same installed public consumer must expose every injected fault.
+    for (const extension of ['mjs', 'ts']) {
+      const required = path.join(temp, 'actor-ai-target-selection.' + extension);
+      copyRequiredConsumer(path.join(root, 'tests/consumers/actor-ai-target-selection.' + extension), required);
+      const saved = required + '.saved';
+      try {fs.renameSync(required, saved); assert.throws(() => copyRequiredConsumer(required, required + '.copy'), {code: 'ENOENT'});}
+      finally {fs.renameSync(saved, required);}
+    }
+    assert.throws(() => assertVersion('0.7.1', '0.7.2'), /installed package version/);
+    const targetMarkers = ['PRIORITY', 'RETENTION', 'LOSS', 'MANUAL', 'VALIDATION', 'REPLAY'].map(x => 'ACTOR_AI_TARGET_' + x + '_PASS');
+    const aiTargetEvidence = exec(['--test', '--test-reporter=tap', 'actor-ai-target-selection.mjs'], temp);
+    assertTapEvidence(aiTargetEvidence, 6, targetMarkers);
+    for (const marker of targetMarkers) console.log(aiTargetEvidence.split(/\r?\n/).find(line => line.includes(marker)));
+    console.log('INSTALLED_ACTOR_AI_TARGET_SELECTION_PASS AI11-AI15; consumer_tests=6 skipped=0; candidate_only');
+    const targetFile = path.join(temp, 'actor-ai-target-selection.mjs'), targetSource = fs.readFileSync(targetFile, 'utf8');
+    for (const mode of ['skipped', 'zero_assertions']) {
+      const fault = mode === 'skipped'
+        ? targetSource.replace("contract('target selection: acquisition", "test.skip('target selection: acquisition")
+        : "const unchecked = new Proxy(() => {}, {get: () => () => {}});\n" + targetSource.replaceAll('assert.', 'unchecked.')
+          .replace("unchecked.ok(assertions > 0, 'Target selection contract requires actual assertions')", "assert.ok(assertions > 0, 'Target selection contract requires actual assertions')");
+      assert.notEqual(fault, targetSource);
+      try {
+        fs.writeFileSync(targetFile, fault);
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'actor-ai-target-selection.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(targetFile, targetSource);}
+      console.log('INSTALLED_ACTOR_AI_TARGET_RUNNER_FAULT_DETECTED ' + mode);
+    }
+    for (const [name, expected, faulty] of [
+      ['excluded_target', 'rules.preferredTargetIds.find(candidate => eligibleIds.includes(candidate))', 'rules.preferredTargetIds.find(() => true)'],
+      ['manual_candidate', "if (current.controller === 'manual')", 'if (false)'],
+      ['retention', "rules.retention === 'retain_if_eligible' && previousEligible", 'false'],
+      ['priority', 'preferred ?? fallback', 'fallback'],
+      ['lexical', 'candidate < best', 'candidate > best'],
+      ['loss_clear', 'targetEntityId: selectedTargetEntityId', 'targetEntityId: selectedTargetEntityId ?? previousTargetEntityId'],
+      ['state_mutation', 'const current = validateActorAIState(state, entities), assessment = perceptionAssessment(perception);',
+        "state.targetEntityId = 'mutated'; const current = validateActorAIState(state, entities), assessment = perceptionAssessment(perception);"],
+    ]) {
+      assert.ok(aiRuntime.includes(expected), 'required installed target fault: ' + name);
+      try {
+        fs.writeFileSync(aiRuntimeFile, aiRuntime.replace(expected, faulty));
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'actor-ai-target-selection.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(aiRuntimeFile, aiRuntime);}
+      assertPackedFiles();
+      console.log('INSTALLED_ACTOR_AI_TARGET_FAULT_DETECTED ' + name);
+    }
+    console.log('INSTALLED_ACTOR_AI_TARGET_NEGATIVE_PASS missing_fixtures; root_export; wrong_version; Core_integrity; seven_runtime_faults; skipped; zero_assertions; restored_artifacts');
+    // AI16–AI20: installed FSM contracts and independently observable fault controls.
+    for (const extension of ['mjs', 'ts']) {
+      const required = path.join(temp, 'actor-ai-behavior.' + extension);
+      copyRequiredConsumer(path.join(root, 'tests/consumers/actor-ai-behavior.' + extension), required);
+      const saved = required + '.saved';
+      try {fs.renameSync(required, saved); assert.throws(() => copyRequiredConsumer(required, required + '.copy'), {code: 'ENOENT'});}
+      finally {fs.renameSync(saved, required);}
+    }
+    assert.throws(() => assertVersion('0.7.2', '0.7.3'), /installed package version/);
+    const behaviorMarkers = ['CAPTURE', 'RULES', 'PROFILES', 'COMPOSITION', 'MANUAL', 'VALIDATION', 'REPLAY'].map(x => 'ACTOR_AI_BEHAVIOR_' + x + '_PASS');
+    const behaviorEvidence = exec(['--test', '--test-reporter=tap', 'actor-ai-behavior.mjs'], temp);
+    assertTapEvidence(behaviorEvidence, 7, behaviorMarkers);
+    for (const marker of behaviorMarkers) console.log(behaviorEvidence.split(/\r?\n/).find(line => line.includes(marker)));
+    console.log('INSTALLED_ACTOR_AI_BEHAVIOR_PASS AI16-AI20; consumer_tests=7 skipped=0; candidate_only');
+    const behaviorFile = path.join(temp, 'actor-ai-behavior.mjs'), behaviorSource = fs.readFileSync(behaviorFile, 'utf8');
+    for (const mode of ['skipped', 'zero_assertions']) {
+      const fault = mode === 'skipped'
+        ? behaviorSource.replace("contract('behavior: generic", "test.skip('behavior: generic")
+        : "const unchecked = new Proxy(() => {}, {get: () => () => {}});\n" + behaviorSource.replaceAll('assert.', 'unchecked.')
+          .replace("unchecked.ok(assertions > 0, 'Behavior contract requires actual assertions')", "assert.ok(assertions > 0, 'Behavior contract requires actual assertions')");
+      assert.notEqual(fault, behaviorSource);
+      try {
+        fs.writeFileSync(behaviorFile, fault);
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'actor-ai-behavior.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(behaviorFile, behaviorSource);}
+      console.log('INSTALLED_ACTOR_AI_BEHAVIOR_RUNNER_FAULT_DETECTED ' + mode);
+    }
+    const behaviorStart = aiRuntime.indexOf('function behaviorIds(');
+    assert.ok(behaviorStart > 0);
+    const behaviorRuntime = aiRuntime.slice(behaviorStart);
+    for (const [name, expected, faulty] of [
+      ['manual', "if (current.controller === 'manual')", 'if (false)'],
+      ['priority', 'rules.rules.find(rule =>', '[...rules.rules].reverse().find(rule =>'],
+      ['profile', 'if (rules.profileId !== current.profileId)', 'if (false)'],
+      ['state_reference', 'if (!stateIds.includes(rule.fromStateId) || !stateIds.includes(rule.toStateId))', 'if (false)'],
+      ['target_guard', "rule.targetRequirement === 'any'", 'true'],
+      ['target_mutation', 'behaviorStateId: nextBehaviorStateId', 'behaviorStateId: nextBehaviorStateId, targetEntityId: null'],
+      ['state_mutation', 'const current = validateActorAIState(state, entities), rules = createActorAIBehaviorPolicy(policy);',
+        "state.behaviorStateId = 'changed'; const current = validateActorAIState(state, entities), rules = createActorAIBehaviorPolicy(policy);"],
+      ['gameplay_execution', 'const nextBehaviorStateId = matched?.toStateId ?? previousBehaviorStateId;',
+        "transitionEntityResource({entityId: current.actorId, current: {health: 5}}, 'health', {amount: 1, operation: 'decrease', maximum: 100, rule: {minimum: 0, currentAboveMaximum: 'reject', allowIncreaseFromMinimum: false}}); const nextBehaviorStateId = matched?.toStateId ?? previousBehaviorStateId;"],
+    ]) {
+      assert.ok(behaviorRuntime.includes(expected), 'required installed behavior fault: ' + name);
+      let fault = aiRuntime.slice(0, behaviorStart) + behaviorRuntime.replace(expected, faulty);
+      if (name === 'gameplay_execution') fault = "import {transitionEntityResource} from '../entity/index.js';\n" + fault;
+      try {
+        fs.writeFileSync(aiRuntimeFile, fault);
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'actor-ai-behavior.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(aiRuntimeFile, aiRuntime);}
+      assertPackedFiles();
+      console.log('INSTALLED_ACTOR_AI_BEHAVIOR_FAULT_DETECTED ' + name);
+    }
+    console.log('INSTALLED_ACTOR_AI_BEHAVIOR_NEGATIVE_PASS missing_fixtures; three_root_exports; wrong_version; Core_integrity; eight_runtime_faults; execution_boundary; skipped; zero_assertions; restored_artifacts');
+    // AI21–AI25: installed action proposals and actual decision-validator delegation.
+    for (const extension of ['mjs', 'ts']) {
+      const required = path.join(temp, 'actor-ai-action-selection.' + extension);
+      copyRequiredConsumer(path.join(root, 'tests/consumers/actor-ai-action-selection.' + extension), required);
+      const saved = required + '.saved';
+      try {fs.renameSync(required, saved); assert.throws(() => copyRequiredConsumer(required, required + '.copy'), {code: 'ENOENT'});}
+      finally {fs.renameSync(saved, required);}
+    }
+    assert.throws(() => assertVersion('0.7.3', '0.7.4'), /installed package version/);
+    const actionMarkers = ['CAPTURE', 'INTENTS', 'PRIORITY', 'DIAGNOSTICS', 'MANUAL', 'VALIDATION', 'COMPOSITION', 'REPLAY'].map(x => 'ACTOR_AI_ACTION_' + x + '_PASS');
+    const actionEvidence = exec(['--test', '--test-reporter=tap', 'actor-ai-action-selection.mjs'], temp);
+    assertTapEvidence(actionEvidence, 8, actionMarkers);
+    for (const marker of actionMarkers) console.log(actionEvidence.split(/\r?\n/).find(line => line.includes(marker)));
+    console.log('INSTALLED_ACTOR_AI_ACTION_PASS AI21-AI25; consumer_tests=8 skipped=0; advisory_intents');
+    const actionFile = path.join(temp, 'actor-ai-action-selection.mjs'), actionSource = fs.readFileSync(actionFile, 'utf8');
+    for (const mode of ['skipped', 'zero_assertions']) {
+      const fault = mode === 'skipped'
+        ? actionSource.replace("contract('action: detached", "test.skip('action: detached")
+        : "const unchecked = new Proxy(() => {}, {get: () => () => {}});\n" + actionSource.replaceAll('assert.', 'unchecked.')
+          .replace("unchecked.ok(assertions > 0, 'Action contract requires actual assertions')", "assert.ok(assertions > 0, 'Action contract requires actual assertions')");
+      assert.notEqual(fault, actionSource);
+      try {
+        fs.writeFileSync(actionFile, fault);
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'actor-ai-action-selection.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(actionFile, actionSource);}
+      console.log('INSTALLED_ACTOR_AI_ACTION_RUNNER_FAULT_DETECTED ' + mode);
+    }
+    const actionStart = aiRuntime.indexOf('function actionRule('); assert.ok(actionStart > 0);
+    const actionRuntime = aiRuntime.slice(actionStart);
+    for (const [name, expected, faulty] of [
+      ['manual', "if (current.controller === 'manual')", 'if (false)'],
+      ['priority', 'for (const rule of rules.rules)', 'for (const rule of [...rules.rules].reverse())'],
+      ['skill_fallback', 'if (reason) {', "if (reason && rule.actionKind !== 'skill') {"],
+      ['target_missing', "rule.targetMode === 'current_target' && current.targetEntityId === null ? 'target_missing'", "false ? 'target_missing'"],
+      ['target_mode', "throw new TypeError('Invalid Actor AI action kind/target mode');", '/* fault: accepted combination */'],
+      ['decision', 'observed.decisionId !== correlation.decisionId', 'false'],
+      ['unavailable', "fact.status === 'unavailable' ? 'action_unavailable'", "false ? 'action_unavailable'"],
+      ['availability_missing', "!fact ? 'availability_missing'", "false ? 'availability_missing'"],
+      ['implicit_wait', "return Object.freeze({ status: 'no_action', reason: 'no_candidate', selectedRuleId: null, actionKind: null,",
+        "return Object.freeze({status: 'selected', reason: 'rule_selected', selectedRuleId: 'invented', actionKind: 'wait', decision: {status: 'proposed', reason: 'none', intent: createActorAIActionIntent(correlation, {actionKey: 'wait', targetEntityId: null})}, rejected: Object.freeze(rejected)}); return Object.freeze({ status: 'no_action', reason: 'no_candidate', selectedRuleId: null, actionKind: null,"],
+      ['state_mutation', 'const current = validateActorAIState(state, entities), correlation = contextSnapshot(context);',
+        "state.behaviorStateId = 'changed'; const current = validateActorAIState(state, entities), correlation = contextSnapshot(context);"],
+      ['profile', 'if (rules.profileId !== current.profileId)', 'if (false)'],
+      ['gameplay_execution', 'const intent = createActorAIActionIntent(correlation,',
+        "transitionEntityResource({entityId: current.actorId, current: {health: 5}}, 'health', {amount: 1, operation: 'decrease', maximum: 100, rule: {minimum: 0, currentAboveMaximum: 'reject', allowIncreaseFromMinimum: false}}); const intent = createActorAIActionIntent(correlation,"],
+    ]) {
+      assert.ok(actionRuntime.includes(expected), 'required installed action fault: ' + name);
+      let fault = aiRuntime.slice(0, actionStart) + actionRuntime.replace(expected, faulty);
+      if (name === 'gameplay_execution') fault = "import {transitionEntityResource} from '../entity/index.js';\n" + fault;
+      try {
+        fs.writeFileSync(aiRuntimeFile, fault);
+        assert.throws(() => exec(['--test', '--test-reporter=tap', 'actor-ai-action-selection.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(aiRuntimeFile, aiRuntime);}
+      assertPackedFiles(); console.log('INSTALLED_ACTOR_AI_ACTION_FAULT_DETECTED ' + name);
+    }
+    // Observe the existing validator on the actual evaluator path. A bypass must fail this probe.
+    const validatorProbe = path.join(temp, 'action-validator-probe.mjs');
+    fs.writeFileSync(validatorProbe, "import assert from 'node:assert/strict'; import * as g from '@rpg/gameplay';\n"
+      + "const actor=g.createEntity({id:'A',kind:'custom'}), entities=g.addEntity(g.createEntityCollection(),actor);\n"
+      + "const state=g.createActorAIState(actor,{profileId:'P'},{controller:'ai',behaviorStateId:'idle'}), context=g.createActorAIDecisionContext(state,'D');\n"
+      + "assert.throws(()=>g.evaluateActorAIActionSelection(state,entities,context,{profileId:'P',rules:[{ruleId:'r',behaviorStateId:'idle',actionKey:'wait',actionKind:'wait',targetMode:'none'}]},g.createActorAIActionObservation(context,[{actionKey:'wait',status:'available',reasonId:null}])), /action-result-validation-probe/);\n");
+    const validatorSignature = 'export function validateActorAIDecisionResult(state, context, result) {';
+    const selectedValidation = "validateActorAIDecisionResult(current, correlation, { status: 'proposed', reason: 'none', intent })";
+    assert.ok(aiRuntime.includes(validatorSignature)); assert.ok(actionRuntime.includes(selectedValidation));
+    const probed = aiRuntime.replace(validatorSignature, validatorSignature + " if (result.status === 'proposed') throw new TypeError('action-result-validation-probe');");
+    try {
+      fs.writeFileSync(aiRuntimeFile, probed); exec([validatorProbe], temp);
+      const bypassed = probed.slice(0, probed.indexOf('function actionRule('))
+        + probed.slice(probed.indexOf('function actionRule(')).replace(selectedValidation, "Object.freeze({status: 'proposed', reason: 'none', intent})");
+      fs.writeFileSync(aiRuntimeFile, bypassed);
+      assert.throws(() => exec([validatorProbe], temp), /AssertionError|ERR_ASSERTION/);
+    } finally {fs.writeFileSync(aiRuntimeFile, aiRuntime); fs.rmSync(validatorProbe);}
+    assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_ACTION_VALIDATOR_DELEGATION_PASS actual_validator_invoked; bypass_detected; restored');
+    console.log('INSTALLED_ACTOR_AI_ACTION_NEGATIVE_PASS missing_fixtures; three_root_exports; wrong_version; Core_integrity; twelve_runtime_faults; validator_bypass; skipped; zero_assertions; restored_artifacts');
+    { // AI26-AI30: real L4 consumer composition, terminal reports and fail-closed evidence.
+    for (const extension of ['mjs', 'ts']) {
+      const required = path.join(temp, 'actor-ai-integration.' + extension);
+      copyRequiredConsumer(path.join(root, 'tests/consumers/actor-ai-integration.' + extension), required);
+      const saved = required + '.saved';
+      try {fs.renameSync(required, saved); assert.throws(() => copyRequiredConsumer(required, required + '.copy'), {code: 'ENOENT'});}
+      finally {fs.renameSync(saved, required);}
+    }
+    assert.throws(() => assertVersion('0.7.4', '0.7.5'), /installed package version/);
+    const integrationMarkers = ['COMBAT','REJECTIONS','SKILL','SKILL_REJECTIONS','EFFECT','FEEDBACK','VALIDATION','FRESHNESS','FALLBACK','REPLAY'].map(x => 'ACTOR_AI_INTEGRATION_' + x + '_PASS');
+    const integrationEvidence = exec(['--test', '--test-reporter=tap', 'actor-ai-integration.mjs'], temp);
+    assertTapEvidence(integrationEvidence, 10, integrationMarkers);
+    for (const marker of integrationMarkers) console.log(integrationEvidence.split(/\r?\n/).find(line => line.includes(marker)));
+    console.log('INSTALLED_ACTOR_AI_INTEGRATION_PASS AI26-AI30; consumer_tests=10 skipped=0; canonical_L4_composition');
+    const integrationFile = path.join(temp, 'actor-ai-integration.mjs'), integrationSource = fs.readFileSync(integrationFile, 'utf8').replace(/\r\n/g, '\n');
+    const mutations = [
+      ['pending_completion', "if(options.pending) return {activation,feedback:null};", "if(options.pending) return {activation,feedback:terminal(f,selected,attemptId,'execution','completed',null)};"],
+      ['cooldown_bypass', 'const ready=g.evaluateSkillCooldownReady', 'f.cooldown=g.createSkillCooldownState(f.instance); const ready=g.evaluateSkillCooldownReady'],
+      ['resource_bypass', 'const payment=g.evaluateSkillResourceCosts', "f.resources=g.createEntityResourceState(f.actor,{mana:{minimum:0,maximum:100,current:100}}); const payment=g.evaluateSkillResourceCosts"],
+      ['combat_actor_bypass', 'g.evaluateCombatActionAdmission(context,f.entities,f.life,{eligible})', "g.evaluateCombatActionAdmission(context,f.entities,g.createEntityLifeState(f.actor,{status:'alive'}),{eligible})"],
+      ['combat_target_bypass', 'g.evaluateCombatTargetValidation(admission,f.entities,f.targetLife,targetPolicy(relation))', "g.evaluateCombatTargetValidation(admission,f.entities,g.createEntityLifeState(f.target,{status:'alive'}),targetPolicy(relation))"],
+      ['effect_block_ignored', "if(restriction.status === 'blocked') return rejected('effect_blocked');", '/* fault: restriction ignored */'],
+      ['effect_allowed_overrides_rejection', "if(admission.status !== 'admitted') return {reason:admission.reason};", "if(admission.status !== 'admitted') return {admission:{...admission,status:'admitted',reason:'none'},validation:g.evaluateCombatTargetValidation({...admission,status:'admitted',reason:'none'},f.entities,f.targetLife,targetPolicy('enemy'))};"],
+      ['commit_after_rejection', "const rejected=reason=>({feedback:terminal(f,selected,attemptId,'admission','rejected',reason)});", "const rejected=reason=>{f.targetResources=g.transitionEntityResource(f.targetResources,'health',{operation:'decrease',amount:5,maximum:100,rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:false}}).state;return {feedback:terminal(f,selected,attemptId,'admission','rejected',reason)};};"],
+      ['stale_execution', "if(intent.actorId !== f.actor.id || f.currentDecision !== intent.decisionId || bound.revision !== f.revision\n    || bound.stateToken !== JSON.stringify(f.ai)) return rejected('stale_decision');", '/* fault: stale decision admitted */'],
+      ['manual_takeover', "if(f.ai.controller !== 'ai') return rejected('controller_changed');", "if(f.ai.controller !== 'ai'){f.ai.controller='ai';bound.stateToken=JSON.stringify(f.ai);}"],
+      ['automatic_retry', 'const outcome=g.reportSkillExecutionOutcome(activation.request,report);', "const outcome=g.reportSkillExecutionOutcome(activation.request,report); if(outcome.status === 'failed'){f.dispatches++;combatDispatch(f,checked,options.mode);}"],
+      ['duplicate_commit', "if(f.attempts.has(attemptId) || f.decisions.has(intent.decisionId)) throw new TypeError('L4 duplicate attempt/decision');", '/* fault: duplicate allowed */'],
+      ['feedback_mutates_ai', 'f.feedback.push(result);', "f.ai.behaviorStateId='changed'; f.feedback.push(result);"],
+      ['feedback_wrong_action', 'selected,{...selected.decision.intent,attemptId,phase,status,reasonId}', "selected,{...selected.decision.intent,actionKey:'wrong',attemptId,phase,status,reasonId}"],
+    ];
+    for (const [name, expected, faulty] of mutations) {
+      assert.ok(integrationSource.includes(expected), 'required integration fault: ' + name);
+      let fault = integrationSource.replace(expected, faulty);
+      if (name === 'stale_execution') fault = fault.replace("else if(intent.targetEntityId !== f.ai.targetEntityId && intent.targetEntityId !== null) return rejected('stale_target');", 'else {}');
+      try {
+        fs.writeFileSync(integrationFile, fault);
+        assert.throws(() => exec(['--test','--test-reporter=tap','actor-ai-integration.mjs'], temp), /AssertionError|ERR_ASSERTION/);
+      } finally {fs.writeFileSync(integrationFile, integrationSource);}
+      assertPackedFiles(); console.log('INSTALLED_ACTOR_AI_INTEGRATION_FAULT_DETECTED ' + name);
+    }
+    for (const mode of ['skipped', 'zero_assertions']) {
+      const fault = mode === 'skipped' ? integrationSource.replace("contract('integration C01", "test.skip('integration C01")
+        : "const unchecked = new Proxy(() => {}, {get: () => () => {}});\n" + integrationSource.replaceAll('assert.', 'unchecked.')
+          .replace("unchecked.ok(assertions > 0, 'Integration contract requires actual assertions')", "assert.ok(assertions > 0, 'Integration contract requires actual assertions')");
+      assert.notEqual(fault, integrationSource);
+      try {fs.writeFileSync(integrationFile, fault);assert.throws(() => exec(['--test','--test-reporter=tap','actor-ai-integration.mjs'], temp), /AssertionError|ERR_ASSERTION/);}
+      finally {fs.writeFileSync(integrationFile, integrationSource);}
+      console.log('INSTALLED_ACTOR_AI_INTEGRATION_RUNNER_FAULT_DETECTED ' + mode);
+    }
+    const feedbackStart = aiRuntime.indexOf('export function validateActorAIActionExecutionFeedback(');assert.ok(feedbackStart > 0);
+    const feedbackRuntime = aiRuntime.slice(feedbackStart);
+    for (const [name, expected, faulty] of [
+      ['correlation', "if (report.actorId !== intent.actorId || report.decisionId !== intent.decisionId\n        || report.actionKey !== intent.actionKey || report.targetEntityId !== intent.targetEntityId)", 'if (false)'],
+      ['no_action', 'const selected = fields(selection,', "if(selection.status === 'no_action') return Object.freeze({...feedback}); const selected = fields(selection,"],
+      ['reason', "data.status === 'completed' && data.reasonId === null", "data.status === 'completed'"],
+      ['snapshot', "return Object.freeze({ ...report, phase: 'execution', status: 'completed', reasonId: null });", "return {...report, phase: 'execution', status: 'completed', reasonId: null};"],
+    ]) {
+      assert.ok(feedbackRuntime.includes(expected), 'required feedback fault: ' + name);
+      try {fs.writeFileSync(aiRuntimeFile, aiRuntime.slice(0,feedbackStart)+feedbackRuntime.replace(expected,faulty));
+        assert.throws(() => exec(['--test','--test-reporter=tap','actor-ai-integration.mjs'],temp),/AssertionError|ERR_ASSERTION/);}
+      finally {fs.writeFileSync(aiRuntimeFile,aiRuntime);}
+      assertPackedFiles();console.log('INSTALLED_ACTOR_AI_FEEDBACK_FAULT_DETECTED '+name);
+    }
+    console.log('INSTALLED_ACTOR_AI_INTEGRATION_NEGATIVE_PASS fourteen_L4_faults; four_feedback_faults; missing_fixture_export; version_Core; skipped_zero_assertions; restored_artifacts');
+    }
+    { // AI31-AI35 installed lifecycle/recovery evidence, caller orchestration only.
+    for (const extension of ['mjs','ts']) {
+      const required=path.join(temp,'actor-ai-lifecycle-recovery.'+extension);
+      copyRequiredConsumer(path.join(root,'tests/consumers/actor-ai-lifecycle-recovery.'+extension),required);
+      const saved=required+'.saved';try{fs.renameSync(required,saved);assert.throws(()=>copyRequiredConsumer(required,required+'.copy'),{code:'ENOENT'});}finally{fs.renameSync(saved,required);}
+    }
+    assert.throws(()=>assertVersion('0.7.5','0.7.6'),/installed package version/);
+    const markers=['LIFE','RESET','TARGET','DISENGAGE','TIMING','FRESHNESS','CONTINUITY','OWNERS','VALIDATION','ACTORS','REPLAY'].map(x=>'ACTOR_AI_LIFECYCLE_'+x+'_PASS');
+    const evidence=exec(['--test','--test-reporter=tap','actor-ai-lifecycle-recovery.mjs'],temp);
+    assertTapEvidence(evidence,11,markers);for(const marker of markers)console.log(evidence.split(/\r?\n/).find(line=>line.includes(marker)));
+    console.log('INSTALLED_ACTOR_AI_LIFECYCLE_PASS AI31-AI35; consumer_tests=11 skipped=0; canonical_Life_Foundation_clock_L4_commit');
+    const consumerFile=path.join(temp,'actor-ai-lifecycle-recovery.mjs'),consumerBytes=fs.readFileSync(consumerFile),consumerSource=consumerBytes.toString('utf8').replace(/\r\n/g,'\n');
+    const lifecycleStart=aiRuntime.indexOf('function actorLifeStatus(');assert.ok(lifecycleStart>0);
+    const lifecycleRuntime=aiRuntime.slice(lifecycleStart);
+    const runtimeFaults=[
+      ['dead_actor',"if (life === 'dead')\n        return Object.freeze({ status: 'blocked'", "if (false)\n        return Object.freeze({ status: 'blocked'"],
+      ['dead_reset',"if (life === 'dead')\n        return Object.freeze({ status: 'rejected'", "if (false)\n        return Object.freeze({ status: 'rejected'"],
+      ['reset_controller','state: Object.freeze({ ...current, behaviorStateId: destination, targetEntityId: null })',"state: Object.freeze({ ...current, controller:'ai', behaviorStateId: destination, targetEntityId: null })"],
+      ['reset_profile','state: Object.freeze({ ...current, behaviorStateId: destination, targetEntityId: null })',"state: Object.freeze({ ...current, profileId:'changed', behaviorStateId: destination, targetEntityId: null })"],
+      ['manual_timing',"if (gate.status === 'blocked')", "if (false)"],
+      ['hidden_clock','const now = readExecutionTime(context);','const now = Date.now();'],
+      ['time_regressed','if (now < cursor.observedAtMs)','if (false)'],
+      ['time_unrepresentable','if (!Number.isFinite(nextEligibleAtMs) || (intervalMs > 0 && nextEligibleAtMs <= now))','if (false)'],
+      ['life_binding','if (id(data.entityId) !== state.actorId)','if (false)'],
+      ['timing_binding','if (cursor.actorId !== gate.actorId)','if (false)'],
+    ];
+    for(const [name,expected,faulty] of runtimeFaults){
+      assert.ok(lifecycleRuntime.includes(expected),'required lifecycle runtime fault '+name);
+      try{fs.writeFileSync(aiRuntimeFile,aiRuntime.slice(0,lifecycleStart)+lifecycleRuntime.replace(expected,faulty));
+        assert.throws(()=>exec(['--test','--test-reporter=tap','actor-ai-lifecycle-recovery.mjs'],temp),/AssertionError|ERR_ASSERTION/);
+      }finally{fs.writeFileSync(aiRuntimeFile,aiRuntime);}
+      assertPackedFiles();console.log('INSTALLED_ACTOR_AI_LIFECYCLE_RUNTIME_FAULT_DETECTED '+name);
+    }
+    const fixtureFaults=[
+      ['automatic_revival','f.life=g.reviveEntity(f.life,f.resources,lifePolicy).state;',"f.life=g.reviveEntity(f.life,f.resources,lifePolicy).state;f.enabled=true;f.ai=reset(f,'respawn').state;"],
+      ['fake_returning','f.ai=transitioned.state;return transitioned;',"f.ai={...transitioned.state,behaviorStateId:'returning'};return {...transitioned,status:'transitioned'};"],
+      ['reset_mutates_world',"const cleared=reset(f,'disengage',null,policy);","const cleared=reset(f,'disengage',null,policy);f.world.position=0;"],
+      ['manual_proposal',"if(!f.enabled || gate(f).status !== 'allowed')return null;", "if(f.ai.controller==='manual')f.ai={...f.ai,controller:'ai'};if(!f.enabled)return null;"],
+      ['stale_timing_commit','if(staged.baseline !== f.timing)return false;','/* fault: stale second accepted */'],
+      ['accepted_is_completed',"a.equal(activation.status,'accepted');a.deepEqual(f.feedback,[]);", "if(activation.status==='accepted')f.feedback.push({status:'completed'});a.equal(activation.status,'accepted');a.deepEqual(f.feedback,[]);"],
+      ['automatic_retry','f.feedback.push(result);return result;',"f.feedback.push(result);if(status==='failed')f.dispatches++;return result;"],
+      ['duplicate_dispatch',"if(f.attempts.has(attemptId))throw new TypeError('L4 duplicate');",'/* fault: duplicate allowed */'],
+    ];
+    for(const [name,expected,faulty] of fixtureFaults){
+      assert.ok(consumerSource.includes(expected),'required lifecycle fixture fault '+name);
+      try{fs.writeFileSync(consumerFile,consumerSource.replace(expected,faulty));assert.throws(()=>exec(['--test','--test-reporter=tap','actor-ai-lifecycle-recovery.mjs'],temp),/AssertionError|ERR_ASSERTION/);}
+      finally{fs.writeFileSync(consumerFile,consumerBytes);}
+      assertPackedFiles();console.log('INSTALLED_ACTOR_AI_LIFECYCLE_FIXTURE_FAULT_DETECTED '+name);
+    }
+    for(const mode of ['skipped','zero_assertions']){
+      const fault=mode==='skipped'?consumerSource.replace("contract('lifecycle L01", "test.skip('lifecycle L01"):
+        consumerSource.replace('count++;return Reflect.get(t,k)(...args);','return undefined;');
+      assert.notEqual(fault,consumerSource);
+      try{fs.writeFileSync(consumerFile,fault);assert.throws(()=>exec(['--test','--test-reporter=tap','actor-ai-lifecycle-recovery.mjs'],temp),/AssertionError|ERR_ASSERTION/);}
+      finally{fs.writeFileSync(consumerFile,consumerBytes);}
+      console.log('INSTALLED_ACTOR_AI_LIFECYCLE_RUNNER_FAULT_DETECTED '+mode);
+    }
+    assertTapEvidence(exec(['--test','--test-reporter=tap','actor-ai-lifecycle-recovery.mjs'],temp),11,markers);
+    console.log('INSTALLED_ACTOR_AI_LIFECYCLE_NEGATIVE_PASS runtime_faults10; fixture_faults8; fifteen_required_categories; missing_consumers_exports; wrong_version_Core; skipped_zero_assertions; restored_clean_rerun');
+    }
+    { // AI36-AI40: physical installed closure plus actual fail-closed controls.
+    for(const extension of ['mjs','ts'])copyRequiredConsumer(path.join(root,'tests/consumers/actor-ai-integration-closure.'+extension),path.join(temp,'actor-ai-integration-closure.'+extension));
+    const file=path.join(temp,'actor-ai-integration-closure.mjs'),bytes=fs.readFileSync(file),source=bytes.toString('utf8').replaceAll('\r\n','\n');
+    const scenarioIds=[...Array.from({length:41},(_,i)=>'E'+String(i+1).padStart(2,'0')),'E44','E45','E49','E50','E53','E55'];
+    const markers=scenarioIds.map(id=>'ACTOR_AI_CLOSURE_'+id+'_PASS');
+    const run=()=>exec(['--test','--test-reporter=tap','actor-ai-integration-closure.mjs'],temp);
+    const validate=evidence=>assertTapEvidence(evidence,14,[...markers,'ACTOR_AI_FIX01_DUPLICATE_ATTEMPT_PASS','ACTOR_AI_FIX01_DUPLICATE_DECISION_PASS','ACTOR_AI_FIX01_FEEDBACK_TIMING_PASS']);
+    const evidence=run();validate(evidence);
+    for(const marker of markers)console.log(evidence.split(/\r?\n/).find(line=>line.includes(marker)));
+    console.log(evidence.split(/\r?\n/).find(line=>line.includes('ACTOR_AI_CLOSURE_REPLAY_SHA256')));
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_PASS AI36-AI40; consumer_tests=14 skipped=0; runtime_scenarios47; external_gates13');
+    function fixtureFault(name,expected,faulty){assert.ok(source.includes(expected),'required closure fault '+name);
+      try{fs.writeFileSync(file,source.replace(expected,faulty));assert.throws(run,/AssertionError|ERR_ASSERTION/);}
+      finally{fs.writeFileSync(file,bytes);}assertPackedFiles();console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED '+name);}
+    fixtureFault('outcome_provenance',"if(phase==='execution' && f.receipts.get(attemptId)!==status)throw new TypeError('L4 outcome provenance');",'');
+    // FIX01: require a real failing run of the dedicated fresh-decision test.
+    const ledger="if(f.attempts.has(attemptId) || f.decisions.has(intent.decisionId)) throw new TypeError('L4 duplicate attempt/decision');";
+    assert.ok(source.includes(ledger));
+    try {
+      fs.writeFileSync(file,source.replace(ledger,''));
+      const env={...process.env};delete env.NODE_TEST_CONTEXT;
+      for(const scenario of ['duplicate_attempt','duplicate_decision']){
+        const result=spawnSync(process.execPath,['--test','--test-reporter=tap','--test-name-pattern=closure FIX01 '+scenario,'actor-ai-integration-closure.mjs'],{cwd:temp,shell:false,encoding:'utf8',env});
+        assert.equal(result.error,undefined);assert.equal(result.signal,null);assert.equal(result.status,1,result.stdout+result.stderr);
+        assert.match(result.stdout,new RegExp('not ok 1 - closure FIX01 '+scenario));
+        assert.match(result.stdout,new RegExp('FIX01 '+scenario+' ledger must reject before second commit'));
+        assert.match(result.stdout,/# tests 1/);assert.match(result.stdout,/# fail 1/);assert.match(result.stdout,/# skipped 0/);
+        if(scenario==='duplicate_decision')assert.match(result.stdout,/Missing expected exception/);
+        console.log('ACTOR_AI_FIX01_MUTANT_KILLED '+scenario+'; expected_ledger_assertion; exit=1');
+        console.log(result.stdout.split(/\r?\n/).filter(line=>/not ok 1|ledger must reject|Missing expected exception/.test(line)).join('\n'));
+      }
+    } finally {fs.writeFileSync(file,bytes);}
+    assert.deepEqual(fs.readFileSync(file),bytes);assertPackedFiles();validate(run());
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED duplicate_commit');
+    fixtureFault('duplicate_feedback',"if(f.feedback.some(x=>x.attemptId===attemptId))throw new TypeError('L4 duplicate feedback');",'');
+    fixtureFault('stale_turn',"if(bound.timing!==f.timing || bound.life!==f.life)return rejected('stale_turn');",'');
+    fixtureFault('manual_stale',"if(f.ai.controller !== 'ai') return rejected('controller_changed');",'');
+    fixtureFault('dead_actor',"if(lifeGate.status!=='allowed')return rejected(lifeGate.reason);",'');
+    fixtureFault('dead_target',"const validation=g.evaluateCombatTargetValidation(admission,f.entities,f.targetLife,targetPolicy(relation));","const validation=g.evaluateCombatTargetValidation(admission,f.entities,g.createEntityLifeState(f.target,{status:'alive'}),targetPolicy(relation));");
+    fixtureFault('effect_bypass',"if(restriction.status === 'blocked') return rejected('effect_blocked');",'');
+    fixtureFault('skill_admission',"owned:options.owned ?? true","owned:true");
+    fixtureFault('skill_resource',"amount:25","amount:0");
+    fixtureFault('skill_cooldown',"const ready=g.evaluateSkillCooldownReady(f.instance,f.cooldown,f.context);","f.cooldown=g.createSkillCooldownState(f.instance);const ready=g.evaluateSkillCooldownReady(f.instance,f.cooldown,f.context);");
+    fixtureFault('action_priority',"...(mode==='passive'?[]:rules.slice(0,2))","...(mode==='passive'?[]:rules.slice(0,2).reverse())");
+    fixtureFault('fsm_priority',"f.profile.behavior);","{...f.profile.behavior,rules:[...f.profile.behavior.rules].reverse()});");
+    fixtureFault('lifecycle_timing',"if(f.due.status!=='ready')return null;",'');
+    fixtureFault('stale_cursor',"if(staged.baseline!==f.timing)return false;",'');
+    fixtureFault('zero_assertions','assertions++;','');
+    try{fs.writeFileSync(file,source.replace('test(name, () =>','test.skip(name, () =>'));assert.throws(run,/TAP skipped|ERR_ASSERTION/);}
+    finally{fs.writeFileSync(file,bytes);}console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED skipped');
+    try{fs.writeFileSync(file,source.replace('E38 E41','E38'));assert.throws(()=>validate(run()),/E41/);}
+    finally{fs.writeFileSync(file,bytes);}console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED omitted_scenario');
+    const rootFile=path.join(installed,'dist/index.js'),rootBytes=fs.readFileSync(rootFile);
+    try{fs.writeFileSync(rootFile,rootBytes.toString('utf8').replace('evaluateActorAILifeGate,','evaluateActorAILifeGate as missingLifeGate,'));assert.throws(run,/ERR_ASSERTION/);}
+    finally{fs.writeFileSync(rootFile,rootBytes);}assertPackedFiles();console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED missing_export');
+    const runtimeFile=path.join(installed,'dist/modules/actor-ai/index.js'),runtimeBytes=fs.readFileSync(runtimeFile),runtime=runtimeBytes.toString('utf8');
+    const correlation="if (report.actorId !== intent.actorId || report.decisionId !== intent.decisionId";assert.ok(runtime.includes(correlation));
+    try{fs.writeFileSync(runtimeFile,runtime.replace(correlation,"if (false && (report.actorId !== intent.actorId || report.decisionId !== intent.decisionId").replace('report.targetEntityId !== intent.targetEntityId) {','report.targetEntityId !== intent.targetEntityId)) {'));assert.throws(run,/ERR_ASSERTION/);}
+    finally{fs.writeFileSync(runtimeFile,runtimeBytes);}assertPackedFiles();console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED feedback_correlation');
+    try{fs.appendFileSync(runtimeFile,'\n// closure deliberate drift\n');assert.throws(assertPackedFiles,/installed artifact content/);}
+    finally{fs.writeFileSync(runtimeFile,runtimeBytes);}assertPackedFiles();console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED dist_drift');
+    // Accepted canonical source and historical fixtures: normalize checkout EOL only.
+    const protectedFiles=[".github/workflows/harness.yml","ARCHITECTURE.md","docs/CORE_INTEGRATION.md","docs/DECISIONS.md","harness/core-pin.json","harness/modules.json","src/foundation/execution/index.ts","src/foundation/messaging/index.ts","src/foundation/modules/index.ts","src/foundation/runtime/index.ts","src/index.ts","src/modules/actor-ai/index.ts","src/modules/combat/index.ts","src/modules/effect/index.ts","src/modules/entity/index.ts","src/modules/progression/index.ts","src/modules/skill/index.ts","tests/consumers/actor-ai-action-selection.mjs","tests/consumers/actor-ai-action-selection.ts","tests/consumers/actor-ai-behavior.mjs","tests/consumers/actor-ai-behavior.ts","tests/consumers/actor-ai-foundation.mjs","tests/consumers/actor-ai-foundation.ts","tests/consumers/actor-ai-integration.mjs","tests/consumers/actor-ai-integration.ts","tests/consumers/actor-ai-lifecycle-recovery.mjs","tests/consumers/actor-ai-lifecycle-recovery.ts","tests/consumers/actor-ai-perception.mjs","tests/consumers/actor-ai-perception.ts","tests/consumers/actor-ai-target-selection.mjs","tests/consumers/actor-ai-target-selection.ts","tests/consumers/advancement.mjs","tests/consumers/advancement.ts","tests/consumers/attribute-points.mjs","tests/consumers/attribute-points.ts","tests/consumers/combat-admission.mjs","tests/consumers/combat-admission.ts","tests/consumers/combat-attack.mjs","tests/consumers/combat-attack.ts","tests/consumers/combat-damage.mjs","tests/consumers/combat-damage.ts","tests/consumers/combat-integration.mjs","tests/consumers/combat-integration.ts","tests/consumers/combat-target.mjs","tests/consumers/combat-target.ts","tests/consumers/combat.mjs","tests/consumers/combat.ts","tests/consumers/composition.mjs","tests/consumers/composition.ts","tests/consumers/effect-application.mjs","tests/consumers/effect-application.ts","tests/consumers/effect-foundation.mjs","tests/consumers/effect-foundation.ts","tests/consumers/effect-integration.mjs","tests/consumers/effect-integration.ts","tests/consumers/effect-lifecycle.mjs","tests/consumers/effect-lifecycle.ts","tests/consumers/effect-modifiers.mjs","tests/consumers/effect-modifiers.ts","tests/consumers/effect-periodic.mjs","tests/consumers/effect-periodic.ts","tests/consumers/effect-restrictions.mjs","tests/consumers/effect-restrictions.ts","tests/consumers/effect-stacking.mjs","tests/consumers/effect-stacking.ts","tests/consumers/entity-collection.mjs","tests/consumers/entity-collection.ts","tests/consumers/entity-integration.mjs","tests/consumers/entity-integration.ts","tests/consumers/entity-life.mjs","tests/consumers/entity-life.ts","tests/consumers/entity-resources.mjs","tests/consumers/entity-resources.ts","tests/consumers/entity-stats.mjs","tests/consumers/entity-stats.ts","tests/consumers/entity.mjs","tests/consumers/entity.ts","tests/consumers/execution.mjs","tests/consumers/execution.ts","tests/consumers/experience.mjs","tests/consumers/experience.ts","tests/consumers/messaging.mjs","tests/consumers/messaging.ts","tests/consumers/modules.mjs","tests/consumers/modules.ts","tests/consumers/progression-integration.mjs","tests/consumers/progression-integration.ts","tests/consumers/progression.mjs","tests/consumers/progression.ts","tests/consumers/runtime.mjs","tests/consumers/runtime.ts","tests/consumers/skill-activation.mjs","tests/consumers/skill-activation.ts","tests/consumers/skill-admission.mjs","tests/consumers/skill-admission.ts","tests/consumers/skill-combat-handoff.mjs","tests/consumers/skill-cooldown.mjs","tests/consumers/skill-cooldown.ts","tests/consumers/skill-foundation.mjs","tests/consumers/skill-foundation.ts","tests/consumers/skill-integration.mjs","tests/consumers/skill-integration.ts","tests/consumers/skill-loadout.mjs","tests/consumers/skill-loadout.ts","tests/consumers/skill-progression.mjs","tests/consumers/skill-progression.ts","tests/consumers/skill-resource-costs.mjs","tests/consumers/skill-resource-costs.ts"];
+    const digest=entries=>createHash('sha256').update(JSON.stringify(entries)).digest('hex');
+    const captured=protectedFiles.map(name=>[name,fs.readFileSync(path.join(root,name),'utf8').replaceAll('\r\n','\n')]);
+    const assertProtected=entries=>assert.equal(digest(entries),'6b71e71ff40973efb3056e104c59934f1d025bf946a12ad4de5e38bc397619be','closure protected source/Core/registry/history guard');
+    assertProtected(captured);
+    for(const name of ['src/modules/entity/index.ts','harness/core-pin.json','harness/modules.json']){
+      const fault=captured.map(([file,text])=>[file,text+(file===name?'\n// deliberate scope fault':'')]);assert.throws(()=>assertProtected(fault),/protected source/);
+    }
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED protected_scope');
+    validate(run());assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_NEGATIVE_PASS runtime_and_fixture_faults; source_Core_registry_guard; scenario_inventory; restored_clean_rerun');
+    }
+
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);
 
@@ -699,8 +1163,81 @@ void resource; void invalid;
     fs.writeFileSync(path.join(temp, 'tsconfig.json'), JSON.stringify({compilerOptions: {
       target:'ES2022', lib:['ES2022'], module:'NodeNext', moduleResolution:'NodeNext',
       strict:true, noEmit:true, types:[], skipLibCheck:false
-    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts', 'effect-periodic.ts', 'effect-integration.ts']}));
+    }, files:['consumer.ts', 'modules.ts', 'composition.ts', 'runtime.ts', 'messaging.ts', 'execution.ts', 'entity.ts', 'entity-collection.ts', 'entity-stats.ts', 'entity-resources.ts', 'entity-life.ts', 'entity-integration.ts', 'progression.ts', 'experience.ts', 'advancement.ts', 'attribute-points.ts', 'skill-progression.ts', 'progression-integration.ts', 'combat.ts', 'combat-admission.ts', 'combat-target.ts', 'combat-attack.ts', 'combat-damage.ts', 'combat-integration.ts', 'skill-foundation.ts', 'skill-admission.ts', 'skill-resource-costs.ts', 'skill-cooldown.ts', 'skill-activation.ts', 'skill-loadout.ts', 'skill-integration.ts', 'effect-foundation.ts', 'effect-application.ts', 'effect-lifecycle.ts', 'effect-stacking.ts', 'effect-modifiers.ts', 'effect-restrictions.ts', 'effect-periodic.ts', 'effect-integration.ts', 'actor-ai-foundation.ts', 'actor-ai-perception.ts', 'actor-ai-target-selection.ts', 'actor-ai-behavior.ts', 'actor-ai-action-selection.ts', 'actor-ai-integration.ts','actor-ai-lifecycle-recovery.ts','actor-ai-integration-closure.ts']}));
     exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp);
+    const aiDeclarationFile = path.join(installed, 'dist/modules/actor-ai/index.d.ts');
+    const aiDeclaration = fs.readFileSync(aiDeclarationFile, 'utf8');
+    assert.ok(aiDeclaration.includes("'manual' | 'ai'"));
+    try {
+      fs.writeFileSync(aiDeclarationFile, aiDeclaration.replace("'manual' | 'ai'", "'manual'"));
+      assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp), /TS\d+/);
+    } finally {fs.writeFileSync(aiDeclarationFile, aiDeclaration);}
+    assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_DECLARATION_NEGATIVE_PASS wrong_controller; strict_NodeNext_failure; restored_declarations');
+    assert.ok(aiDeclaration.includes('readonly observedAtMs: number;'));
+    try {
+      fs.writeFileSync(aiDeclarationFile, aiDeclaration.replaceAll('readonly observedAtMs: number;', 'readonly observedAtMs: string;'));
+      assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp), /TS\d+/);
+    } finally {fs.writeFileSync(aiDeclarationFile, aiDeclaration);}
+    assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_PERCEPTION_DECLARATION_NEGATIVE_PASS wrong_observation_time; strict_NodeNext_failure; restored_declarations');
+    assert.ok(aiDeclaration.includes("'retain_if_eligible' | 'prefer_priority'"));
+    try {
+      fs.writeFileSync(aiDeclarationFile, aiDeclaration.replace("'retain_if_eligible' | 'prefer_priority'", "'retain_if_eligible'"));
+      assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp), /TS\d+/);
+    } finally {fs.writeFileSync(aiDeclarationFile, aiDeclaration);}
+    assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_TARGET_DECLARATION_NEGATIVE_PASS missing_retention_mode; strict_NodeNext_failure; restored_declarations');
+    assert.ok(aiDeclaration.includes("'any' | 'present' | 'absent'"));
+    try {
+      fs.writeFileSync(aiDeclarationFile, aiDeclaration.replace("'any' | 'present' | 'absent'", "'any' | 'absent'"));
+      assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp), /TS\d+/);
+    } finally {fs.writeFileSync(aiDeclarationFile, aiDeclaration);}
+    assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_BEHAVIOR_DECLARATION_NEGATIVE_PASS missing_target_guard; strict_NodeNext_failure; restored_declarations');
+    assert.ok(aiDeclaration.includes("'current_target' | 'self' | 'none'"));
+    try {
+      fs.writeFileSync(aiDeclarationFile, aiDeclaration.replace("'current_target' | 'self' | 'none'", "'current_target' | 'none'"));
+      assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp), /TS\d+/);
+    } finally {fs.writeFileSync(aiDeclarationFile, aiDeclaration);}
+    assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_ACTION_DECLARATION_NEGATIVE_PASS missing_self_target; strict_NodeNext_failure; restored_declarations');
+    const feedbackDeclaration = aiDeclaration.slice(aiDeclaration.indexOf('export type ActorAIActionExecutionFeedback'));
+    assert.ok(feedbackDeclaration.includes('readonly attemptId: string'));
+    try {
+      fs.writeFileSync(aiDeclarationFile, aiDeclaration.slice(0, aiDeclaration.indexOf('export type ActorAIActionExecutionFeedback'))
+        + feedbackDeclaration.replace('readonly attemptId: string', 'readonly attemptId: number'));
+      assert.throws(() => exec([path.join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.json'], temp), /TS\d+/);
+    } finally {fs.writeFileSync(aiDeclarationFile, aiDeclaration);}
+    assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_INTEGRATION_DECLARATION_NEGATIVE_PASS wrong_attempt_type; real_strict_NodeNext_failure; restored');
+    const timingDeclarationStart=aiDeclaration.indexOf('export interface ActorAIDecisionTimingPolicy');
+    assert.ok(timingDeclarationStart>0);
+    const timingDeclaration=aiDeclaration.slice(timingDeclarationStart);assert.ok(timingDeclaration.includes('readonly intervalMs: number'));
+    try{fs.writeFileSync(aiDeclarationFile,aiDeclaration.slice(0,timingDeclarationStart)+timingDeclaration.replace('readonly intervalMs: number','readonly intervalMs: string'));
+      assert.throws(()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','tsconfig.json'],temp),/TS\d+/);
+    }finally{fs.writeFileSync(aiDeclarationFile,aiDeclaration);}
+    assertPackedFiles();console.log('INSTALLED_ACTOR_AI_LIFECYCLE_DECLARATION_NEGATIVE_PASS wrong_interval_type; real_strict_NodeNext_failure; restored');
+    try{fs.writeFileSync(aiDeclarationFile,aiDeclaration.replace('readonly intervalMs: number','readonly intervalMs: string'));assert.throws(()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','tsconfig.json'],temp),/TS\d+/);}
+    finally{fs.writeFileSync(aiDeclarationFile,aiDeclaration);}assertPackedFiles();
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED installed_declaration');
+    const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
+    // NodeNext can fall back through the import condition. Check the package
+    // declaration contract directly; declaration validity remains a compiler gate.
+    const assertRootDeclarationExport=()=>{
+      const manifest=JSON.parse(fs.readFileSync(manifestFile,'utf8'));
+      const declaration=manifest.exports['.'].types;
+      assert.equal(declaration,'./dist/index.d.ts','installed root types export must name the canonical declaration');
+      assert.ok(packed.files.some(file=>'./'+file.path===declaration),'root declaration must be included in the packed artifact');
+      assert.ok(fs.statSync(path.join(installed,declaration)).isFile(),'installed root declaration must exist as a file');
+    };
+    assertRootDeclarationExport();
+    try{const broken=JSON.parse(manifestBytes);broken.exports['.'].types='./dist/missing.d.ts';fs.writeFileSync(manifestFile,JSON.stringify(broken));assert.throws(assertRootDeclarationExport,{code:'ERR_ASSERTION',message:/installed root types export must name the canonical declaration/});}
+    finally{fs.writeFileSync(manifestFile,manifestBytes);}
+    assert.deepEqual(fs.readFileSync(manifestFile),manifestBytes);assertRootDeclarationExport();assertPackedFiles();
+    exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','tsconfig.json'],temp);
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_FAULT_DETECTED export_map');
+    console.log('INSTALLED_ACTOR_AI_CLOSURE_DECLARATION_PASS strict_NodeNext; skipLibCheck_false; restored');
     const declarationFile = path.join(installed, 'dist/modules/effect/index.d.ts');
     const declarationBytes = fs.readFileSync(declarationFile, 'utf8');
     assert.ok(declarationBytes.includes("readonly kind: 'dot' | 'hot';"));

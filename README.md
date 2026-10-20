@@ -1,4 +1,104 @@
-# RPG Gameplay — v0.6.7 Effect Integration & Closure
+## v0.7.6 — AI Lifecycle & Recovery (AI31–AI35)
+
+Package `@rpg/gameplay@0.7.6`; same `feat/v0.7-actor-ai` / Draft PR #12.
+AI01–AI30 retain their accepted contracts. AI31–AI35 add immutable Life/reset/timing
+candidates and installed L4 recovery evidence. Phase **IN_PROGRESS**, Developer
+acceptance **PENDING**; AI36–AI40 belong to v0.7.7 and remain **OUT_OF_SCOPE**.
+See [checkpoint report](docs/reports/v0.7.6-ai-lifecycle-recovery.md) for actual gates
+and the exact delivered-head CI supplement on PR #12. No merge/tag/publish.
+
+# RPG Gameplay — v0.7.5 Combat / Skill / Effect Integration
+
+**AI01–AI30 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**
+Canonical Combat, Skill and Effect integration is demonstrated by installed L4
+consumer fixtures. Production adds only immutable terminal feedback validation;
+L4 owns freshness, execution, receipts, commits and local duplicate handling.
+Root **126 functions /215 types**, additive one function/one type.
+Installed evidence: **234 runtime contracts /45 groups +3 outer**, zero skips;
+all224 prior contracts retained. Core, other owners and graph unchanged.
+Continue [Draft PR #12](https://github.com/TjnhPro/rpg_gameplay/pull/12).
+[Task](docs/tasks/active/v0.7.5-combat-skill-effect-integration.md) / [Report](docs/reports/v0.7.5-combat-skill-effect-integration.md) / [API](docs/API.md).
+Stop v0.7.5; no Ready/merge/tag/publish or automatic v0.7.6.
+Concrete gameplay profiles NOT_EVALUATED; earlier status is historical.
+
+# RPG Gameplay — v0.7.4 Action Selection & Intent
+
+**AI01–AI25 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**
+Actor AI selects one advisory intent from ordered L3 action rules and correlated
+L4 availability facts. Existing intent/result contracts are reused; canonical
+admission and execution remain L4 responsibilities. No AI state or gameplay mutation.
+Three functions/nine types added: root **125 functions /214 types**.
+Installed evidence: **224 runtime contracts /44 groups +3 outer**, zero skips;
+all 216 prior contracts retained. Core, protected owners and graph unchanged.
+Continue [Draft PR #12](https://github.com/TjnhPro/rpg_gameplay/pull/12).
+[Task](docs/tasks/active/v0.7.4-ai-action-selection-intent.md) / [Report](docs/reports/v0.7.4-ai-action-selection-intent.md) / [API](docs/API.md).
+Stop at v0.7.4; no Ready/merge/tag/publish/automatic v0.7.5.
+Concrete gameplay profiles NOT_EVALUATED; earlier status is historical.
+
+# RPG Gameplay — v0.7.3 AI Behavior & State Transitions
+
+**AI01–AI20 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**
+Generic FSM evaluates explicit L4 triggers against ordered L3 rules and structural
+target-presence guards. Only behaviorStateId changes in immutable candidates;
+L4 retains commit/controller authority. Passive/Guard/Aggressive/Defensive are
+consumer configurations, not built-in engines. No actions or World calculations.
+Three functions/five types added: root **122 functions /205 types**.
+Actual installed evidence: **216 runtime contracts /43 groups +3 outer**, zero
+skips; all209 prior contracts retained. Core/other owners/graph unchanged.
+Continue [Draft PR #12](https://github.com/TjnhPro/rpg_gameplay/pull/12).
+[Task](docs/tasks/active/v0.7.3-ai-behavior-state-transitions.md) / [Report](docs/reports/v0.7.3-ai-behavior-state-transitions.md) / [API](docs/API.md).
+Stop at v0.7.3; no Ready/merge/tag/publish/automatic v0.7.4.
+Concrete gameplay profiles NOT_EVALUATED; earlier status is historical.
+
+# RPG Gameplay — v0.7.2 Target Acquisition & Selection
+
+**AI01–AI15 implemented; Actor AI phase IN_PROGRESS; Developer acceptance PENDING.**
+Target selection consumes a validated perception assessment and explicit L3
+retention/preference policy. It acquires, retains, switches or clears only an
+immutable state candidate; L4 retains authoritative commit and freshness checks.
+One function/three types added: root **119 functions /200 types**.
+Actual installed coverage: **209 runtime contracts /42 groups +3 outer**, zero
+skips; all 203 prior contracts retained. Core pin/other owners/graph unchanged.
+Existing [Draft PR #12](https://github.com/TjnhPro/rpg_gameplay/pull/12) continues
+on feat/v0.7-actor-ai. Stop at v0.7.2; no Ready/merge/tag/publish/v0.7.3.
+[Task](docs/tasks/active/v0.7.2-target-acquisition-selection.md) /
+[Report](docs/reports/v0.7.2-target-acquisition-selection.md) / [API](docs/API.md).
+Concrete gameplay profiles remain NOT_EVALUATED. Earlier status is historical.
+
+# RPG Gameplay — v0.7.1 AI Perception & Context
+
+**AI01–AI10 implemented; phase IN_PROGRESS; Developer acceptance PENDING.**
+Caller-supplied perception is captured as immutable snapshots, validated and
+filtered using explicit L3 eligibility policy. Observations/time come from L4;
+Entity owns identity and Life. No target selection, spatial calculation or execution.
+Three functions/six types added: root **118 functions /197 types**.
+Installed evidence: **203 runtime contracts /41 groups +3 outer**, no skips;
+all197 v0.7.0 contracts retained. Core2.0.0 pin and other owners unchanged.
+Continue [Draft PR #12](https://github.com/TjnhPro/rpg_gameplay/pull/12) on
+feat/v0.7-actor-ai. Stop at this checkpoint; no Ready/merge/tag/publish/v0.7.2.
+[Approved task](docs/tasks/active/v0.7.1-ai-perception-context.md) /
+[Report](docs/reports/v0.7.1-ai-perception-context.md) / [API](docs/API.md).
+Concrete gameplay profiles remain NOT_EVALUATED. Earlier status below is historical.
+
+# RPG Gameplay — v0.7.0 Actor AI Foundation
+
+> **Current: AI01–AI05 implemented; Actor AI phase IN_PROGRESS; Developer acceptance PENDING.**
+
+Optional Actor AI adds actor-agnostic immutable state, L3-owned profile references,
+manual/AI controller identity and structural decision/action contracts. It depends
+only on Entity. Six functions/seven types are additive (root115 functions/191 types).
+No evaluator, FSM transitions, target selection or execution runtime exists yet.
+Actual installed coverage:197 runtime contracts /40 groups +3 outer; all192
+historical contracts retained, including Effect FIX01. Core2.0.0 pin unchanged.
+Effect PR #11 is merged in accepted main be716c4. One new phase Draft PR tracks
+feat/v0.7-actor-ai; no Ready/merge/tag/publish or automatic v0.7.1.
+
+[Approved task](docs/tasks/active/v0.7.0-actor-ai-foundation.md) /
+[Checkpoint report](docs/reports/v0.7.0-actor-ai-foundation.md) /
+[Public API](docs/API.md). Concrete game profiles remain NOT_EVALUATED.
+Earlier candidate statements below are historical.
+
+## Historical v0.6.7 Effect Integration & Closure
 
 > **Status: Skill baseline merged through PR #10. Effect EF01–EF40 implemented and locally verified; v0.6.7 closure candidate, Developer acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract

@@ -1,3 +1,98 @@
+## v0.7.6 gates
+
+Run fresh core:prepare and npm ci --ignore-scripts, harness:check, harness:selftest,
+build, typecheck, test:functional and full npm run verify. Physical installed
+@rpg/gameplay@0.7.6 plus pinned Core and strict NodeNext are mandatory. Verify
+historical gates, restored negatives, additive API inventory and protected paths.
+Checkpoint completion also requires both push and pull_request exact-head matrices:
+Windows/Ubuntu x Node22/24, all eight jobs with actual runtime/negative output and
+no skipped assertions. The SHA-bound PR report supplies remote evidence after push.
+See reports/v0.7.6-ai-lifecycle-recovery.md for observed local counts/provenance.
+
+## v0.7.5 verification delta
+
+Windows targeted installed integration: 10/10 and strict NodeNext PASS.
+`npm run verify` requires boundaries, self-tests, build, strict typecheck and actual
+installed package evidence, including AI01–AI30. Missing fixtures/exports, bad
+version/Core, skipped/no-assertion tests and runtime/declaration faults fail closed.
+Observed functional evidence:234 runtime /45 groups +3 outer, zero skipped.
+Full verification and protected-file/API inventory audits are required before push.
+Exact delivered HEAD must have both push/PR matrices: Windows+Ubuntu Node22/24,
+eight successful jobs with all markers and no skipped steps. Final SHA/job URLs
+and artifact hashes are published on Draft PR #12 after CI. [report](reports/v0.7.5-combat-skill-effect-integration.md) remains local
+evidence until that supplement; phase IN_PROGRESS, Developer acceptance PENDING.
+
+## v0.7.4 verification delta
+
+Preparation/fresh install, harness check/selftest, build/typecheck, targeted installed
+8/8+strict NodeNext, test:functional and npm run verify are mandatory and PASS locally.
+Observed 224 runtime contracts /44 installed groups +3 outer, fail/cancel/skip/todo 0.
+Twelve runtime faults and actual accepted-validator bypass detection, mandatory
+fixtures/three exports/version/Core/skip/zero-assertion/declaration controls remain
+active; all injected artifacts restored and checked against original packed bytes.
+Require exact delivered SHA both push/pull_request Windows/Ubuntu Node22/24 8/8.
+Final SHA-bound PR #12 supplement completes the [36-section report](reports/v0.7.4-ai-action-selection-intent.md)
+after push without moving tested HEAD. Earlier statuses are historical.
+
+## v0.7.3 verification delta
+
+Run preparation/fresh install, harness check/selftest, build/typecheck, targeted
+installed7/7+strict NodeNext, test:functional and full npm run verify.
+Observed216 installed runtime /43 groups +3 outer, zero fail/cancel/skip/todo;
+all209 historical contracts preserved. Every new fixture/export is mandatory.
+Eight executable faults, skipped/no-assertion consumers and missing target-guard
+declarations fail; injected gameplay call is caught by installed execution-boundary
+assertions even if its discarded numerical result leaves caller state unchanged.
+All mutations restore in finally; original packed bytes checked.
+Require exact delivered SHA push AND pull_request Windows/Ubuntu Node22/24 jobs8/8.
+Final SHA-bound PR #12 supplement completes the [37-section report](reports/v0.7.3-ai-behavior-state-transitions.md)
+after push without changing verified HEAD. Earlier status is historical.
+
+## v0.7.2 verification delta
+
+Preparation/install, harness checks/self-tests, build/typecheck, targeted installed
+consumer/strict NodeNext, test:functional and npm run verify are required.
+Observed 209 installed runtime contracts /42 groups +3 outer, zero fail/cancel/
+skip/todo. Historical 203 contracts preserved. New consumer cannot be missing,
+skipped or assertion-free. Missing root export/version/Core and actual excluded
+selection/manual/retention/priority/lexical/loss-clear/input-mutation faults fail.
+Corrupt retention declarations fail real strict NodeNext, then original artifacts
+are restored. Both push/pull_request exact delivered SHA Windows/Ubuntu Node22/24
+matrices 8/8 required; final SHA-bound PR supplement completes the
+[34-section report](reports/v0.7.2-target-acquisition-selection.md) after push.
+Earlier status below is historical.
+
+## v0.7.1 verification delta
+
+Run core:prepare, npm ci --ignore-scripts, harness:check, harness:selftest, build,
+typecheck, installed targeted runtime/strict NodeNext, and npm run verify.
+Actor AI perception registration is mandatory. Full actual203 installed runtime
+contracts /41 groups +3 outer, zero failures/skips/cancellations/todos.
+Negative controls cover missing fixtures/three exports, wrong version/Core,
+duplicates, binding, precedence, order, mutation, automatic target selection,
+skips and strict NodeNext faults; restored artifacts must match packed bytes.
+Both push and pull_request exact-head Windows/Ubuntu Node22/24 jobs8/8 required.
+The report's final SHA-bound PR supplement records each CI URL after push; local
+success alone is not CHECKPOINT_COMPLETE. Core pin and historical oracles unchanged.
+See [report](reports/v0.7.1-ai-perception-context.md); earlier status is historical.
+
+## v0.7.0 Actor AI gates
+
+Run core:prepare and npm ci --ignore-scripts, harness:check, harness:selftest,
+build, typecheck, test:functional, full npm run verify and git diff --check.
+Require real installed @rpg/gameplay@0.7.0/Core2.0.0, native ESM, strict external
+NodeNext with skipLibCheck:false, correct dist bytes and no symlinks/source imports.
+Observed197 runtime contracts /40 installed groups +3 outer tests, zero
+fail/cancel/skip/todo; AI's five grouped contracts preserve192 historical contracts.
+Require all five AI evidence markers, negative controls and restored artifacts.
+Audit six-function/seven-type delta (115/191), protected owners/Core pin unchanged,
+no runtime dependency delta, and only optional actor-ai -> entity graph addition.
+Both exact-head push/pull_request Windows/Ubuntu Node22/24 matrices must pass8/8
+before CHECKPOINT_COMPLETE. Keep the phase PR Draft, phase IN_PROGRESS and
+Developer acceptance PENDING. No Ready/merge/tag/publish or v0.7.1 implementation.
+The [report](reports/v0.7.0-actor-ai-foundation.md) records local evidence; its
+SHA-bound phase PR supplement records final CI without changing tested HEAD.
+
 ## v0.6.7-FIX01 gates
 
 Repeat all local commands listed below, plus targeted installed integration9/9

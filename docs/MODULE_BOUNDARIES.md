@@ -1,3 +1,80 @@
+## v0.7.6 lifecycle ownership
+
+Registry/module graph unchanged: Actor AI depends on Entity; Foundation execution
+clock is a shared capability accessed through readExecutionTime, not a new module
+owner. Actor AI reads exact canonical Entity Life and returns immutable reset and
+timing candidates. L3 chooses reset destinations, FSM triggers and cadence. L4 owns
+revival, current-state freshness, atomic commit, scheduling, execution, feedback
+and Effect cleanup. No production Actor AI import of Combat/Skill/Effect/Core.
+Protected production and Core pin are unchanged.
+
+## v0.7.5 feedback / integration ownership
+
+Graph unchanged: optional actor-ai → entity only. Production changes append only
+one terminal feedback function/type in Actor AI and additive public root exports.
+No Combat/Skill/Effect imports in Actor AI; no second engine or global store.
+L3 provides action/restriction policy; test-local L4 binds action/attempt, revalidates
+current controller/target and canonical gates, commits candidates and dispatches.
+Entity/Core/Combat/Skill/Effect retain all numerical and state ownership. Other
+production, Core pin, registry and dependencies unchanged. [report](reports/v0.7.5-combat-skill-effect-integration.md).
+
+## v0.7.4 action-selection ownership
+
+Graph unchanged: optional actor-ai → entity only. Actor AI validates canonical
+actor binding and selects advisory action references using L3 ordered rules and
+L4 facts. Existing ActorAIActionIntent/ActorAIDecisionResult are sole proposal
+boundary. L4 resolves actionKey and revalidates canonical admission before execution.
+No Combat/Skill/Effect/Progression dependency or duplicated availability/admission
+logic, numerical calculation, World/Movement, scheduler or global store.
+Only Actor AI/additive root production changed. Core, Foundation, other modules,
+registry and dependencies unchanged. [report](reports/v0.7.4-ai-action-selection-intent.md); prior statements are historical.
+
+## v0.7.3 behavior ownership
+
+Only Actor AI owner/additive root production changes. Optional actor-ai→entity
+graph preserved. Canonical Entity validates actor; Actor AI owns pure behavior
+evaluation/candidates; L3 owns state/profile/rule/guard priority configuration;
+L4 owns events/provenance/controller/authoritative commit. Target selection and
+behavior evaluation remain separate caller-coordinated functions.
+No Combat/Skill/Effect/Progression dependencies, World/movement/spatial owner,
+Behavior Tree, Utility AI, scheduler, second FSM store/runtime or numerical code.
+Core and every other owner/registry/pin/dependency remain unchanged.
+[API](API.md) / [report](reports/v0.7.3-ai-behavior-state-transitions.md); prior statements are historical.
+
+## v0.7.2 target-selection ownership
+
+Graph unchanged: optional actor-ai → entity only. Existing perception validators
+capture assessment structure; AI09 eligibility is not recalculated. L2 Actor AI
+owns selection decisions and immutable state candidates, L3 owns retention/order,
+L4 owns World ranking inputs, freshness/controller checks and authoritative commit.
+Entity remains canonical identity/Life owner. No target registry, threat score,
+store, scheduler, World/Spatial calculation or Combat/Skill/Effect dependency.
+All other production owners/Core/registry unchanged. [API](API.md).
+Earlier milestone statements below are historical.
+
+## v0.7.1 perception ownership
+
+Optional actor-ai → entity remains the only Actor AI dependency; registry unchanged.
+Entity is canonical identity/Life owner; Actor AI reuses EntityLifeStatus and public
+Entity lookup. L4 discovers nearby entities and supplies relation/life/visibility/
+range/reachability/time facts; L3 provides exact membership and boolean gates.
+L2 validates/captures/filters without selecting targets, World queries, spatial
+math, state commits, execution or a second runtime/store. Other owners and Core
+are untouched. See [API](API.md); earlier milestone statements are historical.
+
+## v0.7.0 Actor AI boundary
+
+New optional `actor-ai -> [entity]`; registry defaults it off.
+The complete graph is Entity -> []; Progression/Combat/Skill/Effect/Actor AI -> [Entity].
+Production changes are limited to src/modules/actor-ai/index.ts and additive root
+exports. Actor AI imports only canonical Entity APIs/types; no dependency on
+Combat, Skill, Effect, Progression, L3 or L4.
+Entity owns identity/resources/life; L2 Actor AI owns only immutable AI schema and
+structural contracts; L3 owns profiles/policy; L4 owns authoritative storage,
+controller dispatch, execution and commit. No global store, runtime or second
+Entity/calculation owner. Existing production owners and Core pin are protected.
+[Approved task](tasks/active/v0.7.0-actor-ai-foundation.md).
+
 ## v0.6.7-FIX01 boundary audit
 
 Production delta is confined to src/modules/effect/index.ts and root exports:

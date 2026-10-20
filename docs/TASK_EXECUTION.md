@@ -1,3 +1,99 @@
+## v0.7.6 authorized checkpoint
+
+Approved task: tasks/active/v0.7.6-ai-lifecycle-recovery.md (D01–D05 all A).
+Continue feat/v0.7-actor-ai / Draft PR #12 from accepted v0.7.5 b5bb3e7894f7f392156941b9e741890bcb3411dc.
+Production scope: Actor AI/root additive API and package0.7.6 only. Focused installed
+consumers, required harness wiring, and affected docs are authorized. Preserve all
+protected owners, Core pin, architecture and historical evidence. Complete local
+gates, commit/push and exact-head eight-job CI; append SHA-bound PR evidence.
+Stop at v0.7.6; phase IN_PROGRESS, Developer acceptance PENDING. No v0.7.7,
+merge/tag/publish/Ready/new PR. Report: reports/v0.7.6-ai-lifecycle-recovery.md.
+
+## Current authorized checkpoint: v0.7.5 Combat / Skill / Effect Integration
+
+Developer supplied approved [task](tasks/active/v0.7.5-combat-skill-effect-integration.md); D01–D05 remain ALL A.
+Starting/accepted v0.7.4 SHA 7c5c6c24b0a8cf0deca6836b9e38992ef610d12b,
+clean synchronized feat/v0.7-actor-ai; Draft PR #12 to main. Baseline push/PR CI
+re-audited 8/8, 208 required markers/job. Package 0.7.4→0.7.5.
+AI26–AI30 only: canonical integration in installed L4 fixtures, plus minimal
+cross-domain terminal feedback validator/type. No domain owner/graph changes.
+Deliver local verification and exact-final-head push/PR CI evidence on PR #12.
+Keep Draft; phase IN_PROGRESS, acceptance PENDING. Stop v0.7.5. No new branch/PR,
+Ready, merge/tag/publish or automatic next milestone. Prior authorizations historical.
+
+## Current authorized checkpoint: v0.7.4 Action Selection & Intent
+
+Developer supplied approved [task](tasks/active/v0.7.4-ai-action-selection-intent.md); D01–D05 ALL A.
+Start from v0.7.3 CHECKPOINT_COMPLETE at 4863e01d20536b5bd0f2a148bb3c18ef10434179,
+clean synchronized feat/v0.7-actor-ai, existing Draft PR #12/main, baseline CI 8/8.
+AI21–AI25 only: three focused functions/nine types, existing intent/result reuse,
+ordered L3 rules, correlated L4 availability and advisory immutable decisions.
+Package 0.7.3→0.7.4; production limited to Actor AI/additive root. Protect all other
+owners/Core/graph/dependencies/history. All local gates and both exact-head CI
+matrices 8/8 precede CHECKPOINT_COMPLETE; SHA-bound supplement completes report.
+Keep Draft; phase IN_PROGRESS, acceptance PENDING. Stop v0.7.4; no new branch/PR,
+Ready/merge/tag/publish or automatic v0.7.5. Earlier authorizations are historical.
+
+## Current authorized checkpoint: v0.7.3 AI Behavior & State Transitions
+
+Developer supplied approved [task](tasks/active/v0.7.3-ai-behavior-state-transitions.md); D01–D05 ALL A, no reapproval required.
+Preflight completed v0.7.2 at4aef1201513b482193b1292349334f702faa2834 with clean
+synchronized branch feat/v0.7-actor-ai and existing Draft PR #12/main, baseline8/8.
+AI16–AI20 only: configurable FSM state/profile/rules, explicit L4 observations,
+first-match guards/priority, immutable behavior-only candidate. Add3functions/5types,
+package0.7.2→0.7.3. Protect Core/all other owners/registry/dependencies/old fixtures.
+Local gates and both exact-head Windows/Ubuntu Node22/24 matrices8/8 precede
+CHECKPOINT_COMPLETE. SHA-bound supplement completes [report](reports/v0.7.3-ai-behavior-state-transitions.md).
+Keep Draft; phase IN_PROGRESS, acceptance PENDING. Stop at v0.7.3; no new PR,
+Ready/merge/tag/publish or automatic v0.7.4. Previous authorization is historical.
+
+## Current authorized checkpoint: v0.7.2 Target Acquisition & Selection
+
+Developer supplied the approved [task](tasks/active/v0.7.2-target-acquisition-selection.md).
+Start from v0.7.1 CHECKPOINT_COMPLETE at108c81d9a84293ed5e2ed3d3b961201e03e214e0,
+same feat/v0.7-actor-ai / existing Draft PR #12/main. D01–D05 ALL A preserved.
+Implement AI11–AI15 only: explicit policy, acquisition/retention/switch/loss and
+immutable target-state candidates. One function/three types; package0.7.2.
+Production restricted to Actor AI and additive root exports. Protect Core, all
+other owners, registry/dependencies and accepted AI01–AI10 fixtures/reports.
+Require local gates plus exact-head push AND pull_request Windows/Ubuntu Node22/24
+8/8 before CHECKPOINT_COMPLETE. Final SHA-bound PR supplement completes the
+[report](reports/v0.7.2-target-acquisition-selection.md) without changing tested HEAD.
+Keep Draft; phase IN_PROGRESS, acceptance PENDING. Stop at v0.7.2.
+No Ready/merge/tag/publish/new branch/PR or automatic v0.7.3.
+All earlier authorizations/statuses below are historical.
+
+## Current authorized checkpoint: v0.7.1 AI Perception & Context
+
+Developer supplied the approved [task](tasks/active/v0.7.1-ai-perception-context.md).
+Start from completed v0.7.0 SHA71acd06994ef3f07d543114981f31bdce7ef4d89,
+same feat/v0.7-actor-ai / Draft PR #12 to main. D01–D05 ALL A remain approved.
+AI06–AI10 only: snapshots/facts/validation/explicit policy filtering/outcomes.
+Production restricted to actor-ai plus additive root exports; version0.7.1.
+Protect every other owner, Core pin/source/dependencies, module graph and old
+fixtures/reports. Add new installed runtime/type consumers and necessary wiring/docs.
+Required local gates plus exact-head push AND pull_request Windows/Ubuntu Node22/24
+8/8 success precede CHECKPOINT_COMPLETE; final SHA-bound PR supplement completes
+the [report](reports/v0.7.1-ai-perception-context.md). Keep Draft, phase IN_PROGRESS,
+acceptance PENDING. Stop here; no Ready/merge/tag/publish/new PR/v0.7.2.
+All earlier authorizations/statuses below are historical.
+
+## Current authorized checkpoint: v0.7.0 Actor AI Foundation
+
+The Developer's approved [task](tasks/active/v0.7.0-actor-ai-foundation.md) authorizes
+AI01–AI05 with phase-scoped D01–D05 ALL A. Effect PR #11 was verified MERGED;
+accepted main baseline be716c4ea7c12a6ac9d73503dd9ea6d0c6a45bf0.
+New feat/v0.7-actor-ai uses one Draft PR to main through v0.7.7.
+Only new actor-ai owner/root exports change production; optional dependency is
+actor-ai -> entity only, with package0.7.0. Preserve prior owners/API/oracles and Core.
+Implement structural contracts only, not AI evaluation/execution/feedback/runtime.
+All local gates and both exact-head Windows/Ubuntu Node22/24 matrices8/8 must pass
+before CHECKPOINT_COMPLETE. Stop at v0.7.0. Keep Draft, phase IN_PROGRESS,
+Developer acceptance PENDING. No merge/tag/publish/Ready/next milestone.
+[Report](reports/v0.7.0-actor-ai-foundation.md) is completed by a SHA-bound CI
+supplement on that Draft PR, avoiding a report-only commit that invalidates evidence.
+All earlier authorizations/statuses below are historical.
+
 ## Current authorized task: v0.6.7-FIX01
 
 Developer-approved Target Defeat Cleanup & Event Timeline Consistency patch starts

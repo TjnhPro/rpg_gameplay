@@ -1,3 +1,305 @@
+## v0.7.6 additive root API
+
+Four functions: `evaluateActorAILifeGate(state, entities, actorLife)`,
+`evaluateActorAIReset(state, entities, actorLife, behaviorPolicy, request)`,
+`createActorAIDecisionTimingState(state, executionContext)`, and
+`evaluateActorAIDecisionTiming(state, entities, actorLife, timing, policy, executionContext)`.
+Seven types: `ActorAILifeGateResult`, `ActorAIResetReason`, `ActorAIResetRequest`,
+`ActorAIResetResult`, `ActorAIDecisionTimingState`, `ActorAIDecisionTimingPolicy`,
+`ActorAIDecisionTimingResult`. Root inventory: **130 functions / 222 types**.
+
+Life gate validates canonical Entity membership and exact bound Life, with dead
+preceding manual. Reset reasons respawn/session_reset require an allowed behavior
+state; disengage requires null destination and preserves current behavior. All
+clear target, preserve actor/profile/controller, reject dead Life. L4 commits.
+Timing companion has actorId/observedAtMs/nextEligibleAtMs. Interval is a nonnegative
+safe integer. Foundation opaque context supplies one clock sample per live AI
+evaluation; dead/manual consume none. Initial cursor is immediately eligible.
+Ready returns an immutable candidate; not_due/blocked return null state. Time
+regression and unrepresentable advance fail closed. Zero interval is explicitly due
+at the same timestamp, without a loop. Candidates are observations, never execution
+authority or a durable reservation; L4 rechecks current Life/controller and baseline.
+Existing ActorAIState and AI01–AI30 signatures remain unchanged. Root-only exports.
+
+## v0.7.5 terminal feedback — AI26–AI30
+
+One additive root function/type; total **126 functions /215 types**:
+
+```ts
+validateActorAIActionExecutionFeedback(
+  selection: ActorAIActionSelectionResult,
+  feedback: ActorAIActionExecutionFeedback
+): ActorAIActionExecutionFeedback
+```
+
+Feedback carries exact actorId/decisionId/actionKey/targetEntityId from the selected
+proposal and a caller-owned nonblank attemptId. Valid terminal combinations:
+
+| phase | status | reasonId |
+|---|---|---|
+| admission | rejected | nonblank string |
+| execution | completed | null |
+| execution | failed | nonblank string |
+
+Selection and feedback use closed own-data validation, without invoking getters.
+No feedback for no_action/manual. Result is detached and frozen; inputs/state are
+unchanged. Invalid discriminants, target bindings, malformed diagnostics or wrong
+correlation throw TypeError. Nonblank identifiers are preserved exactly.
+The validator cannot prove caller execution, authorize an action, establish current
+controller/world state, prevent duplicate execution, or commit state. Repeated valid
+reports are intentionally accepted. L4 verifies receipts, binds actionKey to canonical
+execution, rechecks freshness and owns any attempt ledger. No runtime/store/callback.
+Integration consumers use actual Combat admission/target/attack/damage, Skill
+admission/cost/cooldown/activation/outcome, Effect lifecycle/status/restrictions and
+Entity resources/Life. These are test-only caller composition, not new AI APIs.
+[report](reports/v0.7.5-combat-skill-effect-integration.md). Historical inventories below are preserved.
+
+## v0.7.4 Action Selection & Intent — AI21–AI25
+
+Three functions/nine types added; root **125 functions /214 types**.
+All AI01–AI20 contracts remain unchanged. Types: ActorAIActionKind,
+ActorAIActionTargetMode, ActorAIActionRule, ActorAIActionSelectionPolicy,
+ActorAIActionAvailability, ActorAIActionObservation, ActorAIActionRuleRejectionReason,
+ActorAIActionRuleRejection, ActorAIActionSelectionResult.
+
+```ts
+createActorAIActionSelectionPolicy(input: ActorAIActionSelectionPolicy): ActorAIActionSelectionPolicy;
+createActorAIActionObservation(context: ActorAIDecisionContext,
+  availability: readonly ActorAIActionAvailability[]): ActorAIActionObservation;
+evaluateActorAIActionSelection(state: ActorAIState, entities: EntityCollection,
+  context: ActorAIDecisionContext, policy: ActorAIActionSelectionPolicy,
+  observation: ActorAIActionObservation): ActorAIActionSelectionResult;
+```
+
+Policy is a closed profileId/rules record. Each ordered rule has ruleId,
+behaviorStateId, actionKey, actionKind and targetMode. IDs are exact nonblank,
+case-sensitive, never normalized. Rule IDs unique. Reused actionKey requires
+consistent kind/mode across every behavior rule. Empty rules are valid.
+
+| actionKind | Allowed targetMode | Intent target |
+| --- | --- | --- |
+| basic_attack | current_target | state.targetEntityId |
+| skill | current_target / self | state.targetEntityId / actorId |
+| approach_target | current_target | state.targetEntityId |
+| return_home | none | null |
+| wait | none | null |
+
+Observation contains actorId, decisionId and dense availability array. Each entry
+is exactly {actionKey,status,reasonId}: available/null or unavailable/nonblank
+opaque reasonId. Unique action keys; unknown extra keys are valid facts but cannot
+select a rule. Availability order never defines priority. No canonical admission
+interpretation of reasonId. Fact freshness and decision-ID uniqueness are L4-owned.
+
+Validate canonical actor/state, closed context, entire policy and observation,
+actor/decision/profile identities before manual/no-op/selection. Manual returns
+no_action/manual_control, null rule/kind, validated no_action decision and [].
+AI iterates rules in declared order, skipping different behavior without diagnostics.
+Applicable rejection precedence: target_missing, availability_missing, action_unavailable.
+First valid available rule wins; rejected contains only preceding applicable failures,
+ordered by policy. None selected gives no_action/no_candidate with null intent;
+no implicit wait. Explicit wait still requires configured rule and available fact.
+
+Result fields: status selected/no_action; reason rule_selected/no_candidate/manual_control;
+selectedRuleId string/null; actionKind kind/null; decision ActorAIDecisionResult;
+rejected readonly ActorAIActionRuleRejection[] (ruleId/actionKey/reason).
+Selected wraps proposed/none using existing createActorAIActionIntent and
+validateActorAIDecisionResult. Both no-action paths use the same accepted validator.
+This metadata interface does not introduce another execution intent authority.
+All records/arrays detached and frozen; caller inputs remain untouched.
+
+Current target is a structural reference, not proof of eligibility/existence/Life.
+No state/target/behavior/controller changes, hidden time/RNG, execution or world
+calculations. L4 must revalidate all canonical conditions before execution.
+Full declarations live at public root; no deep export. [report](reports/v0.7.4-ai-action-selection-intent.md).
+
+## v0.7.3 AI Behavior & State Transitions — AI16–AI20
+
+Additive root API: three functions/five types; total **122 functions /205 types**.
+All AI01–AI15 signatures and behavior retained.
+
+```ts
+type ActorAIBehaviorTargetRequirement = 'any' | 'present' | 'absent';
+interface ActorAIBehaviorRule {
+  readonly ruleId: string;
+  readonly fromStateId: string;
+  readonly triggerId: string;
+  readonly toStateId: string;
+  readonly targetRequirement: ActorAIBehaviorTargetRequirement;
+}
+interface ActorAIBehaviorPolicy {
+  readonly profileId: string;
+  readonly stateIds: readonly string[];
+  readonly rules: readonly ActorAIBehaviorRule[];
+}
+interface ActorAIBehaviorObservation {
+  readonly actorId: string;
+  readonly triggerIds: readonly string[];
+}
+createActorAIBehaviorPolicy(input: ActorAIBehaviorPolicy): ActorAIBehaviorPolicy;
+createActorAIBehaviorObservation(state: ActorAIState,
+  triggerIds: readonly string[]): ActorAIBehaviorObservation;
+evaluateActorAIBehaviorTransition(state: ActorAIState, entities: EntityCollection,
+  observation: ActorAIBehaviorObservation,
+  policy: ActorAIBehaviorPolicy): ActorAIBehaviorTransitionResult;
+```
+
+All IDs exact/nonblank/case-sensitive. Unique state/trigger/rule IDs, valid rule
+state references and explicit guard required. Empty rules/triggers are valid;
+empty state sets can be captured but cannot contain a valid evaluation state.
+Policy factory detaches/freezes nested records/arrays and preserves rule order.
+Observation factory structurally validates state and captures supplied triggers,
+without generating events or checking collection membership.
+
+Evaluator validates state/canonical actor, complete policy/observation, profile
+and actor binding, current-state membership before manual gate. All malformed
+input rejects even when manual/no-trigger/no-match; no partial valid subset.
+First rule matching source, trigger membership and target guard wins. Guard
+failure continues to later rules; trigger order has no priority. present/absent
+checks null only, not target existence/Life/eligibility. Same-state rule wins
+without continuing to later rules. No automatic target-selection chaining.
+
+ActorAIBehaviorTransitionResult is a readonly discriminated union:
+
+| status | reason | ruleId / triggerId | nextBehaviorStateId | state |
+| --- | --- | --- | --- | --- |
+| transitioned | rule_matched | string / string | string | ActorAIState |
+| unchanged | no_trigger / no_matching_rule / same_state | string or null | string | ActorAIState |
+| blocked | manual_control | null / null | null | null |
+
+Every result includes previousBehaviorStateId:string. same_state carries matched
+IDs; no_trigger/no_matching_rule carry null IDs. Every nonblocked state is detached
+and frozen; only behaviorStateId can change. Actor/profile/controller/target exact
+values preserved. No result-validation API is added; closed output discriminators
+are proved by literal runtime oracles and strict declarations.
+L3 configures arbitrary states/profiles, L4 supplies genuine events/current state
+and commits candidates after authority/freshness checks. No built-in profile,
+action success inference, timer/RNG, World/movement or execution. [Report](reports/v0.7.3-ai-behavior-state-transitions.md).
+
+## v0.7.2 Target Acquisition & Selection — AI11–AI15
+
+Additive root API: one function/three types; total **119 functions /200 types**.
+Existing AI01–AI10 and all historical signatures/semantics preserved.
+
+```ts
+evaluateActorAITargetSelection(state: ActorAIState, entities: EntityCollection,
+  perception: ActorAIPerceptionAssessment,
+  policy: ActorAITargetSelectionPolicy): ActorAITargetSelectionResult
+```
+
+ActorAITargetSelectionPolicy has required readonly retention:
+'retain_if_eligible'|'prefer_priority' and preferredTargetIds:readonly string[].
+Duplicate/nonblank-invalid IDs reject; absent/excluded preferences cannot win.
+retain_if_eligible preserves an eligible current target over every preference;
+otherwise prefer supplied IDs in order, then minimum remaining ID using
+locale-independent UTF-16 lexical comparison. Perception order does not break ties.
+
+ActorAITargetLossReason is 'not_perceived'|ActorAIPerceptionExclusionReason.
+ActorAITargetSelectionResult is a readonly discriminated union:
+
+| status | reason | selectedTargetEntityId | state |
+| --- | --- | --- | --- |
+| selected | acquired / retained / switched | string | ActorAIState |
+| no_target | no_candidates / target_lost | null | ActorAIState |
+| blocked | manual_control | null | null |
+
+Every envelope also contains previousTargetEntityId:string|null and
+lossReason:ActorAITargetLossReason|null. Loss is null without a previous target
+or when it remains eligible, including priority-only switches. Otherwise use the
+exact exclusion reason, or not_perceived if absent from both lists. A lost target
+without replacement yields a candidate with null target. All nonblocked candidates
+are detached/frozen; only targetEntityId may differ. Manual control never receives
+a candidate and never clears its original target.
+
+Processing validates state/canonical actor, closed assessment and actor binding,
+then policy before checking manual control. Assessment validates time, exact
+status/reason/count agreement, accepted facts/exclusion reasons and unique IDs
+within/across both dense own-data lists. Closed records/accessors/symbols/inherited
+fields reject without getters. Shared perception validators are reused; AI09 is
+never rerun and its policy gates are not duplicated.
+Structural integrity does not establish provenance/freshness. L4 supplies genuine
+assessment evidence and rechecks current state/controller/world before commit and
+execution. No World query, distance/threat score, behavior transition or action
+execution is performed. See [report](reports/v0.7.2-target-acquisition-selection.md).
+
+## v0.7.1 AI Perception & Context — AI06–AI10
+
+Additive root API: three functions/six types; total **118 functions /197 types**.
+All v0.7.0 signatures/semantics preserved. New signatures:
+
+```ts
+createActorAIPerceptionSnapshot(state: ActorAIState,
+  input: {readonly observedAtMs: number; readonly candidates: readonly ActorAIPerceivedEntity[]}): ActorAIPerceptionSnapshot
+validateActorAIPerceptionSnapshot(state: ActorAIState,
+  perception: ActorAIPerceptionSnapshot): ActorAIPerceptionSnapshot
+evaluateActorAIPerception(state: ActorAIState, entities: EntityCollection,
+  perception: ActorAIPerceptionSnapshot, policy: ActorAIPerceptionPolicy): ActorAIPerceptionAssessment
+```
+
+All fields readonly. ActorAIPerceivedEntity: entityId/relationId:string,
+lifeStatus:EntityLifeStatus, visible/inRange/reachable:boolean.
+ActorAIPerceptionSnapshot: actorId:string, observedAtMs:number, candidates:readonly facts[].
+ActorAIPerceptionPolicy: allowedRelationIds:readonly string[],
+allowedLifeStatuses:readonly EntityLifeStatus[], requireVisible/requireInRange/
+requireReachable/allowSelf:boolean; every field required, empty lists allow none.
+ActorAIPerceptionExclusionReason: the seven strings below.
+ActorAIPerceptionExclusion: entityId:string, reason:exclusion reason.
+ActorAIPerceptionAssessment: actorId/observedAtMs, status:'candidates_available'|
+'no_candidates', reason:'none'|'no_perceived_entities'|'no_eligible_candidates',
+eligible:readonly facts[], excluded:readonly exclusions[].
+
+Closed own-data ordinary/null-prototype records; dense own-data arrays without
+extra/symbol/accessor fields. Invalid IDs/life/booleans, duplicates, negative or
+nonfinite time and actor mismatch throw TypeError without running getters.
+Factory/validator capture facts including structurally valid stale references.
+Evaluation validates state, canonical collection/actor, snapshot, policy, binding;
+then filters in input order. First failing reason wins:
+entity_not_found → self_not_allowed → target_life_not_allowed → relation_not_allowed
+→ target_not_visible → target_out_of_range → target_not_reachable.
+Exact relation/life membership; each boolean gate is explicit. Both manual/AI
+controllers may inspect perception; manual proposal restriction is preserved.
+Results are deeply detached/frozen, preserve order/time, never select or mutate a
+target/state, execute gameplay, inspect HP or query World/Spatial. L4 owns fact
+truth/freshness; eligible means advisory filtering, never admission.
+
+## v0.7.0 Actor AI Foundation — AI01–AI05
+
+Additive root API: six functions / seven types; total **115 functions / 191 types**.
+Existing signatures and behavior are preserved.
+
+```ts
+createActorAIProfileReference(input: ActorAIProfileReference): ActorAIProfileReference
+createActorAIState(actor: EntitySnapshot, profile: ActorAIProfileReference,
+  initial: ActorAIInitialState): ActorAIState
+validateActorAIState(state: ActorAIState, entities: EntityCollection): ActorAIState
+createActorAIDecisionContext(state: ActorAIState, decisionId: string): ActorAIDecisionContext
+createActorAIActionIntent(context: ActorAIDecisionContext,
+  input: {readonly actionKey: string; readonly targetEntityId: string | null}): ActorAIActionIntent
+validateActorAIDecisionResult(state: ActorAIState, context: ActorAIDecisionContext,
+  result: ActorAIDecisionResult): ActorAIDecisionResult
+```
+
+Public types: `ActorAIProfileReference` (profileId), `ActorAIControllerMode`
+(manual | ai), `ActorAIInitialState` (controller, behaviorStateId),
+`ActorAIState` (actorId, profileId, controller, behaviorStateId, targetEntityId),
+`ActorAIDecisionContext` (decisionId, actorId), `ActorAIActionIntent`
+(decisionId, actorId, actionKey, targetEntityId), `ActorAIDecisionResult`.
+All fields are readonly; every returned record, including nested result intent,
+is detached and frozen.
+
+Creation validates canonical Entity, preserves exact nonblank IDs and starts with
+targetEntityId:null. State validation requires the actor in canonical collection;
+a stale nonblank target is permitted as a reference, never eligibility evidence.
+Contexts require explicit decision IDs; intents accept opaque action keys and
+nullable target references without action lookup or execution.
+Result `proposed / none / intent` requires AI controller and exact actor/decision
+bindings. `no_action / manual_control / null` requires manual controller;
+`no_action / no_candidate / null` requires AI controller.
+Malformed records, missing/extra/symbol/accessor/inherited fields, invalid IDs,
+controllers or discriminator combinations throw TypeError without invoking getters.
+Ordinary or null-prototype own-data records are supported.
+These functions only validate structure; they do not evaluate AI or change state.
+See [checkpoint report](reports/v0.7.0-actor-ai-foundation.md).
+
 ## v0.6.7-FIX01: explicit target-defeat cleanup
 
 One additive function and two types: root109 functions /184 types. Historical
