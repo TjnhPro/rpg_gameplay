@@ -198,3 +198,16 @@ Effect System or complete game runtime. This supersedes historical activation
 exclusions above. L3 policy and L4 commit/dispatch remain external.
 Phase IN_PROGRESS, PR #10 DRAFT, Developer acceptance PENDING;
 v0.5.5 slots/loadout NOT_STARTED; game profiles NOT_EVALUATED.
+
+## v0.5.5 current Skill checkpoint
+
+Group05 implements SK01–SK30. Loadout adds ordered immutable nullable instance
+references, empty-layout support, canonical structural validation, assign/replace/
+remove candidates and explicit L3 eligibility/duplicate policy. Duplicate/stale
+references are structurally valid; no catalog authority is claimed. L4 owns active
+loadout selection, resolution, persistence and authoritative commit. Assignment
+is independent of learning, admission, resource, cooldown or Combat state.
+This supersedes historical loadout exclusions above. No Skill inventory, global
+registry, UI, move/swap, automatic activation or new gameplay module.
+Phase IN_PROGRESS; PR #10 DRAFT; Developer acceptance PENDING;
+v0.5.6 NOT_STARTED; concrete game profiles NOT_EVALUATED.

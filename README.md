@@ -1,6 +1,6 @@
-# RPG Gameplay — v0.5.4 Skill Activation & Execution
+# RPG Gameplay — v0.5.5 Skill Slots & Loadout
 
-> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK25 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
+> **Status: Group A and Combat CB01–CB30 merged through PR #9. Skill SK01–SK30 implemented; Skill phase IN_PROGRESS, Developer phase acceptance PENDING.**
 > Private native ESM/strict TypeScript package with installed-package contract
 > verification and pinned Core Kernel integration. Module declarations, immutable
 > registry, selection, dependency resolution, composition and synchronous lifecycle
@@ -38,7 +38,7 @@ changes a Developer Core checkout. Run it before `npm ci` in a fresh checkout.
 checks strict NodeNext source; `npm run test:functional` requires a preceding
 build and tests installed package contracts/Kernel integration plus gate failures.
 `npm run verify` runs boundaries, self-tests, build, typecheck and these contracts,
-including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK25 through an installed-package consumer. Text/2D/2.5D probes
+including GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30 and SK01–SK30 through an installed-package consumer. Text/2D/2.5D probes
 prove Foundation/Entity data compatibility; gameplay profile behavior is NOT_EVALUATED.
 
 ## Skill identity foundation
@@ -578,3 +578,17 @@ No refund/retry/exactly-once guarantee or implicit execution. See [API](docs/API
 and [checkpoint report](docs/reports/v0.5.4-skill-activation-execution.md).
 Skill phase IN_PROGRESS; Draft PR #10; Developer acceptance PENDING.
 v0.5.5 slots/loadout NOT_STARTED. Game profiles NOT_EVALUATED.
+
+## Skill Slots & Loadout checkpoint (v0.5.5)
+
+SK26–SK30 adds createSkillLoadoutState, validateSkillLoadoutState,
+assignSkillLoadoutSlot, replaceSkillLoadoutSlot and removeSkillLoadoutSlot.
+L3 supplies ordered slot layout and explicit eligibility/duplicate policies.
+Loadout stores nullable instanceId references only; transitions return immutable
+candidates or structured rejection without partial state. Assignment requires an
+empty slot, replacement an occupied slot, removal clears only one reference.
+Structural validation permits duplicate/stale instance references without claiming
+external catalog integrity. L4 owns resolution, active selection and persistence.
+See [API](docs/API.md) and [report](docs/reports/v0.5.5-skill-slots-loadout.md).
+Phase IN_PROGRESS; PR #10 DRAFT; Developer acceptance PENDING.
+v0.5.6 NOT_STARTED; concrete game profiles NOT_EVALUATED.

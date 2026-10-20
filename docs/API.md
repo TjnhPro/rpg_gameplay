@@ -1,4 +1,4 @@
-# Public API — v0.5.4 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK25)
+# Public API — v0.5.5 (GF01–GF16, EC01–EC18, PG01–PG19, CB01–CB30, SK01–SK30)
 
 Import types/functions only from `@rpg/gameplay`. Native ESM; deep exports closed.
 Canonical owners: `src/foundation/modules/index.ts` (GF01–GF05),
@@ -1594,3 +1594,88 @@ rollback, retry or prove success. Reports are detached scalar immutable snapshot
 caller reports/requests remain untouched. Duplicate attemptId is accepted: no
 exactly-once ledger, reservation, concurrency protection or authoritative runtime
 commit. These remain L4 concerns. No Effect System or complete game runtime.
+
+## SK26–SK30 Skill Slots & Loadout (v0.5.5)
+
+Root-only additions:5 functions/8 types; total80 functions/133 types.
+
+```ts
+export interface SkillLoadoutLayout {
+  readonly loadoutId: string;
+  readonly slotIds: readonly string[];
+}
+export interface SkillLoadoutSlot {
+  readonly slotId: string;
+  readonly instanceId: string | null;
+}
+/** References only; instance resolution, active selection and persistence belong to L4. */
+export interface SkillLoadoutState {
+  readonly entityId: string;
+  readonly loadoutId: string;
+  readonly slots: readonly SkillLoadoutSlot[];
+}
+export interface SkillSlotAssignmentPolicy {
+  readonly eligible: boolean;
+  readonly allowDuplicateInstance: boolean;
+}
+export interface SkillSlotRemovalPolicy {readonly eligible: boolean}
+export type SkillLoadoutMutationOperation = 'assign' | 'replace' | 'remove';
+export type SkillLoadoutMutationReason = 'none' | 'slot_not_found' | 'slot_ineligible'
+  | 'slot_occupied' | 'slot_empty' | 'same_instance' | 'instance_already_assigned';
+export type SkillLoadoutMutationResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly operation: SkillLoadoutMutationOperation;
+      readonly slotId: string; readonly beforeInstanceId: string | null; readonly afterInstanceId: string | null;
+      readonly state: SkillLoadoutState}
+  | {readonly status: 'rejected'; readonly reason: Exclude<SkillLoadoutMutationReason, 'none'>;
+      readonly operation: SkillLoadoutMutationOperation; readonly slotId: string;
+      readonly beforeInstanceId: string | null; readonly afterInstanceId: null; readonly state: null};
+function createSkillLoadoutState(entity: EntitySnapshot, layout: SkillLoadoutLayout): SkillLoadoutState;
+function validateSkillLoadoutState(state: SkillLoadoutState): SkillLoadoutState;
+function assignSkillLoadoutSlot(state: SkillLoadoutState, slotId: string, instance: SkillInstanceState,
+  policy: SkillSlotAssignmentPolicy): SkillLoadoutMutationResult;
+function replaceSkillLoadoutSlot(state: SkillLoadoutState, slotId: string, instance: SkillInstanceState,
+  policy: SkillSlotAssignmentPolicy): SkillLoadoutMutationResult;
+function removeSkillLoadoutSlot(state: SkillLoadoutState, slotId: string,
+  policy: SkillSlotRemovalPolicy): SkillLoadoutMutationResult;
+```
+
+Factory validates Entity through createEntity and returns ordered empty slots from
+L3 layout. Empty layout is valid; no default/minimum/maximum count or slot types.
+All IDs are exact nonblank, case-sensitive strings, preserved without generation
+or normalization. Slot IDs must be unique within the loadout. entityId+loadoutId
+uniqueness across independent snapshots belongs to L4. Special identifiers such
+as __proto__/constructor/toString use safe ordered-array references.
+
+Canonical validateSkillLoadoutState validates complete closed own-data records
+and dense own-data arrays, rejecting missing/extra/symbol/accessor/inherited
+required fields without invoking getters, duplicate slot IDs and invalid nullable
+instance references. It returns a detached frozen snapshot, including every slot.
+Duplicate nonnull instance IDs and stale external references are structurally
+valid; it does not consult a catalog or prove referential integrity.
+
+Assign/replace reuse accepted private Skill Instance validation; entityId must
+match loadout or TypeError. Policies require actual booleans and exact fields.
+All supplied state/instance/slot ID/policy contracts validate before ordinary
+rejection. Priority: slot_not_found > slot_ineligible > operation-specific state
+reason > instance_already_assigned > none. Assign rejects occupied; replace
+rejects empty then same_instance; remove rejects empty. Duplicate restrictions
+apply only to assign/replace and exclude the target slot. same_instance wins even
+when the instance also exists elsewhere. allowDuplicateInstance:true permits
+shared references without copying the instance or creating per-slot cooldown.
+
+Applied results expose the exact operation, slot ID, before/after references and
+one immutable final Loadout candidate. Rejected results expose state:null and
+afterInstanceId:null, with current target reference as beforeInstanceId (null if
+missing/empty). No partial candidate is exposed. Unchanged slots retain order;
+removal clears exactly the target reference, never every duplicate. All outputs
+are frozen/detached; original caller inputs remain unchanged and unfrozen.
+
+Example primary [null,null,null]: assign fireball to slot1, assign heal to slot2,
+replace slot1 with lightning, remove slot2 -> [lightning-instance,null,null].
+Each transition preserves earlier snapshots. Multiple loadouts remain independent.
+Eligibility is a caller assertion, not proof of learning/admission or authority.
+Loadout never calls admission, activation, costs, cooldown, Combat, providers or
+events. Rank/Resource/Cooldown/Skill Instances stay in their canonical owners.
+L3 owns layout/restrictions/duplicate policy; L4 owns active selection, reference
+resolution, persistence and authoritative commit. No active-loadout manager,
+Skill Instance registry/inventory, automatic activation, UI or move/swap/reorder.

@@ -409,3 +409,24 @@ strict NodeNext uses skipLibCheck:false with no any. Runner requires exact5+2
 passes, zero fail/cancel/skip/todo and all7 markers. All118 prior runtime tests
 remain: observed125 installed runtime tests +2 outer tests. Tests prove framework
 contracts; game profile behavior remains NOT_EVALUATED.
+
+## v0.5.5 installed Loadout evidence
+
+skill-loadout.mjs has five distinct contract groups: ordered assign/replace/remove
+with two independently created literal replay histories; deterministic rejection
+priority and explicit duplicate policies; complete malformed state/Entity/Instance/
+layout/policy/array contracts before ordinary rejection with getters0; stale and
+duplicate structural references, independent loadouts, empty layout, admission
+independence and no cascade; opaque special IDs and detached frozen snapshots
+without freezing caller inputs. These cover S01–S27; S28 retains earlier consumers.
+No numerical work, simulator, external catalog mock or count KPI.
+
+skill-loadout.ts checks all8 types/5 function signatures, readonly nested slots/
+policies/layout/results, union narrowing, missing/extra/invalid contracts and
+blocked deep imports. Actual0.5.5 tarball installs independently with pinned Core;
+runner requires5 passes/5 markers, fail/cancel/skip/todo0 and strict external
+NodeNext/skipLibCheck:false. Counts are observed evidence, not acceptance quotas.
+Game profiles remain NOT_EVALUATED.
+
+Observed v0.5.5 total:130 installed runtime tests (125 retained +5 Loadout),
+2 outer tests; zero failures/skips.

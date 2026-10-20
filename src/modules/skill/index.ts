@@ -505,3 +505,108 @@ export function reportSkillExecutionOutcome(request: SkillExecutionRequest, repo
   if (result.status !== 'completed' && result.status !== 'failed') throw new TypeError('Invalid execution report status');
   return Object.freeze({attemptId, instanceId, skillId, actorEntityId, dispatchKind: dispatch.kind, status: result.status});
 }
+
+/** L3 defines ordered opaque slot IDs; no implicit slot count or classification. */
+export interface SkillLoadoutLayout {
+  readonly loadoutId: string;
+  readonly slotIds: readonly string[];
+}
+export interface SkillLoadoutSlot {
+  readonly slotId: string;
+  readonly instanceId: string | null;
+}
+/** References only; instance resolution, active selection and persistence belong to L4. */
+export interface SkillLoadoutState {
+  readonly entityId: string;
+  readonly loadoutId: string;
+  readonly slots: readonly SkillLoadoutSlot[];
+}
+export interface SkillSlotAssignmentPolicy {
+  readonly eligible: boolean;
+  readonly allowDuplicateInstance: boolean;
+}
+export interface SkillSlotRemovalPolicy {readonly eligible: boolean}
+export type SkillLoadoutMutationOperation = 'assign' | 'replace' | 'remove';
+export type SkillLoadoutMutationReason = 'none' | 'slot_not_found' | 'slot_ineligible'
+  | 'slot_occupied' | 'slot_empty' | 'same_instance' | 'instance_already_assigned';
+export type SkillLoadoutMutationResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly operation: SkillLoadoutMutationOperation;
+      readonly slotId: string; readonly beforeInstanceId: string | null; readonly afterInstanceId: string | null;
+      readonly state: SkillLoadoutState}
+  | {readonly status: 'rejected'; readonly reason: Exclude<SkillLoadoutMutationReason, 'none'>;
+      readonly operation: SkillLoadoutMutationOperation; readonly slotId: string;
+      readonly beforeInstanceId: string | null; readonly afterInstanceId: null; readonly state: null};
+
+/** Canonical structural boundary, without external catalog or duplicate-instance policy. */
+export function validateSkillLoadoutState(state: SkillLoadoutState): SkillLoadoutState {
+  const data = admissionFields(state, ['entityId', 'loadoutId', 'slots']);
+  const entityId = admissionId(data.entityId), loadoutId = admissionId(data.loadoutId);
+  const ids = new Set<string>();
+  const slots = costArray(data.slots).map(value => {
+    const slot = admissionFields(value, ['slotId', 'instanceId']);
+    const slotId = admissionId(slot.slotId);
+    if (ids.has(slotId)) throw new TypeError('Loadout slot IDs must be unique');
+    ids.add(slotId);
+    return Object.freeze({slotId, instanceId: slot.instanceId === null ? null : admissionId(slot.instanceId)});
+  });
+  return Object.freeze({entityId, loadoutId, slots: Object.freeze(slots)});
+}
+
+/** Capture a caller layout as empty references, using canonical Entity validation. */
+export function createSkillLoadoutState(entity: EntitySnapshot, layout: SkillLoadoutLayout): SkillLoadoutState {
+  const entityId = createEntity(entity).id;
+  const data = admissionFields(layout, ['loadoutId', 'slotIds']);
+  return validateSkillLoadoutState({entityId, loadoutId: admissionId(data.loadoutId),
+    slots: costArray(data.slotIds).map(slotId => ({slotId: admissionId(slotId), instanceId: null}))});
+}
+
+function mutateLoadoutSlot(state: SkillLoadoutState, slotId: string, operation: SkillLoadoutMutationOperation,
+  policy: SkillSlotAssignmentPolicy | SkillSlotRemovalPolicy, instance?: SkillInstanceState): SkillLoadoutMutationResult {
+  const snapshot = validateSkillLoadoutState(state), targetId = admissionId(slotId);
+  const data = admissionFields(policy, operation === 'remove' ? ['eligible'] : ['eligible', 'allowDuplicateInstance']);
+  if (typeof data.eligible !== 'boolean' || (operation !== 'remove' && typeof data.allowDuplicateInstance !== 'boolean')) {
+    throw new TypeError('Loadout policies require explicit booleans');
+  }
+  let afterInstanceId: string | null = null;
+  if (operation !== 'remove') {
+    // Reuse the accepted closed Skill Instance validator; no new identity authority.
+    const identity = cooldownIdentity(instance!);
+    if (identity.entityId !== snapshot.entityId) throw new TypeError('Loadout and Skill Instance Entity IDs must match');
+    afterInstanceId = identity.instanceId;
+  }
+  // Every supplied contract has validated before selecting an ordinary rejection.
+  const index = snapshot.slots.findIndex(slot => slot.slotId === targetId);
+  const beforeInstanceId = index === -1 ? null : snapshot.slots[index]!.instanceId;
+  const reason: SkillLoadoutMutationReason = index === -1 ? 'slot_not_found'
+    : !data.eligible ? 'slot_ineligible'
+    : operation === 'assign' && beforeInstanceId !== null ? 'slot_occupied'
+    : operation !== 'assign' && beforeInstanceId === null ? 'slot_empty'
+    : operation === 'replace' && beforeInstanceId === afterInstanceId ? 'same_instance'
+    : operation !== 'remove' && !data.allowDuplicateInstance
+      && snapshot.slots.some((slot, position) => position !== index && slot.instanceId === afterInstanceId)
+      ? 'instance_already_assigned' : 'none';
+  if (reason !== 'none') return Object.freeze({status: 'rejected', reason, operation, slotId: targetId,
+    beforeInstanceId, afterInstanceId: null, state: null});
+  const slots = Object.freeze(snapshot.slots.map((slot, position) => position === index
+    ? Object.freeze({slotId: targetId, instanceId: afterInstanceId}) : slot));
+  return Object.freeze({status: 'applied', reason: 'none', operation, slotId: targetId,
+    beforeInstanceId, afterInstanceId, state: Object.freeze({...snapshot, slots})});
+}
+
+/** Assign only to an empty slot; eligibility does not imply Skill admission. */
+export function assignSkillLoadoutSlot(state: SkillLoadoutState, slotId: string, instance: SkillInstanceState,
+  policy: SkillSlotAssignmentPolicy): SkillLoadoutMutationResult {
+  return mutateLoadoutSlot(state, slotId, 'assign', policy, instance);
+}
+
+/** Replace only an occupied slot; never destroys or changes the referenced Skill. */
+export function replaceSkillLoadoutSlot(state: SkillLoadoutState, slotId: string, instance: SkillInstanceState,
+  policy: SkillSlotAssignmentPolicy): SkillLoadoutMutationResult {
+  return mutateLoadoutSlot(state, slotId, 'replace', policy, instance);
+}
+
+/** Remove only the target reference, without cascade cleanup or activation effects. */
+export function removeSkillLoadoutSlot(state: SkillLoadoutState, slotId: string,
+  policy: SkillSlotRemovalPolicy): SkillLoadoutMutationResult {
+  return mutateLoadoutSlot(state, slotId, 'remove', policy);
+}

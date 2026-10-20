@@ -254,3 +254,16 @@ executor, global state, transaction engine, timers or automatic events/refunds.
 Registry skill->[entity] and four modules/nine source files unchanged. L3 policies
 and L4 authoritative commits/concurrency remain external. Root75 functions/125
 types; only Skill/root production files changed.
+
+## SK26–SK30 Loadout reference boundary (v0.5.5)
+
+Skill owns immutable ordered nullable instanceId references only. Factory reuses
+canonical createEntity; assign/replace reuse the accepted cooldownIdentity private
+Skill Instance validator. Shared closed-data/dense-array helpers retain their
+previous semantics. validateSkillLoadoutState is the sole Loadout structural
+boundary; all mutations use it before rejection. Transient local uniqueness Set
+is not a persistent registry. No Core work, admission/activation coupling, provider
+reads, events or cascade state changes. Entity/Progression/Combat/Foundation stay
+unmodified; skill->[entity], four modules/nine source files unchanged. L3 supplies
+layout/eligible/allowDuplicateInstance; L4 owns catalogs/active selection/storage.
+Root80 functions/133 types; no deep exports or duplicate ownership authority.

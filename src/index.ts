@@ -1,6 +1,8 @@
 export {createSkillDefinition, createSkillInstance, evaluateSkillActivationAdmission,
   evaluateSkillResourceCosts, applySkillResourceCosts, createSkillCooldownState,
-  evaluateSkillCooldownReady, startSkillCooldown, activateSkill, reportSkillExecutionOutcome} from './modules/skill/index.js';
+  evaluateSkillCooldownReady, startSkillCooldown, activateSkill, reportSkillExecutionOutcome,
+  createSkillLoadoutState, validateSkillLoadoutState, assignSkillLoadoutSlot,
+  replaceSkillLoadoutSlot, removeSkillLoadoutSlot} from './modules/skill/index.js';
 export type {SkillDefinition, SkillInstanceInitialState, SkillInstanceState,
   SkillRankAdmissionPolicy, SkillAdmissionPolicy, SkillAdmissionStatus,
   SkillAdmissionReason, SkillAdmissionResult, SkillResourceCost, SkillResourceCostBounds,
@@ -9,7 +11,10 @@ export type {SkillDefinition, SkillInstanceInitialState, SkillInstanceState,
   SkillCooldownConfiguration, SkillCooldownStatus, SkillCooldownReason,
   SkillCooldownAssessment, SkillCooldownStartResult, SkillExecutionIntent, SkillExecutionPreflight,
   SkillActivationInput, SkillActivationRejectionReason, SkillActivationResult, SkillExecutionRequest,
-  SkillExecutionStatus, SkillExecutionReport, SkillExecutionOutcome} from './modules/skill/index.js';
+  SkillExecutionStatus, SkillExecutionReport, SkillExecutionOutcome,
+  SkillLoadoutLayout, SkillLoadoutSlot, SkillLoadoutState, SkillSlotAssignmentPolicy,
+  SkillSlotRemovalPolicy, SkillLoadoutMutationOperation, SkillLoadoutMutationReason,
+  SkillLoadoutMutationResult} from './modules/skill/index.js';
 export {
   validateModuleDefinition, createModuleRegistry, registerModule,
   getModule, listModules, configureModules, isModuleEnabled,

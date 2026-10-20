@@ -339,3 +339,20 @@ full verify and diff audit must pass; push+PR exact delivered SHA requires8/8
 Windows/Ubuntu Node22/24 jobs. Final links attach to existing Draft PR #10 without
 changing tested SHA. Phase IN_PROGRESS, acceptance PENDING; v0.5.5 NOT_STARTED.
 macOS NOT_RUN; concrete game profiles NOT_EVALUATED.
+
+## v0.5.5 current Skill Slots & Loadout gates
+
+Actual installed0.5.5 root-only package exercises SK01–SK30 and unchanged
+GF01–GF16/EC01–EC18/PG01–PG19/CB01–CB30. Loadout fixture requires5 runtime tests,
+all5 markers and fail/cancel/skip/todo0; strict external NodeNext also compiles.
+Root80 functions/133 types, closed/private-free declarations, unchanged Core
+artifact integrity and version-only lock audit remain required. Existing source-
+required, spaced-Node and failure propagation controls stay active. All prior125
+runtime tests/oracles retained. Local required commands and full verify must PASS;
+exact delivered head requires push+PR Windows/Ubuntu Node22/24 matrix8/8 PASS.
+Final remote evidence attaches to Draft PR #10 without changing tested SHA.
+Phase IN_PROGRESS; acceptance PENDING; v0.5.6 NOT_STARTED. macOS NOT_RUN;
+concrete game profiles NOT_EVALUATED.
+
+Observed v0.5.5 total:130 installed runtime tests (125 retained +5 Loadout),
+2 outer tests; zero failures/skips.

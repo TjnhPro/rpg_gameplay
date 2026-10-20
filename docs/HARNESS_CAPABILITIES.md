@@ -191,3 +191,14 @@ remain:125 installed runtime contracts +2 outer gates. Private validator reuse,
 unchanged canonical owners, no direct Combat dependency/global runtime and
 candidate-only authority require source audit alongside tests. Exact-head
 Windows/Ubuntu Node22/24 push+PR gates remain required. Game profiles NOT_EVALUATED.
+
+## v0.5.5 Loadout evidence extension
+
+Five installed SK26–SK30 groups prove reference-only immutable state, policy/
+priority, full-input malformed handling, identity and ownership boundaries,
+literal replay and special identifiers. Strict external NodeNext covers5 added
+functions/8 types. Earlier125 runtime tests remain; Core integrity, root closure,
+private declaration and fail-closed verifier controls stay active. Source audit
+must confirm no protected owner/registry/dependency/CI change, no instance catalog
+or activation coupling. Exact-head push+PR matrix required; game profiles
+NOT_EVALUATED. Final counts and links are recorded in checkpoint delivery evidence.

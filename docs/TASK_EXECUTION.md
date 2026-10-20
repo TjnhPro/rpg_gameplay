@@ -136,3 +136,13 @@ minimal contract evidence, local gates and exact-head push+PR CI. No protected
 owner/Core/pin/dependency/registry changes. CHECKPOINT_COMPLETE requires all gates;
 phase IN_PROGRESS, Developer acceptance PENDING and PR remains DRAFT.
 No merge/tag/publish/Ready or v0.5.5 implementation authorization.
+
+## Active Skill Slots & Loadout checkpoint (v0.5.5)
+
+Approved submitted task tasks/active/v0.5.5-skill-slots-loadout.md authorizes
+SK26–SK30 on feat/v0.5-skill/existing Draft PR #10 from verified v0.5.4 checkpoint
+0b15fad46ce4666b5b7e4254b61fdb36ab444fcb. Five functions/eight types, references-only
+Loadout, canonical identity reuse, explicit L3 policies, immutable transitions,
+installed evidence, local gates and exact-head push+PR CI. No protected owner,
+Core/pin/dependency/registry/CI edits. Phase IN_PROGRESS, acceptance PENDING,
+PR remains DRAFT. No Ready/merge/tag/publish or v0.5.6 implementation authorized.
