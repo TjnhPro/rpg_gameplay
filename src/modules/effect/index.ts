@@ -243,7 +243,7 @@ function lifecycleArray(input: unknown): unknown[] {
   return result;
 }
 
-function lifecycleSnapshot(input: EffectLifecycleState): EffectLifecycleState {
+function lifecycleSnapshot(input: EffectLifecycleState, allowPendingExpiry = false): EffectLifecycleState {
   const data = effectFields(input, ['effectState', 'lifetimes', 'observedAtMs']);
   const effectState = validateEffectState(data.effectState as EffectState);
   const observedAtMs = lifecycleTime(data.observedAtMs);
@@ -260,7 +260,7 @@ function lifecycleSnapshot(input: EffectLifecycleState): EffectLifecycleState {
       return Object.freeze({effectInstanceId, mode: 'persistent', startedAtMs, expiresAtMs: null});
     }
     const expiresAtMs = lifecycleTime(fields.expiresAtMs);
-    if (fields.mode !== 'timed' || expiresAtMs <= startedAtMs || expiresAtMs <= observedAtMs) {
+    if (fields.mode !== 'timed' || expiresAtMs <= startedAtMs || (!allowPendingExpiry && expiresAtMs <= observedAtMs)) {
       throw new TypeError('Invalid active lifetime mode/expiry');
     }
     return Object.freeze({effectInstanceId, mode: 'timed', startedAtMs, expiresAtMs});
@@ -329,6 +329,11 @@ export function startEffectLifetime(lifecycle: EffectLifecycleState, application
   duration: EffectDuration, context: GameplayExecutionContext): EffectLifecycleStartResult {
   const current = lifecycleSnapshot(lifecycle), accepted = applicationSnapshot(application);
   const timing = durationSnapshot(duration), now = readExecutionTime(context);
+  return startLifetimeAtTime(current, accepted, timing, now);
+}
+
+function startLifetimeAtTime(current: EffectLifecycleState, accepted: EffectApplyResult,
+  timing: EffectDuration, now: number): EffectLifecycleStartResult {
   const expiresAtMs = timing.mode === 'persistent' ? null : now + timing.durationMs;
   if (expiresAtMs !== null && (!Number.isFinite(expiresAtMs) || expiresAtMs <= now)) {
     throw new TypeError('Unrepresentable Effect expiry');
@@ -388,4 +393,221 @@ export function removeEffectLifetime(lifecycle: EffectLifecycleState, effectInst
   const event: EffectLifecycleEvent = Object.freeze({type: 'removed', effectInstanceId: id, effectId: instance.effectId,
     targetEntityId: instance.targetEntityId, atMs: current.observedAtMs, reason});
   return Object.freeze({status: 'applied', reason: 'none', state, events: Object.freeze([event])});
+}
+
+export interface EffectStackGroupKey {
+  readonly targetEntityId: string;
+  readonly effectId: string;
+  readonly sourceKey: string;
+}
+/** Derived view, never an additional active instance collection or policy store. */
+export interface EffectStackGroupView {
+  readonly key: EffectStackGroupKey;
+  readonly source: EffectSourceReference;
+  readonly instanceIds: readonly string[];
+  readonly stackCount: number;
+}
+export type EffectStackPolicy =
+  | {readonly mode: 'refresh'; readonly maxStacks: 1}
+  | {readonly mode: 'stack'; readonly maxStacks: number};
+export type EffectStackRejectionReason = 'application_rejected' | 'stale_application'
+  | 'lifecycle_not_advanced' | 'time_regressed' | 'pending_expiry' | 'source_identity_conflict'
+  | 'group_policy_conflict' | 'max_stacks_reached' | 'duration_mode_conflict'
+  | 'persistent_already_present' | 'effect_not_found' | 'not_timed' | 'group_not_found' | 'insufficient_stacks';
+export type EffectStackAdmissionResult =
+  | {readonly status: 'admitted'; readonly reason: 'none'; readonly operation: 'add' | 'refresh'; readonly group: EffectStackGroupKey}
+  | {readonly status: 'rejected'; readonly reason: EffectStackRejectionReason; readonly operation: null; readonly group: EffectStackGroupKey};
+export interface EffectStackConsumeRequest {readonly group: EffectStackGroupKey; readonly count: number}
+export interface EffectStackConsumedEvent {
+  readonly type: 'stack-consumed';
+  readonly group: EffectStackGroupKey;
+  readonly consumedInstanceIds: readonly string[];
+  readonly remainingStacks: number;
+  readonly atMs: number;
+}
+export type EffectStackEvent = EffectLifecycleEvent | EffectStackConsumedEvent
+  | {readonly type: 'refreshed'; readonly effectInstanceId: string; readonly effectId: string;
+      readonly targetEntityId: string; readonly atMs: number; readonly expiresAtMs: number};
+export type EffectStackMutationResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly action: 'added' | 'refreshed' | 'consumed' | 'group_removed';
+      readonly state: EffectLifecycleState; readonly events: readonly EffectStackEvent[]}
+  | {readonly status: 'rejected'; readonly reason: EffectStackRejectionReason; readonly state: null; readonly events: readonly []};
+
+function stackKey(input: unknown): EffectStackGroupKey {
+  const fields = effectFields(input, ['targetEntityId', 'effectId', 'sourceKey']);
+  return Object.freeze({targetEntityId: effectId(fields.targetEntityId), effectId: effectId(fields.effectId),
+    sourceKey: effectId(fields.sourceKey)});
+}
+function instanceGroup(instance: EffectInstanceState): EffectStackGroupKey {
+  return Object.freeze({targetEntityId: instance.targetEntityId, effectId: instance.effectId, sourceKey: instance.source.sourceKey});
+}
+function sameGroup(left: EffectStackGroupKey, right: EffectStackGroupKey): boolean {
+  return left.targetEntityId === right.targetEntityId && left.effectId === right.effectId && left.sourceKey === right.sourceKey;
+}
+function stackGroups(current: EffectLifecycleState): readonly EffectStackGroupView[] {
+  const groups: {key: EffectStackGroupKey; source: EffectSourceReference; instanceIds: string[]}[] = [];
+  for (const instance of current.effectState.instances) {
+    const key = instanceGroup(instance), existing = groups.find(group => sameGroup(group.key, key));
+    if (existing) {
+      if (existing.source.kind !== instance.source.kind || existing.source.sourceId !== instance.source.sourceId) {
+        throw new TypeError('Conflicting origins in existing Effect stack group');
+      }
+      existing.instanceIds.push(instance.effectInstanceId);
+    } else groups.push({key, source: instance.source, instanceIds: [instance.effectInstanceId]});
+  }
+  return Object.freeze(groups.map(group => Object.freeze({...group, instanceIds: Object.freeze(group.instanceIds),
+    stackCount: group.instanceIds.length})));
+}
+function stackSnapshot(input: EffectLifecycleState): EffectLifecycleState {
+  // Stack boundaries report due membership as pending_expiry; EF11–EF15 remain strict.
+  const current = lifecycleSnapshot(input, true);
+  stackGroups(current);
+  return current;
+}
+function stackPositiveInteger(input: unknown): number {
+  if (typeof input !== 'number' || !Number.isSafeInteger(input) || input <= 0) throw new TypeError('Expected positive safe stack integer');
+  return input;
+}
+function stackPolicy(input: EffectStackPolicy): EffectStackPolicy {
+  const fields = effectFields(input, ['mode', 'maxStacks']);
+  const maxStacks = stackPositiveInteger(fields.maxStacks);
+  if (fields.mode === 'refresh' && maxStacks === 1) return Object.freeze({mode: 'refresh', maxStacks: 1});
+  if (fields.mode === 'stack') return Object.freeze({mode: 'stack', maxStacks});
+  throw new TypeError('Invalid Effect stack policy');
+}
+function stackExpiry(duration: EffectDuration, now: number): number | null {
+  if (duration.mode === 'persistent') return null;
+  const expiry = now + duration.durationMs;
+  if (!Number.isFinite(expiry) || expiry <= now) throw new TypeError('Unrepresentable Effect expiry');
+  return expiry;
+}
+function stackTimeRejection(current: EffectLifecycleState, now: number): EffectStackRejectionReason | null {
+  return now < current.observedAtMs ? 'time_regressed' : now > current.observedAtMs ? 'lifecycle_not_advanced'
+    : current.lifetimes.some(lifetime => lifetime.expiresAtMs !== null && lifetime.expiresAtMs <= now) ? 'pending_expiry' : null;
+}
+function stackRejected(reason: EffectStackRejectionReason): EffectStackMutationResult {
+  return Object.freeze({status: 'rejected', reason, state: null, events: Object.freeze([] as const)});
+}
+function resolveStackAdmission(lifecycle: EffectLifecycleState, application: EffectApplyResult,
+  duration: EffectDuration, policy: EffectStackPolicy, context: GameplayExecutionContext) {
+  const current = stackSnapshot(lifecycle), accepted = applicationSnapshot(application);
+  const timing = durationSnapshot(duration), selection = stackPolicy(policy), now = readExecutionTime(context);
+  const expiry = stackExpiry(timing, now), incoming = accepted.admission.request.instance, key = instanceGroup(incoming);
+  const group = stackGroups(current).find(view => sameGroup(view.key, key));
+  const anchorId = group?.instanceIds[0];
+  const anchor = current.lifetimes.find(lifetime => lifetime.effectInstanceId === anchorId);
+  const reason: EffectStackRejectionReason | null = accepted.status === 'rejected' ? 'application_rejected'
+    : accepted.state.entityId !== current.effectState.entityId
+      || accepted.state.instances.length !== current.effectState.instances.length + 1
+      || current.effectState.instances.some((instance, index) => !sameEffectInstance(instance, accepted.state.instances[index]!))
+      ? 'stale_application' : stackTimeRejection(current, now)
+        ?? (group && (group.source.kind !== incoming.source.kind || group.source.sourceId !== incoming.source.sourceId)
+          ? 'source_identity_conflict'
+          : group && selection.mode === 'refresh' && group.stackCount > 1 ? 'group_policy_conflict'
+            : anchor && selection.mode === 'refresh' && anchor.mode !== timing.mode ? 'duration_mode_conflict'
+              : anchor && selection.mode === 'refresh' && anchor.mode === 'persistent' ? 'persistent_already_present'
+                : group && selection.mode === 'stack' && group.stackCount >= selection.maxStacks ? 'max_stacks_reached' : null);
+  const admission: EffectStackAdmissionResult = reason === null
+    ? Object.freeze({status: 'admitted', reason: 'none', operation: group && selection.mode === 'refresh' ? 'refresh' : 'add', group: key})
+    : Object.freeze({status: 'rejected', reason, operation: null, group: key});
+  return {current, accepted, timing, now, expiry, anchorId, admission};
+}
+
+/** Exact D06 membership in first-appearance order; no time reads or retained lookup. */
+export function inspectEffectStackGroups(lifecycle: EffectLifecycleState): readonly EffectStackGroupView[] {
+  return stackGroups(stackSnapshot(lifecycle));
+}
+
+/** Assessment only; caller supplies current EF09 receipt and explicit L3 policy. */
+export function evaluateEffectStackAdmission(lifecycle: EffectLifecycleState, application: EffectApplyResult,
+  duration: EffectDuration, policy: EffectStackPolicy, context: GameplayExecutionContext): EffectStackAdmissionResult {
+  return resolveStackAdmission(lifecycle, application, duration, policy, context).admission;
+}
+
+function refreshStack(current: EffectLifecycleState, id: string, now: number, expiry: number): EffectStackMutationResult {
+  const index = current.effectState.instances.findIndex(instance => instance.effectInstanceId === id);
+  const instance = current.effectState.instances[index]!;
+  const lifetimes = current.lifetimes.map((lifetime, position) => position !== index ? lifetime
+    : Object.freeze({...lifetime, expiresAtMs: Math.max(lifetime.expiresAtMs!, expiry)}));
+  const state = lifecycleSnapshot({...current, lifetimes});
+  const event: EffectStackEvent = Object.freeze({type: 'refreshed', effectInstanceId: id, effectId: instance.effectId,
+    targetEntityId: instance.targetEntityId, atMs: now, expiresAtMs: state.lifetimes[index]!.expiresAtMs!});
+  return Object.freeze({status: 'applied', reason: 'none', action: 'refreshed', state, events: Object.freeze([event])});
+}
+
+/** One canonical admission path; additions delegate to EF12 without another caller clock read. */
+export function applyEffectStack(lifecycle: EffectLifecycleState, application: EffectApplyResult,
+  duration: EffectDuration, policy: EffectStackPolicy, context: GameplayExecutionContext): EffectStackMutationResult {
+  const resolved = resolveStackAdmission(lifecycle, application, duration, policy, context);
+  const {current, accepted, timing, now, expiry, anchorId, admission} = resolved;
+  if (admission.status === 'rejected') return stackRejected(admission.reason);
+  if (admission.operation === 'refresh') return refreshStack(current, anchorId!, now, expiry!);
+  // EF12 owns actual append and lifetime association. Captured time is already Foundation-validated.
+  const started = startLifetimeAtTime(current, accepted, timing, now);
+  if (started.status !== 'started') throw new TypeError('Admitted stack could not start');
+  return Object.freeze({status: 'applied', reason: 'none', action: 'added', state: started.state, events: started.events});
+}
+
+/** Renew one timed lifetime, retaining original instance, start and every other deadline. */
+export function refreshEffectStackLifetime(lifecycle: EffectLifecycleState, effectInstanceId: string,
+  duration: EffectDuration, context: GameplayExecutionContext): EffectStackMutationResult {
+  const current = stackSnapshot(lifecycle), id = effectId(effectInstanceId), timing = durationSnapshot(duration);
+  const now = readExecutionTime(context), expiry = stackExpiry(timing, now);
+  const timeReason = stackTimeRejection(current, now);
+  if (timeReason) return stackRejected(timeReason);
+  const lifetime = current.lifetimes.find(entry => entry.effectInstanceId === id);
+  if (!lifetime) return stackRejected('effect_not_found');
+  if (lifetime.mode !== 'timed' || timing.mode !== 'timed') return stackRejected('not_timed');
+  return refreshStack(current, id, now, expiry!);
+}
+
+function orderedStackIds(current: EffectLifecycleState, group: EffectStackGroupView): readonly string[] {
+  return current.lifetimes.filter(lifetime => group.instanceIds.includes(lifetime.effectInstanceId))
+    .sort((left, right) => (left.expiresAtMs === null ? (right.expiresAtMs === null ? 0 : 1)
+      : right.expiresAtMs === null ? -1 : left.expiresAtMs - right.expiresAtMs)
+      || (left.effectInstanceId < right.effectInstanceId ? -1 : left.effectInstanceId > right.effectInstanceId ? 1 : 0))
+    .map(lifetime => lifetime.effectInstanceId);
+}
+function withoutStackIds(current: EffectLifecycleState, ids: readonly string[]): EffectLifecycleState {
+  return lifecycleSnapshot({effectState: {entityId: current.effectState.entityId,
+    instances: current.effectState.instances.filter(instance => !ids.includes(instance.effectInstanceId))},
+    lifetimes: current.lifetimes.filter(lifetime => !ids.includes(lifetime.effectInstanceId)), observedAtMs: current.observedAtMs});
+}
+
+/** Exact-N atomic membership consumption at observed time; no fake removal reason or clock. */
+export function consumeEffectStacks(lifecycle: EffectLifecycleState, request: EffectStackConsumeRequest): EffectStackMutationResult {
+  const current = stackSnapshot(lifecycle), fields = effectFields(request, ['group', 'count']);
+  const key = stackKey(fields.group), count = stackPositiveInteger(fields.count);
+  const timeReason = stackTimeRejection(current, current.observedAtMs);
+  if (timeReason) return stackRejected(timeReason);
+  const group = stackGroups(current).find(view => sameGroup(view.key, key));
+  if (!group) return stackRejected('group_not_found');
+  if (count > group.stackCount) return stackRejected('insufficient_stacks');
+  const ids = Object.freeze(orderedStackIds(current, group).slice(0, count));
+  const state = withoutStackIds(current, ids);
+  const event: EffectStackConsumedEvent = Object.freeze({type: 'stack-consumed', group: key,
+    consumedInstanceIds: ids, remainingStacks: group.stackCount - count, atMs: current.observedAtMs});
+  return Object.freeze({status: 'applied', reason: 'none', action: 'consumed', state, events: Object.freeze([event])});
+}
+
+/** Coordinate the existing single-removal owner in deterministic order; no extra terminal semantics. */
+export function removeEffectStackGroup(lifecycle: EffectLifecycleState, group: EffectStackGroupKey,
+  reason: EffectRemovalReason): EffectStackMutationResult {
+  const current = stackSnapshot(lifecycle), key = stackKey(group);
+  if (!(['explicit', 'dispel', 'target_defeated', 'source_removed', 'session_cleanup'] as readonly unknown[]).includes(reason)) {
+    throw new TypeError('Invalid Effect removal reason');
+  }
+  const timeReason = stackTimeRejection(current, current.observedAtMs);
+  if (timeReason) return stackRejected(timeReason);
+  const found = stackGroups(current).find(view => sameGroup(view.key, key));
+  if (!found) return stackRejected('group_not_found');
+  let state = current;
+  const events: EffectLifecycleEvent[] = [];
+  for (const id of orderedStackIds(current, found)) {
+    const removed = removeEffectLifetime(state, id, reason);
+    if (removed.status !== 'applied') throw new TypeError('Group membership could not be removed');
+    state = removed.state;
+    events.push(...removed.events);
+  }
+  return Object.freeze({status: 'applied', reason: 'none', action: 'group_removed', state, events: Object.freeze(events)});
 }

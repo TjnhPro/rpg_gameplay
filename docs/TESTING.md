@@ -1,3 +1,17 @@
+## v0.6.3 stacking contract evidence
+
+Seven installed tests cover distinct contracts: exact derived grouping/source
+isolation; admission/baseline/capacity/priority; anchor-preserving nonshortening
+renewal/independent expiry/persistent rules; exact-N/group removal/order; explicit
+pending-expiry boundary; malformed closed records/getters/arithmetic/isolation;
+and two independent literal replays with implicit providers blocked. S01–S29 map
+to these observable assertions; S30 uses all prior consumers; S31 is the installed
+tarball and strict NodeNext gate. No historical fixtures or expected values change.
+Compiler evidence checks all nine types/six signatures, discriminants, readonly
+nesting and closed private/deep exports. Real installed JS fault injections prove
+overflow, partial consume and identity-replacement regressions cannot pass.
+No numerical modifier/periodic or gameplay-profile PASS is implied.
+
 ## v0.6.2 lifecycle contract evidence
 
 Seven installed runtime tests prove distinct EF11–EF15 invariants: empty/timed/

@@ -1,3 +1,105 @@
+## v0.6.3 Effect Stacking & Refresh (EF16–EF20)
+
+Six root functions in the same optional Effect owner; EF01–EF15 schemas/signatures
+and existing removal/event unions are unchanged.
+
+```ts
+export interface EffectStackGroupKey {
+  readonly targetEntityId: string;
+  readonly effectId: string;
+  readonly sourceKey: string;
+}
+/** Derived view, never an additional active instance collection or policy store. */
+export interface EffectStackGroupView {
+  readonly key: EffectStackGroupKey;
+  readonly source: EffectSourceReference;
+  readonly instanceIds: readonly string[];
+  readonly stackCount: number;
+}
+export type EffectStackPolicy =
+  | {readonly mode: 'refresh'; readonly maxStacks: 1}
+  | {readonly mode: 'stack'; readonly maxStacks: number};
+export type EffectStackRejectionReason = 'application_rejected' | 'stale_application'
+  | 'lifecycle_not_advanced' | 'time_regressed' | 'pending_expiry' | 'source_identity_conflict'
+  | 'group_policy_conflict' | 'max_stacks_reached' | 'duration_mode_conflict'
+  | 'persistent_already_present' | 'effect_not_found' | 'not_timed' | 'group_not_found' | 'insufficient_stacks';
+export type EffectStackAdmissionResult =
+  | {readonly status: 'admitted'; readonly reason: 'none'; readonly operation: 'add' | 'refresh'; readonly group: EffectStackGroupKey}
+  | {readonly status: 'rejected'; readonly reason: EffectStackRejectionReason; readonly operation: null; readonly group: EffectStackGroupKey};
+export interface EffectStackConsumeRequest {readonly group: EffectStackGroupKey; readonly count: number}
+export interface EffectStackConsumedEvent {
+  readonly type: 'stack-consumed';
+  readonly group: EffectStackGroupKey;
+  readonly consumedInstanceIds: readonly string[];
+  readonly remainingStacks: number;
+  readonly atMs: number;
+}
+export type EffectStackEvent = EffectLifecycleEvent | EffectStackConsumedEvent
+  | {readonly type: 'refreshed'; readonly effectInstanceId: string; readonly effectId: string;
+      readonly targetEntityId: string; readonly atMs: number; readonly expiresAtMs: number};
+export type EffectStackMutationResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly action: 'added' | 'refreshed' | 'consumed' | 'group_removed';
+      readonly state: EffectLifecycleState; readonly events: readonly EffectStackEvent[]}
+  | {readonly status: 'rejected'; readonly reason: EffectStackRejectionReason; readonly state: null; readonly events: readonly []};
+function inspectEffectStackGroups(lifecycle: EffectLifecycleState): readonly EffectStackGroupView[];
+function evaluateEffectStackAdmission(lifecycle: EffectLifecycleState, application: EffectApplyResult,
+  duration: EffectDuration, policy: EffectStackPolicy, context: GameplayExecutionContext): EffectStackAdmissionResult;
+function applyEffectStack(lifecycle: EffectLifecycleState, application: EffectApplyResult,
+  duration: EffectDuration, policy: EffectStackPolicy, context: GameplayExecutionContext): EffectStackMutationResult;
+function refreshEffectStackLifetime(lifecycle: EffectLifecycleState, effectInstanceId: string,
+  duration: EffectDuration, context: GameplayExecutionContext): EffectStackMutationResult;
+function consumeEffectStacks(lifecycle: EffectLifecycleState, request: EffectStackConsumeRequest): EffectStackMutationResult;
+function removeEffectStackGroup(lifecycle: EffectLifecycleState, group: EffectStackGroupKey,
+  reason: EffectRemovalReason): EffectStackMutationResult;
+```
+
+D06 key is exact targetEntityId/effectId/sourceKey. Groups preserve first appearance
+and instance input order; stackCount derives from IDs. Same-group existing origins
+must match source.kind/sourceId or throw TypeError. Incoming collisions reject
+source_identity_conflict. Opaque case-sensitive IDs and __proto__/constructor work.
+Views are detached and deeply frozen; no maxStacks/policy is persisted.
+
+Policies are closed own-data: refresh/maxStacks1 or stack/positive-safe-integer.
+Stack/1 rejects a second stack; refresh/1 renews an existing timed anchor. Both add
+to an empty group. Accepted EF09 candidate must match the entire ordered current
+EffectState plus exactly one incoming instance. It is a structural receipt, not
+an authenticated token; L4 owns freshness/concurrency/commit.
+
+All structure, groups, application, duration, policy, Foundation context and expiry
+arithmetic validate before ordinary rejection. Priority: application_rejected,
+stale_application, time_regressed, lifecycle_not_advanced, pending_expiry,
+source_identity_conflict, group_policy_conflict, duration_mode_conflict,
+persistent_already_present, max_stacks_reached. Assessment returns no candidate.
+Time-sensitive calls read the supplied clock exactly once. Addition shares EF12's
+canonical private implementation; no additional clock/provider is manufactured.
+
+Refresh preserves the original instance and startedAtMs; expiry becomes
+max(previousExpiry, now+duration). Overflow/precision loss throws TypeError before
+rejection. Automatic refresh with multiple anchors rejects group_policy_conflict;
+different duration modes reject duration_mode_conflict; existing persistent plus
+persistent rejects persistent_already_present. Explicit renewal requires a timed
+existing lifetime and timed duration (otherwise not_timed); missing ID rejects
+effect_not_found. Persistent stacks retain null expiry and stack within capacity.
+
+Mutation boundaries reject due membership at observedAtMs as pending_expiry,
+without hidden expiration. A caller must advance the last valid canonical snapshot
+through EF13 and rebuild its EF09 receipt; manually editing observedAtMs is not
+advancement. Earlier EF11–EF15 keep their strict active-snapshot validation.
+Inspection can describe due membership but never resolves it.
+
+Consume validates exact group/positive safe count and removes exactly N or rejects
+insufficient_stacks/group_not_found. Selection: earliest timed deadline, code-unit
+lexical ID ties, persistent last with lexical ties. Survivors preserve input order.
+One stack-consumed event carries selected IDs/remaining count; no fake removed
+reason. Whole-group removal coordinates EF14, returning one removed event per
+instance in the same deterministic selection order and caller-supplied reason.
+Consume/remove read no clock and operate at observedAtMs; all rejections return
+state:null/events:[]. No event publication, numerical changes or automatic commit.
+
+L3 owns policy; L4 must keep policy consistent. Detectable conflicts are rejected,
+but arbitrary historical policy changes cannot be inferred without a catalog.
+No modifier aggregation, restrictions, periodic intents, scheduler or second store.
+
 ## v0.6.2 Effect Duration & Lifecycle (EF11–EF15)
 
 Four new root functions; EF01–EF10 schemas/signatures remain unchanged:

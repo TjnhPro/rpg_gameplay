@@ -1,3 +1,14 @@
+## v0.6.3 installed stacking evidence
+
+Mandatory effect-stacking.mjs/.ts use actual installed0.6.3 tarball and pinned
+Core, native ESM/root exports and strict NodeNext/skipLibCheck:false. Seven
+behavior tests prove EF16–EF20; exact TAP counts and seven markers forbid silent
+skips. All six missing root exports fail the actual consumer. Three independent
+fault injections into installed Effect JS (overflow, partial consume, replacement
+identity) fail the same stacking consumer, then bytes are restored and checked.
+Previous artifact, fixture, compiler, version, Core and TAP controls remain required.
+See [report](reports/v0.6.3-effect-stacking-refresh.md); older sections are history.
+
 ## v0.6.2 installed lifecycle evidence
 
 Mandatory effect-lifecycle.mjs/.ts consumers use actual installed 0.6.2 tarball and

@@ -1,3 +1,14 @@
+## Current authorized checkpoint: v0.6.3
+
+The Developer-approved [stacking/refresh task](tasks/active/v0.6.3-effect-stacking-refresh.md)
+authorizes EF16–EF20 after v0.6.2 checkpoint98ec890 (eight exact-head CI jobs PASS).
+Continue feat/v0.6-effect / Draft PR #11 to main. Six functions/nine types, explicit
+L3 stack policy, canonical lifecycle candidates, installed evidence, docs and
+version0.6.3 only. Keep EF01–EF15, protected owners, Core pin and graph intact.
+Full local gates and exact-head push/PR Windows/Ubuntu Node22/24 are mandatory.
+Stop at CHECKPOINT_COMPLETE; phase IN_PROGRESS, acceptance PENDING. No new PR,
+Ready, merge, tag, publish or automatic v0.6.4. Earlier sections are historical.
+
 ## Current authorized checkpoint: v0.6.2
 
 The Developer-approved [duration/lifecycle task](tasks/active/v0.6.2-effect-duration-lifecycle.md)

@@ -1,3 +1,15 @@
+## v0.6.3 stack ownership
+
+The existing optional Effect owner still imports only public Entity/Foundation
+execution. Graph stays entity[]; progression/combat/skill/effect[entity]. Group
+views/counts derive from canonical instances, with no catalog, cache or second
+active store. EF12 and stack addition share one private start implementation;
+time-sensitive boundaries read the caller Foundation clock once. Group removal
+coordinates EF14; consumption removes membership without fake removal reasons.
+L3 owns stack/refresh/maxStacks; L4 owns consistency, sourceKey allocation,
+authority and commit. No numerical calculation, Legacy usage, scheduler,
+event publication or sibling dependency. Existing public schemas remain intact.
+
 ## v0.6.2 lifecycle ownership
 
 Same Effect owner imports public Entity and Foundation execution entrypoints only.

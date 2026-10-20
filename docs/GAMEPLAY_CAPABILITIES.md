@@ -1,3 +1,15 @@
+## Current checkpoint: v0.6.3 Effect Stacking & Refresh
+
+EF16–EF20 add exact target/effect/sourceKey group views, source identity collision
+checks, explicit stack/refresh policy and capacity, nonshortening single-anchor
+renewal, exact-N consumption and whole-group removal. Membership/counts derive
+from the existing canonical EffectState; lifetimes remain independent metadata.
+L3 supplies policy; L4 owns freshness, clock advance and commit. Historical policy
+changes cannot all be inferred without stored policy; L4 must preserve consistency.
+Buff/Debuff modifiers, restrictions and DoT/HoT remain OUT_OF_SCOPE. Phase
+IN_PROGRESS, Developer acceptance PENDING; v0.6.4 NOT_STARTED. Gameplay profile
+behavior NOT_EVALUATED. Earlier checkpoint sections are historical.
+
 ## Current checkpoint: v0.6.2 Effect Duration & Lifecycle
 
 EF11–EF15 implement timed/persistent duration, initialization from accepted EF09,

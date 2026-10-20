@@ -1,3 +1,8 @@
+export {inspectEffectStackGroups, evaluateEffectStackAdmission, applyEffectStack, refreshEffectStackLifetime,
+  consumeEffectStacks, removeEffectStackGroup} from './modules/effect/index.js';
+export type {EffectStackGroupKey, EffectStackGroupView, EffectStackPolicy, EffectStackAdmissionResult,
+  EffectStackRejectionReason, EffectStackConsumeRequest, EffectStackConsumedEvent, EffectStackEvent,
+  EffectStackMutationResult} from './modules/effect/index.js';
 export {createEffectLifecycleState, startEffectLifetime, advanceEffectLifecycle, removeEffectLifetime} from './modules/effect/index.js';
 export type {EffectDuration, EffectLifetimeState, EffectLifecycleState, EffectRemovalReason, EffectLifecycleEvent,
   EffectLifecycleStartResult, EffectLifecycleTransitionResult} from './modules/effect/index.js';
