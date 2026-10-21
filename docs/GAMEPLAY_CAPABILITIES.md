@@ -458,3 +458,12 @@ v0.8.2 and Ready/merge/tag/publish are NOT AUTHORIZED. See
 [task](tasks/active/v0.8.1-encounter-creation-activation.md) and
 [report](reports/v0.8.1-encounter-creation-activation.md). Prior sections describe
 their milestone boundary; EN06–EN10 are now authorized by this task only.
+
+## v0.8.2 EN11–EN15 implemented boundary
+
+Encounter now proposes explicit Join/Leave/change-side candidates and independent
+member-side reads. Dynamic participation is controlled by required L3 status lists
+and join Life/World policy. Canonical Entity collection remains the identity owner.
+Empty active rosters do not finish an engagement. EN16–EN40 remain deferred;
+v0.8.3 NOT_STARTED, phase IN_PROGRESS, Developer acceptance PENDING.
+This milestone proves framework contracts, not concrete gameplay profiles.

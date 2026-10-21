@@ -226,3 +226,125 @@ export function activateEncounter(state: EncounterState, entities: EntityCollect
   return Object.freeze({status: 'activated', reason: 'none', encounterId: input.current.encounterId,
     state: Object.freeze({...input.current, status: 'active'})});
 }
+
+export type EncounterMembershipOperation = 'join' | 'leave' | 'change_side';
+export type EncounterMembershipOpenStatus = 'prepared' | 'active';
+/** Explicit L3 eligibility rules. Empty operation lists deny that operation. */
+export interface EncounterMembershipPolicy {
+  readonly joinAllowedStatuses: readonly EncounterMembershipOpenStatus[];
+  readonly leaveAllowedStatuses: readonly EncounterMembershipOpenStatus[];
+  readonly changeSideAllowedStatuses: readonly EncounterMembershipOpenStatus[];
+  readonly allowedJoinLifeStatuses: readonly EntityLifeStatus[];
+  readonly requireWorldReadyOnJoin: boolean;
+}
+export type EncounterMembershipRequest =
+  | {readonly operation: 'join'; readonly encounterId: string; readonly entityId: string;
+      readonly sideId: string; readonly readiness: EncounterParticipantActivationFact}
+  | {readonly operation: 'leave'; readonly encounterId: string; readonly entityId: string}
+  | {readonly operation: 'change_side'; readonly encounterId: string; readonly entityId: string; readonly sideId: string};
+export type EncounterMembershipRejectionReason = 'encounter_not_open' | 'operation_not_allowed'
+  | 'side_not_found' | 'entity_not_found' | 'already_participating' | 'participant_not_found'
+  | 'already_on_side' | 'join_life_not_allowed' | 'join_world_not_ready';
+export type EncounterMembershipAdmissionResult =
+  | {readonly status: 'admitted'; readonly reason: 'none'; readonly operation: EncounterMembershipOperation;
+      readonly encounterId: string; readonly entityId: string; readonly previousSideId: string | null; readonly sideId: string | null}
+  | {readonly status: 'rejected'; readonly reason: EncounterMembershipRejectionReason; readonly operation: EncounterMembershipOperation;
+      readonly encounterId: string; readonly entityId: string; readonly previousSideId: string | null; readonly sideId: string | null};
+export type EncounterMembershipTransitionResult =
+  | {readonly status: 'applied'; readonly reason: 'none'; readonly operation: EncounterMembershipOperation;
+      readonly encounterId: string; readonly entityId: string; readonly previousSideId: string | null;
+      readonly sideId: string | null; readonly state: EncounterState}
+  | {readonly status: 'rejected'; readonly reason: EncounterMembershipRejectionReason; readonly operation: EncounterMembershipOperation;
+      readonly encounterId: string; readonly entityId: string; readonly previousSideId: string | null;
+      readonly sideId: string | null; readonly state: null};
+
+function membershipStatuses(input: unknown): readonly EncounterMembershipOpenStatus[] {
+  const statuses = array(input).map(value => {
+    if (value !== 'prepared' && value !== 'active') throw new TypeError('Encounter membership status must be prepared or active');
+    return value;
+  });
+  if (new Set(statuses).size !== statuses.length) throw new TypeError('Duplicate Encounter membership status');
+  return Object.freeze(statuses);
+}
+export function createEncounterMembershipPolicy(input: EncounterMembershipPolicy): EncounterMembershipPolicy {
+  const data = fields(input, ['joinAllowedStatuses', 'leaveAllowedStatuses', 'changeSideAllowedStatuses', 'allowedJoinLifeStatuses', 'requireWorldReadyOnJoin']);
+  const allowedJoinLifeStatuses = array(data.allowedJoinLifeStatuses).map(activationLifeStatus);
+  if (!allowedJoinLifeStatuses.length || new Set(allowedJoinLifeStatuses).size !== allowedJoinLifeStatuses.length) {
+    throw new TypeError('Encounter membership Life statuses must be unique and nonempty');
+  }
+  return Object.freeze({joinAllowedStatuses: membershipStatuses(data.joinAllowedStatuses),
+    leaveAllowedStatuses: membershipStatuses(data.leaveAllowedStatuses), changeSideAllowedStatuses: membershipStatuses(data.changeSideAllowedStatuses),
+    allowedJoinLifeStatuses: Object.freeze(allowedJoinLifeStatuses), requireWorldReadyOnJoin: activationBoolean(data.requireWorldReadyOnJoin)});
+}
+export function createEncounterMembershipRequest(input: EncounterMembershipRequest): EncounterMembershipRequest {
+  // Read the discriminant descriptor without invoking a getter, then capture the
+  // entire exact variant before consulting any domain gate.
+  const operation = typeof input === 'object' && input !== null
+    ? Object.getOwnPropertyDescriptor(input, 'operation') : undefined;
+  if (!operation || !('value' in operation) || !['join', 'leave', 'change_side'].includes(operation.value)) {
+    throw new TypeError('Unknown Encounter membership operation');
+  }
+  const kind = operation.value as EncounterMembershipOperation;
+  const data = fields(input, kind === 'join' ? ['operation', 'encounterId', 'entityId', 'sideId', 'readiness']
+    : kind === 'leave' ? ['operation', 'encounterId', 'entityId'] : ['operation', 'encounterId', 'entityId', 'sideId']);
+  const encounterId = id(data.encounterId), entityId = id(data.entityId);
+  if (kind === 'leave') return Object.freeze({operation: kind, encounterId, entityId});
+  const sideId = id(data.sideId);
+  if (kind === 'change_side') return Object.freeze({operation: kind, encounterId, entityId, sideId});
+  const readiness = createEncounterActivationObservation({encounterId, participants: [data.readiness as EncounterParticipantActivationFact]}).participants[0]!;
+  if (readiness.entityId !== entityId) throw new TypeError('Encounter membership readiness identity mismatch');
+  return Object.freeze({operation: kind, encounterId, entityId, sideId, readiness});
+}
+/** Structural side inspection only; no implicit membership or World lookup. */
+export function getEncounterParticipant(state: EncounterState, entities: EntityCollection, entityId: string): EncounterParticipant | null {
+  const current = validateEncounterState(state, entities), requestedId = id(entityId);
+  return current.participants.find(participant => participant.entityId === requestedId) ?? null;
+}
+function membershipInputs(state: EncounterState, entities: EntityCollection,
+  policy: EncounterMembershipPolicy, request: EncounterMembershipRequest) {
+  const current = validateEncounterState(state, entities);
+  const rules = createEncounterMembershipPolicy(policy), change = createEncounterMembershipRequest(request);
+  if (change.encounterId !== current.encounterId) throw new TypeError('Encounter membership request identity mismatch');
+  const member = current.participants.find(participant => participant.entityId === change.entityId);
+  return {current, rules, change, member, entities};
+}
+function membershipAdmission({current, rules, change, member, entities}: ReturnType<typeof membershipInputs>): EncounterMembershipAdmissionResult {
+  const diagnostics = {operation: change.operation, encounterId: change.encounterId, entityId: change.entityId,
+    previousSideId: member?.sideId ?? null, sideId: change.operation === 'leave' ? null : change.sideId};
+  const reject = (reason: EncounterMembershipRejectionReason): EncounterMembershipAdmissionResult => Object.freeze({status: 'rejected', reason, ...diagnostics});
+  if (current.status !== 'prepared' && current.status !== 'active') return reject('encounter_not_open');
+  const statuses = change.operation === 'join' ? rules.joinAllowedStatuses
+    : change.operation === 'leave' ? rules.leaveAllowedStatuses : rules.changeSideAllowedStatuses;
+  if (!statuses.includes(current.status)) return reject('operation_not_allowed');
+  if (change.operation === 'join') {
+    if (!current.sides.some(side => side.sideId === change.sideId)) return reject('side_not_found');
+    if (member) return reject('already_participating');
+    if (!getEntity(entities, change.entityId)) return reject('entity_not_found');
+    if (!rules.allowedJoinLifeStatuses.includes(change.readiness.life.status)) return reject('join_life_not_allowed');
+    if (rules.requireWorldReadyOnJoin && !change.readiness.worldReady) return reject('join_world_not_ready');
+  } else {
+    if (!member) return reject('participant_not_found');
+    if (change.operation === 'change_side') {
+      if (!current.sides.some(side => side.sideId === change.sideId)) return reject('side_not_found');
+      if (member.sideId === change.sideId) return reject('already_on_side');
+    }
+  }
+  return Object.freeze({status: 'admitted', reason: 'none', ...diagnostics});
+}
+/** Read-only assessment; caller observations are not authoritative permission. */
+export function evaluateEncounterMembershipAdmission(state: EncounterState, entities: EntityCollection,
+  policy: EncounterMembershipPolicy, request: EncounterMembershipRequest): EncounterMembershipAdmissionResult {
+  return membershipAdmission(membershipInputs(state, entities, policy, request));
+}
+/** Recompute from current inputs. L4 owns CAS, freshness and authoritative commit. */
+export function applyEncounterMembershipChange(state: EncounterState, entities: EntityCollection,
+  policy: EncounterMembershipPolicy, request: EncounterMembershipRequest): EncounterMembershipTransitionResult {
+  const input = membershipInputs(state, entities, policy, request), admission = membershipAdmission(input);
+  if (admission.status === 'rejected') return Object.freeze({...admission, state: null});
+  const {current, change} = input;
+  const participants = change.operation === 'join' ? [...current.participants, createEncounterParticipant({entityId: change.entityId, sideId: change.sideId})]
+    : change.operation === 'leave' ? current.participants.filter(participant => participant.entityId !== change.entityId)
+    : current.participants.map(participant => participant.entityId === change.entityId
+      ? createEncounterParticipant({entityId: change.entityId, sideId: change.sideId}) : participant);
+  return Object.freeze({...admission, status: 'applied', state: Object.freeze({...current, participants: Object.freeze(participants)})});
+}

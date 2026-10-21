@@ -2744,3 +2744,49 @@ No spawn, catalog resolution, Life mutation, execution, event, time/RNG provider
 commit, cross-encounter exclusivity or exactly-once guarantee. L3 owns rules;
 L4 owns current facts and authoritative CAS. Canonical Entity remains the owner.
 Runtime root inventory is exactly139 functions; no package subpaths are added.
+
+## EN11–EN15 Encounter membership (v0.8.2)
+
+Five additive root functions / seven types; prior EN01–EN10 unchanged:
+
+- createEncounterMembershipPolicy(input: EncounterMembershipPolicy): EncounterMembershipPolicy
+- createEncounterMembershipRequest(input: EncounterMembershipRequest): EncounterMembershipRequest
+- getEncounterParticipant(state: EncounterState, entities: EntityCollection, entityId: string): EncounterParticipant | null
+- evaluateEncounterMembershipAdmission(state: EncounterState, entities: EntityCollection, policy: EncounterMembershipPolicy, request: EncounterMembershipRequest): EncounterMembershipAdmissionResult
+- applyEncounterMembershipChange(state: EncounterState, entities: EntityCollection, policy: EncounterMembershipPolicy, request: EncounterMembershipRequest): EncounterMembershipTransitionResult
+
+EncounterMembershipOperation = join | leave | change_side. EncounterMembershipOpenStatus
+= prepared | active. EncounterMembershipPolicy requires joinAllowedStatuses,
+leaveAllowedStatuses, changeSideAllowedStatuses (ordered unique open statuses;
+empty denies), allowedJoinLifeStatuses (nonempty unique canonical alive/dead),
+requireWorldReadyOnJoin:boolean. No defaults/coercion.
+EncounterMembershipRequest is a closed readonly union: join has operation,
+encounterId, entityId, sideId, readiness:EncounterParticipantActivationFact;
+leave has only operation, encounterId, entityId; change_side adds only sideId.
+Readiness and nested Life IDs must match entityId; request binds state.encounterId.
+Complete state/current collection, policy and request validate before domain rejection,
+including terminal inputs. Structural/correlation errors throw TypeError.
+
+EncounterMembershipRejectionReason is encounter_not_open | operation_not_allowed |
+side_not_found | entity_not_found | already_participating | participant_not_found |
+already_on_side | join_life_not_allowed | join_world_not_ready.
+Join priority: open → operation → declared destination → duplicate → canonical new
+Entity → Life → World. Leave: open → operation → existing member. Transfer:
+open → operation → existing member → declared destination → different side.
+
+EncounterMembershipAdmissionResult contains exactly status(admitted/rejected),
+reason(none/rejection), operation, encounterId, entityId, previousSideId, sideId.
+previousSideId is current member's side or null, including rejection. sideId is
+requested join/transfer destination (even nonexistent) or null for leave.
+EncounterMembershipTransitionResult carries the same diagnostics and state:
+applied/none has EncounterState; rejected has null. The transition recomputes all
+inputs and accepts no admission token. Root runtime inventory is exactly144 names.
+
+Join appends; leave removes only the member; transfer replaces sideId in place.
+Every snapshot/read result is deeply frozen and detached; caller data stays mutable.
+Identity, definition, status and declared side universe are preserved. Last-member
+leave retains empty active/prepared state; no victory, cleanup or implicit activation.
+No Life/Resource/Combat/AI mutation. Advisory facts and same-input replay do not prove
+freshness, authorization, cross-Encounter exclusivity or exactly-once commit.
+L4 must check current Entity/World/Encounter authority and commit atomically.
+See the v0.8.2 task for exact unions and literal output oracle.

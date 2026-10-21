@@ -657,3 +657,16 @@ suite and npm run verify are required. Push and pull_request each require
 Windows/Ubuntu × Node22/24 at the delivered SHA, full logs/steps, Core pin,
 package provenance, foundation/activation/negative markers and VERIFY_PASS.
 See [checkpoint report](reports/v0.8.1-encounter-creation-activation.md).
+
+## v0.8.2 membership gates
+
+Run core:prepare, npm ci --ignore-scripts, harness:check, harness:selftest, build,
+typecheck, test:functional, npm run verify and git diff --check. Installed membership
+runtime14/14, external strict NodeNext, EN-M01–M55 and EN-N01–N23 are required alongside
+every historical gate. Inspect actual TAP counts, zero failures/skips and package
+hashes; labels alone do not prove assertions. Mutated bytes restore in finally and
+the installed consumer reruns clean after each fault. Source outside approved files
+and historical bodies remain unchanged. CHECKPOINT_COMPLETE requires exact delivered
+SHA push4/4 and PR4/4 on Windows/Ubuntu Node22/24 with full logs/provenance audited.
+The pre-push report records CI_PENDING; a SHA-bound PR supplement records final CI
+without another commit. Developer acceptance PENDING; no merge/tag/publish.

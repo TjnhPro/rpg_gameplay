@@ -26,7 +26,13 @@ function assertActivationRegistration(receipt) {
   assert.equal(receipt.typechecked, true, 'mandatory external activation strict NodeNext');
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40 + EN01–EN10, ESM root, closed exports, strict declarations and real Kernel', () => {
+function assertMembershipRegistration(receipt) {
+  assert.ok(receipt, 'mandatory installed membership consumer registration');
+  assertTapEvidence(receipt.runtime, 14, Array.from({length:53}, (_, i) => 'ENCOUNTER_M' + String(i + 1).padStart(2, '0') + '_PASS'));
+  assert.equal(receipt.typechecked, true, 'mandatory external membership strict NodeNext');
+}
+
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40 + EN01–EN15, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -53,7 +59,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     fs.writeFileSync(path.join(temp, 'package.json'), JSON.stringify({name: 'foundation-consumer', private: true, type: 'module'}));
     exec([cli, 'install', '--ignore-scripts', '--no-audit', '--no-fund', path.join(temp, packed.filename), coreArtifact], temp);
     const installed = path.join(temp, 'node_modules/@rpg/gameplay');
-    let activationReceipt;
+    let activationReceipt, membershipReceipt;
     const expectedPackedFiles = packed.files.filter(file => file.path.startsWith('dist/'))
       .map(file => [file.path, fs.readFileSync(path.join(root, file.path))]);
     const assertPackedFiles = () => {
@@ -74,7 +80,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.8.1');
+    assertVersion(packageJson.version, '0.8.2');
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
@@ -92,7 +98,7 @@ assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModu
  'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId', 'createEntity',
  'createEntityCollection', 'addEntity', 'getEntity', 'hasEntity', 'listEntities', 'removeEntity', 'replaceEntity',
  'createEntityAttributeState', 'getEntityBaseAttributes', 'setEntityBaseAttribute', 'calculateEntityStats',
- 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming', 'createEncounterDefinitionReference', 'createEncounterSide', 'createEncounterParticipant', 'createEncounterState', 'validateEncounterState', 'createEncounterActivationPolicy', 'createEncounterActivationObservation', 'evaluateEncounterActivationAdmission', 'activateEncounter'].sort());
+ 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming', 'createEncounterDefinitionReference', 'createEncounterSide', 'createEncounterParticipant', 'createEncounterState', 'validateEncounterState', 'createEncounterActivationPolicy', 'createEncounterActivationObservation', 'evaluateEncounterActivationAdmission', 'activateEncounter', 'createEncounterMembershipPolicy', 'createEncounterMembershipRequest', 'getEncounterParticipant', 'evaluateEncounterMembershipAdmission', 'applyEncounterMembershipChange'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
@@ -1130,6 +1136,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     // Only exact Developer-approved additive deltas may be removed before hashing.
     const approvedAdditions=[["src/index.ts","\nexport {createEncounterDefinitionReference, createEncounterSide, createEncounterParticipant,\n  createEncounterState, validateEncounterState} from './modules/encounter/index.js';\nexport type {EncounterDefinitionReference, EncounterSide, EncounterParticipant, EncounterStatus,\n  EncounterInitialState, EncounterState} from './modules/encounter/index.js';\n",""],["harness/modules.json",",\n    {\"id\": \"encounter\", \"optional\": true, \"dependencies\": [\"entity\"]}",""],["docs/DECISIONS.md","\n## Encounter phase decisions — v0.8.x (Developer approved, 2026-10-21)\n\n| ID | Approved A | EN01–EN05 implementation boundary |\n| --- | --- | --- |\n| ENC-D01 | One encounter = one engagement | Opaque encounterId; no zone/dungeon/global runtime |\n| ENC-D02 | Entity dependency only | Optional encounter -> [entity]; canonical getEntity/listEntities |\n| ENC-D03 | Generic side IDs | Exact nonblank sideId; no kind/relation inference |\n| ENC-D04 | Future explicit dynamic participation | Initial structural roster only; no Join/Leave |\n| ENC-D05 | Future explicit completion evaluation | No auto-win, objective evaluator or outcome |\n| ENC-D06 | Closed terminal; new ID for rematch | Status vocabulary only; no transition/reopen implementation |\n| ENC-D07 | Future side-based outcome | No winner/reward fields in five-field state |\n\nAll seven choices are approved; later behavior still requires its own milestone.\nStructural validation of any recognized status proves no transition provenance.\nL3 owns content/policy; L4 owns World storage, authoritative commit, spawning,\ncross-encounter exclusivity and orchestration. No new owner or engine.\nSee [approved task](tasks/active/v0.8.0-encounter-foundation.md).\n",""]];
     approvedAdditions.push(["src/index.ts","\nexport {createEncounterActivationPolicy, createEncounterActivationObservation,\n  evaluateEncounterActivationAdmission, activateEncounter} from './modules/encounter/index.js';\nexport type {EncounterParticipantActivationFact, EncounterActivationObservation, EncounterActivationPolicy,\n  EncounterActivationRejectionReason, EncounterActivationAdmissionResult, EncounterActivationTransitionResult} from './modules/encounter/index.js';\n",""]);
+    approvedAdditions.push(["src/index.ts","\nexport {createEncounterMembershipPolicy, createEncounterMembershipRequest, getEncounterParticipant,\n  evaluateEncounterMembershipAdmission, applyEncounterMembershipChange} from './modules/encounter/index.js';\nexport type {EncounterMembershipOperation, EncounterMembershipOpenStatus, EncounterMembershipPolicy,\n  EncounterMembershipRequest, EncounterMembershipRejectionReason, EncounterMembershipAdmissionResult,\n  EncounterMembershipTransitionResult} from './modules/encounter/index.js';\n",""]);
     const historical=entries=>entries.map(([name,text])=>{
       for(const addition of approvedAdditions.filter(([file])=>file===name)){
         assert.equal(text.split(addition[1]).length,2,'exact approved additive scope '+name);
@@ -1191,7 +1198,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     try{const text=rootBytes.toString('utf8');assert.ok(text.includes('createEncounterState,'));fs.writeFileSync(rootFile,text.replace('createEncounterState,','createEncounterState as missingEncounterState,'));red('N02','prepared:',/createEncounterState is not a function/);}
     finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.0.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.1');`,/installed package version/);}
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.0.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.2');`,/installed package version/);}
     finally{fs.writeFileSync(manifestFile,manifestBytes);}done('N03');
     const coreManifest=path.join(temp,'node_modules/@rpg/core/package.json'),coreBytes=fs.readFileSync(coreManifest);
     try{const manifest=JSON.parse(coreBytes);manifest.version='0.0.0';fs.writeFileSync(coreManifest,JSON.stringify(manifest));guardRed('N04_version',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(coreManifest)})).version,${JSON.stringify(pin.version)});`,/installed package version/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
@@ -1279,7 +1286,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     try{const text=rootBytes.toString('utf8');assert.match(text,/\bactivateEncounter\b/);fs.writeFileSync(rootFile,text.replace(/\bactivateEncounter\b/,'activateEncounter as deliberatelyMissingActivation'));red('N02',null,/does not provide an export named 'activateEncounter'/);}
     finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.1');`,/installed package version/);}
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.2');`,/installed package version/);}
     finally{fs.writeFileSync(manifestFile,manifestBytes);}done('N03');
     const pinFile=path.join(temp,'activation-core-pin.json');fs.writeFileSync(pinFile,fs.readFileSync(path.join(root,'harness/core-pin.json')));const pinBytes=fs.readFileSync(pinFile);
     try{const changed=JSON.parse(pinBytes);changed.revision='0000000000000000000000000000000000000000';fs.writeFileSync(pinFile,JSON.stringify(changed));guardRed('N04_revision',`assert.equal(JSON.parse(fs.readFileSync(${JSON.stringify(pinFile)})).revision,'04b7239f998c3c688a0dfa3202f11811a9acd775','activation pinned Core revision');`,/activation pinned Core revision/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
@@ -1331,6 +1338,107 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     }
 
     assertActivationRegistration(activationReceipt);
+
+    { // EN11-EN15: installed membership contracts; each injected fault runs in isolation.
+    for(const ext of ['mjs','ts'])copyRequiredConsumer(path.join(root,'tests/consumers/encounter-membership.'+ext),path.join(temp,'encounter-membership.'+ext));
+    const file=path.join(temp,'encounter-membership.mjs'),bytes=fs.readFileSync(file),source=bytes.toString('utf8');
+    const markers=Array.from({length:53},(_,i)=>'ENCOUNTER_M'+String(i+1).padStart(2,'0')+'_PASS');
+    const run=()=>exec(['--test','--test-reporter=tap','encounter-membership.mjs'],temp);
+    const validate=output=>assertTapEvidence(output,14,markers);
+    const clean=()=>{validate(run());assertPackedFiles();};
+    const evidence=run();validate(evidence);for(const marker of markers)console.log(evidence.split(/\r?\n/).find(line=>line.includes(marker)));
+    console.log(evidence.split(/\r?\n/).find(line=>line.includes('ENCOUNTER_MEMBERSHIP_REPLAY_SHA256')));
+    console.log('INSTALLED_ENCOUNTER_MEMBERSHIP_PASS EN11-EN15; consumer_tests=14 skipped=0; candidate_only');
+    function red(id,pattern,diagnostic){
+      const env={...process.env};delete env.NODE_TEST_CONTEXT;
+      const args=['--test','--test-reporter=tap',...(pattern?['--test-name-pattern=Membership '+pattern]:[]),'encounter-membership.mjs'];
+      const result=spawnSync(process.execPath,args,{cwd:temp,shell:false,encoding:'utf8',env});
+      assert.ifError(result.error);assert.equal(result.signal,null);assert.equal(result.status,1,result.stdout+result.stderr);
+      assert.match(result.stdout+result.stderr,diagnostic,id+' intended assertion');
+      console.log('ENCOUNTER_MEMBERSHIP_NEGATIVE_RED '+id+' exit=1 intended='+diagnostic.source);
+    }
+    function done(id){assertPackedFiles();clean();console.log('ENCOUNTER_MEMBERSHIP_NEGATIVE_PASS '+id+' restored_bytes; clean14/14');}
+    const guardFile=path.join(temp,'encounter-membership-negative-guard.mjs');
+    const guardPrelude=`import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';
+      const installed=${JSON.stringify(installed)};
+      const expectedPackedFiles=${JSON.stringify(expectedPackedFiles.map(([name,bytes])=>[name,bytes.toString('base64')]))}.map(([name,bytes])=>[name,Buffer.from(bytes,'base64')]);
+      const assertVersion=${assertVersion.toString()};const assertCoreIntegrity=${assertCoreIntegrity.toString()};
+      const assertTapEvidence=${assertTapEvidence.toString()};const assertPackedFiles=${assertPackedFiles.toString()};
+      const copyRequiredConsumer=${copyRequiredConsumer.toString()};const assertMembershipRegistration=${assertMembershipRegistration.toString()};`;
+    function guardRed(id,code,diagnostic){
+      fs.writeFileSync(guardFile,guardPrelude+code);
+      const result=spawnSync(process.execPath,[guardFile],{cwd:temp,shell:false,encoding:'utf8'});
+      assert.ifError(result.error);assert.equal(result.signal,null);assert.equal(result.status,1,result.stdout+result.stderr);
+      assert.match(result.stdout+result.stderr,diagnostic,id+' intended central guard');
+      console.log('ENCOUNTER_MEMBERSHIP_NEGATIVE_RED '+id+' exit=1 intended='+diagnostic.source);
+    }
+    try{fs.renameSync(file,file+'.saved');guardRed('N01_missing',`copyRequiredConsumer(${JSON.stringify(file)},${JSON.stringify(file+'.copy')});`,/ENOENT/);}
+    finally{if(fs.existsSync(file+'.saved'))fs.renameSync(file+'.saved',file);}assert.deepEqual(fs.readFileSync(file),bytes);done('N01_missing');
+    guardRed('N01_registration','assertMembershipRegistration(undefined);',/mandatory installed membership consumer registration/);done('N01_registration');
+    const rootFile=path.join(installed,'dist/index.js'),rootBytes=fs.readFileSync(rootFile);
+    try{const text=rootBytes.toString('utf8');assert.match(text,/\bapplyEncounterMembershipChange\b/);fs.writeFileSync(rootFile,text.replace(/\bapplyEncounterMembershipChange\b/,'applyEncounterMembershipChange as deliberatelyMissingMembership'));red('N02',null,/does not provide an export named 'applyEncounterMembershipChange'/);}
+    finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
+    const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.1';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.2');`,/installed package version/);}
+    finally{fs.writeFileSync(manifestFile,manifestBytes);}assert.deepEqual(fs.readFileSync(manifestFile),manifestBytes);done('N03');
+    const pinFile=path.join(temp,'membership-core-pin.json');fs.writeFileSync(pinFile,fs.readFileSync(path.join(root,'harness/core-pin.json')));const pinBytes=fs.readFileSync(pinFile);
+    try{const changed=JSON.parse(pinBytes);changed.revision='0000000000000000000000000000000000000000';fs.writeFileSync(pinFile,JSON.stringify(changed));guardRed('N04_revision',`assert.equal(JSON.parse(fs.readFileSync(${JSON.stringify(pinFile)})).revision,'04b7239f998c3c688a0dfa3202f11811a9acd775','membership pinned Core revision');`,/membership pinned Core revision/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
+    finally{fs.writeFileSync(pinFile,pinBytes);}assert.deepEqual(fs.readFileSync(pinFile),pinBytes);done('N04');
+    const registryFile=path.join(temp,'encounter-modules.json'),registryBytes=fs.readFileSync(registryFile);
+    try{const registry=JSON.parse(registryBytes);registry.modules.find(d=>d.id==='encounter').dependencies=[];fs.writeFileSync(registryFile,JSON.stringify(registry));red('N05','providers:',/membership exact Entity dependency/);}
+    finally{fs.writeFileSync(registryFile,registryBytes);}assert.deepEqual(fs.readFileSync(registryFile),registryBytes);done('N05');
+    const runtimeFile=path.join(installed,'dist/modules/encounter/index.js'),runtimeBytes=fs.readFileSync(runtimeFile),runtime=runtimeBytes.toString('utf8');
+    const faults=[
+      ['N06','duplicate:',"if (member)",'if (false)',/duplicate join exact diagnostic/],
+      ['N07','canonical:',"if (!getEntity(entities, change.entityId))",'if (false)',/missing canonical join exact diagnostic/],
+      ['N08','eligibility:',"if (!rules.allowedJoinLifeStatuses.includes(change.readiness.life.status))",'if (false)',/join Life exact diagnostic/],
+      ['N09','eligibility:',"if (rules.requireWorldReadyOnJoin && !change.readiness.worldReady)",'if (false)',/join World exact diagnostic/],
+      ['N10','operation:',"if (!statuses.includes(current.status))",'if (false)',/operation policy exact diagnostic/],
+      ['N11','terminal:',"if (current.status !== 'prepared' && current.status !== 'active')",'if (false)',/terminal membership exact diagnostic/],
+      ['N12','leave:',"current.participants.filter(participant => participant.entityId !== change.entityId)",'current.participants.filter(participant => participant.entityId === change.entityId)',/leave exact ordered roster/],
+      ['N13','leave:',"state: Object.freeze({ ...current, participants: Object.freeze(participants) })","state: Object.freeze({ ...current, status: participants.length ? current.status : 'closed', participants: Object.freeze(participants) })",/last leave preserves empty active/],
+      ['N14','transfer:',"current.participants.map(participant => participant.entityId === change.entityId","[...current.participants].reverse().map(participant => participant.entityId === change.entityId",/transfer exact in-place roster/],
+      ['N15_missing_side','destination:',"if (!current.sides.some(side => side.sideId === change.sideId))","if (change.operation === 'join' && !current.sides.some(side => side.sideId === change.sideId))",/transfer missing side exact diagnostic/],
+      ['N15_same_side','destination:',"if (member.sideId === change.sideId)",'if (false)',/transfer same side exact diagnostic/],
+      ['N16','missing:',"return reject('participant_not_found');","return Object.freeze({status:'admitted',reason:'none',...diagnostics});",/missing member exact diagnostic/],
+      ['N17_encounter','binding:',"if (change.encounterId !== current.encounterId)",'if (false)',/membership Encounter binding must throw/],
+      ['N17_readiness','binding:',"if (readiness.entityId !== entityId)",'if (false)',/membership readiness binding must throw/],
+      ['N17_life','binding:',"if (id(life.entityId) !== entityId)",'if (false)',/membership Life binding must throw/],
+      ['N18_token','candidate:',"export function applyEncounterMembershipChange(state, entities, policy, request) {","export function applyEncounterMembershipChange(state, entities, policy, request) { if(request.status === 'admitted') return Object.freeze({...request,status:'applied',state});",/membership forged admission request must throw/],
+      ['N18_fresh','candidate:',"admission = membershipAdmission(input);","admission = membershipAdmission({...input,change:input.change.operation==='join'?{...input.change,readiness:{...input.change.readiness,worldReady:true}}:input.change});",/membership transition rechecks fresh inputs/],
+      ['N19','candidate:',"state: Object.freeze({ ...current, participants: Object.freeze(participants) })","state: Object.freeze({ ...current, participants })",/membership deep freeze/],
+      ['N19_caller_array','candidate:',"joinAllowedStatuses: membershipStatuses(data.joinAllowedStatuses)","joinAllowedStatuses: data.joinAllowedStatuses",/membership deep freeze/],
+    ];
+    for(const [id,pattern,expected,faulty,diagnostic] of faults){
+      assert.ok(runtime.includes(expected),id+' required installed mutation');
+      try{fs.writeFileSync(runtimeFile,runtime.replaceAll(expected,faulty));red(id,pattern,diagnostic);}
+      finally{fs.writeFileSync(runtimeFile,runtimeBytes);}assert.deepEqual(fs.readFileSync(runtimeFile),runtimeBytes);done(id);
+    }
+    const config=path.join(temp,'membership-tsconfig.json');fs.writeFileSync(config,JSON.stringify({compilerOptions:{target:'ES2022',lib:['ES2022'],module:'NodeNext',moduleResolution:'NodeNext',strict:true,noEmit:true,skipLibCheck:false,types:[]},files:['encounter-membership.ts']}));
+    const compile=()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','membership-tsconfig.json'],temp);compile();
+    const declarationFile=path.join(installed,'dist/modules/encounter/index.d.ts'),declarationBytes=fs.readFileSync(declarationFile);
+    try{const text=declarationBytes.toString('utf8');assert.ok(text.includes('readonly requireWorldReadyOnJoin: boolean'));fs.writeFileSync(declarationFile,text.replace('readonly requireWorldReadyOnJoin: boolean','requireWorldReadyOnJoin: boolean'));assert.throws(compile,/TS2578/);}
+    finally{fs.writeFileSync(declarationFile,declarationBytes);}compile();console.log('ENCOUNTER_MEMBERSHIP_NEGATIVE_RED N20 real_tsc_exit=1 TS2578_readonly_assertion');done('N20');
+    const rootDeclaration=()=>{const manifest=JSON.parse(fs.readFileSync(manifestFile));const name=manifest.exports['.'].types;
+      assert.equal(name,'./dist/index.d.ts','Membership canonical root declaration path');assert.ok(packed.files.some(f=>'./'+f.path===name));assert.ok(fs.statSync(path.join(installed,name)).isFile());};
+    rootDeclaration();try{const manifest=JSON.parse(manifestBytes);manifest.exports['.'].types='./dist/missing.d.ts';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N21',`const name=JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).exports['.'].types;assert.equal(name,'./dist/index.d.ts','Membership canonical root declaration path');assert.ok(${JSON.stringify(packed.files.map(f=>'./'+f.path))}.includes(name));assert.ok(fs.statSync(path.join(installed,name)).isFile());`,/Membership canonical root declaration path/);}
+    finally{fs.writeFileSync(manifestFile,manifestBytes);}assert.deepEqual(fs.readFileSync(manifestFile),manifestBytes);rootDeclaration();done('N21');
+    for(const [kind,changed] of [['zero_assertions',source.replace('assertions++;','')],['skipped',source.replace("test('Membership '","test.skip('Membership '")]]){
+      assert.notEqual(changed,source);
+      try{fs.writeFileSync(file,changed);if(kind==='skipped'){
+        const env={...process.env};delete env.NODE_TEST_CONTEXT;const result=spawnSync(process.execPath,['--test','--test-reporter=tap','encounter-membership.mjs'],{cwd:temp,shell:false,encoding:'utf8',env});assert.ifError(result.error);assert.equal(result.status,0);guardRed('N22_skipped',`assertTapEvidence(${JSON.stringify(result.stdout)},14);`,/0 !== 14/);
+      }else red('N22_zero_assertions','join:',/Membership requires actual assertions/);}
+      finally{fs.writeFileSync(file,bytes);}assert.deepEqual(fs.readFileSync(file),bytes);done('N22_'+kind);
+    }
+    try{fs.appendFileSync(runtimeFile,'\n// deliberate membership drift\n');guardRed('N23_dist','assertPackedFiles();',/installed artifact content/);}
+    finally{fs.writeFileSync(runtimeFile,runtimeBytes);}done('N23_dist');
+    guardRed('N23_marker',`assertTapEvidence(${JSON.stringify(evidence.replace('ENCOUNTER_M01_PASS','removed_marker'))},14,${JSON.stringify(markers)});`,/required evidence ENCOUNTER_M01_PASS/);done('N23_marker');
+    membershipReceipt={runtime:evidence,typechecked:true};
+    console.log('ENCOUNTER_M54_PASS physical_tarball; root_named_exports; exact_types_pack_exists; strict_NodeNext');
+    console.log('ENCOUNTER_M55_PASS mandatory_central_runner; historical_regressions; CI_runs_same_verify');
+    console.log('INSTALLED_ENCOUNTER_MEMBERSHIP_NEGATIVE_PASS N01-N23; targeted_assertions; restored_clean; strict_NodeNext');
+    }
+    assertMembershipRegistration(membershipReceipt);
 
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);

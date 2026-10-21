@@ -1,3 +1,17 @@
+# RPG Gameplay — v0.8.2 Encounter Participation & Membership
+
+EN11–EN15 adds explicit Join, Leave, side lookup and change-side candidates.
+L3 controls operation/status and join Life/World eligibility. L2 validates current
+canonical Entity references and proposes immutable rosters; L4 owns authoritative
+commit, freshness, World and cross-Encounter reservations. State remains five fields;
+last-member leave preserves active, with no automatic completion or victory.
+
+Phase **IN_PROGRESS**, Developer acceptance **PENDING**. Existing Draft PR #13;
+v0.8.3 **NOT_STARTED**. No Ready/merge/tag/publish.
+[Task](docs/tasks/active/v0.8.2-encounter-participation-membership.md) /
+[Report](docs/reports/v0.8.2-encounter-participation-membership.md).
+Concrete gameplay profiles **NOT_EVALUATED**. Earlier sections are checkpoint history.
+
 # RPG Gameplay — v0.8.1 Encounter Creation & Activation
 
 EN01–EN10: immutable structural encounters plus explicit activation admission

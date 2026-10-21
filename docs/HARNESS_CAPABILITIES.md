@@ -460,3 +460,14 @@ suite and npm run verify are required. Push and pull_request each require
 Windows/Ubuntu × Node22/24 at the delivered SHA, full logs/steps, Core pin,
 package provenance, foundation/activation/negative markers and VERIFY_PASS.
 See [checkpoint report](reports/v0.8.1-encounter-creation-activation.md).
+
+## v0.8.2 installed membership evidence
+
+Mandatory encounter-membership.mjs/.ts fixtures install through the existing
+physical tarball runner. Fourteen substantive runtime groups cover EN-M01–M53;
+M54 is strict external NodeNext/root declarations/provenance and M55 is the full
+historical/CI gate. Receipt checking prevents omission of the entire registration.
+EN-N01–N23 inject isolated installed faults with intended diagnostics, byte restoration
+and clean14/14 reruns. Exact central root inventory retains all144 names; historical
+Actor AI owned inventory/behavior and accepted scope fingerprint remain protected.
+Only the exact approved additive root membership block is normalized for history.

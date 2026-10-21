@@ -148,3 +148,9 @@ export {createEncounterActivationPolicy, createEncounterActivationObservation,
   evaluateEncounterActivationAdmission, activateEncounter} from './modules/encounter/index.js';
 export type {EncounterParticipantActivationFact, EncounterActivationObservation, EncounterActivationPolicy,
   EncounterActivationRejectionReason, EncounterActivationAdmissionResult, EncounterActivationTransitionResult} from './modules/encounter/index.js';
+
+export {createEncounterMembershipPolicy, createEncounterMembershipRequest, getEncounterParticipant,
+  evaluateEncounterMembershipAdmission, applyEncounterMembershipChange} from './modules/encounter/index.js';
+export type {EncounterMembershipOperation, EncounterMembershipOpenStatus, EncounterMembershipPolicy,
+  EncounterMembershipRequest, EncounterMembershipRejectionReason, EncounterMembershipAdmissionResult,
+  EncounterMembershipTransitionResult} from './modules/encounter/index.js';

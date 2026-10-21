@@ -754,3 +754,15 @@ suite and npm run verify are required. Push and pull_request each require
 Windows/Ubuntu × Node22/24 at the delivered SHA, full logs/steps, Core pin,
 package provenance, foundation/activation/negative markers and VERIFY_PASS.
 See [checkpoint report](reports/v0.8.1-encounter-creation-activation.md).
+
+## v0.8.2 membership verification
+
+tests/consumers/encounter-membership.mjs uses root ESM imports, fixed IDs, literal
+append/removal/in-place rosters, exact rejection envelopes, getter counters, immutable
+detachment, independent replay and actual Foundation optional composition. Fourteen
+groups map EN-M01–M53; no gameplay app/simulator. The .ts consumer proves readonly
+arrays/nested Life and request/result discriminants with strict NodeNext and
+skipLibCheck:false. Central runner enforces physical pack provenance, required fixture
+registration, exact exports and EN-N01–N23 mutation kills. Declaration path control
+checks manifest + pack inventory + installed file; it does not rely on NodeNext fallback.
+All prior fixtures/behavioral assertions and negative controls remain mandatory.

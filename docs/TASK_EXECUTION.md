@@ -416,3 +416,16 @@ v0.8.2 and Ready/merge/tag/publish are NOT AUTHORIZED. See
 [task](tasks/active/v0.8.1-encounter-creation-activation.md) and
 [report](reports/v0.8.1-encounter-creation-activation.md). Prior sections describe
 their milestone boundary; EN06–EN10 are now authorized by this task only.
+
+## Active v0.8.2 — Encounter Participation & Membership
+
+Submitted approved task tasks/active/v0.8.2-encounter-participation-membership.md
+authorizes EN11–EN15 from verified v0.8.1 checkpoint
+56c9546d3958c6bfcafefa14864429725d4ec38e on feat/v0.8-encounter / Draft PR #13.
+Five functions/seven types, version-only0.8.2 and installed membership evidence.
+Only Encounter/root production additions; protected owners/Core/registry/workflow
+remain unchanged. Exact additive root block joins historical normalization without
+rebaselining the historical hash. Earlier sections describe earlier task boundaries.
+Local gates, independent mutation provenance, scope audit and exact-head8/8 CI are
+required. Phase IN_PROGRESS, Developer acceptance PENDING; v0.8.3 NOT_STARTED.
+Stop after delivery; no new PR, Ready transition, merge, tag or publish.

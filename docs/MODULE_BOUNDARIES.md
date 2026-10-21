@@ -512,3 +512,12 @@ v0.8.2 and Ready/merge/tag/publish are NOT AUTHORIZED. See
 [task](tasks/active/v0.8.1-encounter-creation-activation.md) and
 [report](reports/v0.8.1-encounter-creation-activation.md). Prior sections describe
 their milestone boundary; EN06–EN10 are now authorized by this task only.
+
+## v0.8.2 Encounter membership owner
+
+Only Encounter and additive root exports change in production. encounter → [entity]
+is unchanged. Existing structural capture and activation fact validation are reused;
+membership owns roster association only. L3 owns explicit operation/Life/World policy;
+L4 owns current facts, controller, cross-Encounter reservations, CAS and dispatch.
+No dependency on Combat/Skill/Effect/Actor AI or second Entity/Life/World owner.
+Leave never closes Encounter, removes Entity, despawns, emits events or calculates rewards.
