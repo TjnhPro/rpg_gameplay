@@ -1,3 +1,11 @@
+## v0.14.2 — Currency integration closure CU11–CU15
+
+CU01–CU15 now have direct functional/closure evidence, including real Reward currency
+handoff100→175 and failure/replay isolation. No production delta. Single-process L4
+fixture only: no game, shop, transfer, ledger, billing or backend guarantee. Developer
+phase acceptance PENDING.
+[Report](../reports/v0.14.2-currency-integration-mvp-closure.md).
+
 ## v0.14.1 — Currency balance operations CU06–CU10
 
 Complete validated balance query and pure bounded credit/debit candidates are implemented.

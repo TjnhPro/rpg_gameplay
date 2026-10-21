@@ -1,3 +1,13 @@
+## v0.14.2 — Currency integration closure (CU11–CU15)
+
+No production/API/schema delta. Direct public-root tests compose prepareRewardClaim
+with currency grantKindId/referenceId/amount and creditCurrency. Test-local L4 checks
+grant facts and prepares every candidate before replacing one composite reference.
+Cap, ineligibility, overflow, unsupported later grant, claimed replay and stale local
+snapshot cannot partially commit. This does not provide durable/distributed atomicity
+or global idempotency. Currency and Reward remain independent optional owners.
+[Report](../reports/v0.14.2-currency-integration-mvp-closure.md).
+
 ## v0.14.1 — Currency balance operations (CU06–CU10)
 
 ```ts

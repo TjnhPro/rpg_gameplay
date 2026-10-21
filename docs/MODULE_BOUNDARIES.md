@@ -1,3 +1,10 @@
+## v0.14.2 — Currency closure evidence
+
+Production bytes and module graph unchanged. Reward prepares claim candidates and
+opaque grants; Currency prepares wallet candidates. Only the test-local L4 fixture
+resolves currency grant facts, checks local snapshot freshness and assigns the combined
+state. No Currency↔Reward import, transaction service, second wallet owner or Core change.
+
 ## v0.14.1 — Currency operations
 
 The same import-free Currency owner adds complete snapshot lookup and bounded
