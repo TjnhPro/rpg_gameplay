@@ -1,3 +1,12 @@
+## v0.10.0 — Inventory Foundation IN01–IN05
+
+Implemented: explicit identity, neutral nullable owner, ordered immutable canonical
+Item snapshots and safe quantities, complete caller-context validation, optional
+inventory -> [item]. Two root functions/six types. No mutation operations, slots,
+weight/capacity, transfer/equipment or persistence. Developer acceptance PENDING;
+see [checkpoint report](reports/v0.10.0-inventory-foundation.md).
+Earlier checkpoint sections below are historical.
+
 ## v0.9.3 — Item MVP technical closure evidence IT12–IT14
 
 Installed literal E2E, source-neutral creation, readonly Inventory/Equipment reader

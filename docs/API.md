@@ -1,3 +1,17 @@
+## v0.10.0 — Inventory Foundation (IN01–IN05)
+
+Root adds `createInventoryState(input, context)` and `validateInventoryState(state, context)`;
+both return fresh detached/frozen complete snapshots or throw TypeError.
+Six types: InventoryOwnerReference, InventoryEntry, InventoryState, InventoryItemContext,
+InventoryValidationContext and InventoryTransitionResult<TReason extends string>.
+State contains only inventoryId, nullable neutral owner and ordered entries with canonical
+ItemInstanceState plus positive safe-integer quantity. Instance ID is the membership key.
+Context supplies complete definitions, Item stackability and explicit maximum/null;
+it is not stored. Item public validators own Item binding/properties. No Add/Remove,
+Merge/Split/Transfer, slots, capacity, authorization or global identity management.
+[Approved task](tasks/active/v0.10.0-inventory-foundation.md) / [report](reports/v0.10.0-inventory-foundation.md).
+Earlier checkpoint sections below are historical.
+
 ## v0.9.3 — Item API frozen, integration evidence only
 
 No production or public declaration changes from 0.9.2: exactly twelve Item

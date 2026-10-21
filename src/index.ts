@@ -183,3 +183,7 @@ export type {ItemPropertyReadResult, ItemPropertyOperationAdmission, ItemPropert
 
 export {validateItemStackPolicy, assessItemStackCompatibility} from './modules/item/index.js';
 export type {ItemStackPolicy, ItemStackCompatibilityResult} from './modules/item/index.js';
+
+export {createInventoryState, validateInventoryState} from './modules/inventory/index.js';
+export type {InventoryOwnerReference, InventoryEntry, InventoryState, InventoryItemContext,
+  InventoryValidationContext, InventoryTransitionResult} from './modules/inventory/index.js';
