@@ -723,3 +723,34 @@ harness:selftest, build, typecheck, test:functional, full npm run verify and
 exact-head push+PR Ubuntu/Windows Node22/24 (8 jobs). No skipped evidence.
 Concrete game profiles remain NOT_EVALUATED; checkpoint/phase acceptance is
 recorded in the report and SHA-bound PR CI supplement.
+
+## v0.8.1 Encounter activation verification
+
+Mandatory physically installed encounter-activation.mjs/.ts adds11 runtime
+groups, EN-A01–EN-A48 functional scenarios; EN-A49 covers physical tarball,
+named root exports, exact types path/pack inventory/existence and external
+strict NodeNext; EN-A50 covers mandatory registration alongside unchanged
+historical suites. Delivered-head CI evidence is recorded in the PR supplement,
+never inferred from a local marker. Full runtime inventory is282 contracts across
+49 installed groups plus3 outer harness/verification tests, zero skips/todos.
+
+EN-N01–EN-N20 are isolated actual subprocess failures with intended diagnostic,
+finally-restored original bytes and clean11/11 reruns. Core revision/integrity
+and skipped/zero-assertion variants are independent. Negative declaration mutation
+runs the actual external tsc (TS2578); broken exports.types uses exact manifest
+path/packed membership/file existence, not the incorrect NodeNext-fallback claim.
+Dist drift compares actual installed bytes to this platform's freshly packed
+build. Source-only aliases, symlinks and fabricated evidence are disallowed.
+
+Central exact full-root inventory becomes139. Historical Actor AI exact owned
+inventory and all behavioral/protected-owner assertions remain intact. Only the
+exact four-function/six-type additive root export block is stripped in addition
+to approved v0.8.0 additions before the unchanged historical SHA256 fingerprint;
+no historical baseline hash or fixture is rebaselined. A missing or altered
+additive block still fails the exact-byte normalization check.
+
+Fresh Core prepare/install, harness check/selftest, build/typecheck, functional
+suite and npm run verify are required. Push and pull_request each require
+Windows/Ubuntu × Node22/24 at the delivered SHA, full logs/steps, Core pin,
+package provenance, foundation/activation/negative markers and VERIFY_PASS.
+See [checkpoint report](reports/v0.8.1-encounter-creation-activation.md).

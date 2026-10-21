@@ -430,3 +430,31 @@ rewards, global store or scheduler. EN06–EN40 are not implemented/authorized.
 Phase IN_PROGRESS; Developer acceptance PENDING; phase PR remains Draft.
 See [task](tasks/active/v0.8.0-encounter-foundation.md) and
 [report](reports/v0.8.0-encounter-foundation.md).
+
+## v0.8.1 Encounter Creation & Activation — EN06–EN10
+
+Approved checkpoint follows v0.8.0 at04ea03eaa99b3de4b2009c36ae9c16e5cc257841
+on feat/v0.8-encounter, existing Draft PR #13. Four additive root functions and
+six types implement explicit activation policy, bound observations, read-only
+admission and detached frozen prepared → active candidates. The five-field
+EncounterState, prepared factory and EN01–EN05 contracts are unchanged.
+
+Every call validates the current canonical Entity collection/state, full policy
+and full observation before domain rejection, including terminal inputs. L3
+explicitly controls minimum participants/occupied sides, required occupied side
+IDs, allowed canonical Life statuses and World-readiness requirement. No implicit
+two-team, actor-kind, alive-only or PvE policy. Missing facts reject; foreign
+facts and mismatched Encounter/Life IDs throw TypeError.
+
+L4 owns actual spawn, Life/World fact truth/freshness, persistence, CAS/commit,
+events and Combat/Skill/AI orchestration. Activation changes only status in a new
+candidate; repeated calls from the same prepared input are allowed and do not
+prove exactly-once commit. No Join/Leave, completion, rewards, scheduler, global
+store, new engine, Core call or sibling-module execution. Entity remains the
+canonical Life/collection owner; encounter → [entity] is unchanged.
+
+Phase IN_PROGRESS; Developer acceptance PENDING. Existing PR remains Draft.
+v0.8.2 and Ready/merge/tag/publish are NOT AUTHORIZED. See
+[task](tasks/active/v0.8.1-encounter-creation-activation.md) and
+[report](reports/v0.8.1-encounter-creation-activation.md). Prior sections describe
+their milestone boundary; EN06–EN10 are now authorized by this task only.

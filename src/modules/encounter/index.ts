@@ -1,4 +1,4 @@
-import {getEntity, listEntities, type EntityCollection} from '../entity/index.js';
+import {getEntity, listEntities, type EntityCollection, type EntityLifeState, type EntityLifeStatus} from '../entity/index.js';
 
 /** Opaque L3 content reference; no catalog lookup or content ownership. */
 export interface EncounterDefinitionReference { readonly definitionId: string; }
@@ -97,4 +97,132 @@ export function createEncounterState(reference: EncounterDefinitionReference, in
  * reward, spawn, join/leave or authoritative World commit authorization. */
 export function validateEncounterState(state: EncounterState, entities: EntityCollection): EncounterState {
   return capture(fields(state, ['encounterId', 'definitionId', 'status', 'sides', 'participants']), entities);
+}
+
+/** L4 observations, not spawn certificates or authoritative current World state. */
+export interface EncounterParticipantActivationFact {
+  readonly entityId: string;
+  readonly life: EntityLifeState;
+  readonly worldReady: boolean;
+}
+export interface EncounterActivationObservation {
+  readonly encounterId: string;
+  readonly participants: readonly EncounterParticipantActivationFact[];
+}
+/** Explicit L3 rules; no implicit two-team or alive-only game policy. */
+export interface EncounterActivationPolicy {
+  readonly requiredOccupiedSideIds: readonly string[];
+  readonly minimumParticipants: number;
+  readonly minimumOccupiedSides: number;
+  readonly allowedLifeStatuses: readonly EntityLifeStatus[];
+  readonly requireWorldReady: boolean;
+}
+export type EncounterActivationRejectionReason = 'not_prepared' | 'insufficient_participants'
+  | 'insufficient_occupied_sides' | 'required_side_unoccupied' | 'participant_fact_missing'
+  | 'participant_life_not_allowed' | 'participant_world_not_ready';
+export type EncounterActivationAdmissionResult =
+  | {readonly status: 'admitted'; readonly reason: 'none'; readonly encounterId: string;
+      readonly sideId: null; readonly entityId: null}
+  | {readonly status: 'rejected'; readonly reason: EncounterActivationRejectionReason;
+      readonly encounterId: string; readonly sideId: string | null; readonly entityId: string | null};
+export type EncounterActivationTransitionResult =
+  | {readonly status: 'activated'; readonly reason: 'none'; readonly encounterId: string; readonly state: EncounterState}
+  | {readonly status: 'rejected'; readonly reason: EncounterActivationRejectionReason; readonly encounterId: string; readonly state: null};
+
+function activationBoolean(input: unknown): boolean {
+  if (typeof input !== 'boolean') throw new TypeError('Encounter activation requires a boolean');
+  return input;
+}
+function activationCount(input: unknown): number {
+  if (typeof input !== 'number' || !Number.isSafeInteger(input) || input < 1) {
+    throw new TypeError('Encounter activation count must be a positive safe integer');
+  }
+  return input;
+}
+function activationLifeStatus(input: unknown): EntityLifeStatus {
+  if (input !== 'alive' && input !== 'dead') throw new TypeError('Encounter activation Life must be alive or dead');
+  return input;
+}
+/** Detached closed policy; no preset, implicit default or rule registration. */
+export function createEncounterActivationPolicy(input: EncounterActivationPolicy): EncounterActivationPolicy {
+  const data = fields(input, ['requiredOccupiedSideIds', 'minimumParticipants', 'minimumOccupiedSides', 'allowedLifeStatuses', 'requireWorldReady']);
+  const requiredOccupiedSideIds = array(data.requiredOccupiedSideIds).map(id);
+  const allowedLifeStatuses = array(data.allowedLifeStatuses).map(activationLifeStatus);
+  if (new Set(requiredOccupiedSideIds).size !== requiredOccupiedSideIds.length
+    || !allowedLifeStatuses.length || new Set(allowedLifeStatuses).size !== allowedLifeStatuses.length) {
+    throw new TypeError('Encounter activation lists must be unique; Life statuses nonempty');
+  }
+  return Object.freeze({requiredOccupiedSideIds: Object.freeze(requiredOccupiedSideIds),
+    minimumParticipants: activationCount(data.minimumParticipants), minimumOccupiedSides: activationCount(data.minimumOccupiedSides),
+    allowedLifeStatuses: Object.freeze(allowedLifeStatuses), requireWorldReady: activationBoolean(data.requireWorldReady)});
+}
+/** Canonical EntityLifeState schema capture only; no Life inference or mutation. */
+export function createEncounterActivationObservation(input: EncounterActivationObservation): EncounterActivationObservation {
+  const data = fields(input, ['encounterId', 'participants']), encounterId = id(data.encounterId);
+  const seen = new Set<string>();
+  const participants = array(data.participants).map(value => {
+    const fact = fields(value, ['entityId', 'life', 'worldReady']), entityId = id(fact.entityId);
+    const life = fields(fact.life, ['entityId', 'status']);
+    if (id(life.entityId) !== entityId) throw new TypeError('Encounter activation Life identity mismatch');
+    if (seen.has(entityId)) throw new TypeError('Duplicate Encounter activation fact');
+    seen.add(entityId);
+    return Object.freeze({entityId, life: Object.freeze({entityId, status: activationLifeStatus(life.status)}),
+      worldReady: activationBoolean(fact.worldReady)});
+  });
+  return Object.freeze({encounterId, participants: Object.freeze(participants)});
+}
+function activationInputs(state: EncounterState, entities: EntityCollection,
+  policy: EncounterActivationPolicy, observation: EncounterActivationObservation) {
+  const current = validateEncounterState(state, entities);
+  const rules = createEncounterActivationPolicy(policy), observed = createEncounterActivationObservation(observation);
+  if (observed.encounterId !== current.encounterId) throw new TypeError('Encounter activation observation identity mismatch');
+  const roster = new Set(current.participants.map(participant => participant.entityId));
+  const facts = new Map(observed.participants.map(fact => {
+    if (!roster.has(fact.entityId)) throw new TypeError('Foreign Encounter activation fact');
+    return [fact.entityId, fact] as const;
+  }));
+  return {current, rules, facts};
+}
+function activationAdmission({current, rules, facts}: ReturnType<typeof activationInputs>): EncounterActivationAdmissionResult {
+  const reject = (reason: EncounterActivationRejectionReason, sideId: string | null = null, entityId: string | null = null): EncounterActivationAdmissionResult =>
+    Object.freeze({status: 'rejected', reason, encounterId: current.encounterId, sideId, entityId});
+  if (current.status !== 'prepared') return reject('not_prepared');
+  if (current.participants.length < rules.minimumParticipants) return reject('insufficient_participants');
+  const occupied = new Set(current.participants.map(participant => participant.sideId));
+  if (occupied.size < rules.minimumOccupiedSides) return reject('insufficient_occupied_sides');
+  for (const sideId of rules.requiredOccupiedSideIds) {
+    if (!occupied.has(sideId)) return reject('required_side_unoccupied', sideId);
+  }
+  // Separate roster-ordered stages: missing facts precede all Life failures,
+  // which precede all World failures, regardless of observation entry order.
+  for (const participant of current.participants) {
+    if (!facts.has(participant.entityId)) return reject('participant_fact_missing', participant.sideId, participant.entityId);
+  }
+  for (const participant of current.participants) {
+    if (!rules.allowedLifeStatuses.includes(facts.get(participant.entityId)!.life.status)) {
+      return reject('participant_life_not_allowed', participant.sideId, participant.entityId);
+    }
+  }
+  for (const participant of current.participants) {
+    if (rules.requireWorldReady && !facts.get(participant.entityId)!.worldReady) {
+      return reject('participant_world_not_ready', participant.sideId, participant.entityId);
+    }
+  }
+  return Object.freeze({status: 'admitted', reason: 'none', encounterId: current.encounterId, sideId: null, entityId: null});
+}
+/** Read-only assessment. L4 owns truth/freshness and authoritative commit. */
+export function evaluateEncounterActivationAdmission(state: EncounterState, entities: EntityCollection,
+  policy: EncounterActivationPolicy, observation: EncounterActivationObservation): EncounterActivationAdmissionResult {
+  return activationAdmission(activationInputs(state, entities, policy, observation));
+}
+/** Explicit prepared -> active candidate. Revalidates original inputs rather
+ * than trusting an admission token; no dispatch, persistence or exactly-once claim. */
+export function activateEncounter(state: EncounterState, entities: EntityCollection,
+  policy: EncounterActivationPolicy, observation: EncounterActivationObservation): EncounterActivationTransitionResult {
+  const input = activationInputs(state, entities, policy, observation), admission = activationAdmission(input);
+  if (admission.status === 'rejected') {
+    return Object.freeze({status: 'rejected', reason: admission.reason, encounterId: admission.encounterId, state: null});
+  }
+  return Object.freeze({status: 'activated', reason: 'none', encounterId: input.current.encounterId,
+    state: Object.freeze({...input.current, status: 'active'})});
 }

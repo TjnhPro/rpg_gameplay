@@ -143,3 +143,8 @@ export {createEncounterDefinitionReference, createEncounterSide, createEncounter
   createEncounterState, validateEncounterState} from './modules/encounter/index.js';
 export type {EncounterDefinitionReference, EncounterSide, EncounterParticipant, EncounterStatus,
   EncounterInitialState, EncounterState} from './modules/encounter/index.js';
+
+export {createEncounterActivationPolicy, createEncounterActivationObservation,
+  evaluateEncounterActivationAdmission, activateEncounter} from './modules/encounter/index.js';
+export type {EncounterParticipantActivationFact, EncounterActivationObservation, EncounterActivationPolicy,
+  EncounterActivationRejectionReason, EncounterActivationAdmissionResult, EncounterActivationTransitionResult} from './modules/encounter/index.js';

@@ -20,8 +20,13 @@ function exec(args, cwd) {
   if (args.includes('--test')) assertTapEvidence(result.stdout);
   return result.stdout;
 }
+function assertActivationRegistration(receipt) {
+  assert.ok(receipt, 'mandatory installed activation consumer registration');
+  assertTapEvidence(receipt.runtime, 11, Array.from({length:48}, (_, i) => 'ENCOUNTER_A' + String(i + 1).padStart(2, '0') + '_PASS'));
+  assert.equal(receipt.typechecked, true, 'mandatory external activation strict NodeNext');
+}
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40 + EN01–EN05, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40 + EN01–EN10, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -48,6 +53,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     fs.writeFileSync(path.join(temp, 'package.json'), JSON.stringify({name: 'foundation-consumer', private: true, type: 'module'}));
     exec([cli, 'install', '--ignore-scripts', '--no-audit', '--no-fund', path.join(temp, packed.filename), coreArtifact], temp);
     const installed = path.join(temp, 'node_modules/@rpg/gameplay');
+    let activationReceipt;
     const expectedPackedFiles = packed.files.filter(file => file.path.startsWith('dist/'))
       .map(file => [file.path, fs.readFileSync(path.join(root, file.path))]);
     const assertPackedFiles = () => {
@@ -68,7 +74,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.8.0');
+    assertVersion(packageJson.version, '0.8.1');
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
@@ -86,7 +92,7 @@ assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModu
  'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId', 'createEntity',
  'createEntityCollection', 'addEntity', 'getEntity', 'hasEntity', 'listEntities', 'removeEntity', 'replaceEntity',
  'createEntityAttributeState', 'getEntityBaseAttributes', 'setEntityBaseAttribute', 'calculateEntityStats',
- 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming', 'createEncounterDefinitionReference', 'createEncounterSide', 'createEncounterParticipant', 'createEncounterState', 'validateEncounterState'].sort());
+ 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming', 'createEncounterDefinitionReference', 'createEncounterSide', 'createEncounterParticipant', 'createEncounterState', 'validateEncounterState', 'createEncounterActivationPolicy', 'createEncounterActivationObservation', 'evaluateEncounterActivationAdmission', 'activateEncounter'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
@@ -1123,11 +1129,13 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     const captured=protectedFiles.map(name=>[name,fs.readFileSync(path.join(root,name),'utf8').replaceAll('\r\n','\n')]);
     // Only exact Developer-approved additive deltas may be removed before hashing.
     const approvedAdditions=[["src/index.ts","\nexport {createEncounterDefinitionReference, createEncounterSide, createEncounterParticipant,\n  createEncounterState, validateEncounterState} from './modules/encounter/index.js';\nexport type {EncounterDefinitionReference, EncounterSide, EncounterParticipant, EncounterStatus,\n  EncounterInitialState, EncounterState} from './modules/encounter/index.js';\n",""],["harness/modules.json",",\n    {\"id\": \"encounter\", \"optional\": true, \"dependencies\": [\"entity\"]}",""],["docs/DECISIONS.md","\n## Encounter phase decisions — v0.8.x (Developer approved, 2026-10-21)\n\n| ID | Approved A | EN01–EN05 implementation boundary |\n| --- | --- | --- |\n| ENC-D01 | One encounter = one engagement | Opaque encounterId; no zone/dungeon/global runtime |\n| ENC-D02 | Entity dependency only | Optional encounter -> [entity]; canonical getEntity/listEntities |\n| ENC-D03 | Generic side IDs | Exact nonblank sideId; no kind/relation inference |\n| ENC-D04 | Future explicit dynamic participation | Initial structural roster only; no Join/Leave |\n| ENC-D05 | Future explicit completion evaluation | No auto-win, objective evaluator or outcome |\n| ENC-D06 | Closed terminal; new ID for rematch | Status vocabulary only; no transition/reopen implementation |\n| ENC-D07 | Future side-based outcome | No winner/reward fields in five-field state |\n\nAll seven choices are approved; later behavior still requires its own milestone.\nStructural validation of any recognized status proves no transition provenance.\nL3 owns content/policy; L4 owns World storage, authoritative commit, spawning,\ncross-encounter exclusivity and orchestration. No new owner or engine.\nSee [approved task](tasks/active/v0.8.0-encounter-foundation.md).\n",""]];
+    approvedAdditions.push(["src/index.ts","\nexport {createEncounterActivationPolicy, createEncounterActivationObservation,\n  evaluateEncounterActivationAdmission, activateEncounter} from './modules/encounter/index.js';\nexport type {EncounterParticipantActivationFact, EncounterActivationObservation, EncounterActivationPolicy,\n  EncounterActivationRejectionReason, EncounterActivationAdmissionResult, EncounterActivationTransitionResult} from './modules/encounter/index.js';\n",""]);
     const historical=entries=>entries.map(([name,text])=>{
-      const addition=approvedAdditions.find(([file])=>file===name);
-      if(!addition)return [name,text];
-      assert.equal(text.split(addition[1]).length,2,'exact approved additive scope '+name);
-      return [name,text.replace(addition[1],addition[2])];
+      for(const addition of approvedAdditions.filter(([file])=>file===name)){
+        assert.equal(text.split(addition[1]).length,2,'exact approved additive scope '+name);
+        text=text.replace(addition[1],addition[2]);
+      }
+      return [name,text];
     });
     const assertProtected=entries=>assert.equal(digest(historical(entries)),'6b71e71ff40973efb3056e104c59934f1d025bf946a12ad4de5e38bc397619be','closure protected source/Core/registry/history guard');
     assertProtected(captured);
@@ -1183,7 +1191,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     try{const text=rootBytes.toString('utf8');assert.ok(text.includes('createEncounterState,'));fs.writeFileSync(rootFile,text.replace('createEncounterState,','createEncounterState as missingEncounterState,'));red('N02','prepared:',/createEncounterState is not a function/);}
     finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.0.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.0');`,/installed package version/);}
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.0.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.1');`,/installed package version/);}
     finally{fs.writeFileSync(manifestFile,manifestBytes);}done('N03');
     const coreManifest=path.join(temp,'node_modules/@rpg/core/package.json'),coreBytes=fs.readFileSync(coreManifest);
     try{const manifest=JSON.parse(coreBytes);manifest.version='0.0.0';fs.writeFileSync(coreManifest,JSON.stringify(manifest));guardRed('N04_version',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(coreManifest)})).version,${JSON.stringify(pin.version)});`,/installed package version/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
@@ -1230,6 +1238,99 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     console.log('INSTALLED_ENCOUNTER_NEGATIVE_PASS N01-N16; targeted_assertions; restored_clean; strict_NodeNext');
     }
 
+
+    { // EN06-EN10: mandatory installed activation contracts and isolated fault controls.
+    for(const ext of ['mjs','ts'])copyRequiredConsumer(path.join(root,'tests/consumers/encounter-activation.'+ext),path.join(temp,'encounter-activation.'+ext));
+    const file=path.join(temp,'encounter-activation.mjs'),bytes=fs.readFileSync(file),source=bytes.toString('utf8');
+    const markers=Array.from({length:48},(_,i)=>'ENCOUNTER_A'+String(i+1).padStart(2,'0')+'_PASS');
+    const run=()=>exec(['--test','--test-reporter=tap','encounter-activation.mjs'],temp);
+    const validate=output=>assertTapEvidence(output,11,markers);
+    const clean=()=>{validate(run());assertPackedFiles();};
+    const evidence=run();validate(evidence);for(const marker of markers)console.log(evidence.split(/\r?\n/).find(line=>line.includes(marker)));
+    console.log(evidence.split(/\r?\n/).find(line=>line.includes('ENCOUNTER_ACTIVATION_REPLAY_SHA256')));
+    console.log('INSTALLED_ENCOUNTER_ACTIVATION_PASS EN06-EN10; consumer_tests=11 skipped=0; candidate_only');
+    function red(id,pattern,diagnostic){
+      const env={...process.env};delete env.NODE_TEST_CONTEXT;
+      const args=['--test','--test-reporter=tap',...(pattern?['--test-name-pattern=Activation '+pattern]:[]),'encounter-activation.mjs'];
+      const result=spawnSync(process.execPath,args,{cwd:temp,shell:false,encoding:'utf8',env});
+      assert.ifError(result.error);assert.equal(result.signal,null);assert.equal(result.status,1,result.stdout+result.stderr);
+      assert.match(result.stdout+result.stderr,diagnostic,id+' intended assertion');
+      console.log('ENCOUNTER_ACTIVATION_NEGATIVE_RED '+id+' exit=1 intended='+diagnostic.source);
+    }
+    function done(id){assertPackedFiles();clean();console.log('ENCOUNTER_ACTIVATION_NEGATIVE_PASS '+id+' restored_bytes; clean11/11');}
+    const guardFile=path.join(temp,'encounter-activation-negative-guard.mjs');
+    const guardPrelude=`import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';
+      const installed=${JSON.stringify(installed)};
+      const expectedPackedFiles=${JSON.stringify(expectedPackedFiles.map(([name,bytes])=>[name,bytes.toString('base64')]))}.map(([name,bytes])=>[name,Buffer.from(bytes,'base64')]);
+      const assertVersion=${assertVersion.toString()};const assertCoreIntegrity=${assertCoreIntegrity.toString()};
+      const assertTapEvidence=${assertTapEvidence.toString()};const assertPackedFiles=${assertPackedFiles.toString()};
+      const copyRequiredConsumer=${copyRequiredConsumer.toString()};const assertActivationRegistration=${assertActivationRegistration.toString()};`;
+    function guardRed(id,code,diagnostic){
+      fs.writeFileSync(guardFile,guardPrelude+code);
+      const result=spawnSync(process.execPath,[guardFile],{cwd:temp,shell:false,encoding:'utf8'});
+      assert.ifError(result.error);assert.equal(result.signal,null);assert.equal(result.status,1,result.stdout+result.stderr);
+      assert.match(result.stdout+result.stderr,diagnostic,id+' intended central guard');
+      console.log('ENCOUNTER_ACTIVATION_NEGATIVE_RED '+id+' exit=1 intended='+diagnostic.source);
+    }
+    try{fs.renameSync(file,file+'.saved');guardRed('N01',`copyRequiredConsumer(${JSON.stringify(file)},${JSON.stringify(file+'.copy')});`,/ENOENT/);}
+    finally{if(fs.existsSync(file+'.saved'))fs.renameSync(file+'.saved',file);}done('N01');
+    guardRed('N01_registration_skipped','assertActivationRegistration(undefined);',/mandatory installed activation consumer registration/);done('N01_registration_skipped');
+    const rootFile=path.join(installed,'dist/index.js'),rootBytes=fs.readFileSync(rootFile);
+    try{const text=rootBytes.toString('utf8');assert.match(text,/\bactivateEncounter\b/);fs.writeFileSync(rootFile,text.replace(/\bactivateEncounter\b/,'activateEncounter as deliberatelyMissingActivation'));red('N02',null,/does not provide an export named 'activateEncounter'/);}
+    finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
+    const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.1');`,/installed package version/);}
+    finally{fs.writeFileSync(manifestFile,manifestBytes);}done('N03');
+    const pinFile=path.join(temp,'activation-core-pin.json');fs.writeFileSync(pinFile,fs.readFileSync(path.join(root,'harness/core-pin.json')));const pinBytes=fs.readFileSync(pinFile);
+    try{const changed=JSON.parse(pinBytes);changed.revision='0000000000000000000000000000000000000000';fs.writeFileSync(pinFile,JSON.stringify(changed));guardRed('N04_revision',`assert.equal(JSON.parse(fs.readFileSync(${JSON.stringify(pinFile)})).revision,'04b7239f998c3c688a0dfa3202f11811a9acd775','activation pinned Core revision');`,/activation pinned Core revision/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
+    finally{fs.writeFileSync(pinFile,pinBytes);}assert.deepEqual(fs.readFileSync(pinFile),pinBytes);done('N04');
+    const registryFile=path.join(temp,'encounter-modules.json'),registryBytes=fs.readFileSync(registryFile);
+    try{const registry=JSON.parse(registryBytes);registry.modules.find(d=>d.id==='encounter').dependencies=[];fs.writeFileSync(registryFile,JSON.stringify(registry));red('N05','providers:',/activation exact Entity dependency/);}
+    finally{fs.writeFileSync(registryFile,registryBytes);}done('N05');
+    const runtimeFile=path.join(installed,'dist/modules/encounter/index.js'),runtimeBytes=fs.readFileSync(runtimeFile),runtime=runtimeBytes.toString('utf8');
+    const faults=[
+      ['N06','missing:',"return reject('participant_fact_missing', participant.sideId, participant.entityId);","return Object.freeze({status:'admitted',reason:'none',encounterId:current.encounterId,sideId:null,entityId:null});",/missing fact exact diagnostic/],
+      ['N07','readiness:',"if (!rules.allowedLifeStatuses.includes(facts.get(participant.entityId).life.status))",'if (false)',/life exact diagnostic before world/],
+      ['N08','readiness:',"if (rules.requireWorldReady && !facts.get(participant.entityId).worldReady)",'if (false)',/world exact diagnostic/],
+      ['N09','policy:',"const occupied = new Set(current.participants.map(participant => participant.sideId));","const occupied = new Set(current.sides.map(side => side.sideId));",/occupied not declared oracle/],
+      ['N10','readiness:',"if (!rules.allowedLifeStatuses.includes(facts.get(participant.entityId).life.status))","if (rules.requireWorldReady && !facts.get(participant.entityId).worldReady) return reject('participant_world_not_ready', participant.sideId, participant.entityId);\n        if (!rules.allowedLifeStatuses.includes(facts.get(participant.entityId).life.status))",/life exact diagnostic before world/],
+      ['N11','terminal:',"if (current.status !== 'prepared')","if (false)",/terminal cannot restart/],
+      ['N12','terminal:',"const rules = createEncounterActivationPolicy(policy), observed = createEncounterActivationObservation(observation);","const rules = current.status !== 'prepared' ? policy : createEncounterActivationPolicy(policy), observed = createEncounterActivationObservation(observation);",/terminal policy still validated/],
+      ['N13','diagnostics:',"encounterId: admission.encounterId, state: null","encounterId: admission.encounterId, state: Object.freeze({...input.current,status:'active'})",/rejected transition exact null state/],
+      ['N14','candidate:',"sides: Object.freeze(sides)","sides: sides",/activation deep freeze/],
+      ['N15','observations:',"if (observed.encounterId !== current.encounterId)",'if (false)',/observation binding must throw/],
+    ];
+    for(const [id,pattern,expected,faulty,diagnostic] of faults){
+      assert.ok(runtime.includes(expected),id+' required installed mutation');
+      try{fs.writeFileSync(runtimeFile,runtime.replace(expected,faulty));red(id,pattern,diagnostic);}
+      finally{fs.writeFileSync(runtimeFile,runtimeBytes);}assert.deepEqual(fs.readFileSync(runtimeFile),runtimeBytes);done(id);
+    }
+    const config=path.join(temp,'activation-tsconfig.json');fs.writeFileSync(config,JSON.stringify({compilerOptions:{target:'ES2022',lib:['ES2022'],module:'NodeNext',moduleResolution:'NodeNext',strict:true,noEmit:true,skipLibCheck:false,types:[]},files:['encounter-activation.ts']}));
+    const compile=()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','activation-tsconfig.json'],temp);compile();
+    const declarationFile=path.join(installed,'dist/modules/encounter/index.d.ts'),declarationBytes=fs.readFileSync(declarationFile);
+    try{const text=declarationBytes.toString('utf8');assert.ok(text.includes('readonly requireWorldReady: boolean'));fs.writeFileSync(declarationFile,text.replace('readonly requireWorldReady: boolean','requireWorldReady: boolean'));assert.throws(compile,/TS2578/);}
+    finally{fs.writeFileSync(declarationFile,declarationBytes);}compile();console.log('ENCOUNTER_ACTIVATION_NEGATIVE_RED N16 real_tsc_exit=1 TS2578_readonly_assertion');done('N16');
+    const rootDeclaration=()=>{const manifest=JSON.parse(fs.readFileSync(manifestFile));const name=manifest.exports['.'].types;
+      assert.equal(name,'./dist/index.d.ts','Activation canonical root declaration path');assert.ok(packed.files.some(f=>'./'+f.path===name));assert.ok(fs.statSync(path.join(installed,name)).isFile());};
+    rootDeclaration();try{const manifest=JSON.parse(manifestBytes);manifest.exports['.'].types='./dist/missing.d.ts';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N17',`const name=JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).exports['.'].types;assert.equal(name,'./dist/index.d.ts','Activation canonical root declaration path');assert.ok(${JSON.stringify(packed.files.map(f=>'./'+f.path))}.includes(name));assert.ok(fs.statSync(path.join(installed,name)).isFile());`,/Activation canonical root declaration path/);}
+    finally{fs.writeFileSync(manifestFile,manifestBytes);}assert.deepEqual(fs.readFileSync(manifestFile),manifestBytes);rootDeclaration();done('N17');
+    for(const [kind,changed] of [['zero_assertions',source.replace('assertions++;','')],['skipped',source.replace("test('Activation '","test.skip('Activation '")]]){
+      assert.notEqual(changed,source);
+      try{fs.writeFileSync(file,changed);if(kind==='skipped'){
+        const env={...process.env};delete env.NODE_TEST_CONTEXT;const result=spawnSync(process.execPath,['--test','--test-reporter=tap','encounter-activation.mjs'],{cwd:temp,shell:false,encoding:'utf8',env});assert.ifError(result.error);assert.equal(result.status,0);guardRed('N18_skipped',`assertTapEvidence(${JSON.stringify(result.stdout)},11);`,/0 !== 11/);
+      }else red('N18_zero_assertions','creation:',/Activation requires actual assertions/);}
+      finally{fs.writeFileSync(file,bytes);}done('N18_'+kind);
+    }
+    try{fs.appendFileSync(runtimeFile,'\n// deliberate activation drift\n');guardRed('N19','assertPackedFiles();',/installed artifact content/);}
+    finally{fs.writeFileSync(runtimeFile,runtimeBytes);}done('N19');
+    guardRed('N20',`assertTapEvidence(${JSON.stringify(evidence.replace('ENCOUNTER_A35_PASS','removed_marker'))},11,${JSON.stringify(markers)});`,/required evidence ENCOUNTER_A35_PASS/);done('N20');
+    console.log('ENCOUNTER_A49_PASS physical_tarball; root_named_exports; exact_types_pack_exists; strict_NodeNext');
+    console.log('ENCOUNTER_A50_PASS mandatory_central_runner; historical_regressions; CI_runs_same_verify');
+    console.log('INSTALLED_ENCOUNTER_ACTIVATION_NEGATIVE_PASS N01-N20; targeted_assertions; restored_clean; strict_NodeNext');
+    activationReceipt={runtime:evidence,typechecked:true};
+    }
+
+    assertActivationRegistration(activationReceipt);
 
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);

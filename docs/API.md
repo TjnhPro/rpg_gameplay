@@ -2697,3 +2697,50 @@ Factory always produces prepared, including empty rosters. Structural validator
 recaptures all five statuses but proves no transition, Life admission or authority.
 No package subpaths. Public inventory adds exactly five functions/six types;
 existing APIs and signatures remain unchanged. See approved Encounter task.
+
+## EN06–EN10 Encounter activation (v0.8.1)
+
+Root-only additive functions:
+
+- createEncounterActivationPolicy(input: EncounterActivationPolicy): EncounterActivationPolicy
+- createEncounterActivationObservation(input: EncounterActivationObservation): EncounterActivationObservation
+- evaluateEncounterActivationAdmission(state: EncounterState, entities: EntityCollection, policy: EncounterActivationPolicy, observation: EncounterActivationObservation): EncounterActivationAdmissionResult
+- activateEncounter(state: EncounterState, entities: EntityCollection, policy: EncounterActivationPolicy, observation: EncounterActivationObservation): EncounterActivationTransitionResult
+
+All data is readonly. EncounterActivationPolicy requires exactly
+requiredOccupiedSideIds: readonly string[] (unique opaque nonblank IDs; empty
+allowed), minimumParticipants/minimumOccupiedSides: positive safe integers,
+allowedLifeStatuses: nonempty unique readonly EntityLifeStatus[], and
+requireWorldReady: boolean. There are no defaults.
+EncounterParticipantActivationFact has exactly entityId: string,
+life: EntityLifeState (canonical entityId + alive/dead status), worldReady: boolean.
+EncounterActivationObservation has exactly encounterId and readonly participants.
+Duplicate facts, extra/missing/accessor fields, unsafe arrays, Life ID mismatch,
+foreign participants and mismatched Encounter identity throw TypeError. Fact
+absence is a domain rejection. Factories deeply copy/freeze and do not freeze
+caller input. Observation factory cannot check a roster; evaluation does so.
+
+Validation order is structural state/current collection → policy → observation
+→ matching Encounter ID → no foreign facts, even for terminal states. Domain
+first-match order: not_prepared → insufficient_participants →
+insufficient_occupied_sides → required_side_unoccupied (policy order) →
+participant_fact_missing → participant_life_not_allowed →
+participant_world_not_ready. Participant stages each traverse roster order,
+independent of observation order. Occupied sides come from participants.
+
+EncounterActivationRejectionReason is exactly those seven string literals.
+EncounterActivationAdmissionResult always has exactly status, reason,
+encounterId, sideId, entityId: admitted/none has null diagnostic IDs; nonparticipant
+rejections have null IDs except required_side_unoccupied names its side;
+participant rejections name both roster side and Entity.
+EncounterActivationTransitionResult always has status, reason, encounterId,
+state: activated/none contains a deeply frozen detached active candidate;
+rejected contains the same first-match reason and state:null. No diagnostic ID
+fields or partial candidate. Only candidate status changes; original inputs,
+Entity/Life and all prior snapshots remain unchanged. It revalidates original
+inputs, accepts no admission token and does not reopen active/terminal state.
+
+No spawn, catalog resolution, Life mutation, execution, event, time/RNG provider,
+commit, cross-encounter exclusivity or exactly-once guarantee. L3 owns rules;
+L4 owns current facts and authoritative CAS. Canonical Entity remains the owner.
+Runtime root inventory is exactly139 functions; no package subpaths are added.
