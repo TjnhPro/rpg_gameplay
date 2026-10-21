@@ -1,3 +1,11 @@
+## v0.11.3 — Equipment EQ16–EQ20 closure evidence
+
+Installed end-to-end equip/query/replace/unequip, safe test-local Item/Inventory handoff,
+canonical Entity/Core recalculation and replay are exercised with no production changes.
+EQ01–EQ20 are ready for Developer review; milestone/phase acceptance PENDING. No durable
+storage guarantee, implicit modifier grants or v0.12 Loot implementation.
+[Final review](reports/v0.11.3-equipment-integration-mvp-closure.md).
+
 ## v0.11.2 — Equipment operations EQ11–EQ15
 
 Pure equip/unequip/single-entry replacement candidates with occupancy protection, exact

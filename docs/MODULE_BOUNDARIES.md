@@ -1,3 +1,11 @@
+## v0.11.3 — Equipment integration ownership
+
+Production and graph unchanged: item->[], inventory->[item], equipment->[item]. Only
+consumer fixtures compose the owners. L3 maps chosen Item data to Kernel modifiers;
+Entity/Core own all calculations; L4 owns admission, freshness, uniqueness and publication.
+No transfer/stat engine, reverse edge, shared store or adapter was added.
+[Final review](reports/v0.11.3-equipment-integration-mvp-closure.md).
+
 ## v0.11.2 — Equipment candidate boundary
 
 Graph remains equipment->[item] only. Three pure operations own Equipment membership/slots;

@@ -1,3 +1,12 @@
+## v0.11.3 — Equipment integration evidence (EQ16–EQ20)
+
+Zero production/API delta from v0.11.2: nine Equipment functions and nine types remain
+unchanged. Consumer fixtures stage independent Inventory and Equipment candidates,
+publish both locally only on success/current baselines, return released Items and reject
+quantity>1 wholesale handoff. Explicit L3 Item-to-modifier mapping feeds existing
+calculateEntityStats/Core; Equipment does no stat work. Text/2D/2.5D are data fixtures.
+Developer acceptance PENDING. [Final review](reports/v0.11.3-equipment-integration-mvp-closure.md).
+
 ## v0.11.2 — Equip, Unequip & Safe Replacement (EQ11–EQ15)
 
 Three additive functions: `equipEquipmentItem(state,context,item,slotIds,admission)`,
