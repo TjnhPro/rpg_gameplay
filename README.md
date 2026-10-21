@@ -1,6 +1,6 @@
 # RPG Gameplay — current verification
 
-L2 reusable headless function-first RPG framework. Package checkpoint: `0.13.0` (Reward Foundation RW01–RW05, Developer acceptance PENDING).
+L2 reusable headless function-first RPG framework. Package checkpoint: `0.13.1` (Reward Claim Planning RW06–RW10, Developer acceptance PENDING).
 Daily checks: `npm run verify` runs boundaries, build, strict repo NodeNext typecheck
 and direct public function tests. Fresh setup: `npm run core:prepare` then
 `npm ci --ignore-scripts`. CI is one Ubuntu/Node22 PR job.
@@ -19,11 +19,14 @@ test-local data flows, not live games or durable/exactly-once grants. No product
 or behavior changes in this checkpoint.
 See [Loot closure evidence](docs/reports/v0.12.2-loot-integration-mvp-closure.md).
 
-Reward provides detached immutable resolved packages and claim snapshots: four root
-functions, five readonly types, optional `reward -> []`. Grant kind/reference and
+Reward Foundation provides detached immutable resolved packages and claim snapshots:
+four root functions and five readonly types, optional `reward -> []`. Grant kind/reference and
 source/recipient are opaque. `claimed` is supplied data, not proof of delivery.
-No claim planning, Item/EXP grants or persistence is implemented in this checkpoint.
-See [Reward Foundation evidence](docs/reports/v0.13.0-reward-foundation.md).
+`prepareRewardClaim` adds one function and two types for pure candidate/intent planning
+with explicit admission and
+already-claimed priority. L4 owns atomic external grants/claim commit and freshness.
+No Item/EXP grants or persistence is implemented.
+See [Reward planning evidence](docs/reports/v0.13.1-reward-claim-planning.md).
 
 See [testing and limitations](docs/TESTING.md), [verification](docs/VERIFICATION.md)
 and [harness migration report](docs/reports/harness-simplification-mvp.md).

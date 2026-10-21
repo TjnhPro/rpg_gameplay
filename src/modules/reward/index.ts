@@ -111,3 +111,36 @@ export function validateRewardClaimState(input: RewardClaimState): RewardClaimSt
 export function createRewardClaimState(input: RewardClaimState): RewardClaimState {
   return validateRewardClaimState(input);
 }
+
+export interface RewardClaimAdmission {
+  readonly eligible: boolean;
+}
+export type RewardClaimPreparationResult =
+  | {
+      readonly status: 'accepted';
+      readonly reason: 'none';
+      readonly candidate: RewardClaimState;
+      readonly grants: readonly RewardLine[];
+    }
+  | {
+      readonly status: 'rejected';
+      readonly reason: 'already_claimed' | 'ineligible';
+      readonly candidate: null;
+      readonly grants: readonly [];
+    };
+
+/** Prepare intents only. L4 must atomically commit the claim and all external grants. */
+export function prepareRewardClaim(state: RewardClaimState, admission: RewardClaimAdmission): RewardClaimPreparationResult {
+  return inspect(() => {
+    const snapshot = validateRewardClaimState(state);
+    const {eligible} = fields(admission, ['eligible']);
+    if (typeof eligible !== 'boolean') throw new TypeError('Reward admission eligible must be boolean');
+    if (snapshot.status === 'claimed' || !eligible) {
+      return Object.freeze({status: 'rejected', reason: snapshot.status === 'claimed' ? 'already_claimed' : 'ineligible',
+        candidate: null, grants: Object.freeze([] as const)});
+    }
+    const candidate = Object.freeze({...snapshot, status: 'claimed' as const});
+    const grants = validateRewardPackage(snapshot.reward).lines;
+    return Object.freeze({status: 'accepted', reason: 'none', candidate, grants});
+  });
+}

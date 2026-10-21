@@ -208,3 +208,6 @@ export {rollLootTable} from './modules/loot/index.js';
 
 export {createRewardPackage, validateRewardPackage, createRewardClaimState, validateRewardClaimState} from './modules/reward/index.js';
 export type {RewardLine, RewardPackage, RewardSourceReference, RewardRecipientReference, RewardClaimState} from './modules/reward/index.js';
+
+export {prepareRewardClaim} from './modules/reward/index.js';
+export type {RewardClaimAdmission, RewardClaimPreparationResult} from './modules/reward/index.js';

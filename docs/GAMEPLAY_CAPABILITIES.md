@@ -1,3 +1,13 @@
+## v0.13.1 — Reward planning RW06–RW10
+
+Canonical snapshot inspection is reused. Explicit admission and claimed-snapshot checks
+prepare immutable complete claim candidates plus ordered intent lines, or exact empty
+rejections. Structural errors remain TypeError before policy rejection; claimed reason
+has priority. No Item/Inventory/EXP execution or authoritative commit; repeat/concurrent
+plans on an available snapshot remain possible. L4 owns freshness and atomic delivery.
+RW11–RW15 deferred; Developer acceptance PENDING.
+[Report](reports/v0.13.1-reward-claim-planning.md).
+
 ## v0.13.0 — Reward Foundation RW01–RW05
 
 Implemented exact immutable package/ordered opaque lines, source/recipient references,
