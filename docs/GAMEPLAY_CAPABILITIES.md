@@ -1,3 +1,13 @@
+## v0.8.7 — Encounter integration closure EN36–EN40
+
+Existing public functions compose installed PvE, pending/clear waves, independent
+Dungeon battles and externally selected turns in L4 test consumers. No production
+API, five-field EncounterState, optional entity-only dependency or canonical
+Combat/Skill/Effect/AI owner changes. See the [final evidence](reports/v0.8.7-encounter-final-review.md).
+Technical review does not accept the phase: Developer acceptance remains PENDING,
+PR #13 remains Draft. Concrete game profiles, World spawning, durable/distributed
+transactions, rewards, rendering and game balance remain NOT_EVALUATED.
+
 ## v0.8.6 — Encounter continuity and recovery EN31–EN35
 
 No production API or semantics change. Installed consumers compose existing Entity

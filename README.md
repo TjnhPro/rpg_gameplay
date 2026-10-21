@@ -1,3 +1,27 @@
+## v0.8.7 — Encounter integration and closure EN36–EN40
+
+Installed headless consumers compose existing Entity/Combat/Skill/Effect/Actor AI
+owners with Encounter for PvE, explicit pending/clear reinforcement, independent
+Dungeon encounters and externally selected turns. No new production API or owner
+semantics. EncounterState still has five fields; encounter depends only on Entity.
+
+The final consumer and strict NodeNext pair are mandatory in the central runner.
+Isolated N01–N36 mutations must fail their dedicated assertions, restore exact
+bytes and rerun every positive final group. Historical suites and negative controls
+remain unchanged. Root package.json remains the independent build-version oracle.
+
+Technical closure requires full local verification and eight exact-head push/PR
+Windows/Ubuntu Node22/24 jobs. See the final report and its SHA-bound PR supplement.
+Developer acceptance remains PENDING; PR #13 remains Draft. No Ready/merge/tag/publish
+or next-phase work is authorized. These single-process caller fixtures do not prove
+World spawning, persistent/distributed transactions, exactly-once delivery, rewards,
+renderer integration or game balance. Concrete gameplay profiles NOT_EVALUATED.
+
+[Approved task](docs/tasks/active/v0.8.7-encounter-integration-closure.md) /
+[Final report](docs/reports/v0.8.7-encounter-final-review.md).
+
+Earlier checkpoint sections below are historical.
+
 ## v0.8.6 — Encounter continuity and recovery EN31–EN35
 
 No production API or semantics change. Installed consumers compose existing Entity

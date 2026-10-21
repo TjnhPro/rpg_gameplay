@@ -56,7 +56,13 @@ function assertContinuityRegistration(receipt) {
  assert.equal(receipt.typechecked,true,'mandatory continuity strict NodeNext');
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40 + EN01–EN35, ESM root, closed exports, strict declarations and real Kernel', () => {
+function assertFinalRegistration(receipt) {
+ assert.ok(receipt,'mandatory final Encounter registration');
+ assertTapEvidence(receipt.runtime,13,Array.from({length:73},(_,i)=>i+1).filter(i=>i<=60||i>=68).map(i=>'ENCOUNTER_E'+String(i).padStart(2,'0')+'_PASS'));
+ assert.equal(receipt.typechecked,true,'mandatory final Encounter strict NodeNext');
+}
+
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40 + EN01–EN40, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -87,7 +93,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     fs.writeFileSync(path.join(temp, 'package.json'), JSON.stringify({name: 'foundation-consumer', private: true, type: 'module'}));
     exec([cli, 'install', '--ignore-scripts', '--no-audit', '--no-fund', path.join(temp, packed.filename), coreArtifact], temp);
     const installed = path.join(temp, 'node_modules/@rpg/gameplay');
-    let activationReceipt, membershipReceipt, integrationReceipt, completionReceipt, closureReceipt, continuityReceipt;
+    let activationReceipt, membershipReceipt, integrationReceipt, completionReceipt, closureReceipt, continuityReceipt, finalReceipt;
     const expectedPackedFiles = packed.files.filter(file => file.path.startsWith('dist/'))
       .map(file => [file.path, fs.readFileSync(path.join(root, file.path))]);
     const assertPackedFiles = () => {
@@ -1862,6 +1868,98 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     console.log('INSTALLED_ENCOUNTER_CONTINUITY_DECLARATION_PASS strict_NodeNext; skipLibCheck_false; restored');
     console.log('INSTALLED_ENCOUNTER_CONTINUITY_NEGATIVE_PASS N01-N30; isolated_intended_assertions; restored_clean');
     }
+    { // EN36-EN40: physical installed final integration; no production delta.
+    const name='encounter-integration-closure';
+    for(const ext of ['mjs','ts'])copyRequiredConsumer(path.join(root,'tests/consumers/'+name+'.'+ext),path.join(temp,name+'.'+ext));
+    const file=path.join(temp,name+'.mjs'),bytes=fs.readFileSync(file),source=bytes.toString('utf8');
+    const env={...process.env};delete env.NODE_TEST_CONTEXT;
+    const markers=Array.from({length:73},(_,i)=>i+1).filter(i=>i<=60||i>=68).map(i=>'ENCOUNTER_E'+String(i).padStart(2,'0')+'_PASS');
+    const run=()=>exec(['--test','--test-reporter=tap',name+'.mjs'],temp);
+    const clean=()=>{assertTapEvidence(run(),13,markers);assertPackedFiles();assertBuildVersions(rootPackage,lock,JSON.parse(fs.readFileSync(path.join(installed,'package.json'))));};
+    const evidence=run();assertTapEvidence(evidence,13,markers);
+    for(const line of evidence.split(/\r?\n/))if(/ENCOUNTER_(?:E\d+_PASS|FINAL_)/.test(line))console.log(line);else if(/^(?:ok \d+|# (?:tests|pass|fail|cancelled|skipped|todo) \d+)/.test(line))console.log('ENCOUNTER_FINAL_TAP '+line);
+    const raw=title=>spawnSync(process.execPath,['--test','--test-reporter=tap','--test-name-pattern=^Final Encounter '+title+'$',name+'.mjs'],{cwd:temp,shell:false,encoding:'utf8',env});
+    const owner=path.join(installed,'dist/modules/encounter/index.js'),ownerBytes=fs.readFileSync(owner),ownerSource=ownerBytes.toString('utf8');
+    function mutate(id,title,target,anchor,replacement,diagnostic){
+      const original=fs.readFileSync(target),text=original.toString('utf8');assert.equal(text.split(anchor).length-1,1,id+' single mutation anchor');
+      const baseline=raw(title);assert.ifError(baseline.error);assert.equal(baseline.status,0,baseline.stdout+baseline.stderr);assert.match(baseline.stdout,/# pass 1\r?$/m);
+      try{fs.writeFileSync(target,text.replace(anchor,replacement));const r=raw(title);assert.ifError(r.error);assert.equal(r.signal,null);assert.equal(r.status,1,r.stdout+r.stderr);assert.match(r.stdout,new RegExp('not ok \\d+ - Final Encounter '+title));assert.match(r.stdout,/# fail 1\r?$/m);assert.match(r.stdout+r.stderr,diagnostic,id+' dedicated assertion');assert.doesNotMatch(r.stdout+r.stderr,/SyntaxError|ReferenceError|ERR_MODULE_NOT_FOUND|ENOENT/);console.log('ENCOUNTER_FINAL_NEGATIVE_RED '+id+' exit=1 target='+title+' intended='+diagnostic.source+' selected_fail=1');}
+      finally{fs.writeFileSync(target,original);}
+      assert.deepEqual(fs.readFileSync(target),original);clean();console.log('ENCOUNTER_FINAL_NEGATIVE_PASS '+id+' restored_sha256='+createHash('sha256').update(original).digest('hex')+' clean13/13');
+    }
+    const l4=[
+      ['N01','rejected-paths',source.split('\n').find(s=>s.startsWith('function activation(w)')),"function activation(w){return {status:'activated',state:{...w.state,status:'active'}};}",/N01 activation readiness/],
+      ['N04','rejected-paths',"g.evaluateCombatActionAdmission(action,w.entities,w.life[actor],{eligible});","g.evaluateCombatActionAdmission(action,w.entities,w.life[actor],{eligible:true});",/N04 canonical denial/],
+      ['N05','pve',"w.combatReceipts.push([admission.status,validation.status,applied.appliedDamage]);","w.state={...w.state,status:'resolved'};w.combatReceipts.push([admission.status,validation.status,applied.appliedDamage]);",/N05 no automatic victory/],
+      ['N07','skill-effect-ai',"if(restriction.status==='blocked')return 'effect_blocked';","if(false)return 'effect_blocked';",/N07 fresh restriction/],
+      ['N08','skill-effect-ai',"o.resources=result.resources;o.cooldown=result.cooldown;","o.resources=result.resources;o.cooldown=result.cooldown;o.feedback.push({status:'completed'});",/N08 accepted is not completed/],
+      ['N09','skill-effect-ai',"if(w.controller!=='ai')return 'manual_control';","if(false)return 'manual_control';",/N09 current controller/],
+      ['N10','current-turn-authority',"const scope=currentScope(w,actor,target);","const scope={status:'eligible'};",/N10 departed target/],
+      ['N12','waves',"if(operation==='change_side')w.sideVersion++;return result;","if(operation==='join')w.state={...w.state,participants:w.state.participants.filter(p=>p.entityId!==id)};if(operation==='change_side')w.sideVersion++;return result;",/N12 explicit reinforcement/],
+      ['N14','waves',"function continuation(w,value){w.continuation=value;w.continuationVersion++;}","function continuation(w,value){w.continuation=w.life['wolf-002'].status==='dead'?'clear':value;w.continuationVersion++;}",/N14 explicit final clear/],
+      ['N17','dungeon',"return {dungeonId:'crypt-dungeon-001',room,boss};","boss.cleanupReceipts=room.cleanupReceipts;return {dungeonId:'crypt-dungeon-001',room,boss};",/N17 independent ledgers/],
+      ['N18','dungeon',"return {dungeonId:'crypt-dungeon-001',room,boss};","boss.state={...boss.state,status:'active'};return {dungeonId:'crypt-dungeon-001',room,boss};",/N18 no auto activation/],
+      ['N20','turns',"function start(w){assert.equal(commit(w,stage(w,activation(w))),'accepted');return w;}","function start(w){assert.equal(commit(w,stage(w,activation(w))),'accepted');w.turns.push('implicit');return w;}",/N20 external turns only/],
+      ['N21','current-turn-authority',"g.evaluateCombatActionAdmission(action,w.entities,w.life[actor],{eligible});","g.evaluateCombatActionAdmission(action,w.entities,{...w.life[actor],status:'alive'},{eligible});",/N21 queued dead/],
+      ['N24','turns',source.split('\n').find(s=>s.startsWith('function resolution(w)')),"function resolution(w){const c=g.resolveEncounter(w.state,w.entities,w.policy,observe(w));return c.disposition?.outcome?.kind==='draw'?{...c,disposition:{...c.disposition,outcome:{...c.disposition.outcome,winnerSideIds:['party']}}}:c;}",/N24 exact draw arrays/],
+      ['N25','terminal-atomic-cleanup',"if(!allowed)return 'terminal_guard';","if(false)return 'terminal_guard';",/N25 terminal independent guard/],
+      ['N25_decision','terminal-atomic-cleanup',"if(w.decisions.has(decisionId))return 'duplicate_decision';","if(false)return 'duplicate_decision';",/independent duplicate decision/],
+      ['N25_attempt','terminal-atomic-cleanup',"if(w.attempts.has(attemptId))return 'duplicate_attempt';","if(false)return 'duplicate_attempt';",/independent duplicate attempt/],
+      ['N26','current-turn-authority',"if(p.rev!==w.rev)return 'stale_revision';","if(false)return 'stale_revision';",/N26 same-shape freshness/],
+      ['N27','waves',"if(p.continuationVersion!==w.continuationVersion)return 'stale_continuation';","if(false)return 'stale_continuation';",/N27 new pending invalidates clear/],
+      ['N28','terminal-atomic-cleanup',"if(fail)throw new Error('atomic staging failure');","if(fail){w.state=c.state;throw new Error('atomic staging failure');}",/N28 atomic status disposition/],
+      ['N29','terminal-atomic-cleanup',"if(!['closed','cancelled'].includes(w.state.status)||token(candidate.state)!==token(w.state)||token(candidate.disposition)!==token(w.disposition))return 'unauthorized_cleanup';","if(!['closed','cancelled'].includes(w.state.status)){w.events.push(['premature']);return 'dispatched';}",/N29 no premature World work/],
+      ['N30','terminal-atomic-cleanup',"if(w.cleanupReceipts.has(key))return 'duplicate_cleanup';","if(false)return 'duplicate_cleanup';",/N30 no double cleanup/],
+      ['N31','literal-replay',"function e2e(mode='landed'){","function e2e(mode='landed'){Date.now();",/N31 hidden provider/],
+      ['N33_zero','pve',"assertions++;","",/Final Encounter requires actual assertions/],
+    ];
+    const runtime=[
+      ['N02','rejected-paths',"const source = getEncounterParticipant(current, entities, action.sourceEntityId);","const source = getEncounterParticipant(current, entities, action.sourceEntityId) ?? {sideId:'party'};",/N02 outsider scope/],
+      ['N03','current-turn-authority',"if (!rules.allowedSideRelations.includes(sideRelation))","if (false)",/N03 current side/],
+      ['N06','rejected-paths',"if (!lives.has(participant.entityId))","if (false)",/N06 missing Life blocks/],
+      ['N11','waves',"if (observed.continuation === 'pending')","if (false)",/N11 pending barrier/],
+      ['N13','waves',"if (!lives.has(participant.entityId))","if (false)",/N13 fresh wave facts/],
+      ['N15','objective-policy',"if (observed.objectives.some(fact => fact.objectiveId === rule.objectiveId && fact.status === rule.whenStatus))","if (true)",/N15 required objective/],
+      ['N16','objective-policy',"for (const rule of rules.rules) {\n        let outcome","for (const rule of [...rules.rules].reverse()) {\n        let outcome",/N16 first matching priority/],
+      ['N19','dungeon',"const target = getEncounterParticipant(current, entities, action.targetEntityId);","const target = getEncounterParticipant(current, entities, action.targetEntityId) ?? {sideId:'enemies'};",/N19 foreign dungeon target/],
+      ['N22','current-turn-authority',"const source = getEncounterParticipant(current, entities, action.sourceEntityId);","const source = getEncounterParticipant(current, entities, action.sourceEntityId) ?? {sideId:'party'};",/N22 queued leaver/],
+      ['N23','terminal-alive-turn',"if (current.status !== 'active')\n        return reject('encounter_not_active');","if (false)\n        return reject('encounter_not_active');",/N23 alive terminal turn/],
+      ['N32','immutable-inputs',"return capture(fields(state, ['encounterId', 'definitionId', 'status', 'sides', 'participants']), entities);","return state;",/N32 detached roster/],
+    ];
+    for(const [id,title,anchor,replacement,diagnostic] of l4)mutate(id,title,file,anchor,replacement,diagnostic);
+    for(const [id,title,anchor,replacement,diagnostic] of runtime)mutate(id,title,owner,anchor,replacement,diagnostic);
+    const guard=path.join(temp,'final-closure-guard.mjs');
+    const prelude=`import assert from 'node:assert/strict';import fs from 'node:fs';const assertTapEvidence=${assertTapEvidence.toString()};const copyRequiredConsumer=${copyRequiredConsumer.toString()};const assertFinalRegistration=${assertFinalRegistration.toString()};\n`;
+    function guardRed(id,code,diagnostic){fs.writeFileSync(guard,prelude+code);const r=spawnSync(process.execPath,[guard],{cwd:temp,shell:false,encoding:'utf8'});assert.ifError(r.error);assert.equal(r.signal,null);assert.equal(r.status,1,r.stdout+r.stderr);assert.match(r.stderr,diagnostic);console.log('ENCOUNTER_FINAL_NEGATIVE_RED '+id+' exit=1 intended='+diagnostic.source);}
+    const restored=id=>{clean();console.log('ENCOUNTER_FINAL_NEGATIVE_PASS '+id+' exact_bytes_restored clean13/13');};
+    for(const ext of ['mjs','ts']){const f=path.join(temp,name+'.'+ext),b=fs.readFileSync(f);try{fs.renameSync(f,f+'.saved');guardRed('N33_missing_'+ext,`copyRequiredConsumer(${JSON.stringify(f)},${JSON.stringify(f+'.copy')});`,/ENOENT/);}finally{fs.renameSync(f+'.saved',f);}assert.deepEqual(fs.readFileSync(f),b);restored('N33_missing_'+ext);}
+    guardRed('N33_registration','assertFinalRegistration(undefined);',/mandatory final Encounter registration/);restored('N33_registration');
+    try{fs.writeFileSync(file,source.replace("test('Final Encounter '","test.skip('Final Encounter '"));const r=spawnSync(process.execPath,['--test','--test-reporter=tap',name+'.mjs'],{cwd:temp,shell:false,encoding:'utf8',env});assert.ifError(r.error);assert.equal(r.status,0);guardRed('N33_skip',`assertTapEvidence(${JSON.stringify(r.stdout)},13);`,/TAP skipped|0 !== 13/);}finally{fs.writeFileSync(file,bytes);}assert.deepEqual(fs.readFileSync(file),bytes);restored('N33_skip');
+    exec([cli,'install','--ignore-scripts','--no-audit','--no-fund','typescript@'+rootPackage.devDependencies.typescript],temp);
+    const config=path.join(temp,'final-closure-tsconfig.json');fs.writeFileSync(config,JSON.stringify({compilerOptions:{target:'ES2022',lib:['ES2022'],module:'NodeNext',moduleResolution:'NodeNext',strict:true,noEmit:true,skipLibCheck:false,types:[]},files:[name+'.ts']}));
+    const compile=()=>exec([path.join(temp,'node_modules/typescript/bin/tsc'),'-p',config],temp);compile();
+    const declaration=path.join(installed,'dist/modules/encounter/index.d.ts'),declarationBytes=fs.readFileSync(declaration);const d=declarationBytes.toString();assert.equal(d.split('readonly status: EncounterStatus;').length-1,1);
+    try{fs.writeFileSync(declaration,d.replace('readonly status: EncounterStatus;','readonly status: number;'));assert.throws(compile,/TS2322/);console.log('ENCOUNTER_FINAL_NEGATIVE_RED N34 real_tsc_exit=1 intended=TS2322_used_status_type');}finally{fs.writeFileSync(declaration,declarationBytes);}assert.deepEqual(fs.readFileSync(declaration),declarationBytes);compile();restored('N34');
+    const manifest=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifest);
+    const exportContract=()=>{const p=JSON.parse(fs.readFileSync(manifest));assert.equal(p.exports['.'].types,'./dist/index.d.ts','final root declaration path');assert.ok(packed.files.some(f=>f.path===p.exports['.'].types.slice(2)));assert.ok(fs.statSync(path.join(installed,p.exports['.'].types)).isFile());};exportContract();
+    try{const p=JSON.parse(manifestBytes);p.exports['.'].types='./dist/missing.d.ts';fs.writeFileSync(manifest,JSON.stringify(p));assert.throws(exportContract,/final root declaration path/);console.log('ENCOUNTER_FINAL_NEGATIVE_RED N35 intended=final_root_declaration_path independent_of_NodeNext_fallback');}finally{fs.writeFileSync(manifest,manifestBytes);}assert.deepEqual(fs.readFileSync(manifest),manifestBytes);exportContract();compile();restored('N35');
+    // Accepted v0.8.6 inventory: checkout EOL normalization only; no protected exceptions.
+    const protectedPaths=[".github/workflows/harness.yml","ARCHITECTURE.md","docs/CORE_INTEGRATION.md","docs/DECISIONS.md","harness/core-pin.json","harness/modules.json","src/foundation/execution/index.ts","src/foundation/messaging/index.ts","src/foundation/modules/index.ts","src/foundation/runtime/index.ts","src/index.ts","src/modules/actor-ai/index.ts","src/modules/combat/index.ts","src/modules/effect/index.ts","src/modules/encounter/index.ts","src/modules/entity/index.ts","src/modules/progression/index.ts","src/modules/skill/index.ts","tests/consumers/actor-ai-action-selection.mjs","tests/consumers/actor-ai-action-selection.ts","tests/consumers/actor-ai-behavior.mjs","tests/consumers/actor-ai-behavior.ts","tests/consumers/actor-ai-foundation.mjs","tests/consumers/actor-ai-foundation.ts","tests/consumers/actor-ai-integration-closure.mjs","tests/consumers/actor-ai-integration-closure.ts","tests/consumers/actor-ai-integration.mjs","tests/consumers/actor-ai-integration.ts","tests/consumers/actor-ai-lifecycle-recovery.mjs","tests/consumers/actor-ai-lifecycle-recovery.ts","tests/consumers/actor-ai-perception.mjs","tests/consumers/actor-ai-perception.ts","tests/consumers/actor-ai-target-selection.mjs","tests/consumers/actor-ai-target-selection.ts","tests/consumers/advancement.mjs","tests/consumers/advancement.ts","tests/consumers/attribute-points.mjs","tests/consumers/attribute-points.ts","tests/consumers/combat-admission.mjs","tests/consumers/combat-admission.ts","tests/consumers/combat-attack.mjs","tests/consumers/combat-attack.ts","tests/consumers/combat-damage.mjs","tests/consumers/combat-damage.ts","tests/consumers/combat-integration.mjs","tests/consumers/combat-integration.ts","tests/consumers/combat-target.mjs","tests/consumers/combat-target.ts","tests/consumers/combat.mjs","tests/consumers/combat.ts","tests/consumers/composition.mjs","tests/consumers/composition.ts","tests/consumers/effect-application.mjs","tests/consumers/effect-application.ts","tests/consumers/effect-foundation.mjs","tests/consumers/effect-foundation.ts","tests/consumers/effect-integration.mjs","tests/consumers/effect-integration.ts","tests/consumers/effect-lifecycle.mjs","tests/consumers/effect-lifecycle.ts","tests/consumers/effect-modifiers.mjs","tests/consumers/effect-modifiers.ts","tests/consumers/effect-periodic.mjs","tests/consumers/effect-periodic.ts","tests/consumers/effect-restrictions.mjs","tests/consumers/effect-restrictions.ts","tests/consumers/effect-stacking.mjs","tests/consumers/effect-stacking.ts","tests/consumers/encounter-activation.mjs","tests/consumers/encounter-activation.ts","tests/consumers/encounter-closure.mjs","tests/consumers/encounter-closure.ts","tests/consumers/encounter-combat-ai-integration.mjs","tests/consumers/encounter-combat-ai-integration.ts","tests/consumers/encounter-completion-resolution.mjs","tests/consumers/encounter-completion-resolution.ts","tests/consumers/encounter-continuity-recovery.mjs","tests/consumers/encounter-continuity-recovery.ts","tests/consumers/encounter-foundation.mjs","tests/consumers/encounter-foundation.ts","tests/consumers/encounter-membership.mjs","tests/consumers/encounter-membership.ts","tests/consumers/entity-collection.mjs","tests/consumers/entity-collection.ts","tests/consumers/entity-integration.mjs","tests/consumers/entity-integration.ts","tests/consumers/entity-life.mjs","tests/consumers/entity-life.ts","tests/consumers/entity-resources.mjs","tests/consumers/entity-resources.ts","tests/consumers/entity-stats.mjs","tests/consumers/entity-stats.ts","tests/consumers/entity.mjs","tests/consumers/entity.ts","tests/consumers/execution.mjs","tests/consumers/execution.ts","tests/consumers/experience.mjs","tests/consumers/experience.ts","tests/consumers/messaging.mjs","tests/consumers/messaging.ts","tests/consumers/modules.mjs","tests/consumers/modules.ts","tests/consumers/progression-integration.mjs","tests/consumers/progression-integration.ts","tests/consumers/progression.mjs","tests/consumers/progression.ts","tests/consumers/runtime.mjs","tests/consumers/runtime.ts","tests/consumers/skill-activation.mjs","tests/consumers/skill-activation.ts","tests/consumers/skill-admission.mjs","tests/consumers/skill-admission.ts","tests/consumers/skill-combat-handoff.mjs","tests/consumers/skill-cooldown.mjs","tests/consumers/skill-cooldown.ts","tests/consumers/skill-foundation.mjs","tests/consumers/skill-foundation.ts","tests/consumers/skill-integration.mjs","tests/consumers/skill-integration.ts","tests/consumers/skill-loadout.mjs","tests/consumers/skill-loadout.ts","tests/consumers/skill-progression.mjs","tests/consumers/skill-progression.ts","tests/consumers/skill-resource-costs.mjs","tests/consumers/skill-resource-costs.ts"];
+    function protectedDigest(base){return createHash('sha256').update(JSON.stringify(protectedPaths.map(f=>[f,fs.readFileSync(path.join(base,f),'utf8').replace(/\r\n/g,'\n')]))).digest('hex');}
+    const expectedProtected='dd6daace0251b6ad133008488d33ab1bd324d536aa38fc327a0280b68b41b88a';assert.equal(protectedDigest(root),expectedProtected,'final protected owner inventory');
+    const copy=path.join(temp,'final-protected-copy');for(const f of protectedPaths){fs.mkdirSync(path.dirname(path.join(copy,f)),{recursive:true});fs.copyFileSync(path.join(root,f),path.join(copy,f));}assert.equal(protectedDigest(copy),expectedProtected);
+    for(const f of ['harness/core-pin.json','harness/modules.json','src/modules/actor-ai/index.ts']){const target=path.join(copy,f),b=fs.readFileSync(target);try{fs.appendFileSync(target,'\nmutant\n');assert.throws(()=>assert.equal(protectedDigest(copy),expectedProtected,'final protected owner inventory'),/final protected owner inventory/);console.log('ENCOUNTER_FINAL_NEGATIVE_RED N36_'+f+' intended=final_protected_owner_inventory');}finally{fs.writeFileSync(target,b);}assert.deepEqual(fs.readFileSync(target),b);assert.equal(protectedDigest(copy),expectedProtected);restored('N36_'+f);}
+    const repeatResult=JSON.parse(exec([cli,'pack','--ignore-scripts','--json','--pack-destination',temp],root));const repeat=Array.isArray(repeatResult)?repeatResult[0]:repeatResult['@rpg/gameplay'];assert.equal(repeat.integrity,packed.integrity,'same-platform repeated physical tarball');
+    const resolution=exec(['--input-type=module','-e',"console.log(import.meta.resolve('@rpg/gameplay'))"],temp).trim();assert.ok(resolution.includes('/node_modules/@rpg/gameplay/dist/index.js'));assert.equal(fs.lstatSync(installed).isSymbolicLink(),false);assertPackedFiles();exportContract();compile();clean();
+    const distHash=createHash('sha256').update(JSON.stringify(expectedPackedFiles.map(([f,b])=>[f,createHash('sha256').update(b).digest('hex')]))).digest('hex');console.log('ENCOUNTER_FINAL_PROVENANCE version='+packageJson.version+' root='+resolution+' dist_sha256='+distHash+' repeat_pack_integrity='+repeat.integrity);
+    finalReceipt={runtime:evidence,typechecked:true};assertFinalRegistration(finalReceipt);assertContinuityRegistration(continuityReceipt);
+    console.log('INSTALLED_ENCOUNTER_FINAL_PASS EN36-EN40; consumer_tests=13 skipped=0; zero_production_delta; L4_test_only');
+    console.log('INSTALLED_ENCOUNTER_FINAL_NEGATIVE_PASS N01-N36; isolated_intended_assertions; exact_restore; clean13/13');
+    console.log('INSTALLED_ENCOUNTER_FINAL_DECLARATION_PASS strict_NodeNext; skipLibCheck_false; installed_TypeScript; real_type_corruption_restored');
+    console.log('ENCOUNTER_E61_E67_E74_E78_PASS mandatory_historical_gates; pinned_owner_inventory; real_artifact; actual_compiler_and_negatives');
+    }
+    assertFinalRegistration(finalReceipt);
+
 
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);
