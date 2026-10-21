@@ -1,6 +1,16 @@
 # RPG Gameplay — current verification
 
-L2 reusable headless function-first RPG framework. Package checkpoint: `0.13.2` (Reward Integration & MVP Closure RW11–RW15, Developer acceptance PENDING).
+L2 reusable headless function-first RPG framework. Package checkpoint: `0.14.2` (Currency CU01–CU15, Developer acceptance PENDING).
+Currency captures complete immutable multi-currency wallets: independent wallet/owner IDs,
+optional neutral owner, opaque ordered balances and nonnegative safe integer units.
+Explicit zero entries are retained (Developer CU-D03 choice). Query, credit and debit
+validate complete snapshots and return immutable candidates with explicit admission
+and credit cap policy. L4 owns freshness and commit; no Reward delivery or transaction manager.
+Closure tests prove real Reward currency intents → wallet candidates and one test-local
+composite commit, including cap, overflow, replay and stale-state failure isolation.
+This is single-process orchestration evidence, not durable/exactly-once delivery.
+See [Currency closure report](reports/v0.14.2-currency-integration-mvp-closure.md).
+
 Daily checks: `npm run verify` runs boundaries, build, strict repo NodeNext typecheck
 and direct public function tests. Fresh setup: `npm run core:prepare` then
 `npm ci --ignore-scripts`. CI is one Ubuntu/Node22 PR job.

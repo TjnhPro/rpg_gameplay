@@ -1,3 +1,63 @@
+## v0.14.2 — Currency integration closure (CU11–CU15)
+
+No production/API/schema delta. Direct public-root tests compose prepareRewardClaim
+with currency grantKindId/referenceId/amount and creditCurrency. Test-local L4 checks
+grant facts and prepares every candidate before replacing one composite reference.
+Cap, ineligibility, overflow, unsupported later grant, claimed replay and stale local
+snapshot cannot partially commit. This does not provide durable/distributed atomicity
+or global idempotency. Currency and Reward remain independent optional owners.
+[Report](../reports/v0.14.2-currency-integration-mvp-closure.md).
+
+## v0.14.1 — Currency balance operations (CU06–CU10)
+
+```ts
+interface CurrencyBalancePolicy { readonly maxBalance:number|null; }
+interface CurrencyOperationAdmission { readonly eligible:boolean; }
+type CurrencyMutationReason = 'ineligible'|'insufficient_balance'|'balance_limit_exceeded'|'amount_overflow';
+type CurrencyTransitionResult =
+  | {readonly status:'accepted'; readonly reason:'none'; readonly candidate:CurrencyWalletState}
+  | {readonly status:'rejected'; readonly reason:CurrencyMutationReason; readonly candidate:null};
+function getCurrencyBalance(wallet:CurrencyWalletState,currencyId:string):number;
+function creditCurrency(wallet:CurrencyWalletState,currencyId:string,amount:number,policy:CurrencyBalancePolicy,admission:CurrencyOperationAdmission):CurrencyTransitionResult;
+function debitCurrency(wallet:CurrencyWalletState,currencyId:string,amount:number,admission:CurrencyOperationAdmission):CurrencyTransitionResult;
+```
+
+Complete canonical wallet validation and all argument validation precede rejection.
+Malformed data throws TypeError; amount must be a positive safe integer. Admission
+is explicit boolean; cap is null or a nonnegative safe integer, including zero.
+Precedence: ineligible, then credit overflow before cap, or debit insufficient balance.
+Lookup of an absent exact ID returns zero. Credit appends absent entries; updates keep
+order and debit retains explicit zero. Accepted candidates are canonically captured,
+detached and deeply frozen; both outcome variants are frozen. Reduced caps affect
+only credit, never read/debit or persisted snapshot validity. No operation commits;
+equal requests against one base return independent equal proposals, not concurrency safety.
+[Report](../reports/v0.14.1-currency-balance-operations.md).
+
+## v0.14.0 — Currency Foundation (CU01–CU05)
+
+```ts
+interface CurrencyReference { readonly currencyId:string; }
+interface CurrencyWalletOwner { readonly ownerKind:string; readonly ownerId:string; }
+interface CurrencyBalance { readonly currencyId:string; readonly amount:number; }
+interface CurrencyWalletState {
+  readonly walletId:string;
+  readonly owner:CurrencyWalletOwner|null;
+  readonly balances:readonly CurrencyBalance[];
+}
+function validateCurrencyWalletState(state:CurrencyWalletState):CurrencyWalletState;
+function createCurrencyWalletState(input:CurrencyWalletState):CurrencyWalletState;
+```
+
+Both functions capture complete detached deeply frozen snapshots through one validator.
+Closed own-data records, exact nonblank IDs and dense ordered arrays are required;
+amounts are nonnegative safe integers. Explicit zero entries are valid and retained,
+per Developer CU-D03 decision; no pruning/sorting/rounding/case normalization. Local
+currencyId uniqueness only. walletId is independent of optional neutral owner. Invalid
+structure throws TypeError, including failed reflection; getters are not invoked.
+Plain Object/null record prototypes are supported, standard dense arrays only.
+No catalog, Core call, query, credit/debit, grant or authoritative commit.
+[Report](../reports/v0.14.0-currency-foundation.md).
+
 ## v0.13.2 — Reward integration closure (RW11–RW15)
 
 No production or public API delta. Test-local L4 resolves Item content, supplies IDs,

@@ -1,3 +1,28 @@
+## v0.14.2 — Currency closure evidence
+
+Production bytes and module graph unchanged. Reward prepares claim candidates and
+opaque grants; Currency prepares wallet candidates. Only the test-local L4 fixture
+resolves currency grant facts, checks local snapshot freshness and assigns the combined
+state. No Currency↔Reward import, transaction service, second wallet owner or Core change.
+
+## v0.14.1 — Currency operations
+
+The same import-free Currency owner adds complete snapshot lookup and bounded
+credit/debit proposals with explicit L3 cap and L4 admission. Canonical Foundation
+validation is reused for input and accepted output; wallet schema and currency -> []
+are unchanged. No sibling owner, Core call, store, commit or transaction coordinator.
+L4 retains authorization, freshness and atomic commit responsibilities.
+
+## v0.14.0 — Currency canonical owner
+
+`src/modules/currency/index.ts` owns wallet identity, neutral optional owner, ordered
+balances and immutable structural capture. Optional `currency -> []` has zero imports,
+including no Kernel edge. Item/Inventory/Reward/Loot/Progression/Equipment remain separate
+owners. L3 owns IDs, presentation units and policy; L4 owns authorization, current state,
+persistence, freshness/concurrency and multi-owner commit. No operations, transaction
+history, revision, engine or backend manager. Explicit zero balance entries are retained.
+[Report](../reports/v0.14.0-currency-foundation.md).
+
 ## v0.13.0 — Reward canonical owner
 
 `src/modules/reward/index.ts` owns package/line identities, neutral source/recipient

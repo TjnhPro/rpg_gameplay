@@ -1,3 +1,28 @@
+## v0.14.2 — Currency integration closure CU11–CU15
+
+CU01–CU15 now have direct functional/closure evidence, including real Reward currency
+handoff100→175 and failure/replay isolation. No production delta. Single-process L4
+fixture only: no game, shop, transfer, ledger, billing or backend guarantee. Developer
+phase acceptance PENDING.
+[Report](../reports/v0.14.2-currency-integration-mvp-closure.md).
+
+## v0.14.1 — Currency balance operations CU06–CU10
+
+Complete validated balance query and pure bounded credit/debit candidates are implemented.
+Explicit admission/cap, overflow-before-cap priority, zero retention and frozen outcomes
+are covered by direct public-root tests. No authoritative commit, transfer, exchange,
+catalog, Reward integration or concurrency protection. Developer acceptance PENDING.
+[Report](../reports/v0.14.1-currency-balance-operations.md).
+
+## v0.14.0 — Currency Foundation CU01–CU05
+
+Independent optional Currency provides complete multi-currency wallet capture with
+nonnegative safe integer units (including explicit zero), neutral nullable owner,
+exact identities, ordered local uniqueness and detached frozen snapshots. No query/
+credit/debit/transfer, currency catalog, Reward integration, shop or transaction ledger.
+CU06+ NOT_STARTED; Developer milestone/phase acceptance PENDING.
+[Report](../reports/v0.14.0-currency-foundation.md).
+
 ## v0.13.2 — Reward RW11–RW15 closure evidence
 
 Installed test-local handoff proves canonical Item3 + EXP100, atomic failure/replay,
