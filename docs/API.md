@@ -1,3 +1,13 @@
+## v0.9.3 — Item API frozen, integration evidence only
+
+No production or public declaration changes from 0.9.2: exactly twelve Item
+functions/thirteen types. Installed consumers use root ESM and readonly public
+shapes for definition → instance → inspect → set/replace candidate → revalidate →
+compatibility → read handoff. The missing-property result remains {found:false};
+explicit null is present. Source labels stay outside Item. Candidates and advisory
+compatibility prove neither authoritative commit nor ownership/quantity/equipment.
+See the v0.9.3 final report; milestone and phase acceptance PENDING.
+
 ## v0.9.2 — Item stack compatibility IT09–IT11
 
 Root additions: validateItemStackPolicy(policy) and

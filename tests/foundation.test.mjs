@@ -7,6 +7,7 @@ import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import test from 'node:test';
 import {runItemStack, assertItemStackRegistration} from './item-stack-evidence.mjs';
+import {runItemClosure, assertItemClosureRegistration} from './item-integration-closure-evidence.mjs';
 import {runItemProperties, assertItemPropertiesRegistration} from './item-property-evidence.mjs';
 import {historicalBeforeItem, runItemFoundation, assertItemRegistration} from './item-foundation-evidence.mjs';
 import {copyRequiredConsumer, assertVersion, assertBuildVersions, assertCoreIntegrity, assertTapEvidence} from './consumer-evidence.mjs';
@@ -2102,6 +2103,10 @@ void resource; void invalid;
     console.log('ITEM_P24_PASS all_historical_installed_consumers_completed');
     assertItemStackRegistration(runItemStack({root,temp,installed,exec,rootPackage,lock,packed}));
     console.log('ITEM_S23_PASS all_historical_installed_consumers_completed');
+    assertItemClosureRegistration(runItemClosure({root,temp,installed,exec,rootPackage,lock,packed}));
+    assertPackedFiles();
+    console.log('ITEM_C22_PASS historical_Item_foundation_property_stack_completed');
+    console.log('ITEM_C23_PASS all_historical_installed_consumers_completed');
     console.log('INSTALLED_CONSUMER_NEGATIVE_PASS missing_root_export; real_TypeScript_failure; required_commands_nonzero');
   } finally {
     const resolved = fs.realpathSync(temp);

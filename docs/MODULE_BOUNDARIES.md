@@ -1,3 +1,11 @@
+## v0.9.3 — Item closure boundary
+
+Zero production changes: optional item -> [], all sibling owners, root exports,
+Core pin and CI matrix remain byte-identical to 0.9.2. Integration readers/source
+labels exist only in tests/consumers/item-integration-closure.mjs/.ts. No Inventory,
+Equipment, Loot or Reward implementation; no numerical owner or alternate engine.
+An injected item -> inventory import must fail the unchanged boundary checker.
+
 ## v0.9.2 — Item compatibility owner
 
 Existing optional item -> [] alone owns the two new structural functions. The

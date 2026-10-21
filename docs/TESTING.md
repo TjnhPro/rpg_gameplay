@@ -1,3 +1,14 @@
+## v0.9.3 — Mandatory installed Item closure
+
+Ten assertion-bearing native tests in item-integration-closure.mjs cover C01–C21
+and C24; the .ts consumer uses strict external NodeNext, skipLibCheck:false.
+Twenty-three targeted faults exercise missing/skip/zero-assertion guards, exact
+Item names, version/Core provenance, immutable isolation, lookup/admission/stack
+oracles, sibling boundaries and declaration readonly/discrimination. Every modified
+file restores exact bytes and clean10/10 reruns; declarations also recompile.
+Historical suites and controls stay unchanged. Marker IDs are evidence traces,
+not test-count targets. See VERIFICATION and the final Item review report.
+
 ## v0.8.7 — Encounter integration and closure EN36–EN40
 
 Installed headless consumers compose existing Entity/Combat/Skill/Effect/Actor AI

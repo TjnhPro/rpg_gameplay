@@ -1,3 +1,18 @@
+## v0.9.3 — Item MVP integration closure (IT12–IT14)
+
+Item is an optional, independent headless library: twelve functions and thirteen
+public types for immutable definitions/instances, property proposals and structural
+stack assessments. This milestone adds installed integration evidence with zero
+production/API/graph changes. Test-local readers and source labels cover
+Inventory/Equipment handoff and Loot/Reward-neutral creation using Text/2D/2.5D
+data. Those future systems, storage transactions and game behavior are unimplemented.
+
+The mandatory installed closure pair adds literal end-to-end replay, deep isolation,
+strict external NodeNext and fault-targeted guards. See the [final Item review](docs/reports/v0.9.3-item-integration-mvp-closure.md)
+and its exact-SHA supplement on [Draft PR #14](https://github.com/TjnhPro/rpg_gameplay/pull/14).
+Developer milestone and phase acceptance remain PENDING. Stop at this milestone;
+no Inventory, Ready, merge, tag or publication. Earlier sections are historical.
+
 ## v0.8.7 — Encounter integration and closure EN36–EN40
 
 Installed headless consumers compose existing Entity/Combat/Skill/Effect/Actor AI

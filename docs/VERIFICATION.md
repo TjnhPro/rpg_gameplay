@@ -1,3 +1,18 @@
+## v0.9.3 — Item integration and final MVP closure
+
+Central installed runner requires runItemClosure and assertItemClosureRegistration:
+ten runtime tests, C01–C21/C24, physical packed root ESM, strict external NodeNext
+(C25) and 23 targeted controls (C26). C22/C23 print only after historical Item and
+all earlier consumers complete. C27–C30 are full local verification, eight exact
+HEAD CI jobs, cumulative protected-scope audit and committed review evidence;
+those are not fabricated runtime test markers. Missing fixtures, skipped tests,
+missing markers and zero executed assertions must fail closed. Historical tests,
+negative controls, type inventories, Core integrity and workflow stay protected.
+
+The final report records actual counts/artifact/provenance. CI evidence follows
+in a SHA-bound PR #14 supplement without a report-only untested commit. Developer
+milestone/phase acceptance PENDING; no Ready/merge/tag/publish/next phase.
+
 ## v0.9.2 — Item stack compatibility installed verification
 
 Mandatory item-stack.mjs/.ts add eight installed runtime groups covering S01–S21

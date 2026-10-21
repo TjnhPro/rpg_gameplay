@@ -1,3 +1,12 @@
+## v0.9.3 — Item MVP technical closure evidence IT12–IT14
+
+Installed literal E2E, source-neutral creation, readonly Inventory/Equipment reader
+handoffs and three L3 fixture profiles exercise the accepted IT01–IT11 API without
+new production capability. IT12–IT14 add integration, isolation, replay and final
+regression evidence. Inventory, Equipment, Loot/Reward and concrete game profiles
+remain unimplemented/NOT_EVALUATED. Developer milestone/phase acceptance PENDING;
+PR #14 remains Draft. See the v0.9.3 report and exact-HEAD CI supplement.
+
 ## v0.9.2 — Item stack compatibility IT09–IT11
 
 Implemented: closed caller stackability policy, canonical complete pair validation,
