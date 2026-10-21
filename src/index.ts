@@ -197,3 +197,5 @@ export type {InventoryMergeReason} from './modules/inventory/index.js';
 export {createEquipmentState, validateEquipmentState} from './modules/equipment/index.js';
 export type {EquipmentOwnerReference, EquippedEntry, EquipmentState, EquipmentItemContext,
   EquipmentValidationContext} from './modules/equipment/index.js';
+export {listEquippedEntries, getEquippedEntryBySlot, hasEquippedItem, assessEquipmentAdmission} from './modules/equipment/index.js';
+export type {EquipmentAdmission, EquipmentAdmissionResult} from './modules/equipment/index.js';

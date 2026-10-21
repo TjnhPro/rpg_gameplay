@@ -1,3 +1,11 @@
+## v0.11.1 — Equipment read/admission boundary
+
+Graph remains equipment->[item] only. Query/admission reuse Foundation validation, including
+canonical Item binding and exact slot constraints. Caller boolean eligibility is advisory;
+L3 owns game rules and L4 owns freshness, cross-storage uniqueness and commits. No direct
+Inventory/Entity/Core import, new validator owner or operation. EQ11+ NOT_STARTED.
+[Report](reports/v0.11.1-equipment-slot-queries-admission.md).
+
 ## v0.11.0 — Equipment canonical owner
 
 Optional equipment->[item] owns only equipped-slot snapshot structure. Item public validators

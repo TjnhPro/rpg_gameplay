@@ -1,3 +1,10 @@
+## v0.11.1 — Equipment Slot Queries & Admission EQ06–EQ10
+
+Stable detached listing, whole-entry exact slot lookup, local instance membership and
+advisory admission with complete structural validation and deterministic denial priority.
+No state transition, Item update, slot reservation or authority. EQ11–EQ20 NOT_STARTED.
+Developer acceptance PENDING. [Report](reports/v0.11.1-equipment-slot-queries-admission.md).
+
 ## v0.11.0 — Equipment Foundation EQ01–EQ05
 
 Identity, neutral owner, canonical Item snapshots and ordered opaque multi-slot occupancy,

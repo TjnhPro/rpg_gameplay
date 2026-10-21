@@ -105,3 +105,48 @@ export function validateEquipmentState(state: EquipmentState, context: Equipment
 export function createEquipmentState(input: EquipmentState, context: EquipmentValidationContext): EquipmentState {
   return validateEquipmentState(input, context);
 }
+
+export interface EquipmentAdmission { readonly eligible: boolean; }
+export type EquipmentAdmissionResult =
+  | { readonly allowed: true; readonly reason: 'none' }
+  | { readonly allowed: false; readonly reason: 'already_equipped' | 'slot_occupied' | 'ineligible' };
+
+export function listEquippedEntries(state: EquipmentState, context: EquipmentValidationContext): readonly EquippedEntry[] {
+  return validateEquipmentState(state, context).entries;
+}
+
+export function getEquippedEntryBySlot(state: EquipmentState, context: EquipmentValidationContext,
+  slotId: string): EquippedEntry | null {
+  const snapshot = validateEquipmentState(state, context), key = id(slotId);
+  return snapshot.entries.find(entry => entry.slotIds.includes(key)) ?? null;
+}
+
+export function hasEquippedItem(state: EquipmentState, context: EquipmentValidationContext, instanceId: string): boolean {
+  const snapshot = validateEquipmentState(state, context), key = id(instanceId);
+  return snapshot.entries.some(entry => entry.item.instanceId === key);
+}
+
+/** Advisory only: validates current data and a separate request, never reserves slots. */
+export function assessEquipmentAdmission(state: EquipmentState, context: EquipmentValidationContext,
+  item: ItemInstanceState, slotIds: readonly string[], admission: EquipmentAdmission): EquipmentAdmissionResult {
+  try {
+    const snapshot = validateEquipmentState(state, context);
+    // Reuse Foundation's exact Item binding and slot constraints in isolation from
+    // current occupancy. A collision with current state is a denial, not malformed data.
+    const request = validateEquipmentState({equipmentId: snapshot.equipmentId, owner: null,
+      entries: [{item, slotIds}]}, context).entries[0]!;
+    const {eligible} = fields(admission, ['eligible']);
+    if (typeof eligible !== 'boolean') throw new TypeError('Equipment admission requires a boolean eligible fact');
+    if (snapshot.entries.some(entry => entry.item.instanceId === request.item.instanceId)) {
+      return Object.freeze({allowed: false, reason: 'already_equipped'});
+    }
+    if (snapshot.entries.some(entry => entry.slotIds.some(slot => request.slotIds.includes(slot)))) {
+      return Object.freeze({allowed: false, reason: 'slot_occupied'});
+    }
+    if (!eligible) return Object.freeze({allowed: false, reason: 'ineligible'});
+    return Object.freeze({allowed: true, reason: 'none'});
+  } catch (error) {
+    if (error instanceof TypeError) throw error;
+    throw new TypeError('Equipment admission data could not be inspected safely');
+  }
+}

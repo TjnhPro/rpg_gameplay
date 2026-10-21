@@ -1,3 +1,20 @@
+## v0.11.1 — Equipment Slot Queries & Admission (EQ06–EQ10)
+
+Four additive functions: `listEquippedEntries(state,context):readonly EquippedEntry[]`,
+`getEquippedEntryBySlot(state,context,slotId):EquippedEntry|null`,
+`hasEquippedItem(state,context,instanceId):boolean`, and
+`assessEquipmentAdmission(state,context,item,slotIds,admission):EquipmentAdmissionResult`.
+Two types: `EquipmentAdmission` is readonly `{eligible:boolean}`;
+`EquipmentAdmissionResult` is readonly `{allowed:true,reason:'none'}` or
+`{allowed:false,reason:'already_equipped'|'slot_occupied'|'ineligible'}`.
+All functions validate the full canonical state/context. Queries preserve exact nonblank IDs,
+entry order and whole multi-slot entries; returned data is freshly detached/deeply frozen.
+Admission also validates incoming canonical Item, Foundation slot constraints and exact
+own-data boolean fact before denial. Priority: already_equipped → slot_occupied → ineligible → none.
+Results are fresh/frozen; no reservation, candidate, write or authorization. Foundation shapes,
+graph and semantics unchanged. EQ11+ NOT_STARTED; Developer acceptance PENDING.
+[Report](reports/v0.11.1-equipment-slot-queries-admission.md).
+
 ## v0.11.0 — Equipment Foundation (EQ01–EQ05)
 
 New runtime functions: createEquipmentState(input,context), validateEquipmentState(state,context).
