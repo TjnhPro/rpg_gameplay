@@ -1,3 +1,17 @@
+# RPG Gameplay — v0.8.0 Encounter Foundation
+
+EN01–EN05: immutable structural encounters, exact identities, generic sides and
+canonical Entity references. Optional encounter -> entity only. Prepared-only
+factory; structural status validation grants no activation or World authority.
+Five functions/six types added; existing owners unchanged. No spawning, dynamic
+membership, execution, completion, rewards, store or scheduler.
+
+Phase **IN_PROGRESS**, Developer acceptance **PENDING**. Draft phase PR only;
+no Ready/merge/tag/publish or v0.8.1 authorization.
+[Task](docs/tasks/active/v0.8.0-encounter-foundation.md) /
+[Report](docs/reports/v0.8.0-encounter-foundation.md) / [API](docs/API.md).
+Concrete gameplay profiles **NOT_EVALUATED**. Earlier status below is historical.
+
 ## v0.7.6 — AI Lifecycle & Recovery (AI31–AI35)
 
 Package `@rpg/gameplay@0.7.6`; same `feat/v0.7-actor-ai` / Draft PR #12.

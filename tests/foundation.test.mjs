@@ -21,7 +21,7 @@ function exec(args, cwd) {
   return result.stdout;
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40, ESM root, closed exports, strict declarations and real Kernel', () => {
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40 + EN01–EN05, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
@@ -34,6 +34,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     console.log(`INSTALLED_PACKAGE_SHA256 ${packed.filename} ${createHash('sha256').update(fs.readFileSync(path.join(temp, packed.filename))).digest('hex')}`);
     assert.deepEqual(packed.files.map(x => x.path).sort(), [
       'dist/modules/actor-ai/index.d.ts', 'dist/modules/actor-ai/index.js',
+      'dist/modules/encounter/index.d.ts', 'dist/modules/encounter/index.js',
       'README.md', 'dist/foundation/execution/index.d.ts', 'dist/foundation/execution/index.js',
       'dist/foundation/messaging/index.d.ts', 'dist/foundation/messaging/index.js',
       'dist/foundation/modules/index.d.ts', 'dist/foundation/modules/index.js',
@@ -67,7 +68,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.7.7');
+    assertVersion(packageJson.version, '0.8.0');
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
@@ -85,12 +86,12 @@ assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModu
  'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId', 'createEntity',
  'createEntityCollection', 'addEntity', 'getEntity', 'hasEntity', 'listEntities', 'removeEntity', 'replaceEntity',
  'createEntityAttributeState', 'getEntityBaseAttributes', 'setEntityBaseAttribute', 'calculateEntityStats',
- 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming'].sort());
+ 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming', 'createEncounterDefinitionReference', 'createEncounterSide', 'createEncounterParticipant', 'createEncounterState', 'validateEncounterState'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
  {resource:'energy',before:8,after:5,applied:3,reachedMinimum:false});
-for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', '@rpg/gameplay/foundation/modules', '@rpg/gameplay/foundation/runtime', '@rpg/gameplay/dist/foundation/runtime/index.js', '@rpg/gameplay/foundation/messaging', '@rpg/gameplay/dist/foundation/messaging/index.js', '@rpg/gameplay/foundation/execution', '@rpg/gameplay/dist/foundation/execution/index.js', '@rpg/gameplay/modules/entity', '@rpg/gameplay/dist/modules/entity/index.js', '@rpg/gameplay/modules/combat', '@rpg/gameplay/dist/modules/combat/index.js', '@rpg/gameplay/modules/progression', '@rpg/gameplay/dist/modules/progression/index.js', '@rpg/gameplay/skill', '@rpg/gameplay/skill/internal', '@rpg/gameplay/modules/skill', '@rpg/gameplay/dist/modules/skill/index.js', '@rpg/gameplay/effect', '@rpg/gameplay/modules/effect', '@rpg/gameplay/dist/modules/effect/index.js']) {
+for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/modules/encounter/index.js','@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', '@rpg/gameplay/foundation/modules', '@rpg/gameplay/foundation/runtime', '@rpg/gameplay/dist/foundation/runtime/index.js', '@rpg/gameplay/foundation/messaging', '@rpg/gameplay/dist/foundation/messaging/index.js', '@rpg/gameplay/foundation/execution', '@rpg/gameplay/dist/foundation/execution/index.js', '@rpg/gameplay/modules/entity', '@rpg/gameplay/dist/modules/entity/index.js', '@rpg/gameplay/modules/combat', '@rpg/gameplay/dist/modules/combat/index.js', '@rpg/gameplay/modules/progression', '@rpg/gameplay/dist/modules/progression/index.js', '@rpg/gameplay/skill', '@rpg/gameplay/skill/internal', '@rpg/gameplay/modules/skill', '@rpg/gameplay/dist/modules/skill/index.js', '@rpg/gameplay/effect', '@rpg/gameplay/modules/effect', '@rpg/gameplay/dist/modules/effect/index.js']) {
  await assert.rejects(import(spec), {code:'ERR_PACKAGE_PATH_NOT_EXPORTED'});
 }
 `);
@@ -241,6 +242,7 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
       {id: 'skill', optional: true, dependencies: ['entity']},
       {id: 'effect', optional: true, dependencies: ['entity']},
       {id: 'actor-ai', optional: true, dependencies: ['entity']},
+      {id: 'encounter', optional: true, dependencies: ['entity']},
     ]);
     fs.copyFileSync(path.join(root, 'tests/consumers/combat.mjs'), path.join(temp, 'combat.mjs'));
     const combatEvidence = exec(['--test', '--test-reporter=tap', 'combat.mjs'], temp);
@@ -1119,7 +1121,15 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     const protectedFiles=[".github/workflows/harness.yml","ARCHITECTURE.md","docs/CORE_INTEGRATION.md","docs/DECISIONS.md","harness/core-pin.json","harness/modules.json","src/foundation/execution/index.ts","src/foundation/messaging/index.ts","src/foundation/modules/index.ts","src/foundation/runtime/index.ts","src/index.ts","src/modules/actor-ai/index.ts","src/modules/combat/index.ts","src/modules/effect/index.ts","src/modules/entity/index.ts","src/modules/progression/index.ts","src/modules/skill/index.ts","tests/consumers/actor-ai-action-selection.mjs","tests/consumers/actor-ai-action-selection.ts","tests/consumers/actor-ai-behavior.mjs","tests/consumers/actor-ai-behavior.ts","tests/consumers/actor-ai-foundation.mjs","tests/consumers/actor-ai-foundation.ts","tests/consumers/actor-ai-integration.mjs","tests/consumers/actor-ai-integration.ts","tests/consumers/actor-ai-lifecycle-recovery.mjs","tests/consumers/actor-ai-lifecycle-recovery.ts","tests/consumers/actor-ai-perception.mjs","tests/consumers/actor-ai-perception.ts","tests/consumers/actor-ai-target-selection.mjs","tests/consumers/actor-ai-target-selection.ts","tests/consumers/advancement.mjs","tests/consumers/advancement.ts","tests/consumers/attribute-points.mjs","tests/consumers/attribute-points.ts","tests/consumers/combat-admission.mjs","tests/consumers/combat-admission.ts","tests/consumers/combat-attack.mjs","tests/consumers/combat-attack.ts","tests/consumers/combat-damage.mjs","tests/consumers/combat-damage.ts","tests/consumers/combat-integration.mjs","tests/consumers/combat-integration.ts","tests/consumers/combat-target.mjs","tests/consumers/combat-target.ts","tests/consumers/combat.mjs","tests/consumers/combat.ts","tests/consumers/composition.mjs","tests/consumers/composition.ts","tests/consumers/effect-application.mjs","tests/consumers/effect-application.ts","tests/consumers/effect-foundation.mjs","tests/consumers/effect-foundation.ts","tests/consumers/effect-integration.mjs","tests/consumers/effect-integration.ts","tests/consumers/effect-lifecycle.mjs","tests/consumers/effect-lifecycle.ts","tests/consumers/effect-modifiers.mjs","tests/consumers/effect-modifiers.ts","tests/consumers/effect-periodic.mjs","tests/consumers/effect-periodic.ts","tests/consumers/effect-restrictions.mjs","tests/consumers/effect-restrictions.ts","tests/consumers/effect-stacking.mjs","tests/consumers/effect-stacking.ts","tests/consumers/entity-collection.mjs","tests/consumers/entity-collection.ts","tests/consumers/entity-integration.mjs","tests/consumers/entity-integration.ts","tests/consumers/entity-life.mjs","tests/consumers/entity-life.ts","tests/consumers/entity-resources.mjs","tests/consumers/entity-resources.ts","tests/consumers/entity-stats.mjs","tests/consumers/entity-stats.ts","tests/consumers/entity.mjs","tests/consumers/entity.ts","tests/consumers/execution.mjs","tests/consumers/execution.ts","tests/consumers/experience.mjs","tests/consumers/experience.ts","tests/consumers/messaging.mjs","tests/consumers/messaging.ts","tests/consumers/modules.mjs","tests/consumers/modules.ts","tests/consumers/progression-integration.mjs","tests/consumers/progression-integration.ts","tests/consumers/progression.mjs","tests/consumers/progression.ts","tests/consumers/runtime.mjs","tests/consumers/runtime.ts","tests/consumers/skill-activation.mjs","tests/consumers/skill-activation.ts","tests/consumers/skill-admission.mjs","tests/consumers/skill-admission.ts","tests/consumers/skill-combat-handoff.mjs","tests/consumers/skill-cooldown.mjs","tests/consumers/skill-cooldown.ts","tests/consumers/skill-foundation.mjs","tests/consumers/skill-foundation.ts","tests/consumers/skill-integration.mjs","tests/consumers/skill-integration.ts","tests/consumers/skill-loadout.mjs","tests/consumers/skill-loadout.ts","tests/consumers/skill-progression.mjs","tests/consumers/skill-progression.ts","tests/consumers/skill-resource-costs.mjs","tests/consumers/skill-resource-costs.ts"];
     const digest=entries=>createHash('sha256').update(JSON.stringify(entries)).digest('hex');
     const captured=protectedFiles.map(name=>[name,fs.readFileSync(path.join(root,name),'utf8').replaceAll('\r\n','\n')]);
-    const assertProtected=entries=>assert.equal(digest(entries),'6b71e71ff40973efb3056e104c59934f1d025bf946a12ad4de5e38bc397619be','closure protected source/Core/registry/history guard');
+    // Only exact Developer-approved additive deltas may be removed before hashing.
+    const approvedAdditions=[["src/index.ts","\nexport {createEncounterDefinitionReference, createEncounterSide, createEncounterParticipant,\n  createEncounterState, validateEncounterState} from './modules/encounter/index.js';\nexport type {EncounterDefinitionReference, EncounterSide, EncounterParticipant, EncounterStatus,\n  EncounterInitialState, EncounterState} from './modules/encounter/index.js';\n",""],["harness/modules.json",",\n    {\"id\": \"encounter\", \"optional\": true, \"dependencies\": [\"entity\"]}",""],["docs/DECISIONS.md","\n## Encounter phase decisions — v0.8.x (Developer approved, 2026-10-21)\n\n| ID | Approved A | EN01–EN05 implementation boundary |\n| --- | --- | --- |\n| ENC-D01 | One encounter = one engagement | Opaque encounterId; no zone/dungeon/global runtime |\n| ENC-D02 | Entity dependency only | Optional encounter -> [entity]; canonical getEntity/listEntities |\n| ENC-D03 | Generic side IDs | Exact nonblank sideId; no kind/relation inference |\n| ENC-D04 | Future explicit dynamic participation | Initial structural roster only; no Join/Leave |\n| ENC-D05 | Future explicit completion evaluation | No auto-win, objective evaluator or outcome |\n| ENC-D06 | Closed terminal; new ID for rematch | Status vocabulary only; no transition/reopen implementation |\n| ENC-D07 | Future side-based outcome | No winner/reward fields in five-field state |\n\nAll seven choices are approved; later behavior still requires its own milestone.\nStructural validation of any recognized status proves no transition provenance.\nL3 owns content/policy; L4 owns World storage, authoritative commit, spawning,\ncross-encounter exclusivity and orchestration. No new owner or engine.\nSee [approved task](tasks/active/v0.8.0-encounter-foundation.md).\n",""]];
+    const historical=entries=>entries.map(([name,text])=>{
+      const addition=approvedAdditions.find(([file])=>file===name);
+      if(!addition)return [name,text];
+      assert.equal(text.split(addition[1]).length,2,'exact approved additive scope '+name);
+      return [name,text.replace(addition[1],addition[2])];
+    });
+    const assertProtected=entries=>assert.equal(digest(historical(entries)),'6b71e71ff40973efb3056e104c59934f1d025bf946a12ad4de5e38bc397619be','closure protected source/Core/registry/history guard');
     assertProtected(captured);
     for(const name of ['src/modules/entity/index.ts','harness/core-pin.json','harness/modules.json']){
       const fault=captured.map(([file,text])=>[file,text+(file===name?'\n// deliberate scope fault':'')]);assert.throws(()=>assertProtected(fault),/protected source/);
@@ -1128,6 +1138,98 @@ for (const spec of ['@rpg/gameplay/src/index.ts','@rpg/gameplay/dist/index.js', 
     validate(run());assertPackedFiles();
     console.log('INSTALLED_ACTOR_AI_CLOSURE_NEGATIVE_PASS runtime_and_fixture_faults; source_Core_registry_guard; scenario_inventory; restored_clean_rerun');
     }
+
+    { // EN01-EN05: physically installed contracts, targeted mutations and strict declarations.
+    for(const ext of ['mjs','ts'])copyRequiredConsumer(path.join(root,'tests/consumers/encounter-foundation.'+ext),path.join(temp,'encounter-foundation.'+ext));
+    const file=path.join(temp,'encounter-foundation.mjs'),bytes=fs.readFileSync(file),source=bytes.toString('utf8');
+    const registryFile=path.join(temp,'encounter-modules.json'),registryBytes=fs.readFileSync(path.join(root,'harness/modules.json'));fs.writeFileSync(registryFile,registryBytes);
+    const markers=Array.from({length:44},(_,i)=>'ENCOUNTER_F'+String(i+1).padStart(2,'0')+'_PASS');
+    const run=()=>exec(['--test','--test-reporter=tap','encounter-foundation.mjs'],temp);
+    const validate=output=>assertTapEvidence(output,12,markers);
+    const clean=()=>{validate(run());assertPackedFiles();};
+    const evidence=run();validate(evidence);for(const marker of markers)console.log(evidence.split(/\r?\n/).find(line=>line.includes(marker)));
+    console.log(evidence.split(/\r?\n/).find(line=>line.includes('ENCOUNTER_REPLAY_SHA256')));
+    console.log('INSTALLED_ENCOUNTER_FOUNDATION_PASS EN01-EN05; consumer_tests=12 skipped=0; structural_only');
+    // Require the intended failing assertion in a real isolated subprocess.
+    function red(id,pattern,diagnostic){
+      const env={...process.env};delete env.NODE_TEST_CONTEXT;
+      const args=['--test','--test-reporter=tap',...(pattern?['--test-name-pattern=Encounter '+pattern]:[]),'encounter-foundation.mjs'];
+      const result=spawnSync(process.execPath,args,{cwd:temp,shell:false,encoding:'utf8',env});
+      assert.ifError(result.error);assert.equal(result.signal,null);assert.equal(result.status,1,result.stdout+result.stderr);
+      assert.match(result.stdout+result.stderr,diagnostic,id+' intended assertion');
+      console.log('ENCOUNTER_NEGATIVE_RED '+id+' exit=1 intended='+diagnostic.source);
+    }
+    function done(id){assertPackedFiles();clean();console.log('ENCOUNTER_NEGATIVE_PASS '+id+' restored_bytes; clean12/12');}
+    // Run the same central guard functions in an isolated process so expected
+    // assertion failures carry an observed nonzero exit, not a synthetic label.
+    const guardFile=path.join(temp,'encounter-negative-guard.mjs');
+    const guardPrelude=`import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import {createHash} from 'node:crypto';
+      const installed=${JSON.stringify(installed)};
+      const expectedPackedFiles=${JSON.stringify(expectedPackedFiles.map(([name,bytes])=>[name,bytes.toString('base64')]))}.map(([name,bytes])=>[name,Buffer.from(bytes,'base64')]);
+      const assertVersion=${assertVersion.toString()};const assertCoreIntegrity=${assertCoreIntegrity.toString()};
+      const assertTapEvidence=${assertTapEvidence.toString()};const assertPackedFiles=${assertPackedFiles.toString()};`;
+    function guardRed(id,code,diagnostic){
+      fs.writeFileSync(guardFile,guardPrelude+code);
+      const result=spawnSync(process.execPath,[guardFile],{cwd:temp,shell:false,encoding:'utf8'});
+      assert.ifError(result.error);assert.equal(result.signal,null);assert.equal(result.status,1,result.stdout+result.stderr);
+      assert.match(result.stdout+result.stderr,diagnostic,id+' intended central guard');
+      console.log('ENCOUNTER_NEGATIVE_RED '+id+' exit=1 intended='+diagnostic.source);
+    }
+
+    // N01: actual missing file and skipped execution, not a simulated marker.
+    try{fs.renameSync(file,file+'.saved');red('N01',null,/Could not find.*encounter-foundation\.mjs|ENOENT|MODULE_NOT_FOUND/);}
+    finally{if(fs.existsSync(file+'.saved'))fs.renameSync(file+'.saved',file);}done('N01');
+    const rootFile=path.join(installed,'dist/index.js'),rootBytes=fs.readFileSync(rootFile);
+    try{const text=rootBytes.toString('utf8');assert.ok(text.includes('createEncounterState,'));fs.writeFileSync(rootFile,text.replace('createEncounterState,','createEncounterState as missingEncounterState,'));red('N02','prepared:',/createEncounterState is not a function/);}
+    finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
+    const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.0.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.0');`,/installed package version/);}
+    finally{fs.writeFileSync(manifestFile,manifestBytes);}done('N03');
+    const coreManifest=path.join(temp,'node_modules/@rpg/core/package.json'),coreBytes=fs.readFileSync(coreManifest);
+    try{const manifest=JSON.parse(coreBytes);manifest.version='0.0.0';fs.writeFileSync(coreManifest,JSON.stringify(manifest));guardRed('N04_version',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(coreManifest)})).version,${JSON.stringify(pin.version)});`,/installed package version/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
+    finally{fs.writeFileSync(coreManifest,coreBytes);}done('N04');
+    try{const registry=JSON.parse(registryBytes);registry.modules.find(d=>d.id==='encounter').dependencies=[];fs.writeFileSync(registryFile,JSON.stringify(registry));red('N05','composition:',/Encounter exact dependency oracle/);}
+    finally{fs.writeFileSync(registryFile,registryBytes);}done('N05');
+    const runtimeFile=path.join(installed,'dist/modules/encounter/index.js'),runtimeBytes=fs.readFileSync(runtimeFile),runtime=runtimeBytes.toString('utf8');
+    const faults=[
+      ['N06','sides:',"if (sideIds.has(side.sideId))",'if (false)',/duplicate side must reject/],
+      ['N07','participants:',"if (entityIds.has(participant.entityId))",'if (false)',/duplicate participant must reject/],
+      ['N08','membership:',"if (!getEntity(entities, participant.entityId))",'if (false)',/unknown canonical Entity must reject/],
+      ['N09','definition:',"if (!field || !('value' in field))",'if (false)',/definition accessor must reject/],
+      ['N10','prepared:',"status: 'prepared'","status: 'active'",/prepared literal oracle/],
+      ['N11','snapshots:','sides: Object.freeze(sides)','sides: sides',/Encounter snapshot must be frozen/],
+      ['N12','status:',"if (typeof status !== 'string' || !['prepared', 'active', 'resolved', 'closed', 'cancelled'].includes(status))",'if (false)',/unknown status must reject/],
+    ];
+    for(const [id,pattern,expected,faulty,diagnostic] of faults){
+      assert.ok(runtime.includes(expected),id+' required mutation');let changed=runtime.replace(expected,faulty);
+      // N09 deliberately invokes the getter instead of capturing its descriptor.
+      if(id==='N09')changed=changed.replace('return [key, field.value];','return [key, input[key]];');
+      try{fs.writeFileSync(runtimeFile,changed);red(id,pattern,diagnostic);}
+      finally{fs.writeFileSync(runtimeFile,runtimeBytes);}assert.deepEqual(fs.readFileSync(runtimeFile),runtimeBytes);done(id);
+    }
+    const config=path.join(temp,'encounter-tsconfig.json');fs.writeFileSync(config,JSON.stringify({compilerOptions:{target:'ES2022',lib:['ES2022'],module:'NodeNext',moduleResolution:'NodeNext',strict:true,noEmit:true,skipLibCheck:false,types:[]},files:['encounter-foundation.ts']}));
+    const compile=()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','encounter-tsconfig.json'],temp);compile();
+    const declarationFile=path.join(installed,'dist/modules/encounter/index.d.ts'),declarationBytes=fs.readFileSync(declarationFile);
+    try{const text=declarationBytes.toString('utf8');assert.ok(text.includes('readonly encounterId: string'));fs.writeFileSync(declarationFile,text.replaceAll('readonly encounterId: string','encounterId: string'));assert.throws(compile,/TS2578/);}
+    finally{fs.writeFileSync(declarationFile,declarationBytes);}compile();console.log('ENCOUNTER_NEGATIVE_RED N13 real_tsc_exit=1 TS2578_readonly_assertion');done('N13');
+    for(const [kind,changed,diagnostic] of [
+      ['zero_assertions',source.replace('assertions++;',''),/Encounter requires actual assertions/],
+      ['skipped',source.replace("test('Encounter '","test.skip('Encounter '"),/TAP skipped|required evidence|required test count/],
+    ]){try{fs.writeFileSync(file,changed);if(kind==='skipped'){const env={...process.env};delete env.NODE_TEST_CONTEXT;const result=spawnSync(process.execPath,['--test','--test-reporter=tap','encounter-foundation.mjs'],{cwd:temp,shell:false,encoding:'utf8',env});assert.ifError(result.error);assert.equal(result.status,0);guardRed('N14_skipped',`assertTapEvidence(${JSON.stringify(result.stdout)},12);`,/0 !== 12/);}else red('N14_'+kind,'identity:',diagnostic);}
+    finally{fs.writeFileSync(file,bytes);}done('N14_'+kind);}
+    const rootDeclaration=()=>{const manifest=JSON.parse(fs.readFileSync(manifestFile));const name=manifest.exports['.'].types;
+      assert.equal(name,'./dist/index.d.ts','Encounter canonical root declaration path');assert.ok(packed.files.some(f=>'./'+f.path===name));assert.ok(fs.statSync(path.join(installed,name)).isFile());};
+    rootDeclaration();try{const manifest=JSON.parse(manifestBytes);manifest.exports['.'].types='./dist/missing.d.ts';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N15',`const name=JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).exports['.'].types;assert.equal(name,'./dist/index.d.ts','Encounter canonical root declaration path');assert.ok(${JSON.stringify(packed.files.map(f=>'./'+f.path))}.includes(name));assert.ok(fs.statSync(path.join(installed,name)).isFile());`,/Encounter canonical root declaration path/);}
+    finally{fs.writeFileSync(manifestFile,manifestBytes);}assert.deepEqual(fs.readFileSync(manifestFile),manifestBytes);rootDeclaration();done('N15');
+    try{fs.appendFileSync(runtimeFile,'\n// deliberate drift\n');guardRed('N16','assertPackedFiles();',/installed artifact content/);}
+    finally{fs.writeFileSync(runtimeFile,runtimeBytes);}done('N16');
+    // Actual runtime dependency/source audit: no execution or hidden providers.
+    assert.deepEqual([...runtime.matchAll(/from ['"]([^'"]+)['"]/g)].map(m=>m[1]),['../entity/index.js']);
+    assert.doesNotMatch(runtime,/Date\.now|Math\.random|setTimeout|setInterval|randomUUID|process\.|fetch\(|class |new WeakMap|from ['"](?:node:|@rpg\/core)/);
+    console.log('ENCOUNTER_F45_PASS installed_runtime; strict_NodeNext; historical_runner_required');
+    console.log('INSTALLED_ENCOUNTER_NEGATIVE_PASS N01-N16; targeted_assertions; restored_clean; strict_NodeNext');
+    }
+
 
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);

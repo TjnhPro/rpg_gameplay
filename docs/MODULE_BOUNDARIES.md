@@ -468,3 +468,19 @@ reads, events or cascade state changes. Entity/Progression/Combat/Foundation sta
 unmodified; skill->[entity], four modules/nine source files unchanged. L3 supplies
 layout/eligible/allowDuplicateInstance; L4 owns catalogs/active selection/storage.
 Root80 functions/133 types; no deep exports or duplicate ownership authority.
+
+## v0.8.0 Encounter Foundation — EN01–EN05
+
+Package @rpg/gameplay@0.8.0 adds five functions and six types at the root.
+Optional encounter -> [entity] captures one engagement as an immutable five-field
+snapshot. Factory status is always prepared; validation accepts the five status
+names structurally and grants no lifecycle/World authority. Exact opaque IDs,
+unique sides/participant Entity IDs, canonical current Entity membership, dense
+own-data arrays and closed records are required. Empty/dead references are
+structurally allowed; activation readiness is deferred.
+
+No activation, dynamic Join/Leave, spawning, Combat/AI dispatch, completion,
+rewards, global store or scheduler. EN06–EN40 are not implemented/authorized.
+Phase IN_PROGRESS; Developer acceptance PENDING; phase PR remains Draft.
+See [task](tasks/active/v0.8.0-encounter-foundation.md) and
+[report](reports/v0.8.0-encounter-foundation.md).

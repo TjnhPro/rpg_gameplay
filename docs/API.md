@@ -2672,3 +2672,28 @@ layout/policies; L4 resolves references, preflights, checks current local inputs
 commits candidates and dispatches. Consumers are verification, not a production
 facade. No new authorization, exactly-once, rollback/refund or concurrency promise.
 See reports/v0.5.6-skill-final-review.md for current-artifact evidence.
+
+## EN01–EN05 Encounter Foundation (v0.8.0)
+
+Root-only runtime exports:
+
+- createEncounterDefinitionReference(input: EncounterDefinitionReference): EncounterDefinitionReference
+- createEncounterSide(input: EncounterSide): EncounterSide
+- createEncounterParticipant(input: EncounterParticipant): EncounterParticipant
+- createEncounterState(reference: EncounterDefinitionReference, initial: EncounterInitialState, entities: EntityCollection): EncounterState
+- validateEncounterState(state: EncounterState, entities: EntityCollection): EncounterState
+
+Types: EncounterDefinitionReference {readonly definitionId: string}; EncounterSide
+{readonly sideId: string}; EncounterParticipant {readonly entityId: string;
+readonly sideId: string}; EncounterStatus = prepared | active | resolved | closed |
+cancelled (string literals). EncounterInitialState has readonly encounterId, sides
+and participants. EncounterState has exactly readonly encounterId, definitionId,
+status, sides and participants; arrays/records are readonly and deeply frozen.
+
+Factories/validator capture detached snapshots, never freeze caller inputs, and
+throw TypeError on malformed/extra/symbol/inherited/accessor fields, unsafe arrays,
+blank IDs, duplicate sides/participants, unknown side or missing canonical Entity.
+Factory always produces prepared, including empty rosters. Structural validator
+recaptures all five statuses but proves no transition, Life admission or authority.
+No package subpaths. Public inventory adds exactly five functions/six types;
+existing APIs and signatures remain unchanged. See approved Encounter task.

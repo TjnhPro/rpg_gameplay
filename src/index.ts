@@ -138,3 +138,8 @@ export {evaluateActorAILifeGate, evaluateActorAIReset, createActorAIDecisionTimi
   evaluateActorAIDecisionTiming} from './modules/actor-ai/index.js';
 export type {ActorAILifeGateResult, ActorAIResetReason, ActorAIResetRequest, ActorAIResetResult,
   ActorAIDecisionTimingState, ActorAIDecisionTimingPolicy, ActorAIDecisionTimingResult} from './modules/actor-ai/index.js';
+
+export {createEncounterDefinitionReference, createEncounterSide, createEncounterParticipant,
+  createEncounterState, validateEncounterState} from './modules/encounter/index.js';
+export type {EncounterDefinitionReference, EncounterSide, EncounterParticipant, EncounterStatus,
+  EncounterInitialState, EncounterState} from './modules/encounter/index.js';

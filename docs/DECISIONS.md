@@ -172,3 +172,21 @@ not replace historical project D01–D18.
 
 Only optional actor-ai -> entity is authorized. L3 owns profiles; Entity retains
 identity/resources/life. [Approved checkpoint task](tasks/active/v0.7.0-actor-ai-foundation.md).
+
+## Encounter phase decisions — v0.8.x (Developer approved, 2026-10-21)
+
+| ID | Approved A | EN01–EN05 implementation boundary |
+| --- | --- | --- |
+| ENC-D01 | One encounter = one engagement | Opaque encounterId; no zone/dungeon/global runtime |
+| ENC-D02 | Entity dependency only | Optional encounter -> [entity]; canonical getEntity/listEntities |
+| ENC-D03 | Generic side IDs | Exact nonblank sideId; no kind/relation inference |
+| ENC-D04 | Future explicit dynamic participation | Initial structural roster only; no Join/Leave |
+| ENC-D05 | Future explicit completion evaluation | No auto-win, objective evaluator or outcome |
+| ENC-D06 | Closed terminal; new ID for rematch | Status vocabulary only; no transition/reopen implementation |
+| ENC-D07 | Future side-based outcome | No winner/reward fields in five-field state |
+
+All seven choices are approved; later behavior still requires its own milestone.
+Structural validation of any recognized status proves no transition provenance.
+L3 owns content/policy; L4 owns World storage, authoritative commit, spawning,
+cross-encounter exclusivity and orchestration. No new owner or engine.
+See [approved task](tasks/active/v0.8.0-encounter-foundation.md).

@@ -696,3 +696,30 @@ Game profiles remain NOT_EVALUATED.
 
 Observed v0.5.5 total:130 installed runtime tests (125 retained +5 Loadout),
 2 outer tests; zero failures/skips.
+
+## v0.8.0 Encounter evidence and historical inventory exception
+
+Required installed encounter-foundation.mjs/.ts consumer: twelve runtime groups,
+EN-F01–EN-F44 markers and strict external NodeNext; EN-F45 requires the central
+installed runner and full historical regression. N01–N16 deliberately mutate
+required fixtures, actual installed runtime/declarations/manifest, graph and
+artifact bytes; intended guards must fail, bytes restore, clean rerun must pass.
+All prior behavioral assertions, FIX01 ledger mutations, protected-owner guards
+and negative controls remain active. Central foundation runner keeps an exact
+full-root inventory (135 named functions), exact pack inventory and canonical
+declaration-path oracle; import-condition fallback is not a declaration-path test.
+
+Developer-approved historical exception: Actor AI closure checks its exact 21
+owned root names instead of a whole-package count. Approved Encounter root,
+registry and decision additions alone are normalized out of the historical scope
+fingerprint; the accepted baseline digest and protected-owner mutation tests stay.
+Future additive phases should use exact inventories by ownership in historical
+consumers and retain a central exact full-package inventory. Each future additive
+inventory/fingerprint delta needs explicit approved scope; this is no automatic
+permission to rebaseline unrelated regressions.
+
+Required gates: core:prepare, npm ci --ignore-scripts, harness:check,
+harness:selftest, build, typecheck, test:functional, full npm run verify and
+exact-head push+PR Ubuntu/Windows Node22/24 (8 jobs). No skipped evidence.
+Concrete game profiles remain NOT_EVALUATED; checkpoint/phase acceptance is
+recorded in the report and SHA-bound PR CI supplement.
