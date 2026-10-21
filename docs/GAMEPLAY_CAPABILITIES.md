@@ -1,3 +1,27 @@
+## v0.12.2 — Loot Integration & MVP Closure LT11–LT15
+
+Consumers demonstrate validation/selection/Item creation/Inventory candidate handoff,
+distinct Text/2D/2.5D data, explicit Foundation sample, replay, no-drop and rejected
+delivery isolation. Production, four functions/four types and optional loot->[] are
+unchanged. This is function-level evidence, not live game, reward or durable transaction
+assurance. Developer final acceptance PENDING. [Report](reports/v0.12.2-loot-integration-mvp-closure.md).
+
+## v0.12.1 — Loot Weighted Selection LT06–LT10
+
+Explicit finite `[0,1)` sample selects no-drop or one ordered weighted entry. Exact fixed
+quantity, canonical validation and immutable snapshots; no internal RNG/time/IDs, catalog,
+Item/Inventory writes or Reward. Existing Foundation contracts and `loot -> []` unchanged.
+LT11+ NOT_STARTED; Developer acceptance PENDING.
+[Report](reports/v0.12.1-loot-weighted-selection.md).
+
+## v0.12.0 — Loot Foundation LT01–LT05
+
+Immutable exact table identity, weighted entry/fixed quantity definitions, structural
+ordered drop intents, strict hostile-input validation and optional independent composition.
+No selection, RNG, Item creation, Inventory writes, Reward entitlement or World pickup.
+Future mechanics are design probes only. Developer acceptance PENDING; LT06+ NOT_STARTED.
+[Report](reports/v0.12.0-loot-foundation.md).
+
 ## v0.11.3 — Equipment EQ16–EQ20 closure evidence
 
 Installed end-to-end equip/query/replace/unequip, safe test-local Item/Inventory handoff,

@@ -1,3 +1,46 @@
+## v0.12.2 — Loot integration closure (LT11–LT15)
+
+No new runtime API/type or changed schema. Four Loot functions and four readonly types
+remain unchanged from v0.12.1. Only test consumers resolve real Item definitions, supply
+unique IDs, call createItemInstance and addInventoryEntry with explicit context, capacity
+and admission, then locally accept successful candidates. No-drop invokes no delivery
+provider; rejected Inventory adds leave current state unchanged and preserve the intent.
+Selection does not guarantee delivery or entitlement. [Report](reports/v0.12.2-loot-integration-mvp-closure.md).
+
+## v0.12.1 — Loot Weighted Drop Selection (LT06–LT10)
+
+One additive root function, no new types:
+`rollLootTable(table:LootTableDefinition,sample:number):LootRollResult`.
+Complete canonical table validation precedes sample validation (finite number in `[0,1)`).
+For validated total weight, ticket is `min(total-1,floor(sample*total))`. No-drop occupies
+the first half-open interval, followed by entries in original array order. Returns a fresh
+deeply frozen empty result or exactly one entry's ID/definition/quantity through canonical
+result validation. No retry, normalization, provider call, Item creation or delivery.
+JS double precision approximates ideal buckets; this is no statistical uniformity guarantee
+for every large integer weight. Foundation fields/errors/graph remain unchanged.
+[Report](reports/v0.12.1-loot-weighted-selection.md).
+
+## v0.12.0 — Loot Foundation (LT01–LT05)
+
+Three root functions: `createLootTableDefinition(input:LootTableDefinition):LootTableDefinition`,
+`validateLootTableDefinition(input:LootTableDefinition):LootTableDefinition` and
+`validateLootRollResult(result:LootRollResult):LootRollResult`. Four readonly types:
+
+```ts
+interface LootTableEntry { readonly entryId:string; readonly definitionId:string; readonly weight:number; readonly quantity:number; }
+interface LootTableDefinition { readonly tableId:string; readonly entries:readonly LootTableEntry[]; readonly noDropWeight:number; }
+interface LootDropIntent { readonly entryId:string; readonly definitionId:string; readonly quantity:number; }
+interface LootRollResult { readonly tableId:string; readonly drops:readonly LootDropIntent[]; }
+```
+
+IDs are exact nonblank strings. Table entry IDs are unique; definition references may
+repeat. Entry weight/quantity are positive safe integers, no-drop weight nonnegative;
+total weight must be positive and safe. Empty tables require positive no-drop weight.
+Closed own-data records and dense standard arrays only; malformed/unsafe data throws
+TypeError without invoking getters. Every return is a fresh detached deeply frozen snapshot.
+Result validation permits empty/multiple/repeated intents, without live-table/catalog
+binding or entitlement. No roll operation exists yet. [Report](reports/v0.12.0-loot-foundation.md).
+
 ## v0.11.3 — Equipment integration evidence (EQ16–EQ20)
 
 Zero production/API delta from v0.11.2: nine Equipment functions and nine types remain

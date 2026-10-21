@@ -201,3 +201,7 @@ export {listEquippedEntries, getEquippedEntryBySlot, hasEquippedItem, assessEqui
 export type {EquipmentAdmission, EquipmentAdmissionResult} from './modules/equipment/index.js';
 export {equipEquipmentItem, unequipEquipmentItem, replaceEquipmentItem} from './modules/equipment/index.js';
 export type {EquipmentMutationReason, EquipmentMutationResult} from './modules/equipment/index.js';
+
+export {createLootTableDefinition, validateLootTableDefinition, validateLootRollResult} from './modules/loot/index.js';
+export type {LootTableEntry, LootTableDefinition, LootDropIntent, LootRollResult} from './modules/loot/index.js';
+export {rollLootTable} from './modules/loot/index.js';

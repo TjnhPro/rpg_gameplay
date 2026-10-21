@@ -1,3 +1,12 @@
+## v0.12.0 — Loot canonical owner
+
+`src/modules/loot/index.ts` owns table/intent schemas and detached structural snapshots.
+Optional `loot -> []` imports no sibling or Foundation/Core. Definition IDs are opaque;
+Item owns actual definitions/instances, Inventory owns stored quantity, Equipment owns
+slots, future Reward owns claims. L3 supplies tables; L4 chooses sources and commits.
+No provider, manager, storage, engine or selection operation is added. Existing edges
+are unchanged. [Report](reports/v0.12.0-loot-foundation.md).
+
 ## v0.11.3 — Equipment integration ownership
 
 Production and graph unchanged: item->[], inventory->[item], equipment->[item]. Only

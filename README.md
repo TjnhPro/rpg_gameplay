@@ -1,6 +1,6 @@
 # RPG Gameplay — current verification
 
-L2 reusable headless function-first RPG framework. Package checkpoint: `0.11.3` (Equipment Integration & MVP Closure, Developer acceptance PENDING).
+L2 reusable headless function-first RPG framework. Package checkpoint: `0.12.2` (Loot Integration & MVP Closure LT11–LT15, Developer acceptance PENDING).
 Daily checks: `npm run verify` runs boundaries, build, strict repo NodeNext typecheck
 and direct public function tests. Fresh setup: `npm run core:prepare` then
 `npm ci --ignore-scripts`. CI is one Ubuntu/Node22 PR job.
@@ -9,6 +9,15 @@ Inventory provides validated immutable add/remove/quantity and complete merge ca
 Equipment provides immutable slot snapshots, queries/admission and pure equip/unequip/replacement candidates. Unequip/replacement return the released Item; caller owns cross-storage commits.
 Equipment closure fixtures prove test-local Inventory handoffs and explicit Entity/Core stat recalculation; production APIs are unchanged. No durable transaction or game-profile assurance.
 See [Equipment checkpoint](docs/reports/v0.11.3-equipment-integration-mvp-closure.md).
+
+Loot provides immutable table definitions, structural drop intents and deterministic
+weighted selection from an explicit caller sample: four functions, four types,
+optional `loot -> []`. Item creation, Inventory delivery and rewards remain caller-owned.
+Closure consumers prove table validation → explicit sample → immutable intent → external
+Item/Inventory handoff, including no-drop and rejected delivery. These are headless
+test-local data flows, not live games or durable/exactly-once grants. No production API
+or behavior changes in this checkpoint.
+See [Loot closure evidence](docs/reports/v0.12.2-loot-integration-mvp-closure.md).
 
 See [testing and limitations](docs/TESTING.md), [verification](docs/VERIFICATION.md)
 and [harness migration report](docs/reports/harness-simplification-mvp.md).
