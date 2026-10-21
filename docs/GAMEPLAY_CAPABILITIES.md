@@ -1,3 +1,11 @@
+## v0.12.1 — Loot Weighted Selection LT06–LT10
+
+Explicit finite `[0,1)` sample selects no-drop or one ordered weighted entry. Exact fixed
+quantity, canonical validation and immutable snapshots; no internal RNG/time/IDs, catalog,
+Item/Inventory writes or Reward. Existing Foundation contracts and `loot -> []` unchanged.
+LT11+ NOT_STARTED; Developer acceptance PENDING.
+[Report](reports/v0.12.1-loot-weighted-selection.md).
+
 ## v0.12.0 — Loot Foundation LT01–LT05
 
 Immutable exact table identity, weighted entry/fixed quantity definitions, structural

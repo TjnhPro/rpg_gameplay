@@ -110,3 +110,25 @@ export function validateLootRollResult(result: LootRollResult): LootRollResult {
     return Object.freeze({tableId, drops: Object.freeze(drops)});
   });
 }
+
+/** Select one ordered bucket from a caller-supplied sample; never generates randomness. */
+export function rollLootTable(table: LootTableDefinition, sample: number): LootRollResult {
+  const snapshot = validateLootTableDefinition(table);
+  if (typeof sample !== 'number' || !Number.isFinite(sample) || sample < 0 || sample >= 1) {
+    throw new TypeError('Loot sample must be a finite number in [0,1)');
+  }
+  const total = snapshot.entries.reduce((sum, entry) => sum + entry.weight, snapshot.noDropWeight);
+  const ticket = Math.min(total - 1, Math.floor(sample * total));
+  let end = snapshot.noDropWeight;
+  if (ticket < end) return validateLootRollResult({tableId: snapshot.tableId, drops: []});
+  for (const entry of snapshot.entries) {
+    end += entry.weight;
+    if (ticket < end) {
+      return validateLootRollResult({tableId: snapshot.tableId, drops: [
+        {entryId: entry.entryId, definitionId: entry.definitionId, quantity: entry.quantity},
+      ]});
+    }
+  }
+  // Validated positive safe total and clamped ticket make this unreachable.
+  throw new TypeError('Loot ticket outside validated buckets');
+}

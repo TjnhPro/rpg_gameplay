@@ -1,3 +1,16 @@
+## v0.12.1 — Loot Weighted Drop Selection (LT06–LT10)
+
+One additive root function, no new types:
+`rollLootTable(table:LootTableDefinition,sample:number):LootRollResult`.
+Complete canonical table validation precedes sample validation (finite number in `[0,1)`).
+For validated total weight, ticket is `min(total-1,floor(sample*total))`. No-drop occupies
+the first half-open interval, followed by entries in original array order. Returns a fresh
+deeply frozen empty result or exactly one entry's ID/definition/quantity through canonical
+result validation. No retry, normalization, provider call, Item creation or delivery.
+JS double precision approximates ideal buckets; this is no statistical uniformity guarantee
+for every large integer weight. Foundation fields/errors/graph remain unchanged.
+[Report](reports/v0.12.1-loot-weighted-selection.md).
+
 ## v0.12.0 — Loot Foundation (LT01–LT05)
 
 Three root functions: `createLootTableDefinition(input:LootTableDefinition):LootTableDefinition`,

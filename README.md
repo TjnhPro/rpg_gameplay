@@ -1,6 +1,6 @@
 # RPG Gameplay — current verification
 
-L2 reusable headless function-first RPG framework. Package checkpoint: `0.12.0` (Loot Foundation LT01–LT05, Developer acceptance PENDING).
+L2 reusable headless function-first RPG framework. Package checkpoint: `0.12.1` (Loot Weighted Drop Selection LT06–LT10, Developer acceptance PENDING).
 Daily checks: `npm run verify` runs boundaries, build, strict repo NodeNext typecheck
 and direct public function tests. Fresh setup: `npm run core:prepare` then
 `npm ci --ignore-scripts`. CI is one Ubuntu/Node22 PR job.
@@ -10,10 +10,10 @@ Equipment provides immutable slot snapshots, queries/admission and pure equip/un
 Equipment closure fixtures prove test-local Inventory handoffs and explicit Entity/Core stat recalculation; production APIs are unchanged. No durable transaction or game-profile assurance.
 See [Equipment checkpoint](docs/reports/v0.11.3-equipment-integration-mvp-closure.md).
 
-Loot adds immutable table definitions and structural drop intents: three functions,
-four types, optional `loot -> []`. It validates data only; selection, Item creation,
-Inventory delivery and rewards remain outside this checkpoint.
-See [Loot checkpoint](docs/reports/v0.12.0-loot-foundation.md).
+Loot provides immutable table definitions, structural drop intents and deterministic
+weighted selection from an explicit caller sample: four functions, four types,
+optional `loot -> []`. Item creation, Inventory delivery and rewards remain caller-owned.
+See [Loot checkpoint](docs/reports/v0.12.1-loot-weighted-selection.md).
 
 See [testing and limitations](docs/TESTING.md), [verification](docs/VERIFICATION.md)
 and [harness migration report](docs/reports/harness-simplification-mvp.md).
