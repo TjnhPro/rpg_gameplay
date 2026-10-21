@@ -33,7 +33,8 @@ contract('F01 F02','module and root',a=>{
   a.deepEqual(g.configureModules(registry).enabledModuleIds,[]);
   a.deepEqual(Object.keys(g).filter(key=>key.includes('Item')).sort(),[
     'createItemDefinitionReference','createItemInstanceReference','validateItemInstanceReference',
-    'createItemDefinition','validateItemDefinition','createItemInstance','validateItemInstance'].sort());
+    'createItemDefinition','validateItemDefinition','createItemInstance','validateItemInstance',
+    'getItemInstanceProperty','setItemInstanceProperty','replaceItemInstanceProperties'].sort());
 });
 
 contract('F03 F04 F05','identity',a=>{

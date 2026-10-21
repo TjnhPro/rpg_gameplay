@@ -177,3 +177,6 @@ export {createItemDefinitionReference, createItemInstanceReference, validateItem
   createItemDefinition, validateItemDefinition, createItemInstance, validateItemInstance} from './modules/item/index.js';
 export type {ItemDefinitionReference, ItemInstanceInitialIdentity, ItemInstanceReference, ItemPropertyValue,
   ItemDefinitionContent, ItemDefinition, ItemInstanceInitialState, ItemInstanceState} from './modules/item/index.js';
+
+export {getItemInstanceProperty, setItemInstanceProperty, replaceItemInstanceProperties} from './modules/item/index.js';
+export type {ItemPropertyReadResult, ItemPropertyOperationAdmission, ItemPropertyOperationResult} from './modules/item/index.js';

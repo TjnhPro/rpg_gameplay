@@ -1,3 +1,26 @@
+## v0.9.1 — Item property operations IT06–IT08
+
+Root-only additions: getItemInstanceProperty(definition, instance, key),
+setItemInstanceProperty(definition, instance, key, value, admission), and
+replaceItemInstanceProperties(definition, instance, properties, admission).
+New types: ItemPropertyReadResult, ItemPropertyOperationAdmission and
+ItemPropertyOperationResult. The eight Foundation types/seven functions stay unchanged.
+
+Read returns exactly {found:false} or {found:true,value}; it reads instance own
+properties only, distinguishing absent, null and all falsy data. Keys are any exact
+strings, including empty/whitespace, Unicode and __proto__. Set replaces/adds one
+key; replacement removes every omitted key. Both return a new full same-ID candidate
+for closed {eligible:true}, or {status:'rejected',reason:'ineligible',candidate:null}
+for valid {eligible:false}. Accepted shape is
+{status:'accepted',reason:'none',candidate:<ItemInstanceState>}.
+
+Canonical complete definition/instance validation and recursive payload/admission
+validation precede rejection. Malformed input throws TypeError. Every returned
+object is detached/deeply frozen; inputs remain untouched. ECMAScript own-key order
+is preserved. Admission is a caller assertion; L3 owns permitted property semantics
+and L4 rechecks current authoritative state and commits. No arithmetic, implicit
+definition defaults, deletion operation, events or persistence.
+
 ## v0.9.0 — Item foundation (IT01–IT05)
 
 Root-only seven functions: createItemDefinitionReference, createItemInstanceReference,

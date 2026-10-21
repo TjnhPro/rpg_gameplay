@@ -1,3 +1,25 @@
+## v0.9.1 — Item property installed verification
+
+Mandatory item-properties.mjs/.ts: eight runtime contracts cover P01–P20/P22–P23;
+P21 is external strict NodeNext (skipLibCheck:false) readonly/discriminant evidence;
+P24 requires completion of all historical installed consumers, including v0.9.0.
+The consumer physically installs the packed root package with pinned Core in a path
+with spaces. No source aliases or workspace symlinks. Twenty targeted controls
+cover fixture/registration/marker/skip/zero-assertion loss, truthiness/fallback,
+mutation/alias/freeze, binding, validation-before-admission, rejected candidate,
+root export, wrong version, Core integrity, readonly/discriminant declarations and
+undeclared sibling dependency. Every mutated file restores exact bytes and clean
+8/8 runtime reruns; declaration mutations also require clean external compilation.
+
+Exact full-root inventory adds only three function names; Item declaration inventory
+adds only three types. Historical Item inventory adds the same exact functions;
+its behavioral assertions and all 17 negative controls remain unchanged. Historical
+root normalization removes only the exact authorized additive export bytes; original
+hash oracles remain unchanged. Module graph/Core pin/CI matrix stay identical.
+Delivered HEAD requires 8/8 push/PR Windows/Ubuntu Node22/24 plus full job-log audit.
+Report records local evidence; SHA-bound PR supplement records remote CI afterward.
+Developer acceptance PENDING; stop at v0.9.1. Earlier sections are historical.
+
 ## v0.9.0 — Item installed contracts
 
 Mandatory item-foundation.mjs/.ts run from a physical npm tarball installed with

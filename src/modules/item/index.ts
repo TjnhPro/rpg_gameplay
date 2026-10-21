@@ -171,3 +171,63 @@ export function validateItemInstance(definition: ItemDefinition, instance: ItemI
     return Object.freeze({instanceId, definitionId, properties: properties(value.properties)});
   });
 }
+
+export type ItemPropertyReadResult =
+  | {readonly found: false}
+  | {readonly found: true; readonly value: ItemPropertyValue};
+export interface ItemPropertyOperationAdmission { readonly eligible: boolean; }
+export type ItemPropertyOperationResult =
+  | {readonly status: 'accepted'; readonly reason: 'none'; readonly candidate: ItemInstanceState}
+  | {readonly status: 'rejected'; readonly reason: 'ineligible'; readonly candidate: null};
+
+function propertyKey(key: unknown): string {
+  if (typeof key !== 'string') throw new TypeError('Expected an Item property key string');
+  return key;
+}
+function eligible(admission: ItemPropertyOperationAdmission): boolean {
+  const value = fields(admission, ['eligible']).eligible;
+  if (typeof value !== 'boolean') throw new TypeError('Expected boolean Item property admission');
+  return value;
+}
+
+export function getItemInstanceProperty(
+  definition: ItemDefinition, instance: ItemInstanceState, key: string,
+): ItemPropertyReadResult {
+  return inspect(() => {
+    const current = validateItemInstance(definition, instance);
+    const name = propertyKey(key);
+    return Object.freeze(Object.hasOwn(current.properties, name)
+      ? {found: true, value: current.properties[name]!} : {found: false});
+  });
+}
+
+export function setItemInstanceProperty(
+  definition: ItemDefinition, instance: ItemInstanceState, key: string,
+  value: ItemPropertyValue, admission: ItemPropertyOperationAdmission,
+): ItemPropertyOperationResult {
+  return inspect(() => {
+    const current = validateItemInstance(definition, instance);
+    const name = propertyKey(key);
+    const captured = copyValue(value, new Set());
+    const allowed = eligible(admission);
+    if (!allowed) return Object.freeze({status: 'rejected', reason: 'ineligible', candidate: null});
+    const next = {...current.properties};
+    Object.defineProperty(next, name, {value: captured, enumerable: true, configurable: true, writable: true});
+    const candidate = validateItemInstance(definition, {...current, properties: next});
+    return Object.freeze({status: 'accepted', reason: 'none', candidate});
+  });
+}
+
+export function replaceItemInstanceProperties(
+  definition: ItemDefinition, instance: ItemInstanceState,
+  replacement: Readonly<Record<string, ItemPropertyValue>>, admission: ItemPropertyOperationAdmission,
+): ItemPropertyOperationResult {
+  return inspect(() => {
+    const current = validateItemInstance(definition, instance);
+    const captured = properties(replacement);
+    const allowed = eligible(admission);
+    if (!allowed) return Object.freeze({status: 'rejected', reason: 'ineligible', candidate: null});
+    const candidate = validateItemInstance(definition, {...current, properties: captured});
+    return Object.freeze({status: 'accepted', reason: 'none', candidate});
+  });
+}

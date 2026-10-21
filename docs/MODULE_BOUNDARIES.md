@@ -1,3 +1,13 @@
+## v0.9.1 — Item property owner
+
+The existing optional item -> [] owner alone adds three property operations.
+It reuses canonical Item validators and recursive capture helpers; Foundation state
+and public shapes stay unchanged. Core owns calculations, but these operations
+perform structural data replacement only and make no numerical Kernel call.
+L3 supplies property rules, L4 supplies explicit admission/current authoritative
+inputs and commits candidates. No sibling dependency, store, Inventory quantity,
+Equipment binding, Effect application, durability formula or second runtime owner.
+
 ## v0.9.0 — Item owner
 
 The only Item production owner is src/modules/item/index.ts, optional item -> [].

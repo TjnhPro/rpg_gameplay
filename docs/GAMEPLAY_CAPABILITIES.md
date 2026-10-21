@@ -1,3 +1,13 @@
+## v0.9.1 — Item property operations IT06–IT08
+
+Implemented: exact own-instance reads, immutable single-key set and whole-map
+replacement candidates, structural TypeErrors and explicit closed caller admission
+with accepted/rejected discriminants. Foundation schemas and optional item -> []
+remain unchanged. Opaque numbers are data; L3 owns property meaning and L4 current
+state/commit. Installed inert Text/2D/2.5D examples prove API compatibility only;
+concrete gameplay profiles NOT_EVALUATED. No Inventory/Equipment/Loot/Reward,
+stacking or v0.9.2 work. Phase IN_PROGRESS; Developer acceptance PENDING; PR #14 Draft.
+
 ## v0.9.0 — implemented Item foundation only
 
 IT01–IT05 provide definition/reference/instance identity and content, recursive safe
