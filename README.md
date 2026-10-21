@@ -1,12 +1,13 @@
 # RPG Gameplay — current verification
 
-L2 reusable headless function-first RPG framework. Package checkpoint: `0.10.4` (Inventory Integration & MVP Closure, Developer acceptance PENDING).
+L2 reusable headless function-first RPG framework. Package checkpoint: `0.11.0` (Equipment Foundation, Developer acceptance PENDING).
 Daily checks: `npm run verify` runs boundaries, build, strict repo NodeNext typecheck
 and direct public function tests. Fresh setup: `npm run core:prepare` then
 `npm ci --ignore-scripts`. CI is one Ubuntu/Node22 PR job.
 
 Inventory provides validated immutable add/remove/quantity and complete merge candidates, snapshots, queries and capacity assessment; caller owns commits. No split/partial merge/transfer.
-See [Inventory checkpoint](docs/reports/v0.10.4-inventory-integration-closure.md).
+Equipment adds immutable identity/owner/slot occupancy snapshots with canonical Item validation. No equip/unequip operations.
+See [Equipment checkpoint](docs/reports/v0.11.0-equipment-foundation.md).
 
 See [testing and limitations](docs/TESTING.md), [verification](docs/VERIFICATION.md)
 and [harness migration report](docs/reports/harness-simplification-mvp.md).

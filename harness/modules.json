@@ -10,6 +10,7 @@
     {"id": "actor-ai", "optional": true, "dependencies": ["entity"]},
     {"id": "encounter", "optional": true, "dependencies": ["entity"]},
     {"id": "item", "optional": true, "dependencies": []},
-    {"id": "inventory", "optional": true, "dependencies": ["item"]}
+    {"id": "inventory", "optional": true, "dependencies": ["item"]},
+    {"id": "equipment", "optional": true, "dependencies": ["item"]}
   ]
 }

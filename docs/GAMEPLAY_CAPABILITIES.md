@@ -1,3 +1,10 @@
+## v0.11.0 — Equipment Foundation EQ01–EQ05
+
+Identity, neutral owner, canonical Item snapshots and ordered opaque multi-slot occupancy,
+validated immutable state and optional equipment->[item] boundary implemented. No equip,
+unequip, queries/admission, stat grants or cross-storage operations. EQ06–EQ20 NOT_STARTED.
+Developer acceptance PENDING. [Report](reports/v0.11.0-equipment-foundation.md).
+
 ## v0.10.4 — Inventory integration and MVP closure evidence
 
 IN21–IN25 add installed deterministic integration evidence with zero production/API

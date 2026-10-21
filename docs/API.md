@@ -1,3 +1,17 @@
+## v0.11.0 — Equipment Foundation (EQ01–EQ05)
+
+New runtime functions: createEquipmentState(input,context), validateEquipmentState(state,context).
+Types: EquipmentOwnerReference {ownerKind,ownerId}; EquippedEntry {item:ItemInstanceState,slotIds};
+EquipmentState {equipmentId,owner:EquipmentOwnerReference|null,entries}; EquipmentItemContext
+{definition:ItemDefinition}; EquipmentValidationContext {items}. All fields readonly.
+IDs are nonblank exact opaque strings. Ordered dense entries have unique Item instance IDs;
+ordered nonempty dense slotIds have no duplicates within/across entries. No fixed slot catalog.
+Context supplies unique complete definitions (unused allowed). Canonical Item validation owns
+binding and nested payloads. Closed own-data inputs, invalid occupancy or context throw TypeError.
+Both functions return fresh detached deeply frozen snapshots, including nonempty rehydration.
+No quantity, equip/unequip transition, Inventory commit, stats, global Item store or authorization.
+[Report](reports/v0.11.0-equipment-foundation.md). EQ06+ NOT_STARTED; Developer acceptance PENDING.
+
 ## v0.10.4 — Inventory integration evidence only (IN21–IN25)
 
 No production source or public API changes from v0.10.3. Installed consumers compose

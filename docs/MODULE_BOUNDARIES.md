@@ -1,3 +1,12 @@
+## v0.11.0 — Equipment canonical owner
+
+Optional equipment->[item] owns only equipped-slot snapshot structure. Item public validators
+own full definitions/instances; Inventory retains independent unequipped membership/quantity.
+No Equipment->Inventory/Entity/Skill/Effect/Core dependency. L3 owns slot/eligibility policies;
+L4 owns current-state authority, cross-storage uniqueness and commits. No ItemStore or manager.
+Multi-slot occupancy is data representation, not two-hand mechanics. EQ06+ NOT_STARTED.
+[Report](reports/v0.11.0-equipment-foundation.md).
+
 ## v0.10.0 — Inventory owner
 
 Optional `inventory -> [item]` adds only create/validate snapshots. Inventory owns
