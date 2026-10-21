@@ -172,3 +172,109 @@ export function assessInventoryCapacity(state: InventoryState, context: Inventor
   const fits = maximum === null || (occupied <= maximum && additional <= maximum - occupied);
   return Object.freeze({fits, occupied, available});
 }
+
+export interface InventoryOperationAdmission { readonly eligible: boolean; }
+export type InventoryMutationReason =
+  | 'ineligible' | 'already_present' | 'missing_entry' | 'capacity_exceeded'
+  | 'quantity_underflow' | 'stack_limit_exceeded' | 'quantity_not_allowed';
+
+function inspectMutation<T>(read: () => T): T {
+  try { return read(); }
+  catch (error) {
+    if (error instanceof TypeError) throw error;
+    throw new TypeError('Inventory operation data could not be inspected safely');
+  }
+}
+function eligibleOperation(admission: InventoryOperationAdmission): boolean {
+  const eligible = fields(admission, ['eligible']).eligible;
+  if (typeof eligible !== 'boolean') throw new TypeError('Inventory admission requires explicit boolean eligibility');
+  return eligible;
+}
+// State validation has already checked the complete context. Capture the relevant
+// facts through Item's public validators; never define another Item schema.
+function mutationFacts(context: InventoryValidationContext, definitionId: string): InventoryItemContext {
+  for (const value of values(fields(context, ['items']).items)) {
+    const fact = fields(value, ['definition', 'stackPolicy', 'maxStackQuantity']);
+    const definition = validateItemDefinition(fact.definition as ItemDefinition);
+    if (definition.definitionId === definitionId) {
+      return {definition, stackPolicy: validateItemStackPolicy(fact.stackPolicy as ItemStackPolicy),
+        maxStackQuantity: fact.maxStackQuantity === null ? null : quantity(fact.maxStackQuantity)};
+    }
+  }
+  throw new TypeError('Unresolved Inventory Item definition');
+}
+function quantityRejection(count: number, fact: InventoryItemContext): InventoryMutationReason | null {
+  if (!fact.stackPolicy.stackable && count !== 1) return 'quantity_not_allowed';
+  if (fact.maxStackQuantity !== null && count > fact.maxStackQuantity) return 'stack_limit_exceeded';
+  return null;
+}
+function denied(reason: InventoryMutationReason): InventoryTransitionResult<InventoryMutationReason> {
+  return Object.freeze({status: 'rejected', reason, candidate: null});
+}
+function acceptedMutation(state: InventoryState, context: InventoryValidationContext): InventoryTransitionResult<InventoryMutationReason> {
+  return Object.freeze({status: 'accepted', reason: 'none', candidate: validateInventoryState(state, context)});
+}
+
+/** Append supplied membership only; caller owns Item entitlement and commits. */
+export function addInventoryEntry(state: InventoryState, context: InventoryValidationContext,
+  entry: InventoryEntry, capacity: InventoryCapacityPolicy,
+  admission: InventoryOperationAdmission): InventoryTransitionResult<InventoryMutationReason> {
+  return inspectMutation(() => {
+    const snapshot = validateInventoryState(state, context);
+    const input = fields(entry, ['item', 'quantity']);
+    const count = quantity(input.quantity);
+    const binding = typeof input.item === 'object' && input.item !== null
+      ? Object.getOwnPropertyDescriptor(input.item, 'definitionId') : undefined;
+    if (!binding || !('value' in binding) || typeof binding.value !== 'string') {
+      throw new TypeError('Inventory requires an own-data Item definitionId');
+    }
+    const fact = mutationFacts(context, binding.value);
+    const item = validateItemInstance(fact.definition, input.item as ItemInstanceState);
+    const assessment = assessInventoryCapacity(snapshot, context, capacity, 1);
+    const eligible = eligibleOperation(admission);
+    if (!eligible) return denied('ineligible');
+    if (snapshot.entries.some(value => value.item.instanceId === item.instanceId)) return denied('already_present');
+    if (!assessment.fits) return denied('capacity_exceeded');
+    const reason = quantityRejection(count, fact);
+    if (reason) return denied(reason);
+    return acceptedMutation({...snapshot, entries: [...snapshot.entries, {item, quantity: count}]}, context);
+  });
+}
+
+/** Remove membership, never delete Item existence from any external authority. */
+export function removeInventoryEntry(state: InventoryState, context: InventoryValidationContext,
+  instanceId: string, admission: InventoryOperationAdmission): InventoryTransitionResult<InventoryMutationReason> {
+  return inspectMutation(() => {
+    const snapshot = validateInventoryState(state, context);
+    const key = id(instanceId), eligible = eligibleOperation(admission);
+    if (!eligible) return denied('ineligible');
+    if (!snapshot.entries.some(entry => entry.item.instanceId === key)) return denied('missing_entry');
+    return acceptedMutation({...snapshot, entries: snapshot.entries.filter(entry => entry.item.instanceId !== key)}, context);
+  });
+}
+
+/** Signed safe-integer bookkeeping; zero quantity retires membership. */
+export function adjustInventoryQuantity(state: InventoryState, context: InventoryValidationContext,
+  instanceId: string, delta: number, admission: InventoryOperationAdmission): InventoryTransitionResult<InventoryMutationReason> {
+  return inspectMutation(() => {
+    const snapshot = validateInventoryState(state, context);
+    const key = id(instanceId);
+    if (!Number.isSafeInteger(delta) || delta === 0) throw new TypeError('Inventory delta must be a nonzero safe integer');
+    const eligible = eligibleOperation(admission);
+    if (!eligible) return denied('ineligible');
+    const entry = snapshot.entries.find(value => value.item.instanceId === key);
+    if (!entry) return denied('missing_entry');
+    if (delta < -entry.quantity) return denied('quantity_underflow');
+    // Never calculate an unsafe positive sum. The safe integer ceiling is the
+    // implicit structural stack ceiling even when L3 supplies no lower cap.
+    if (delta > Number.MAX_SAFE_INTEGER - entry.quantity) return denied('stack_limit_exceeded');
+    const count = entry.quantity + delta;
+    if (count !== 0) {
+      const reason = quantityRejection(count, mutationFacts(context, entry.item.definitionId));
+      if (reason) return denied(reason);
+    }
+    const entries = snapshot.entries.flatMap(value => value.item.instanceId !== key
+      ? [value] : count === 0 ? [] : [{item: value.item, quantity: count}]);
+    return acceptedMutation({...snapshot, entries}, context);
+  });
+}

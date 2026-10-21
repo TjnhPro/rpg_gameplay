@@ -1,3 +1,10 @@
+## v0.10.2 — Inventory IN11–IN15
+
+Immutable validated add/remove/quantity candidates with explicit admission, typed rejections,
+capacity and canonical Item stack limits. No hidden commit, Item creation, auto-merge,
+split or transfer. Foundation/query contracts unchanged. Developer acceptance PENDING.
+[Report](reports/v0.10.2-inventory-add-remove-quantity.md).
+
 ## v0.10.1 — Inventory IN06–IN10
 
 Exact lookup, ordered list, membership and pure entry-count capacity assessment implemented.

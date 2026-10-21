@@ -1,3 +1,20 @@
+## v0.10.2 — Inventory Add, Remove & Quantity (IN11–IN15)
+
+Root adds addInventoryEntry(state,context,entry,capacity,admission),
+removeInventoryEntry(state,context,instanceId,admission) and
+adjustInventoryQuantity(state,context,instanceId,delta,admission).
+Types: InventoryOperationAdmission {readonly eligible:boolean} and InventoryMutationReason
+(ineligible, already_present, missing_entry, capacity_exceeded, quantity_underflow,
+stack_limit_exceeded, quantity_not_allowed). All use the existing InventoryTransitionResult union.
+Structural validation precedes admission, including the incoming Item, safe positive quantity,
+closed capacity/admission, IDs and nonzero safe-integer delta. Invalid structure throws TypeError.
+Then admission rejection takes precedence; add checks duplicate, capacity, stackability and cap
+in that order; remove/adjust check missing membership. Overflow rejects stack_limit_exceeded.
+Positive safe quantities violating stackability/caps yield business rejections, not TypeError.
+Accepted full candidates pass canonical validation and are detached/frozen; results are frozen.
+Add appends without merging, remove preserves remaining order, adjust to zero removes membership.
+No authoritative Item grant/delete or storage commit. [Report](reports/v0.10.2-inventory-add-remove-quantity.md).
+
 ## v0.10.1 — Inventory Queries & Capacity (IN06–IN10)
 
 Root adds getInventoryEntry(state, context, instanceId), listInventoryEntries(state, context),

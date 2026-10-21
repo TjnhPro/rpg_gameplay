@@ -189,3 +189,5 @@ export type {InventoryOwnerReference, InventoryEntry, InventoryState, InventoryI
   InventoryValidationContext, InventoryTransitionResult} from './modules/inventory/index.js';
 export {getInventoryEntry, listInventoryEntries, hasInventoryItem, assessInventoryCapacity} from './modules/inventory/index.js';
 export type {InventoryCapacityPolicy, InventoryCapacityAssessment} from './modules/inventory/index.js';
+export {addInventoryEntry, removeInventoryEntry, adjustInventoryQuantity} from './modules/inventory/index.js';
+export type {InventoryOperationAdmission, InventoryMutationReason} from './modules/inventory/index.js';
