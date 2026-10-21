@@ -1,6 +1,6 @@
 # RPG Gameplay — current verification
 
-L2 reusable headless function-first RPG framework. Package checkpoint: `0.13.1` (Reward Claim Planning RW06–RW10, Developer acceptance PENDING).
+L2 reusable headless function-first RPG framework. Package checkpoint: `0.13.2` (Reward Integration & MVP Closure RW11–RW15, Developer acceptance PENDING).
 Daily checks: `npm run verify` runs boundaries, build, strict repo NodeNext typecheck
 and direct public function tests. Fresh setup: `npm run core:prepare` then
 `npm ci --ignore-scripts`. CI is one Ubuntu/Node22 PR job.
@@ -26,7 +26,10 @@ source/recipient are opaque. `claimed` is supplied data, not proof of delivery.
 with explicit admission and
 already-claimed priority. L4 owns atomic external grants/claim commit and freshness.
 No Item/EXP grants or persistence is implemented.
-See [Reward planning evidence](docs/reports/v0.13.1-reward-claim-planning.md).
+Closure fixtures compose real Item/Inventory/Progression APIs in test-local L4: Potion ×3
+and EXP25→125 commit together; capacity, unsupported kinds, fractional Item quantities,
+limited EXP and stale baselines prevent commit. Production Reward/API/graph are unchanged.
+See [Reward closure evidence](docs/reports/v0.13.2-reward-integration-mvp-closure.md).
 
 See [testing and limitations](docs/TESTING.md), [verification](docs/VERIFICATION.md)
 and [harness migration report](docs/reports/harness-simplification-mvp.md).

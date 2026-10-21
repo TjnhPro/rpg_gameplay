@@ -1,3 +1,12 @@
+## v0.13.2 — Reward integration closure (RW11–RW15)
+
+No production or public API delta. Test-local L4 resolves Item content, supplies IDs,
+prepares Inventory/Progression candidates, and replaces one composite state only when
+all grants succeed and the baseline remains current. Reward alone neither delivers
+Item/EXP nor prevents stale/concurrent delivery. No currency/unlock consumer exists;
+unsupported kinds and incomplete EXP are rejected by the fixture before commit.
+[Evidence](reports/v0.13.2-reward-integration-mvp-closure.md).
+
 ## v0.13.1 — Reward claim planning (RW06–RW10)
 
 One additive root function and two types; all Foundation shapes/functions unchanged:

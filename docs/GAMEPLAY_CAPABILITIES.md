@@ -1,3 +1,11 @@
+## v0.13.2 — Reward RW11–RW15 closure evidence
+
+Installed test-local handoff proves canonical Item3 + EXP100, atomic failure/replay,
+no-op and opaque neutral data. Reward production stays import-free and independent;
+there is no delivery engine, ledger or distributed exactly-once guarantee.
+RW01–RW15 are implemented/evidenced; Developer final phase acceptance PENDING.
+[Report](reports/v0.13.2-reward-integration-mvp-closure.md).
+
 ## v0.13.1 — Reward planning RW06–RW10
 
 Canonical snapshot inspection is reused. Explicit admission and claimed-snapshot checks
