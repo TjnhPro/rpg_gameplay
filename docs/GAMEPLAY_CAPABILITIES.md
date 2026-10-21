@@ -1,3 +1,11 @@
+## v0.12.2 — Loot Integration & MVP Closure LT11–LT15
+
+Consumers demonstrate validation/selection/Item creation/Inventory candidate handoff,
+distinct Text/2D/2.5D data, explicit Foundation sample, replay, no-drop and rejected
+delivery isolation. Production, four functions/four types and optional loot->[] are
+unchanged. This is function-level evidence, not live game, reward or durable transaction
+assurance. Developer final acceptance PENDING. [Report](reports/v0.12.2-loot-integration-mvp-closure.md).
+
 ## v0.12.1 — Loot Weighted Selection LT06–LT10
 
 Explicit finite `[0,1)` sample selects no-drop or one ordered weighted entry. Exact fixed

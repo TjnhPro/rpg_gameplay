@@ -1,3 +1,12 @@
+## v0.12.2 — Loot integration closure (LT11–LT15)
+
+No new runtime API/type or changed schema. Four Loot functions and four readonly types
+remain unchanged from v0.12.1. Only test consumers resolve real Item definitions, supply
+unique IDs, call createItemInstance and addInventoryEntry with explicit context, capacity
+and admission, then locally accept successful candidates. No-drop invokes no delivery
+provider; rejected Inventory adds leave current state unchanged and preserve the intent.
+Selection does not guarantee delivery or entitlement. [Report](reports/v0.12.2-loot-integration-mvp-closure.md).
+
 ## v0.12.1 — Loot Weighted Drop Selection (LT06–LT10)
 
 One additive root function, no new types:
