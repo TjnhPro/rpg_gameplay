@@ -1,3 +1,22 @@
+## v0.8.5 — explicit Encounter closure EN26–EN30
+
+Five functions/seven types add fresh active→resolved candidates, side-based
+resolution/cancellation companion records, explicit resolved→closed, L3-authorized
+prepared/active cancellation and terminal-only cleanup references. EncounterState
+retains exactly encounterId/definitionId/status/sides/participants; EN01–EN25 stay
+unchanged. Encounter depends only on Entity; canonical owners/Core/registry stay
+unchanged. No World/reward/cleanup execution, engine or implicit completion.
+
+All candidates and records are detached immutable data, not authenticated receipts.
+L3 owns ordered completion and cancellation policy; L4 supplies current facts and
+atomically accepts state+record against its current baseline, then dispatches cleanup.
+Structural snapshots cannot prove provenance or distributed exactly-once delivery.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; PR #13 remains Draft.
+v0.8.6/v0.8.7 NOT_STARTED. No Ready UI, merge, tag or publish. Concrete gameplay
+profiles NOT_EVALUATED. Earlier checkpoint sections below are historical.
+
+
 # v0.8.4 — Encounter Victory / Defeat Resolution
 
 EN21–EN25 adds read-only completion assessment: explicit canonical Life/objective

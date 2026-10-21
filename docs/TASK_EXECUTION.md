@@ -1,3 +1,25 @@
+## Current authorized checkpoint: v0.8.5 Encounter Closure
+
+Approved [task](tasks/active/v0.8.5-encounter-closure.md), EN26–EN30 only, from
+accepted v0.8.4 d29d5ee7bcb0dbb7adf8d59cfa9a0a2e755cfb36 on feat/v0.8-encounter.
+Developer explicitly approved one exception on2026-10-21: only historical consumer
+encounter-completion-resolution.mjs:161 exact version0.8.4→0.8.5; keep every behavior,
+negative and API assertion. Installed0.8.4 must fail the new version oracle.
+This supersedes that specific v0.8.5 blocker, not the prior blocked history.
+
+Production edits confined to Encounter append and additive root exports. Package/lock
+version-only0.8.5; no Core, sibling owner, architecture, registry, workflow or dependency
+change. Existing historical source digest retained with exact additive-root exclusion.
+Mandatory target/negative/strict NodeNext/full verify, scope audit and exact SHA8/8
+push+PR CI precede CHECKPOINT_COMPLETE. Final evidence is a SHA-bound supplement to
+the same Draft PR#13, without a report-only commit after tested HEAD.
+[Report](reports/v0.8.5-encounter-closure.md).
+
+Phase IN_PROGRESS; Developer acceptance PENDING; PR #13 remains Draft.
+v0.8.6/v0.8.7 NOT_STARTED. No Ready UI, merge, tag or publish. Concrete gameplay
+profiles NOT_EVALUATED. Earlier checkpoint sections below are historical.
+
+
 ## Current authorized checkpoint: v0.8.4 completion assessment
 
 Developer supplied approved [task](tasks/active/v0.8.4-encounter-victory-defeat-resolution.md); ENC-D01–D07 remain all A.

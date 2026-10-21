@@ -158,7 +158,7 @@ contract('47 48','canonical-combat',a=>{
 });
 contract('60','installed-surface',a=>{
   const manifest=JSON.parse(readFileSync(new URL('./node_modules/@rpg/gameplay/package.json',import.meta.url)));
-  a.equal(manifest.version,'0.8.4');a.deepEqual(manifest.exports,{'.':{types:'./dist/index.d.ts',import:'./dist/index.js'}});
+  a.equal(manifest.version,'0.8.5');a.deepEqual(manifest.exports,{'.':{types:'./dist/index.d.ts',import:'./dist/index.js'}});
   for(const name of ['createEncounterCompletionPolicy','createEncounterCompletionObservation','evaluateEncounterCompletion'])a.equal(typeof g[name],'function');
   const registry=[{id:'entity',optional:true,dependencies:[]},{id:'encounter',optional:true,dependencies:['entity']}].reduce(g.registerModule,g.createModuleRegistry());const composition=g.composeModules(registry,g.configureModules(registry,{enable:['entity','encounter']}));a.deepEqual(composition.moduleIds,['entity','encounter']);a.deepEqual(evaluate(fixture()),resolved());
 });

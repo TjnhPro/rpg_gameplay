@@ -166,3 +166,9 @@ export type {EncounterParticipantLifeFact, EncounterObjectiveStatus, EncounterOb
   EncounterContinuation, EncounterCompletionObservation, EncounterVictoryOutcomeTemplate, EncounterDrawOutcomeTemplate,
   EncounterOutcomeTemplate, EncounterCompletionRule, EncounterCompletionPolicy, EncounterResolutionOutcome,
   EncounterCompletionPendingReason, EncounterCompletionAssessment} from './modules/encounter/index.js';
+
+export {createEncounterClosurePolicy, resolveEncounter, closeEncounter, cancelEncounter,
+  createEncounterCleanupHandoff} from './modules/encounter/index.js';
+export type {EncounterResolutionTransitionResult, EncounterDispositionRecord, EncounterCloseTransitionResult,
+  EncounterClosurePolicy, EncounterCancellationRequest, EncounterCancellationTransitionResult,
+  EncounterCleanupHandoff} from './modules/encounter/index.js';

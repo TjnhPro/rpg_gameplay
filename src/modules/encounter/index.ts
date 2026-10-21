@@ -561,3 +561,111 @@ export function evaluateEncounterCompletion(state: EncounterState, entities: Ent
   }
   return pending('no_completion_condition_met');
 }
+
+/** Companion metadata, not transition provenance or a second lifecycle store. */
+export type EncounterDispositionRecord =
+  | {readonly kind: 'resolution'; readonly encounterId: string; readonly definitionId: string;
+      readonly ruleId: string; readonly outcome: EncounterResolutionOutcome}
+  | {readonly kind: 'cancellation'; readonly encounterId: string; readonly definitionId: string;
+      readonly reasonId: string; readonly outcome: null};
+export type EncounterResolutionTransitionResult =
+  | {readonly status: 'resolved'; readonly reason: 'none'; readonly encounterId: string;
+      readonly state: EncounterState; readonly disposition: EncounterDispositionRecord}
+  | {readonly status: 'rejected'; readonly reason: EncounterCompletionPendingReason; readonly encounterId: string;
+      readonly state: null; readonly disposition: null};
+export type EncounterCloseTransitionResult =
+  | {readonly status: 'closed'; readonly reason: 'none'; readonly encounterId: string;
+      readonly state: EncounterState; readonly disposition: EncounterDispositionRecord}
+  | {readonly status: 'rejected'; readonly reason: 'encounter_not_resolved' | 'already_terminal'; readonly encounterId: string;
+      readonly state: null; readonly disposition: null};
+export interface EncounterClosurePolicy {
+  readonly definitionId: string;
+  readonly cancelAllowedStatuses: readonly ('prepared' | 'active')[];
+}
+export interface EncounterCancellationRequest { readonly encounterId: string; readonly reasonId: string; }
+export type EncounterCancellationTransitionResult =
+  | {readonly status: 'cancelled'; readonly reason: 'none'; readonly encounterId: string;
+      readonly state: EncounterState; readonly disposition: EncounterDispositionRecord}
+  | {readonly status: 'rejected'; readonly reason: 'cancellation_not_allowed' | 'already_finalized'; readonly encounterId: string;
+      readonly state: null; readonly disposition: null};
+export interface EncounterCleanupHandoff {
+  readonly encounterId: string;
+  readonly terminalStatus: 'closed' | 'cancelled';
+  readonly dispositionKind: 'resolution' | 'cancellation';
+  readonly participantEntityIds: readonly string[];
+}
+
+function closureDisposition(input: EncounterDispositionRecord, state: EncounterState): EncounterDispositionRecord {
+  const kind = completionKind(input);
+  const data = fields(input, kind === 'resolution'
+    ? ['kind', 'encounterId', 'definitionId', 'ruleId', 'outcome']
+    : ['kind', 'encounterId', 'definitionId', 'reasonId', 'outcome']);
+  const encounterId = id(data.encounterId), definitionId = id(data.definitionId);
+  if (encounterId !== state.encounterId || definitionId !== state.definitionId) {
+    throw new TypeError('Encounter disposition identity mismatch');
+  }
+  if (kind === 'resolution') {
+    const outcome = completionOutcome(data.outcome);
+    const sides = new Set(state.sides.map(side => side.sideId));
+    if ([...outcome.winnerSideIds, ...outcome.defeatedSideIds].some(side => !sides.has(side))) {
+      throw new TypeError('Unknown Encounter disposition side');
+    }
+    return Object.freeze({kind, encounterId, definitionId, ruleId: id(data.ruleId), outcome});
+  }
+  if (kind !== 'cancellation' || data.outcome !== null) throw new TypeError('Invalid Encounter cancellation disposition');
+  return Object.freeze({kind, encounterId, definitionId, reasonId: id(data.reasonId), outcome: null});
+}
+function closureRejected<R extends string>(encounterId: string, reason: R) {
+  return Object.freeze({status: 'rejected' as const, reason, encounterId, state: null, disposition: null});
+}
+export function createEncounterClosurePolicy(input: EncounterClosurePolicy): EncounterClosurePolicy {
+  const data = fields(input, ['definitionId', 'cancelAllowedStatuses']);
+  const cancelAllowedStatuses = array(data.cancelAllowedStatuses).map(status => {
+    if (status !== 'prepared' && status !== 'active') throw new TypeError('Invalid Encounter cancellation status');
+    return status;
+  });
+  if (new Set(cancelAllowedStatuses).size !== cancelAllowedStatuses.length) throw new TypeError('Duplicate Encounter cancellation status');
+  return Object.freeze({definitionId: id(data.definitionId), cancelAllowedStatuses: Object.freeze(cancelAllowedStatuses)});
+}
+/** Reassess explicit current facts. L4 must atomically accept state + record against its current baseline. */
+export function resolveEncounter(state: EncounterState, entities: EntityCollection,
+  policy: EncounterCompletionPolicy, observation: EncounterCompletionObservation): EncounterResolutionTransitionResult {
+  const current = validateEncounterState(state, entities);
+  const assessment = evaluateEncounterCompletion(current, entities, policy, observation);
+  if (assessment.status === 'pending') return closureRejected(current.encounterId, assessment.reason);
+  const disposition = closureDisposition({kind: 'resolution', encounterId: current.encounterId,
+    definitionId: current.definitionId, ruleId: assessment.ruleId, outcome: assessment.outcome}, current);
+  return Object.freeze({status: 'resolved', reason: 'none', encounterId: current.encounterId,
+    state: validateEncounterState({...current, status: 'resolved'}, entities), disposition});
+}
+export function closeEncounter(state: EncounterState, entities: EntityCollection,
+  disposition: EncounterDispositionRecord): EncounterCloseTransitionResult {
+  const current = validateEncounterState(state, entities), record = closureDisposition(disposition, current);
+  if (current.status === 'closed' || current.status === 'cancelled') return closureRejected(current.encounterId, 'already_terminal');
+  if (current.status !== 'resolved') return closureRejected(current.encounterId, 'encounter_not_resolved');
+  if (record.kind !== 'resolution') throw new TypeError('Resolved Encounter requires resolution disposition');
+  return Object.freeze({status: 'closed', reason: 'none', encounterId: current.encounterId,
+    state: validateEncounterState({...current, status: 'closed'}, entities), disposition: record});
+}
+export function cancelEncounter(state: EncounterState, entities: EntityCollection,
+  policy: EncounterClosurePolicy, request: EncounterCancellationRequest): EncounterCancellationTransitionResult {
+  const current = validateEncounterState(state, entities), rules = createEncounterClosurePolicy(policy);
+  const data = fields(request, ['encounterId', 'reasonId']), encounterId = id(data.encounterId), reasonId = id(data.reasonId);
+  if (encounterId !== current.encounterId || rules.definitionId !== current.definitionId) throw new TypeError('Encounter cancellation identity mismatch');
+  if (current.status === 'resolved' || current.status === 'closed' || current.status === 'cancelled') return closureRejected(encounterId, 'already_finalized');
+  if (!rules.cancelAllowedStatuses.includes(current.status)) return closureRejected(encounterId, 'cancellation_not_allowed');
+  return Object.freeze({status: 'cancelled', reason: 'none', encounterId,
+    state: validateEncounterState({...current, status: 'cancelled'}, entities),
+    disposition: closureDisposition({kind: 'cancellation', encounterId, definitionId: current.definitionId, reasonId, outcome: null}, current)});
+}
+/** Structural post-terminal references only; L4 owns accepted provenance, dispatch and retries. */
+export function createEncounterCleanupHandoff(state: EncounterState, entities: EntityCollection,
+  disposition: EncounterDispositionRecord): EncounterCleanupHandoff {
+  const current = validateEncounterState(state, entities), record = closureDisposition(disposition, current);
+  if (current.status !== 'closed' && current.status !== 'cancelled') throw new TypeError('Encounter is not terminal');
+  if ((current.status === 'closed' && record.kind !== 'resolution') || (current.status === 'cancelled' && record.kind !== 'cancellation')) {
+    throw new TypeError('Encounter terminal disposition mismatch');
+  }
+  return Object.freeze({encounterId: current.encounterId, terminalStatus: current.status, dispositionKind: record.kind,
+    participantEntityIds: Object.freeze(current.participants.map(participant => participant.entityId))});
+}

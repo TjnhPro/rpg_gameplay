@@ -1,3 +1,37 @@
+## v0.8.5 — installed closure verification
+
+Required encounter-closure.mjs/.ts:19 assertion-bearing groups cover C01–C67,
+C69–C70; mandatory historical execution/final compiler prove C68, with exact-head
+CI checked externally. Normal/terminal/policy gates, detached snapshots, literal
+canonical Combat HP20→0/Life dead replay and retained Skill mana100→75/cooldown1750
+exercise pure candidates versus caller-owned commit. Test-only L4 fixture covers
+roster/Life/continuation stale proposals, atomic failure, competing cancellation,
+premature handoff and independent duplicate terminal guard.
+
+N01–N32 run actual installed runtime/consumer/manifest/Core/declaration/runner or
+source-copy faults. Each requires its intended assertion, restores exact bytes and
+reruns clean19/19; strict NodeNext uses skipLibCheck:false. N27 corrupts actual
+readonly/discriminant/syntax declarations; N28 directly checks canonical types path,
+packed inventory and installed file, independently of TypeScript import fallback.
+N30 uses current revision/facts so stale checks cannot mask the terminal guard.
+N05 rejects installed0.8.4 through both new and historical exact-version assertions.
+The only protected historical consumer change is the Developer-approved metadata
+expectation0.8.4→0.8.5 at encounter-completion-resolution.mjs:161. No behavior,
+negative control or older API assertion was changed. Exact central root inventory
+is additive155 runtime functions/267 types; historical root normalization removes
+only the exact approved export block and retains its existing digest.
+
+Required: core:prepare, npm ci --ignore-scripts, harness:check/selftest, build,
+typecheck, targeted installed runtime+NodeNext, test:functional, npm run verify,
+git diff --check and protected-file audit. Both push/PR need Windows/Ubuntu
+Node22/24 eight exact delivered-head jobs with full logs and artifact provenance.
+Local evidence alone is CI_PENDING. [Report](reports/v0.8.5-encounter-closure.md).
+
+Phase IN_PROGRESS; Developer acceptance PENDING; PR #13 remains Draft.
+v0.8.6/v0.8.7 NOT_STARTED. No Ready UI, merge, tag or publish. Concrete gameplay
+profiles NOT_EVALUATED. Earlier checkpoint sections below are historical.
+
+
 ## v0.8.4 — installed completion verification
 
 Mandatory encounter-completion-resolution.mjs/.ts:13 substantive runtime groups

@@ -1,3 +1,49 @@
+## v0.8.5 — EN26–EN30 terminal candidate API
+
+Root-only ESM signatures (EntityCollection is the canonical Entity owner):
+
+```ts
+createEncounterClosurePolicy(input: EncounterClosurePolicy): EncounterClosurePolicy
+resolveEncounter(state: EncounterState, entities: EntityCollection, policy: EncounterCompletionPolicy, observation: EncounterCompletionObservation): EncounterResolutionTransitionResult
+closeEncounter(state: EncounterState, entities: EntityCollection, disposition: EncounterDispositionRecord): EncounterCloseTransitionResult
+cancelEncounter(state: EncounterState, entities: EntityCollection, policy: EncounterClosurePolicy, request: EncounterCancellationRequest): EncounterCancellationTransitionResult
+createEncounterCleanupHandoff(state: EncounterState, entities: EntityCollection, disposition: EncounterDispositionRecord): EncounterCleanupHandoff
+```
+
+Seven new types are EncounterDispositionRecord, EncounterResolutionTransitionResult,
+EncounterCloseTransitionResult, EncounterClosurePolicy, EncounterCancellationRequest,
+EncounterCancellationTransitionResult and EncounterCleanupHandoff. Root inventory
+is155 functions/267 types, preserving every prior named export and signature.
+
+Disposition is exactly {kind:'resolution',encounterId,definitionId,ruleId,outcome}
+or {kind:'cancellation',encounterId,definitionId,reasonId,outcome:null}. Resolution
+retains canonical EncounterResolutionOutcome, selected rule and unique/disjoint
+declared-side arrays. IDs are opaque exact nonblank strings. Close/cleanup check
+identity/outcome correlations; neither authenticates a caller record or proves
+that a transition was committed. State remains the original five fields.
+
+Resolve calls evaluateEncounterCompletion freshly; pending yields rejected with
+its exact existing reason and state:null/disposition:null. Close permits only
+resolved→closed; prepared/active reject encounter_not_resolved and closed/cancelled
+reject already_terminal. Resolved plus cancellation record throws TypeError.
+Cancellation policy is {definitionId,cancelAllowedStatuses:('prepared'|'active')[]};
+[] is valid deny-all, duplicates invalid. Request is {encounterId,reasonId}.
+Resolved/closed/cancelled reject already_finalized; excluded prepared/active reject
+cancellation_not_allowed. Every rejection has null candidates; successes reason:none.
+
+Cleanup accepts only closed+resolution or cancelled+cancellation and returns exactly
+{encounterId,terminalStatus,dispositionKind,participantEntityIds} in roster order.
+Empty terminal roster yields[]. All structural inputs validate before domain
+rejections; unknown fields, accessors, symbols, sparse/duplicate arrays and malformed
+correlations throw TypeError. Outputs are deeply frozen/detached; inputs unchanged.
+L4 owns current-baseline atomic acceptance, record persistence, dispatch and retries.
+There is no internal commit/store, implicit close, World action or receipt authority.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; PR #13 remains Draft.
+v0.8.6/v0.8.7 NOT_STARTED. No Ready UI, merge, tag or publish. Concrete gameplay
+profiles NOT_EVALUATED. Earlier checkpoint sections below are historical.
+
+
 ## v0.8.4 — EN21–EN25 completion assessment
 
 Root-only native ESM functions:
