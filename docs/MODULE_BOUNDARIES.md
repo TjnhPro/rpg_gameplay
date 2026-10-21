@@ -1,3 +1,13 @@
+## v0.14.0 — Currency canonical owner
+
+`src/modules/currency/index.ts` owns wallet identity, neutral optional owner, ordered
+balances and immutable structural capture. Optional `currency -> []` has zero imports,
+including no Kernel edge. Item/Inventory/Reward/Loot/Progression/Equipment remain separate
+owners. L3 owns IDs, presentation units and policy; L4 owns authorization, current state,
+persistence, freshness/concurrency and multi-owner commit. No operations, transaction
+history, revision, engine or backend manager. Explicit zero balance entries are retained.
+[Report](../reports/v0.14.0-currency-foundation.md).
+
 ## v0.13.0 — Reward canonical owner
 
 `src/modules/reward/index.ts` owns package/line identities, neutral source/recipient

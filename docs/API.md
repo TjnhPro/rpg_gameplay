@@ -1,3 +1,28 @@
+## v0.14.0 — Currency Foundation (CU01–CU05)
+
+```ts
+interface CurrencyReference { readonly currencyId:string; }
+interface CurrencyWalletOwner { readonly ownerKind:string; readonly ownerId:string; }
+interface CurrencyBalance { readonly currencyId:string; readonly amount:number; }
+interface CurrencyWalletState {
+  readonly walletId:string;
+  readonly owner:CurrencyWalletOwner|null;
+  readonly balances:readonly CurrencyBalance[];
+}
+function validateCurrencyWalletState(state:CurrencyWalletState):CurrencyWalletState;
+function createCurrencyWalletState(input:CurrencyWalletState):CurrencyWalletState;
+```
+
+Both functions capture complete detached deeply frozen snapshots through one validator.
+Closed own-data records, exact nonblank IDs and dense ordered arrays are required;
+amounts are nonnegative safe integers. Explicit zero entries are valid and retained,
+per Developer CU-D03 decision; no pruning/sorting/rounding/case normalization. Local
+currencyId uniqueness only. walletId is independent of optional neutral owner. Invalid
+structure throws TypeError, including failed reflection; getters are not invoked.
+Plain Object/null record prototypes are supported, standard dense arrays only.
+No catalog, Core call, query, credit/debit, grant or authoritative commit.
+[Report](../reports/v0.14.0-currency-foundation.md).
+
 ## v0.13.2 — Reward integration closure (RW11–RW15)
 
 No production or public API delta. Test-local L4 resolves Item content, supplies IDs,

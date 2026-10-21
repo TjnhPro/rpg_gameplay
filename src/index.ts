@@ -211,3 +211,6 @@ export type {RewardLine, RewardPackage, RewardSourceReference, RewardRecipientRe
 
 export {prepareRewardClaim} from './modules/reward/index.js';
 export type {RewardClaimAdmission, RewardClaimPreparationResult} from './modules/reward/index.js';
+
+export {createCurrencyWalletState, validateCurrencyWalletState} from './modules/currency/index.js';
+export type {CurrencyReference, CurrencyWalletOwner, CurrencyBalance, CurrencyWalletState} from './modules/currency/index.js';

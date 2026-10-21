@@ -1,6 +1,12 @@
 # RPG Gameplay — current verification
 
-L2 reusable headless function-first RPG framework. Package checkpoint: `0.13.2` (Reward Integration & MVP Closure RW11–RW15, Developer acceptance PENDING).
+L2 reusable headless function-first RPG framework. Package checkpoint: `0.14.0` (Currency Foundation CU01–CU05, Developer acceptance PENDING).
+Currency captures complete immutable multi-currency wallets: independent wallet/owner IDs,
+optional neutral owner, opaque ordered balances and nonnegative safe integer units.
+Explicit zero entries are retained (Developer CU-D03 choice). No query/credit/debit,
+Reward delivery, catalog or transaction manager is added.
+See [Currency Foundation report](reports/v0.14.0-currency-foundation.md).
+
 Daily checks: `npm run verify` runs boundaries, build, strict repo NodeNext typecheck
 and direct public function tests. Fresh setup: `npm run core:prepare` then
 `npm ci --ignore-scripts`. CI is one Ubuntu/Node22 PR job.
