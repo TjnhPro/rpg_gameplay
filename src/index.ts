@@ -214,3 +214,5 @@ export type {RewardClaimAdmission, RewardClaimPreparationResult} from './modules
 
 export {createCurrencyWalletState, validateCurrencyWalletState} from './modules/currency/index.js';
 export type {CurrencyReference, CurrencyWalletOwner, CurrencyBalance, CurrencyWalletState} from './modules/currency/index.js';
+export {getCurrencyBalance, creditCurrency, debitCurrency} from './modules/currency/index.js';
+export type {CurrencyBalancePolicy, CurrencyOperationAdmission, CurrencyMutationReason, CurrencyTransitionResult} from './modules/currency/index.js';

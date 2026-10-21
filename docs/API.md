@@ -1,3 +1,28 @@
+## v0.14.1 — Currency balance operations (CU06–CU10)
+
+```ts
+interface CurrencyBalancePolicy { readonly maxBalance:number|null; }
+interface CurrencyOperationAdmission { readonly eligible:boolean; }
+type CurrencyMutationReason = 'ineligible'|'insufficient_balance'|'balance_limit_exceeded'|'amount_overflow';
+type CurrencyTransitionResult =
+  | {readonly status:'accepted'; readonly reason:'none'; readonly candidate:CurrencyWalletState}
+  | {readonly status:'rejected'; readonly reason:CurrencyMutationReason; readonly candidate:null};
+function getCurrencyBalance(wallet:CurrencyWalletState,currencyId:string):number;
+function creditCurrency(wallet:CurrencyWalletState,currencyId:string,amount:number,policy:CurrencyBalancePolicy,admission:CurrencyOperationAdmission):CurrencyTransitionResult;
+function debitCurrency(wallet:CurrencyWalletState,currencyId:string,amount:number,admission:CurrencyOperationAdmission):CurrencyTransitionResult;
+```
+
+Complete canonical wallet validation and all argument validation precede rejection.
+Malformed data throws TypeError; amount must be a positive safe integer. Admission
+is explicit boolean; cap is null or a nonnegative safe integer, including zero.
+Precedence: ineligible, then credit overflow before cap, or debit insufficient balance.
+Lookup of an absent exact ID returns zero. Credit appends absent entries; updates keep
+order and debit retains explicit zero. Accepted candidates are canonically captured,
+detached and deeply frozen; both outcome variants are frozen. Reduced caps affect
+only credit, never read/debit or persisted snapshot validity. No operation commits;
+equal requests against one base return independent equal proposals, not concurrency safety.
+[Report](../reports/v0.14.1-currency-balance-operations.md).
+
 ## v0.14.0 — Currency Foundation (CU01–CU05)
 
 ```ts

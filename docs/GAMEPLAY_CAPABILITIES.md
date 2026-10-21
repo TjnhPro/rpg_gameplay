@@ -1,3 +1,11 @@
+## v0.14.1 — Currency balance operations CU06–CU10
+
+Complete validated balance query and pure bounded credit/debit candidates are implemented.
+Explicit admission/cap, overflow-before-cap priority, zero retention and frozen outcomes
+are covered by direct public-root tests. No authoritative commit, transfer, exchange,
+catalog, Reward integration or concurrency protection. Developer acceptance PENDING.
+[Report](../reports/v0.14.1-currency-balance-operations.md).
+
 ## v0.14.0 — Currency Foundation CU01–CU05
 
 Independent optional Currency provides complete multi-currency wallet capture with

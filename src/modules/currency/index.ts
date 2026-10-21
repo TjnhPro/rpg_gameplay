@@ -84,3 +84,81 @@ export function validateCurrencyWalletState(state: CurrencyWalletState): Currenc
 export function createCurrencyWalletState(input: CurrencyWalletState): CurrencyWalletState {
   return validateCurrencyWalletState(input);
 }
+
+export interface CurrencyBalancePolicy {
+  readonly maxBalance: number | null;
+}
+export interface CurrencyOperationAdmission {
+  readonly eligible: boolean;
+}
+export type CurrencyMutationReason =
+  | 'ineligible' | 'insufficient_balance' | 'balance_limit_exceeded' | 'amount_overflow';
+export type CurrencyTransitionResult =
+  | {readonly status: 'accepted'; readonly reason: 'none'; readonly candidate: CurrencyWalletState}
+  | {readonly status: 'rejected'; readonly reason: CurrencyMutationReason; readonly candidate: null};
+
+// Normalize failed reflection just as the canonical wallet capture does.
+function operationFields(input: unknown, keys: readonly string[]): Record<string, unknown> {
+  try { return fields(input, keys); }
+  catch (error) {
+    if (error instanceof TypeError) throw error;
+    throw new TypeError('Currency operation data could not be inspected safely');
+  }
+}
+function positiveAmount(amount: number): number {
+  if (!Number.isSafeInteger(amount) || amount <= 0) throw new TypeError('Expected positive safe integer Currency amount');
+  return amount;
+}
+function eligible(input: CurrencyOperationAdmission): boolean {
+  const admission = operationFields(input, ['eligible']);
+  if (typeof admission.eligible !== 'boolean') throw new TypeError('Expected explicit Currency eligibility');
+  return admission.eligible;
+}
+function balanceOf(wallet: CurrencyWalletState, currencyId: string): number {
+  return wallet.balances.find(balance => balance.currencyId === currencyId)?.amount ?? 0;
+}
+function rejected(reason: CurrencyMutationReason): CurrencyTransitionResult {
+  return Object.freeze({status: 'rejected', reason, candidate: null});
+}
+function accepted(wallet: CurrencyWalletState, currencyId: string, amount: number): CurrencyTransitionResult {
+  const balances = wallet.balances.map(balance => balance.currencyId === currencyId ? {currencyId, amount} : balance);
+  if (!balances.some(balance => balance.currencyId === currencyId)) balances.push({currencyId, amount});
+  const candidate = validateCurrencyWalletState({...wallet, balances});
+  return Object.freeze({status: 'accepted', reason: 'none', candidate});
+}
+
+/** Complete capture precedes lookup; an absent opaque ID has balance zero. */
+export function getCurrencyBalance(wallet: CurrencyWalletState, currencyId: string): number {
+  return balanceOf(validateCurrencyWalletState(wallet), id(currencyId));
+}
+
+/** Pure candidate only. Admission precedes overflow, which precedes the caller's cap. */
+export function creditCurrency(
+  wallet: CurrencyWalletState, currencyId: string, amount: number,
+  policy: CurrencyBalancePolicy, admission: CurrencyOperationAdmission,
+): CurrencyTransitionResult {
+  const snapshot = validateCurrencyWalletState(wallet), key = id(currencyId), units = positiveAmount(amount);
+  const {maxBalance} = operationFields(policy, ['maxBalance']);
+  if (maxBalance !== null && (typeof maxBalance !== 'number' || !Number.isSafeInteger(maxBalance) || maxBalance < 0)) {
+    throw new TypeError('Expected null or nonnegative safe integer Currency cap');
+  }
+  const admitted = eligible(admission);
+  if (!admitted) return rejected('ineligible');
+  const current = balanceOf(snapshot, key);
+  if (units > Number.MAX_SAFE_INTEGER - current) return rejected('amount_overflow');
+  const next = current + units;
+  if (maxBalance !== null && next > maxBalance) return rejected('balance_limit_exceeded');
+  return accepted(snapshot, key, next);
+}
+
+/** Debit retains explicit zero entries; authoritative commit/freshness belongs to L4. */
+export function debitCurrency(
+  wallet: CurrencyWalletState, currencyId: string, amount: number, admission: CurrencyOperationAdmission,
+): CurrencyTransitionResult {
+  const snapshot = validateCurrencyWalletState(wallet), key = id(currencyId), units = positiveAmount(amount);
+  const admitted = eligible(admission);
+  if (!admitted) return rejected('ineligible');
+  const current = balanceOf(snapshot, key);
+  if (units > current) return rejected('insufficient_balance');
+  return accepted(snapshot, key, current - units);
+}

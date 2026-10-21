@@ -1,3 +1,11 @@
+## v0.14.1 — Currency operations
+
+The same import-free Currency owner adds complete snapshot lookup and bounded
+credit/debit proposals with explicit L3 cap and L4 admission. Canonical Foundation
+validation is reused for input and accepted output; wallet schema and currency -> []
+are unchanged. No sibling owner, Core call, store, commit or transaction coordinator.
+L4 retains authorization, freshness and atomic commit responsibilities.
+
 ## v0.14.0 — Currency canonical owner
 
 `src/modules/currency/index.ts` owns wallet identity, neutral optional owner, ordered
