@@ -1,3 +1,24 @@
+## v0.9.0 — Item installed contracts
+
+Mandatory item-foundation.mjs/.ts run from a physical npm tarball installed with
+pinned Core under an independent path containing spaces. Eight runtime scenarios
+cover F01–F19; F20 requires every historical installed consumer before completion.
+The external compiler uses strict NodeNext and skipLibCheck:false, verifies all
+eight types/seven functions, readonly/recursive contracts and root-only access.
+
+Seventeen targeted negative controls cover missing fixtures, disabled registration,
+missing marker, skipped/empty assertions, deep freeze, both binding paths, dangerous
+key preservation, root export, version, Core integrity, readonly/invalid declarations,
+undeclared sibling dependency and the exact historical exception. Modified fixture,
+installed JS/declaration/manifest and boundary-copy bytes are restored exactly;
+clean runtime/compile gates rerun. Original behavioral and negative controls run
+unchanged. Existing historical hashes are not rebaselined.
+
+Full verify plus exact-HEAD push/pull_request Windows/Ubuntu Node22/24 jobs are
+required for CHECKPOINT_COMPLETE. CI evidence is added as a SHA-bound PR supplement
+after the local-evidence commit. Developer acceptance PENDING; no automatic next
+milestone, merge, Ready, publish or tag. Earlier sections are historical.
+
 ## v0.8.7 — Encounter integration and closure EN36–EN40
 
 Installed headless consumers compose existing Entity/Combat/Skill/Effect/Actor AI

@@ -1,3 +1,18 @@
+## v0.9.0 — implemented Item foundation only
+
+IT01–IT05 provide definition/reference/instance identity and content, recursive safe
+properties, immutable structural validation and optional independent item -> [].
+L3 supplies catalogs/vocabulary/policies; L4 supplies explicit IDs, uniqueness,
+ownership, authoritative storage and commit. C-D01–C-D07 remain as approved in the
+[task](tasks/active/v0.9.0-item-foundation.md). Quantity belongs to future Inventory;
+Equipment has separate storage; Currency is independent; Loot selects explicit
+creation data. No mechanics from those future systems are implemented.
+
+Text/2D/2.5D probes prove data compatibility only; concrete gameplay profiles
+NOT_EVALUATED. IT06 onward is deferred; stop after v0.9.0, acceptance PENDING.
+Encounter prerequisite is merged PR #13 at cc7a42e. Earlier status sections describe
+historical checkpoints.
+
 ## v0.8.7 — Encounter integration closure EN36–EN40
 
 Existing public functions compose installed PvE, pending/clear waves, independent

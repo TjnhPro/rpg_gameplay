@@ -1,3 +1,32 @@
+## v0.9.0 — Item foundation (IT01–IT05)
+
+Root-only seven functions: createItemDefinitionReference, createItemInstanceReference,
+validateItemInstanceReference, createItemDefinition, validateItemDefinition,
+createItemInstance, validateItemInstance. Eight types: ItemDefinitionReference,
+ItemInstanceInitialIdentity, ItemInstanceReference, ItemPropertyValue,
+ItemDefinitionContent, ItemDefinition, ItemInstanceInitialState, ItemInstanceState.
+
+Definition has definitionId/categoryId/tagIds/rarityId/properties. Instance has
+instanceId/definitionId/properties. IDs are exact nonblank strings; category/rarity
+are opaque nullable IDs; tags are ordered unique IDs. Instance properties are its
+own explicit data and never inherit definition properties. Narrow reference helpers
+require a projected {definitionId}, not a contentful definition.
+
+Creation and validation return fresh detached deeply frozen snapshots. Records
+are closed own-data plain/null-prototype objects. Recursive properties accept
+null, strings, finite numbers (including -0), booleans, dense arrays and plain
+records, including arbitrary dangerous string keys as inert own data. Accessors,
+cycles, unsupported values/prototypes, symbol keys and sparse/extended arrays
+throw TypeError. Reflection reads descriptors, not getters. JavaScript cannot
+portably detect every Proxy; inspection failures are rejected. No arbitrary size
+policy is added; deeply nested/large untrusted inputs still need caller budgets.
+
+No quantity/slot/owner/location, arithmetic, catalog, store, implicit ID, property
+operations, stack compatibility, Inventory/Equipment/Loot/Reward execution.
+See [task](tasks/active/v0.9.0-item-foundation.md) and
+[report](reports/v0.9.0-item-foundation.md). Developer acceptance PENDING;
+phase IN_PROGRESS, PR Draft. Earlier sections are historical.
+
 ## v0.8.7 — Encounter integration closure EN36–EN40
 
 Existing public functions compose installed PvE, pending/clear waves, independent

@@ -1,3 +1,20 @@
+## v0.9.0 — Item owner
+
+The only Item production owner is src/modules/item/index.ts, optional item -> [].
+Only src/index.ts re-exports its seven functions/eight types. Existing seven module
+entries/owners and the exact Core pin remain unchanged. Item imports no sibling,
+Foundation, Node runtime or external dependency. No numerical operation is needed.
+
+L2 validates/captures immutable structural data; L3 owns property meanings and
+policies; L4 owns lookup, identity allocation/uniqueness, ownership, persistence and
+commit. Inventory quantity, Equipment slots/storage, Currency, Loot and Reward
+remain separate deferred owners, not fields or engines added inside Item.
+
+The approved historical exception removes only the exact Item root export block
+and registry entry before comparing original historical hashes. Full current root
+and registry inventories remain exact. No historical behavioral assertion is changed.
+See [report](reports/v0.9.0-item-foundation.md). Earlier sections are historical.
+
 ## v0.8.7 — Encounter integration closure EN36–EN40
 
 Existing public functions compose installed PvE, pending/clear waves, independent
