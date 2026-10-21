@@ -1,3 +1,19 @@
+# v0.8.3 — Encounter Combat & Actor AI Integration
+
+EN16–EN20 adds a pure current-snapshot Encounter action scope assessment. Three
+functions/six types are additive; five-field EncounterState and EN01–EN15 stay
+unchanged. Encounter still depends only on Entity. Installed test-only L4 consumers
+compose canonical Combat/Skill/Effect/Actor AI; production adds no executor.
+
+Scope eligible is advisory membership/side evidence, never gameplay admission,
+execution or commit authority. L4 rechecks roster, controller, Life, cadence and
+canonical gates and owns correlation/atomic commit/duplicate control.
+Phase IN_PROGRESS; Developer acceptance PENDING; PR #13 remains Draft.
+v0.8.4 NOT_STARTED. No Ready/merge/tag/publish. Concrete gameplay profiles
+NOT_EVALUATED. Earlier checkpoint statements below are historical.
+[Task](docs/tasks/active/v0.8.3-encounter-combat-actor-ai-integration.md) /
+[Report](docs/reports/v0.8.3-encounter-combat-actor-ai-integration.md).
+
 # RPG Gameplay — v0.8.2 Encounter Participation & Membership
 
 EN11–EN15 adds explicit Join, Leave, side lookup and change-side candidates.

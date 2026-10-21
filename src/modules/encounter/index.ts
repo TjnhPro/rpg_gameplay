@@ -348,3 +348,72 @@ export function applyEncounterMembershipChange(state: EncounterState, entities: 
       ? createEncounterParticipant({entityId: change.entityId, sideId: change.sideId}) : participant);
   return Object.freeze({...admission, status: 'applied', state: Object.freeze({...current, participants: Object.freeze(participants)})});
 }
+
+export type EncounterActionTargetMode = 'none' | 'participant';
+/** Membership association only; never Combat's tactical relation. */
+export type EncounterSideMembershipRelation = 'self' | 'same_side' | 'other_side';
+export interface EncounterActionScopePolicy {
+  readonly targetMode: EncounterActionTargetMode;
+  readonly allowedSideRelations: readonly EncounterSideMembershipRelation[];
+}
+export interface EncounterActionScopeRequest {
+  readonly encounterId: string;
+  readonly actionId: string;
+  readonly sourceEntityId: string;
+  readonly targetEntityId: string | null;
+}
+export type EncounterActionScopeRejectionReason = 'encounter_not_active' | 'source_not_participant'
+  | 'target_required' | 'unexpected_target' | 'target_not_participant' | 'side_relation_not_allowed';
+export type EncounterActionScopeResult =
+  | {readonly status: 'eligible'; readonly reason: 'none'; readonly encounterId: string; readonly actionId: string;
+      readonly sourceEntityId: string; readonly targetEntityId: string | null; readonly sourceSideId: string;
+      readonly targetSideId: string | null; readonly sideRelation: EncounterSideMembershipRelation | null}
+  | {readonly status: 'rejected'; readonly reason: EncounterActionScopeRejectionReason; readonly encounterId: string; readonly actionId: string;
+      readonly sourceEntityId: string; readonly targetEntityId: string | null; readonly sourceSideId: string | null;
+      readonly targetSideId: string | null; readonly sideRelation: EncounterSideMembershipRelation | null};
+
+export function createEncounterActionScopePolicy(input: EncounterActionScopePolicy): EncounterActionScopePolicy {
+  const data = fields(input, ['targetMode', 'allowedSideRelations']);
+  if (data.targetMode !== 'none' && data.targetMode !== 'participant') throw new TypeError('Unknown Encounter target mode');
+  const allowedSideRelations = array(data.allowedSideRelations).map(value => {
+    if (value !== 'self' && value !== 'same_side' && value !== 'other_side') throw new TypeError('Unknown Encounter side membership relation');
+    return value;
+  });
+  if (new Set(allowedSideRelations).size !== allowedSideRelations.length
+    || (data.targetMode === 'none' ? allowedSideRelations.length !== 0 : allowedSideRelations.length === 0)) {
+    throw new TypeError('Encounter scope relations must be unique and compatible with target mode');
+  }
+  return Object.freeze({targetMode: data.targetMode, allowedSideRelations: Object.freeze(allowedSideRelations)});
+}
+export function createEncounterActionScopeRequest(input: EncounterActionScopeRequest): EncounterActionScopeRequest {
+  const data = fields(input, ['encounterId', 'actionId', 'sourceEntityId', 'targetEntityId']);
+  return Object.freeze({encounterId: id(data.encounterId), actionId: id(data.actionId), sourceEntityId: id(data.sourceEntityId),
+    targetEntityId: data.targetEntityId === null ? null : id(data.targetEntityId)});
+}
+/** Advisory current-snapshot assessment only. L4 owns fresh canonical admission,
+ * dispatch, correlation, duplicate prevention and authoritative atomic commit. */
+export function evaluateEncounterActionScope(state: EncounterState, entities: EntityCollection,
+  policy: EncounterActionScopePolicy, request: EncounterActionScopeRequest): EncounterActionScopeResult {
+  const current = validateEncounterState(state, entities);
+  const rules = createEncounterActionScopePolicy(policy), action = createEncounterActionScopeRequest(request);
+  if (action.encounterId !== current.encounterId) throw new TypeError('Encounter scope request identity mismatch');
+  let sourceSideId: string | null = null, targetSideId: string | null = null;
+  let sideRelation: EncounterSideMembershipRelation | null = null;
+  const reject = (reason: EncounterActionScopeRejectionReason): EncounterActionScopeResult =>
+    Object.freeze({status: 'rejected', reason, ...action, sourceSideId, targetSideId, sideRelation});
+  if (current.status !== 'active') return reject('encounter_not_active');
+  const source = getEncounterParticipant(current, entities, action.sourceEntityId);
+  if (!source) return reject('source_not_participant');
+  sourceSideId = source.sideId;
+  if (rules.targetMode === 'participant' && action.targetEntityId === null) return reject('target_required');
+  if (rules.targetMode === 'none' && action.targetEntityId !== null) return reject('unexpected_target');
+  if (action.targetEntityId !== null) {
+    const target = getEncounterParticipant(current, entities, action.targetEntityId);
+    if (!target) return reject('target_not_participant');
+    targetSideId = target.sideId;
+    sideRelation = action.sourceEntityId === action.targetEntityId ? 'self'
+      : sourceSideId === targetSideId ? 'same_side' : 'other_side';
+    if (!rules.allowedSideRelations.includes(sideRelation)) return reject('side_relation_not_allowed');
+  }
+  return Object.freeze({status: 'eligible', reason: 'none', ...action, sourceSideId, targetSideId, sideRelation});
+}

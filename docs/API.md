@@ -2790,3 +2790,40 @@ No Life/Resource/Combat/AI mutation. Advisory facts and same-input replay do not
 freshness, authorization, cross-Encounter exclusivity or exactly-once commit.
 L4 must check current Entity/World/Encounter authority and commit atomically.
 See the v0.8.2 task for exact unions and literal output oracle.
+
+## v0.8.3 — EN16–EN20 Encounter action scope
+
+Additive root-only functions (native ESM):
+
+- createEncounterActionScopePolicy(input: EncounterActionScopePolicy): EncounterActionScopePolicy
+- createEncounterActionScopeRequest(input: EncounterActionScopeRequest): EncounterActionScopeRequest
+- evaluateEncounterActionScope(state: EncounterState, entities: EntityCollection, policy: EncounterActionScopePolicy, request: EncounterActionScopeRequest): EncounterActionScopeResult
+
+Six types: EncounterActionTargetMode (none|participant),
+EncounterSideMembershipRelation (self|same_side|other_side),
+EncounterActionScopePolicy, EncounterActionScopeRequest,
+EncounterActionScopeRejectionReason, EncounterActionScopeResult.
+Policy has readonly targetMode and readonly allowedSideRelations array.
+None requires an empty relation list; participant requires a nonempty unique list.
+Request has exact readonly encounterId/actionId/sourceEntityId/targetEntityId;
+target is null or an opaque nonblank ID. No normalization or inferred defaults.
+
+Result has exact readonly status/reason and all request fields plus sourceSideId,
+targetSideId, sideRelation. Eligible discriminates reason none and non-null source
+side; rejected uses one of six reasons with nullable diagnostics. Targetless results
+have null target side/relation. Structural validation of state/entities/full policy/
+full request precedes domain outcomes; mismatched encounter identity throws TypeError.
+Closed own-data objects/dense arrays only; getters are never evaluated. Factories and
+results are detached and frozen without freezing input. No stored action counter.
+
+First reason wins: encounter_not_active, source_not_participant, target_required,
+unexpected_target, target_not_participant, side_relation_not_allowed, then eligible.
+Source side remains null until source membership is established. Disallowed existing
+target returns actual target side and relation. Self precedes same-side comparison;
+other_side is never Combat enemy. Dead roster members can satisfy membership only.
+
+ActionId is an opaque caller correlation value, no L2 ledger/authorization receipt.
+Every call rereads only the supplied validated roster. L4 owns snapshot freshness,
+canonical admission, execution, side-policy interpretation and authoritative commit.
+No Combat/Skill/Effect/AI production import; encounter -> [entity] unchanged.
+No cross-Encounter targeted actions, World, result/closure, spawning or scheduler.

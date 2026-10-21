@@ -670,3 +670,22 @@ and historical bodies remain unchanged. CHECKPOINT_COMPLETE requires exact deliv
 SHA push4/4 and PR4/4 on Windows/Ubuntu Node22/24 with full logs/provenance audited.
 The pre-push report records CI_PENDING; a SHA-bound PR supplement records final CI
 without another commit. Developer acceptance PENDING; no merge/tag/publish.
+
+## v0.8.3 — Encounter action scope and canonical caller integration
+
+Mandatory new installed encounter-combat-ai-integration.mjs/.ts evidence: eleven
+meaningful runtime contracts covering EN-I01–I57, plus central pack/type/history and
+external delivery/CI audits for I58–I60. Runtime counts are observed TAP tests, not
+scenario markers. Strict external ES2022/NodeNext/strict/noEmit/skipLibCheck:false
+checks public discriminants and readonly fields. Central runner performs N01–N24
+isolated installed/test-only L4/manifest/declaration/runner faults, requires intended
+diagnostics, restores bytes in finally, reruns clean11/11 and checks packed dist bytes.
+All prior GF/EC/PG/CB/SK/EF/AI/EN01–EN15 consumers remain required. Exact root export
+inventory remains central; historical fingerprint removes only the exact approved
+additive root block, preserving the historical hash and all behavioral assertions.
+Core prepare/install, harness checks/selftests, build/typecheck/functional/verify and
+scope diff audit are mandatory. Delivered SHA requires push+pull_request Windows and
+Ubuntu Node22/24 eight successful jobs with full log evidence. CI pending is not
+CHECKPOINT_COMPLETE. See the v0.8.3 report and its SHA-bound PR supplement.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; Draft PR #13. v0.8.4 NOT_STARTED.

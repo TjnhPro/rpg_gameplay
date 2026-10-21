@@ -467,3 +467,14 @@ and join Life/World policy. Canonical Entity collection remains the identity own
 Empty active rosters do not finish an engagement. EN16–EN40 remain deferred;
 v0.8.3 NOT_STARTED, phase IN_PROGRESS, Developer acceptance PENDING.
 This milestone proves framework contracts, not concrete gameplay profiles.
+
+## v0.8.3 — Encounter action scope and canonical caller integration
+
+EN16 active/source and EN17 target/side scope are implemented as pure advisory
+assessment, with closed immutable outcomes (EN20). EN18/EN19 demonstrate canonical
+Combat/Skill/Effect/Actor AI integration only through an installed test-only L4
+consumer. Side membership is not a tactical relation; eligible does not override Life,
+Effect, resources/cooldown or current authority. No default game policy or World
+runtime, cross-Encounter attacks, encounter result/closure or distributed idempotency.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; Draft PR #13. v0.8.4 NOT_STARTED.

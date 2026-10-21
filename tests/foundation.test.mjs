@@ -32,6 +32,12 @@ function assertMembershipRegistration(receipt) {
   assert.equal(receipt.typechecked, true, 'mandatory external membership strict NodeNext');
 }
 
+function assertIntegrationRegistration(receipt) {
+ assert.ok(receipt, 'mandatory Encounter integration registration');
+ assertTapEvidence(receipt.runtime,11,Array.from({length:57},(_,i)=>'ENCOUNTER_I'+String(i+1).padStart(2,'0')+'_PASS'));
+ assert.equal(receipt.typechecked,true,'mandatory integration strict NodeNext');
+}
+
 test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40 + EN01–EN15, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
@@ -59,7 +65,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     fs.writeFileSync(path.join(temp, 'package.json'), JSON.stringify({name: 'foundation-consumer', private: true, type: 'module'}));
     exec([cli, 'install', '--ignore-scripts', '--no-audit', '--no-fund', path.join(temp, packed.filename), coreArtifact], temp);
     const installed = path.join(temp, 'node_modules/@rpg/gameplay');
-    let activationReceipt, membershipReceipt;
+    let activationReceipt, membershipReceipt, integrationReceipt;
     const expectedPackedFiles = packed.files.filter(file => file.path.startsWith('dist/'))
       .map(file => [file.path, fs.readFileSync(path.join(root, file.path))]);
     const assertPackedFiles = () => {
@@ -80,7 +86,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.8.2');
+    assertVersion(packageJson.version, '0.8.3');
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
@@ -98,7 +104,7 @@ assert.deepEqual(Object.keys(gameplay).sort(), ['composeModules', 'configureModu
  'createExecutionContext', 'readExecutionTime', 'nextExecutionRandom', 'nextExecutionId', 'createEntity',
  'createEntityCollection', 'addEntity', 'getEntity', 'hasEntity', 'listEntities', 'removeEntity', 'replaceEntity',
  'createEntityAttributeState', 'getEntityBaseAttributes', 'setEntityBaseAttribute', 'calculateEntityStats',
- 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming', 'createEncounterDefinitionReference', 'createEncounterSide', 'createEncounterParticipant', 'createEncounterState', 'validateEncounterState', 'createEncounterActivationPolicy', 'createEncounterActivationObservation', 'evaluateEncounterActivationAdmission', 'activateEncounter', 'createEncounterMembershipPolicy', 'createEncounterMembershipRequest', 'getEncounterParticipant', 'evaluateEncounterMembershipAdmission', 'applyEncounterMembershipChange'].sort());
+ 'createEntityResourceState', 'getEntityResourceCurrent', 'normalizeEntityResource', 'transitionEntityResource', 'regenerateEntityResource', 'createEntityLifeState', 'resolveEntityDefeat', 'reviveEntity', 'createProgressionState', 'gainExperience', 'adjustExperience', 'evaluateLevelAdvancement', 'advanceProgressionLevel', 'createAttributePointState', 'grantAttributePointRewards', 'allocateAttributePoints', 'createSkillRankState', 'getSkillRank', 'createSkillPointState', 'grantSkillPointRewards', 'evaluateSkillUpgrade', 'upgradeSkillRank', 'createCombatActionContext', 'evaluateCombatActionAdmission', 'evaluateCombatTargetValidation', 'resolveCombatAttack', 'applyCombatAttackDamage', 'createSkillDefinition', 'createSkillInstance', 'evaluateSkillActivationAdmission', 'evaluateSkillResourceCosts', 'applySkillResourceCosts', 'createSkillCooldownState', 'evaluateSkillCooldownReady', 'startSkillCooldown', 'activateSkill', 'reportSkillExecutionOutcome', 'createSkillLoadoutState', 'validateSkillLoadoutState', 'assignSkillLoadoutSlot', 'replaceSkillLoadoutSlot', 'removeSkillLoadoutSlot', 'createEffectDefinition', 'createEffectInstance', 'createEffectState', 'validateEffectState', 'evaluateEffectApplyAdmission', 'applyEffect', 'createEffectLifecycleState', 'startEffectLifetime', 'advanceEffectLifecycle', 'removeEffectLifetime', 'inspectEffectStackGroups', 'evaluateEffectStackAdmission', 'applyEffectStack', 'refreshEffectStackLifetime', 'consumeEffectStacks', 'removeEffectStackGroup', 'createEffectModifierState', 'applyEffectModifierTransition', 'listActiveEffectModifiers', 'createEffectStatusState', 'applyEffectStatusTransition', 'listActiveEffectStatuses', 'listActiveEffectRestrictions', 'evaluateEffectRestrictionGate', 'createEffectPeriodicState', 'applyEffectPeriodicTransition', 'getNextDueEffectTick', 'completeEffectPeriodicTick', 'cleanupDefeatedTargetEffects', 'createActorAIProfileReference', 'createActorAIState', 'validateActorAIState', 'createActorAIDecisionContext', 'createActorAIActionIntent', 'validateActorAIDecisionResult', 'createActorAIPerceptionSnapshot', 'validateActorAIPerceptionSnapshot', 'evaluateActorAIPerception', 'evaluateActorAITargetSelection', 'createActorAIBehaviorPolicy', 'createActorAIBehaviorObservation', 'evaluateActorAIBehaviorTransition', 'createActorAIActionSelectionPolicy', 'createActorAIActionObservation', 'evaluateActorAIActionSelection', 'validateActorAIActionExecutionFeedback','evaluateActorAILifeGate','evaluateActorAIReset','createActorAIDecisionTimingState','evaluateActorAIDecisionTiming', 'createEncounterDefinitionReference', 'createEncounterSide', 'createEncounterParticipant', 'createEncounterState', 'validateEncounterState', 'createEncounterActivationPolicy', 'createEncounterActivationObservation', 'evaluateEncounterActivationAdmission', 'activateEncounter', 'createEncounterMembershipPolicy', 'createEncounterMembershipRequest', 'getEncounterParticipant', 'evaluateEncounterMembershipAdmission', 'applyEncounterMembershipChange', 'createEncounterActionScopePolicy', 'createEncounterActionScopeRequest', 'evaluateEncounterActionScope'].sort());
 // Independent contract oracle: 8 units minus 3 gives 5, bounds [0,10].
 assert.deepEqual(calculateResourceTransition({resource:'energy',current:8,maximum:10,
  amount:3,operation:'decrease',rule:{minimum:0,currentAboveMaximum:'reject',allowIncreaseFromMinimum:true}}),
@@ -1137,6 +1143,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     const approvedAdditions=[["src/index.ts","\nexport {createEncounterDefinitionReference, createEncounterSide, createEncounterParticipant,\n  createEncounterState, validateEncounterState} from './modules/encounter/index.js';\nexport type {EncounterDefinitionReference, EncounterSide, EncounterParticipant, EncounterStatus,\n  EncounterInitialState, EncounterState} from './modules/encounter/index.js';\n",""],["harness/modules.json",",\n    {\"id\": \"encounter\", \"optional\": true, \"dependencies\": [\"entity\"]}",""],["docs/DECISIONS.md","\n## Encounter phase decisions — v0.8.x (Developer approved, 2026-10-21)\n\n| ID | Approved A | EN01–EN05 implementation boundary |\n| --- | --- | --- |\n| ENC-D01 | One encounter = one engagement | Opaque encounterId; no zone/dungeon/global runtime |\n| ENC-D02 | Entity dependency only | Optional encounter -> [entity]; canonical getEntity/listEntities |\n| ENC-D03 | Generic side IDs | Exact nonblank sideId; no kind/relation inference |\n| ENC-D04 | Future explicit dynamic participation | Initial structural roster only; no Join/Leave |\n| ENC-D05 | Future explicit completion evaluation | No auto-win, objective evaluator or outcome |\n| ENC-D06 | Closed terminal; new ID for rematch | Status vocabulary only; no transition/reopen implementation |\n| ENC-D07 | Future side-based outcome | No winner/reward fields in five-field state |\n\nAll seven choices are approved; later behavior still requires its own milestone.\nStructural validation of any recognized status proves no transition provenance.\nL3 owns content/policy; L4 owns World storage, authoritative commit, spawning,\ncross-encounter exclusivity and orchestration. No new owner or engine.\nSee [approved task](tasks/active/v0.8.0-encounter-foundation.md).\n",""]];
     approvedAdditions.push(["src/index.ts","\nexport {createEncounterActivationPolicy, createEncounterActivationObservation,\n  evaluateEncounterActivationAdmission, activateEncounter} from './modules/encounter/index.js';\nexport type {EncounterParticipantActivationFact, EncounterActivationObservation, EncounterActivationPolicy,\n  EncounterActivationRejectionReason, EncounterActivationAdmissionResult, EncounterActivationTransitionResult} from './modules/encounter/index.js';\n",""]);
     approvedAdditions.push(["src/index.ts","\nexport {createEncounterMembershipPolicy, createEncounterMembershipRequest, getEncounterParticipant,\n  evaluateEncounterMembershipAdmission, applyEncounterMembershipChange} from './modules/encounter/index.js';\nexport type {EncounterMembershipOperation, EncounterMembershipOpenStatus, EncounterMembershipPolicy,\n  EncounterMembershipRequest, EncounterMembershipRejectionReason, EncounterMembershipAdmissionResult,\n  EncounterMembershipTransitionResult} from './modules/encounter/index.js';\n",""]);
+    approvedAdditions.push(["src/index.ts","\nexport {createEncounterActionScopePolicy, createEncounterActionScopeRequest,\n  evaluateEncounterActionScope} from './modules/encounter/index.js';\nexport type {EncounterActionTargetMode, EncounterSideMembershipRelation, EncounterActionScopePolicy,\n  EncounterActionScopeRequest, EncounterActionScopeRejectionReason, EncounterActionScopeResult} from './modules/encounter/index.js';\n",""]);
     const historical=entries=>entries.map(([name,text])=>{
       for(const addition of approvedAdditions.filter(([file])=>file===name)){
         assert.equal(text.split(addition[1]).length,2,'exact approved additive scope '+name);
@@ -1198,7 +1205,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     try{const text=rootBytes.toString('utf8');assert.ok(text.includes('createEncounterState,'));fs.writeFileSync(rootFile,text.replace('createEncounterState,','createEncounterState as missingEncounterState,'));red('N02','prepared:',/createEncounterState is not a function/);}
     finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.0.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.2');`,/installed package version/);}
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.0.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.3');`,/installed package version/);}
     finally{fs.writeFileSync(manifestFile,manifestBytes);}done('N03');
     const coreManifest=path.join(temp,'node_modules/@rpg/core/package.json'),coreBytes=fs.readFileSync(coreManifest);
     try{const manifest=JSON.parse(coreBytes);manifest.version='0.0.0';fs.writeFileSync(coreManifest,JSON.stringify(manifest));guardRed('N04_version',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(coreManifest)})).version,${JSON.stringify(pin.version)});`,/installed package version/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
@@ -1286,7 +1293,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     try{const text=rootBytes.toString('utf8');assert.match(text,/\bactivateEncounter\b/);fs.writeFileSync(rootFile,text.replace(/\bactivateEncounter\b/,'activateEncounter as deliberatelyMissingActivation'));red('N02',null,/does not provide an export named 'activateEncounter'/);}
     finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.2');`,/installed package version/);}
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.3');`,/installed package version/);}
     finally{fs.writeFileSync(manifestFile,manifestBytes);}done('N03');
     const pinFile=path.join(temp,'activation-core-pin.json');fs.writeFileSync(pinFile,fs.readFileSync(path.join(root,'harness/core-pin.json')));const pinBytes=fs.readFileSync(pinFile);
     try{const changed=JSON.parse(pinBytes);changed.revision='0000000000000000000000000000000000000000';fs.writeFileSync(pinFile,JSON.stringify(changed));guardRed('N04_revision',`assert.equal(JSON.parse(fs.readFileSync(${JSON.stringify(pinFile)})).revision,'04b7239f998c3c688a0dfa3202f11811a9acd775','activation pinned Core revision');`,/activation pinned Core revision/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
@@ -1379,7 +1386,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     try{const text=rootBytes.toString('utf8');assert.match(text,/\bapplyEncounterMembershipChange\b/);fs.writeFileSync(rootFile,text.replace(/\bapplyEncounterMembershipChange\b/,'applyEncounterMembershipChange as deliberatelyMissingMembership'));red('N02',null,/does not provide an export named 'applyEncounterMembershipChange'/);}
     finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.1';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.2');`,/installed package version/);}
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.1';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.3');`,/installed package version/);}
     finally{fs.writeFileSync(manifestFile,manifestBytes);}assert.deepEqual(fs.readFileSync(manifestFile),manifestBytes);done('N03');
     const pinFile=path.join(temp,'membership-core-pin.json');fs.writeFileSync(pinFile,fs.readFileSync(path.join(root,'harness/core-pin.json')));const pinBytes=fs.readFileSync(pinFile);
     try{const changed=JSON.parse(pinBytes);changed.revision='0000000000000000000000000000000000000000';fs.writeFileSync(pinFile,JSON.stringify(changed));guardRed('N04_revision',`assert.equal(JSON.parse(fs.readFileSync(${JSON.stringify(pinFile)})).revision,'04b7239f998c3c688a0dfa3202f11811a9acd775','membership pinned Core revision');`,/membership pinned Core revision/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
@@ -1439,6 +1446,102 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     console.log('INSTALLED_ENCOUNTER_MEMBERSHIP_NEGATIVE_PASS N01-N23; targeted_assertions; restored_clean; strict_NodeNext');
     }
     assertMembershipRegistration(membershipReceipt);
+
+    { // EN16-EN20: installed pure scope plus test-only canonical L4 composition.
+    for(const ext of ['mjs','ts'])copyRequiredConsumer(path.join(root,'tests/consumers/encounter-combat-ai-integration.'+ext),path.join(temp,'encounter-combat-ai-integration.'+ext));
+    const file=path.join(temp,'encounter-combat-ai-integration.mjs'),bytes=fs.readFileSync(file),source=bytes.toString('utf8');
+    const markers=Array.from({length:57},(_,i)=>'ENCOUNTER_I'+String(i+1).padStart(2,'0')+'_PASS');
+    const run=()=>exec(['--test','--test-reporter=tap','encounter-combat-ai-integration.mjs'],temp);
+    const validate=output=>assertTapEvidence(output,11,markers);
+    const clean=()=>{validate(run());assertPackedFiles();};
+    const evidence=run();validate(evidence);for(const marker of markers)console.log(evidence.split(/\r?\n/).find(line=>line.includes(marker)));
+    console.log(evidence.split(/\r?\n/).find(line=>line.includes('ENCOUNTER_INTEGRATION_REPLAY_SHA256')));
+    console.log('INSTALLED_ENCOUNTER_INTEGRATION_PASS EN16-EN20; consumer_tests=11 skipped=0; scope_only_L2; canonical_L4');
+    function red(id,pattern,diagnostic){
+      const env={...process.env};delete env.NODE_TEST_CONTEXT;
+      const result=spawnSync(process.execPath,['--test','--test-reporter=tap',...(pattern?['--test-name-pattern=Encounter integration '+pattern]:[]),'encounter-combat-ai-integration.mjs'],{cwd:temp,shell:false,encoding:'utf8',env});
+      assert.ifError(result.error);assert.equal(result.signal,null);assert.equal(result.status,1,result.stdout+result.stderr);
+      assert.match(result.stdout+result.stderr,diagnostic,id+' intended assertion');
+      console.log('ENCOUNTER_INTEGRATION_NEGATIVE_RED '+id+' exit=1 intended='+diagnostic.source);
+    }
+    function done(id){assertPackedFiles();clean();console.log('ENCOUNTER_INTEGRATION_NEGATIVE_PASS '+id+' restored_bytes; clean11/11');}
+    const guardFile=path.join(temp,'encounter-integration-negative-guard.mjs');
+    const prelude=`import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';
+      const assertTapEvidence=${assertTapEvidence.toString()};const assertVersion=${assertVersion.toString()};
+      const copyRequiredConsumer=${copyRequiredConsumer.toString()};const assertIntegrationRegistration=${assertIntegrationRegistration.toString()};\n`;
+    function guardRed(id,code,diagnostic){
+      fs.writeFileSync(guardFile,prelude+code);const r=spawnSync(process.execPath,[guardFile],{cwd:temp,shell:false,encoding:'utf8'});
+      assert.ifError(r.error);assert.equal(r.signal,null);assert.equal(r.status,1,r.stdout+r.stderr);assert.match(r.stdout+r.stderr,diagnostic,id+' intended central guard');
+      console.log('ENCOUNTER_INTEGRATION_NEGATIVE_RED '+id+' exit=1 intended='+diagnostic.source);
+    }
+    const runtimeFile=path.join(installed,'dist/modules/encounter/index.js'),runtimeBytes=fs.readFileSync(runtimeFile),runtime=runtimeBytes.toString('utf8');
+    const faults=[
+      ['N01','scope:',"if (current.status !== 'active')",'if (false)',/inactive scope exact diagnostic/],
+      ['N02','scope:',"getEncounterParticipant(current, entities, action.sourceEntityId);","getEncounterParticipant(current, entities, action.sourceEntityId) ?? {sideId:'enemies'};",/source scope exact diagnostic/],
+      ['N03','relations:',"getEncounterParticipant(current, entities, action.targetEntityId);","getEncounterParticipant(current, entities, action.targetEntityId) ?? {sideId:'party'};",/target_not_participant exact diagnostic/],
+      ['N04','relations:',"action.sourceEntityId === action.targetEntityId ? 'self'","false ? 'self'",/self exact relation/],
+      ['N06','relations:',"if (rules.targetMode === 'none' && action.targetEntityId !== null)",'if (false)',/unexpected_target exact diagnostic/],
+      ['N07','relations:',"if (rules.targetMode === 'participant' && action.targetEntityId === null)",'if (false)',/target_required exact diagnostic/],
+      ['N08','structural:',"if (new Set(allowedSideRelations).size !== allowedSideRelations.length","if (false",/scope policy must throw/],
+      ['N09','structural:',"if (action.encounterId !== current.encounterId)",'if (false)',/scope binding must throw/],
+      ['N10','structural:',"fields(input, ['encounterId', 'actionId', 'sourceEntityId', 'targetEntityId'])",'input',/scope closed request validation/],
+      ['N10_accessor','structural:',"export function createEncounterActionScopeRequest(input) {","export function createEncounterActionScopeRequest(input) { if(Object.getOwnPropertyDescriptor(input, 'actionId')?.get)void input.actionId;",/scope getters not invoked/],
+      ['N11','structural:',"return Object.freeze({ status: 'eligible', reason: 'none', ...action, sourceSideId, targetSideId, sideRelation });","return { status: 'eligible', reason: 'none', ...action, sourceSideId, targetSideId, sideRelation };",/scope deep freeze/],
+      ['N12','structural:',"const current = validateEncounterState(state, entities);\n    const rules = createEncounterActionScopePolicy(policy)","if(!Object.isFrozen(state))state.participants.reverse();\n    const current = validateEncounterState(state, entities);\n    const rules = createEncounterActionScopePolicy(policy)",/scope never mutates inputs/],
+    ];
+    for(const [id,pattern,expected,faulty,diagnostic] of faults){assert.ok(runtime.includes(expected),id+' required installed mutation');
+      try{fs.writeFileSync(runtimeFile,runtime.replace(expected,faulty));red(id,pattern,diagnostic);}
+      finally{fs.writeFileSync(runtimeFile,runtimeBytes);}assert.deepEqual(fs.readFileSync(runtimeFile),runtimeBytes);done(id);
+    }
+    const l4Faults=[
+      ['N05','combat:',"targetPolicy(relation)","targetPolicy(scope(f).sideRelation==='other_side'?'enemy':relation)",/canonical Combat rejection remains binding/],
+      ['N13','freshness:',"function freshScope(f,bound){","function freshScope(f,bound){f={...f,encounter:{...f.encounter,participants:[...f.encounter.participants.filter(p=>p.entityId!==f.target.id),...bound.encounter.participants.filter(p=>p.entityId===f.target.id)]}};",/fresh target scope rejects/],
+      ['N14','freshness:',"function freshScope(f,bound){","function freshScope(f,bound){f={...f,encounter:{...f.encounter,participants:[...f.encounter.participants.filter(p=>p.entityId!==f.actor.id),...bound.encounter.participants.filter(p=>p.entityId===f.actor.id)]}};",/fresh source scope rejects/],
+      ['N15','freshness:',"function freshScope(f,bound){","function freshScope(f,bound){f={...f,encounter:{...f.encounter,participants:f.encounter.participants.map(p=>({...p,sideId:bound.encounter.participants.find(old=>old.entityId===p.entityId)?.sideId??p.sideId}))}};",/fresh side scope rejects/],
+      ['N16','combat:',"targetPolicy(relation)","targetPolicy('enemy')",/canonical Combat rejection remains binding/],
+      ['N17_cost','skill:',"amount:25","amount:0",/canonical Skill rejection remains binding/],
+      ['N18','skill:',"if(restriction.status === 'blocked')",'if(false)',/Effect AND gate/],
+      ['N19','skill:',"if(options.pending) return {activation,feedback:null};","if(options.pending) return {activation,feedback:terminal(f,selected,attemptId,'execution','completed',null)};",/pending has no terminal feedback/],
+      ['N20','duplicate:',"if(f.attempts.has(attemptId) || f.decisions.has(intent.decisionId))",'if(false)',/duplicate ledger must block/],
+    ];
+    for(const [id,pattern,expected,faulty,diagnostic] of l4Faults){assert.ok(source.includes(expected),id+' required test-only L4 mutation');
+      try{fs.writeFileSync(file,source.replace(expected,faulty));red(id,pattern,diagnostic);}
+      finally{fs.writeFileSync(file,bytes);}assert.deepEqual(fs.readFileSync(file),bytes);done(id);
+    }
+    // Bypass both the explicit readiness query and the canonical activation input in
+    // this test-only mutant; otherwise activateSkill would correctly mask the fault.
+    const cooldownMutant=source.replaceAll('g.evaluateSkillCooldownReady(f.instance,f.cooldown,f.context)','g.evaluateSkillCooldownReady(f.instance,g.createSkillCooldownState(f.instance),f.context)').replaceAll('cooldownState:f.cooldown,cooldownConfig:','cooldownState:g.createSkillCooldownState(f.instance),cooldownConfig:');
+    assert.notEqual(cooldownMutant,source);
+    try{fs.writeFileSync(file,cooldownMutant);red('N17_cooldown','skill:',/canonical Skill rejection remains binding/);}
+    finally{fs.writeFileSync(file,bytes);}done('N17_cooldown');
+    const skipped=source.replace("test('Encounter integration '","test.skip('Encounter integration '");assert.notEqual(skipped,source);
+    try{fs.writeFileSync(file,skipped);const env={...process.env};delete env.NODE_TEST_CONTEXT;const r=spawnSync(process.execPath,['--test','--test-reporter=tap','encounter-combat-ai-integration.mjs'],{cwd:temp,shell:false,encoding:'utf8',env});assert.ifError(r.error);assert.equal(r.status,0);guardRed('N24_skipped',`assertTapEvidence(${JSON.stringify(r.stdout)},11);`,/0 !== 11/);}
+    finally{fs.writeFileSync(file,bytes);}done('N24_skipped');
+    for(const ext of ['mjs','ts']){const required=path.join(temp,'encounter-combat-ai-integration.'+ext),saved=fs.readFileSync(required);try{fs.renameSync(required,required+'.saved');guardRed('N21_'+ext,`copyRequiredConsumer(${JSON.stringify(required)},${JSON.stringify(required+'.copy')});`,/ENOENT/);}finally{if(fs.existsSync(required+'.saved'))fs.renameSync(required+'.saved',required);}assert.deepEqual(fs.readFileSync(required),saved);done('N21_'+ext);}
+    const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.2';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N22_version',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.3');`,/installed package version/);}
+    finally{fs.writeFileSync(manifestFile,manifestBytes);}done('N22_version');
+    const rootFile=path.join(installed,'dist/index.js'),rootBytes=fs.readFileSync(rootFile);
+    try{const text=rootBytes.toString('utf8');assert.match(text,/\bevaluateEncounterActionScope\b/);fs.writeFileSync(rootFile,text.replace(/\bevaluateEncounterActionScope\b/,'evaluateEncounterActionScope as deliberatelyMissingScope'));red('N22_export',null,/does not provide an export named 'evaluateEncounterActionScope'/);}
+    finally{fs.writeFileSync(rootFile,rootBytes);}done('N22_export');
+    const config=path.join(temp,'integration-tsconfig.json');fs.writeFileSync(config,JSON.stringify({compilerOptions:{target:'ES2022',lib:['ES2022'],module:'NodeNext',moduleResolution:'NodeNext',strict:true,noEmit:true,skipLibCheck:false,types:[]},files:['encounter-combat-ai-integration.ts']}));
+    const compile=()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p','integration-tsconfig.json'],temp);compile();
+    const declarationFile=path.join(installed,'dist/modules/encounter/index.d.ts'),declarationBytes=fs.readFileSync(declarationFile);
+    for(const [kind,expected,faulty] of [['readonly','readonly actionId: string','actionId: string'],['discriminant',"EncounterActionTargetMode = 'none' | 'participant'","EncounterActionTargetMode = 'none'"],['member','readonly sourceSideId: string;','readonly sourceSideId: number;']]){
+      const text=declarationBytes.toString('utf8');assert.ok(text.includes(expected));try{fs.writeFileSync(declarationFile,text.replaceAll(expected,faulty));assert.throws(compile,/TS(?:2578|2322)/);}
+      finally{fs.writeFileSync(declarationFile,declarationBytes);}compile();console.log('ENCOUNTER_INTEGRATION_NEGATIVE_RED N23_'+kind+' real_tsc_exit=1 public_declaration');done('N23_'+kind);
+    }
+    try{assert.ok(source.includes('assertions++;'));fs.writeFileSync(file,source.replace('assertions++;',''));red('N24_zero','scope:',/Encounter integration requires actual assertions/);}
+    finally{fs.writeFileSync(file,bytes);}done('N24_zero');
+    guardRed('N24_registration','assertIntegrationRegistration(undefined);',/mandatory Encounter integration registration/);done('N24_registration');
+    guardRed('N24_marker',`assertTapEvidence(${JSON.stringify(evidence.replace('ENCOUNTER_I01_PASS','removed_marker'))},11,${JSON.stringify(markers)});`,/required evidence ENCOUNTER_I01_PASS/);done('N24_marker');
+    integrationReceipt={runtime:evidence,typechecked:true};
+    console.log('ENCOUNTER_I58_PASS physical_tarball; exact_root_inventory; strict_NodeNext_positive_negative');
+    console.log('ENCOUNTER_I59_PASS all_historical_consumers_required; exact_head_CI_external');
+    console.log('ENCOUNTER_I60_PASS preserved_owner_fingerprint; scope_and_delivery_audit_external; acceptance_PENDING');
+    console.log('INSTALLED_ENCOUNTER_INTEGRATION_NEGATIVE_PASS N01-N24; installed_and_L4_faults; restored_clean');
+    }
+    assertIntegrationRegistration(integrationReceipt);
 
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);

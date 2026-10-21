@@ -521,3 +521,14 @@ membership owns roster association only. L3 owns explicit operation/Life/World p
 L4 owns current facts, controller, cross-Encounter reservations, CAS and dispatch.
 No dependency on Combat/Skill/Effect/Actor AI or second Entity/Life/World owner.
 Leave never closes Encounter, removes Entity, despawns, emits events or calculates rewards.
+
+## v0.8.3 — Encounter action scope and canonical caller integration
+
+Encounter production imports only canonical Entity. No Combat/Skill/Effect/Actor AI
+edges, reverse dependencies or L4 production adapter. Installed fixture alone composes
+those independent owners. Entity owns HP/Life; Core owns numerical resolution;
+Combat owns attack/target; Skill owns cost/cooldown/activation; Effect owns restrictions;
+Actor AI owns advisory selection/Life/cadence/terminal feedback validation. L4 owns
+current controller/roster, dispatch, local ledger/CAS and authoritative commit.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; Draft PR #13. v0.8.4 NOT_STARTED.

@@ -154,3 +154,8 @@ export {createEncounterMembershipPolicy, createEncounterMembershipRequest, getEn
 export type {EncounterMembershipOperation, EncounterMembershipOpenStatus, EncounterMembershipPolicy,
   EncounterMembershipRequest, EncounterMembershipRejectionReason, EncounterMembershipAdmissionResult,
   EncounterMembershipTransitionResult} from './modules/encounter/index.js';
+
+export {createEncounterActionScopePolicy, createEncounterActionScopeRequest,
+  evaluateEncounterActionScope} from './modules/encounter/index.js';
+export type {EncounterActionTargetMode, EncounterSideMembershipRelation, EncounterActionScopePolicy,
+  EncounterActionScopeRequest, EncounterActionScopeRejectionReason, EncounterActionScopeResult} from './modules/encounter/index.js';
