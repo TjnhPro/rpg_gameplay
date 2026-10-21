@@ -1,3 +1,96 @@
+## v0.8.7 — Encounter integration closure EN36–EN40
+
+Existing public functions compose installed PvE, pending/clear waves, independent
+Dungeon battles and externally selected turns in L4 test consumers. No production
+API, five-field EncounterState, optional entity-only dependency or canonical
+Combat/Skill/Effect/AI owner changes. See the [final evidence](reports/v0.8.7-encounter-final-review.md).
+Technical review does not accept the phase: Developer acceptance remains PENDING,
+PR #13 remains Draft. Concrete game profiles, World spawning, durable/distributed
+transactions, rewards, rendering and game balance remain NOT_EVALUATED.
+
+## v0.8.6 — Encounter continuity and recovery EN31–EN35
+
+No production API or semantics change. Installed consumers compose existing Entity
+Life/resource/revival, Combat damage, membership, completion, resolution and cleanup
+contracts. L3 supplies policy; L4 explicitly commits reinforcement/leave/rejoin,
+refreshes canonical Life and continuation/objective facts, rejects stale proposals,
+and accepts state+disposition together before cleanup. No wave spawner or engine.
+
+The in-memory L4 fixture proves controlled local interleavings only; it does not
+provide durable/distributed transactions, exactly-once cleanup, rewards or World
+spawning. EncounterState remains five fields; root inventory remains155 functions/
+267 types; encounter depends only on Entity. Concrete gameplay profiles NOT_EVALUATED.
+
+Developer approved a harness-only version-oracle exception: root package.json is
+the current-build authority. Central installed runner checks installed manifest,
+top lockfile version and packages[''].version against it. Historical consumers keep
+behavior/export assertions without milestone version literals. Real mismatch probes
+fail before exact-byte restoration and clean rechecks. No Core/graph changes.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; existing PR #13 remains Draft.
+v0.8.7 NOT_STARTED. No Ready, merge, tag or publish. Earlier sections are historical.
+[Task](tasks/active/v0.8.6-encounter-continuity-recovery.md) / [Report](reports/v0.8.6-encounter-continuity-recovery.md).
+
+## v0.8.5 — installed closure verification
+
+Required encounter-closure.mjs/.ts:19 assertion-bearing groups cover C01–C67,
+C69–C70; mandatory historical execution/final compiler prove C68, with exact-head
+CI checked externally. Normal/terminal/policy gates, detached snapshots, literal
+canonical Combat HP20→0/Life dead replay and retained Skill mana100→75/cooldown1750
+exercise pure candidates versus caller-owned commit. Test-only L4 fixture covers
+roster/Life/continuation stale proposals, atomic failure, competing cancellation,
+premature handoff and independent duplicate terminal guard.
+
+N01–N32 run actual installed runtime/consumer/manifest/Core/declaration/runner or
+source-copy faults. Each requires its intended assertion, restores exact bytes and
+reruns clean19/19; strict NodeNext uses skipLibCheck:false. N27 corrupts actual
+readonly/discriminant/syntax declarations; N28 directly checks canonical types path,
+packed inventory and installed file, independently of TypeScript import fallback.
+N30 uses current revision/facts so stale checks cannot mask the terminal guard.
+N05 rejects installed0.8.4 through both new and historical exact-version assertions.
+The only protected historical consumer change is the Developer-approved metadata
+expectation0.8.4→0.8.5 at encounter-completion-resolution.mjs:161. No behavior,
+negative control or older API assertion was changed. Exact central root inventory
+is additive155 runtime functions/267 types; historical root normalization removes
+only the exact approved export block and retains its existing digest.
+
+Required: core:prepare, npm ci --ignore-scripts, harness:check/selftest, build,
+typecheck, targeted installed runtime+NodeNext, test:functional, npm run verify,
+git diff --check and protected-file audit. Both push/PR need Windows/Ubuntu
+Node22/24 eight exact delivered-head jobs with full logs and artifact provenance.
+Local evidence alone is CI_PENDING. [Report](reports/v0.8.5-encounter-closure.md).
+
+Phase IN_PROGRESS; Developer acceptance PENDING; PR #13 remains Draft.
+v0.8.6/v0.8.7 NOT_STARTED. No Ready UI, merge, tag or publish. Concrete gameplay
+profiles NOT_EVALUATED. Earlier checkpoint sections below are historical.
+
+
+## v0.8.4 — installed completion verification
+
+Mandatory encounter-completion-resolution.mjs/.ts:13 substantive runtime groups
+cover R01–R58/R60; central mandatory registration, strict external NodeNext and full
+history prove R59/R60. R59 exact-head CI is a separate delivery audit. Literal
+independent replay, canonical Combat/Kernel→Entity defeat, read-only scope, empty-side
+safety, continuation/first-missing/ordered-rule precedence and getter-zero snapshots.
+Root inventory150 runtime functions/260 types is exact, not a count-only assertion.
+
+N01–N26 mutations target installed new owner, manifest, declarations and test runner;
+require intended dedicated diagnostics, restore in finally and clean13/13 rerun,
+with installed dist bytes matched to pack. Types export control directly asserts
+canonical path + packed membership + file existence; strict NodeNext positive and
+real wrong declaration/consumer negatives remain independent (skipLibCheck:false).
+Required commands: core:prepare, npm ci --ignore-scripts, harness:check/selftest,
+build, typecheck, test:functional, npm run verify, git diff --check. Preserve every
+prior consumer/negative and accepted scope hash; normalize only exact approved
+additive root block, without changing prior hash/behavior. Scope audit is mandatory.
+Both push and pull_request need Windows/Ubuntu Node22/24 exact delivered SHA8/8,
+full step/log/provenance audit. Pre-push report CI_PENDING is completed only by a
+SHA-bound PR supplement. Never claim checkpoint complete from local markers alone.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; existing PR #13 remains Draft.
+v0.8.5 NOT_STARTED. No Ready/merge/tag/publish. Concrete gameplay profiles
+NOT_EVALUATED. Prior milestone sections below are historical.
+
 ## v0.7.6 installed lifecycle evidence
 
 Required physical installed consumer `actor-ai-lifecycle-recovery.mjs` executes
@@ -402,3 +495,91 @@ private declaration and fail-closed verifier controls stay active. Source audit
 must confirm no protected owner/registry/dependency/CI change, no instance catalog
 or activation coupling. Exact-head push+PR matrix required; game profiles
 NOT_EVALUATED. Final counts and links are recorded in checkpoint delivery evidence.
+
+## v0.8.0 Encounter evidence and historical inventory exception
+
+Required installed encounter-foundation.mjs/.ts consumer: twelve runtime groups,
+EN-F01–EN-F44 markers and strict external NodeNext; EN-F45 requires the central
+installed runner and full historical regression. N01–N16 deliberately mutate
+required fixtures, actual installed runtime/declarations/manifest, graph and
+artifact bytes; intended guards must fail, bytes restore, clean rerun must pass.
+All prior behavioral assertions, FIX01 ledger mutations, protected-owner guards
+and negative controls remain active. Central foundation runner keeps an exact
+full-root inventory (135 named functions), exact pack inventory and canonical
+declaration-path oracle; import-condition fallback is not a declaration-path test.
+
+Developer-approved historical exception: Actor AI closure checks its exact 21
+owned root names instead of a whole-package count. Approved Encounter root,
+registry and decision additions alone are normalized out of the historical scope
+fingerprint; the accepted baseline digest and protected-owner mutation tests stay.
+Future additive phases should use exact inventories by ownership in historical
+consumers and retain a central exact full-package inventory. Each future additive
+inventory/fingerprint delta needs explicit approved scope; this is no automatic
+permission to rebaseline unrelated regressions.
+
+Required gates: core:prepare, npm ci --ignore-scripts, harness:check,
+harness:selftest, build, typecheck, test:functional, full npm run verify and
+exact-head push+PR Ubuntu/Windows Node22/24 (8 jobs). No skipped evidence.
+Concrete game profiles remain NOT_EVALUATED; checkpoint/phase acceptance is
+recorded in the report and SHA-bound PR CI supplement.
+
+## v0.8.1 Encounter activation verification
+
+Mandatory physically installed encounter-activation.mjs/.ts adds11 runtime
+groups, EN-A01–EN-A48 functional scenarios; EN-A49 covers physical tarball,
+named root exports, exact types path/pack inventory/existence and external
+strict NodeNext; EN-A50 covers mandatory registration alongside unchanged
+historical suites. Delivered-head CI evidence is recorded in the PR supplement,
+never inferred from a local marker. Full runtime inventory is282 contracts across
+49 installed groups plus3 outer harness/verification tests, zero skips/todos.
+
+EN-N01–EN-N20 are isolated actual subprocess failures with intended diagnostic,
+finally-restored original bytes and clean11/11 reruns. Core revision/integrity
+and skipped/zero-assertion variants are independent. Negative declaration mutation
+runs the actual external tsc (TS2578); broken exports.types uses exact manifest
+path/packed membership/file existence, not the incorrect NodeNext-fallback claim.
+Dist drift compares actual installed bytes to this platform's freshly packed
+build. Source-only aliases, symlinks and fabricated evidence are disallowed.
+
+Central exact full-root inventory becomes139. Historical Actor AI exact owned
+inventory and all behavioral/protected-owner assertions remain intact. Only the
+exact four-function/six-type additive root export block is stripped in addition
+to approved v0.8.0 additions before the unchanged historical SHA256 fingerprint;
+no historical baseline hash or fixture is rebaselined. A missing or altered
+additive block still fails the exact-byte normalization check.
+
+Fresh Core prepare/install, harness check/selftest, build/typecheck, functional
+suite and npm run verify are required. Push and pull_request each require
+Windows/Ubuntu × Node22/24 at the delivered SHA, full logs/steps, Core pin,
+package provenance, foundation/activation/negative markers and VERIFY_PASS.
+See [checkpoint report](reports/v0.8.1-encounter-creation-activation.md).
+
+## v0.8.2 installed membership evidence
+
+Mandatory encounter-membership.mjs/.ts fixtures install through the existing
+physical tarball runner. Fourteen substantive runtime groups cover EN-M01–M53;
+M54 is strict external NodeNext/root declarations/provenance and M55 is the full
+historical/CI gate. Receipt checking prevents omission of the entire registration.
+EN-N01–N23 inject isolated installed faults with intended diagnostics, byte restoration
+and clean14/14 reruns. Exact central root inventory retains all144 names; historical
+Actor AI owned inventory/behavior and accepted scope fingerprint remain protected.
+Only the exact approved additive root membership block is normalized for history.
+
+## v0.8.3 — Encounter action scope and canonical caller integration
+
+Mandatory new installed encounter-combat-ai-integration.mjs/.ts evidence: eleven
+meaningful runtime contracts covering EN-I01–I57, plus central pack/type/history and
+external delivery/CI audits for I58–I60. Runtime counts are observed TAP tests, not
+scenario markers. Strict external ES2022/NodeNext/strict/noEmit/skipLibCheck:false
+checks public discriminants and readonly fields. Central runner performs N01–N24
+isolated installed/test-only L4/manifest/declaration/runner faults, requires intended
+diagnostics, restores bytes in finally, reruns clean11/11 and checks packed dist bytes.
+All prior GF/EC/PG/CB/SK/EF/AI/EN01–EN15 consumers remain required. Exact root export
+inventory remains central; historical fingerprint removes only the exact approved
+additive root block, preserving the historical hash and all behavioral assertions.
+Core prepare/install, harness checks/selftests, build/typecheck/functional/verify and
+scope diff audit are mandatory. Delivered SHA requires push+pull_request Windows and
+Ubuntu Node22/24 eight successful jobs with full log evidence. CI pending is not
+CHECKPOINT_COMPLETE. See the v0.8.3 report and its SHA-bound PR supplement.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; Draft PR #13. v0.8.4 NOT_STARTED.

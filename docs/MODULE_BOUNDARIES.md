@@ -1,3 +1,69 @@
+## v0.8.7 — Encounter integration closure EN36–EN40
+
+Existing public functions compose installed PvE, pending/clear waves, independent
+Dungeon battles and externally selected turns in L4 test consumers. No production
+API, five-field EncounterState, optional entity-only dependency or canonical
+Combat/Skill/Effect/AI owner changes. See the [final evidence](reports/v0.8.7-encounter-final-review.md).
+Technical review does not accept the phase: Developer acceptance remains PENDING,
+PR #13 remains Draft. Concrete game profiles, World spawning, durable/distributed
+transactions, rewards, rendering and game balance remain NOT_EVALUATED.
+
+## v0.8.6 — Encounter continuity and recovery EN31–EN35
+
+No production API or semantics change. Installed consumers compose existing Entity
+Life/resource/revival, Combat damage, membership, completion, resolution and cleanup
+contracts. L3 supplies policy; L4 explicitly commits reinforcement/leave/rejoin,
+refreshes canonical Life and continuation/objective facts, rejects stale proposals,
+and accepts state+disposition together before cleanup. No wave spawner or engine.
+
+The in-memory L4 fixture proves controlled local interleavings only; it does not
+provide durable/distributed transactions, exactly-once cleanup, rewards or World
+spawning. EncounterState remains five fields; root inventory remains155 functions/
+267 types; encounter depends only on Entity. Concrete gameplay profiles NOT_EVALUATED.
+
+Developer approved a harness-only version-oracle exception: root package.json is
+the current-build authority. Central installed runner checks installed manifest,
+top lockfile version and packages[''].version against it. Historical consumers keep
+behavior/export assertions without milestone version literals. Real mismatch probes
+fail before exact-byte restoration and clean rechecks. No Core/graph changes.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; existing PR #13 remains Draft.
+v0.8.7 NOT_STARTED. No Ready, merge, tag or publish. Earlier sections are historical.
+[Task](tasks/active/v0.8.6-encounter-continuity-recovery.md) / [Report](reports/v0.8.6-encounter-continuity-recovery.md).
+
+## v0.8.5 — explicit Encounter closure EN26–EN30
+
+Five functions/seven types add fresh active→resolved candidates, side-based
+resolution/cancellation companion records, explicit resolved→closed, L3-authorized
+prepared/active cancellation and terminal-only cleanup references. EncounterState
+retains exactly encounterId/definitionId/status/sides/participants; EN01–EN25 stay
+unchanged. Encounter depends only on Entity; canonical owners/Core/registry stay
+unchanged. No World/reward/cleanup execution, engine or implicit completion.
+
+All candidates and records are detached immutable data, not authenticated receipts.
+L3 owns ordered completion and cancellation policy; L4 supplies current facts and
+atomically accepts state+record against its current baseline, then dispatches cleanup.
+Structural snapshots cannot prove provenance or distributed exactly-once delivery.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; PR #13 remains Draft.
+v0.8.6/v0.8.7 NOT_STARTED. No Ready UI, merge, tag or publish. Concrete gameplay
+profiles NOT_EVALUATED. Earlier checkpoint sections below are historical.
+
+
+## v0.8.4 — completion ownership
+
+EN21–EN25 only: Encounter owns immutable observations, closed ordered rules and
+side-based pending/resolvable proposals. Generic side elimination reads supplied
+canonical Life predicates, not HP/formulas/kind. L3 owns contenders/zero-survivors/
+objective outcome/order; L4 owns objective and continuation truth/freshness/commit.
+No active → resolved, persisted outcome, World/wave/turn/reward engine, sibling
+imports, Core call or numerical fallback. encounter → [entity] unchanged; no global
+store, automatic event, timer, reward or Life change. v0.8.5–v0.8.7 remain deferred.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; existing PR #13 remains Draft.
+v0.8.5 NOT_STARTED. No Ready/merge/tag/publish. Concrete gameplay profiles
+NOT_EVALUATED. Prior milestone sections below are historical.
+
 ## v0.7.6 lifecycle ownership
 
 Registry/module graph unchanged: Actor AI depends on Entity; Foundation execution
@@ -468,3 +534,67 @@ reads, events or cascade state changes. Entity/Progression/Combat/Foundation sta
 unmodified; skill->[entity], four modules/nine source files unchanged. L3 supplies
 layout/eligible/allowDuplicateInstance; L4 owns catalogs/active selection/storage.
 Root80 functions/133 types; no deep exports or duplicate ownership authority.
+
+## v0.8.0 Encounter Foundation — EN01–EN05
+
+Package @rpg/gameplay@0.8.0 adds five functions and six types at the root.
+Optional encounter -> [entity] captures one engagement as an immutable five-field
+snapshot. Factory status is always prepared; validation accepts the five status
+names structurally and grants no lifecycle/World authority. Exact opaque IDs,
+unique sides/participant Entity IDs, canonical current Entity membership, dense
+own-data arrays and closed records are required. Empty/dead references are
+structurally allowed; activation readiness is deferred.
+
+No activation, dynamic Join/Leave, spawning, Combat/AI dispatch, completion,
+rewards, global store or scheduler. EN06–EN40 are not implemented/authorized.
+Phase IN_PROGRESS; Developer acceptance PENDING; phase PR remains Draft.
+See [task](tasks/active/v0.8.0-encounter-foundation.md) and
+[report](reports/v0.8.0-encounter-foundation.md).
+
+## v0.8.1 Encounter Creation & Activation — EN06–EN10
+
+Approved checkpoint follows v0.8.0 at04ea03eaa99b3de4b2009c36ae9c16e5cc257841
+on feat/v0.8-encounter, existing Draft PR #13. Four additive root functions and
+six types implement explicit activation policy, bound observations, read-only
+admission and detached frozen prepared → active candidates. The five-field
+EncounterState, prepared factory and EN01–EN05 contracts are unchanged.
+
+Every call validates the current canonical Entity collection/state, full policy
+and full observation before domain rejection, including terminal inputs. L3
+explicitly controls minimum participants/occupied sides, required occupied side
+IDs, allowed canonical Life statuses and World-readiness requirement. No implicit
+two-team, actor-kind, alive-only or PvE policy. Missing facts reject; foreign
+facts and mismatched Encounter/Life IDs throw TypeError.
+
+L4 owns actual spawn, Life/World fact truth/freshness, persistence, CAS/commit,
+events and Combat/Skill/AI orchestration. Activation changes only status in a new
+candidate; repeated calls from the same prepared input are allowed and do not
+prove exactly-once commit. No Join/Leave, completion, rewards, scheduler, global
+store, new engine, Core call or sibling-module execution. Entity remains the
+canonical Life/collection owner; encounter → [entity] is unchanged.
+
+Phase IN_PROGRESS; Developer acceptance PENDING. Existing PR remains Draft.
+v0.8.2 and Ready/merge/tag/publish are NOT AUTHORIZED. See
+[task](tasks/active/v0.8.1-encounter-creation-activation.md) and
+[report](reports/v0.8.1-encounter-creation-activation.md). Prior sections describe
+their milestone boundary; EN06–EN10 are now authorized by this task only.
+
+## v0.8.2 Encounter membership owner
+
+Only Encounter and additive root exports change in production. encounter → [entity]
+is unchanged. Existing structural capture and activation fact validation are reused;
+membership owns roster association only. L3 owns explicit operation/Life/World policy;
+L4 owns current facts, controller, cross-Encounter reservations, CAS and dispatch.
+No dependency on Combat/Skill/Effect/Actor AI or second Entity/Life/World owner.
+Leave never closes Encounter, removes Entity, despawns, emits events or calculates rewards.
+
+## v0.8.3 — Encounter action scope and canonical caller integration
+
+Encounter production imports only canonical Entity. No Combat/Skill/Effect/Actor AI
+edges, reverse dependencies or L4 production adapter. Installed fixture alone composes
+those independent owners. Entity owns HP/Life; Core owns numerical resolution;
+Combat owns attack/target; Skill owns cost/cooldown/activation; Effect owns restrictions;
+Actor AI owns advisory selection/Life/cadence/terminal feedback validation. L4 owns
+current controller/roster, dispatch, local ledger/CAS and authoritative commit.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; Draft PR #13. v0.8.4 NOT_STARTED.

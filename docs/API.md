@@ -1,3 +1,107 @@
+## v0.8.7 — Encounter integration closure EN36–EN40
+
+Existing public functions compose installed PvE, pending/clear waves, independent
+Dungeon battles and externally selected turns in L4 test consumers. No production
+API, five-field EncounterState, optional entity-only dependency or canonical
+Combat/Skill/Effect/AI owner changes. See the [final evidence](reports/v0.8.7-encounter-final-review.md).
+Technical review does not accept the phase: Developer acceptance remains PENDING,
+PR #13 remains Draft. Concrete game profiles, World spawning, durable/distributed
+transactions, rewards, rendering and game balance remain NOT_EVALUATED.
+
+## v0.8.6 — composition only, no new public API
+
+EN31–EN35 use current canonical Life and existing activateEncounter,
+applyEncounterMembershipChange, evaluateEncounterCompletion, resolveEncounter,
+closeEncounter, cancelEncounter and createEncounterCleanupHandoff. Callers refresh
+full-roster facts and retain L4 revision/fact generations; returned candidates do
+not authenticate a commit or authorize side effects. No new recovery/wave status,
+participant Life store, module export or default game policy. See the
+[installed evidence](reports/v0.8.6-encounter-continuity-recovery.md).
+
+## v0.8.5 — EN26–EN30 terminal candidate API
+
+Root-only ESM signatures (EntityCollection is the canonical Entity owner):
+
+```ts
+createEncounterClosurePolicy(input: EncounterClosurePolicy): EncounterClosurePolicy
+resolveEncounter(state: EncounterState, entities: EntityCollection, policy: EncounterCompletionPolicy, observation: EncounterCompletionObservation): EncounterResolutionTransitionResult
+closeEncounter(state: EncounterState, entities: EntityCollection, disposition: EncounterDispositionRecord): EncounterCloseTransitionResult
+cancelEncounter(state: EncounterState, entities: EntityCollection, policy: EncounterClosurePolicy, request: EncounterCancellationRequest): EncounterCancellationTransitionResult
+createEncounterCleanupHandoff(state: EncounterState, entities: EntityCollection, disposition: EncounterDispositionRecord): EncounterCleanupHandoff
+```
+
+Seven new types are EncounterDispositionRecord, EncounterResolutionTransitionResult,
+EncounterCloseTransitionResult, EncounterClosurePolicy, EncounterCancellationRequest,
+EncounterCancellationTransitionResult and EncounterCleanupHandoff. Root inventory
+is155 functions/267 types, preserving every prior named export and signature.
+
+Disposition is exactly {kind:'resolution',encounterId,definitionId,ruleId,outcome}
+or {kind:'cancellation',encounterId,definitionId,reasonId,outcome:null}. Resolution
+retains canonical EncounterResolutionOutcome, selected rule and unique/disjoint
+declared-side arrays. IDs are opaque exact nonblank strings. Close/cleanup check
+identity/outcome correlations; neither authenticates a caller record or proves
+that a transition was committed. State remains the original five fields.
+
+Resolve calls evaluateEncounterCompletion freshly; pending yields rejected with
+its exact existing reason and state:null/disposition:null. Close permits only
+resolved→closed; prepared/active reject encounter_not_resolved and closed/cancelled
+reject already_terminal. Resolved plus cancellation record throws TypeError.
+Cancellation policy is {definitionId,cancelAllowedStatuses:('prepared'|'active')[]};
+[] is valid deny-all, duplicates invalid. Request is {encounterId,reasonId}.
+Resolved/closed/cancelled reject already_finalized; excluded prepared/active reject
+cancellation_not_allowed. Every rejection has null candidates; successes reason:none.
+
+Cleanup accepts only closed+resolution or cancelled+cancellation and returns exactly
+{encounterId,terminalStatus,dispositionKind,participantEntityIds} in roster order.
+Empty terminal roster yields[]. All structural inputs validate before domain
+rejections; unknown fields, accessors, symbols, sparse/duplicate arrays and malformed
+correlations throw TypeError. Outputs are deeply frozen/detached; inputs unchanged.
+L4 owns current-baseline atomic acceptance, record persistence, dispatch and retries.
+There is no internal commit/store, implicit close, World action or receipt authority.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; PR #13 remains Draft.
+v0.8.6/v0.8.7 NOT_STARTED. No Ready UI, merge, tag or publish. Concrete gameplay
+profiles NOT_EVALUATED. Earlier checkpoint sections below are historical.
+
+
+## v0.8.4 — EN21–EN25 completion assessment
+
+Root-only native ESM functions:
+
+- createEncounterCompletionPolicy(input: EncounterCompletionPolicy): EncounterCompletionPolicy
+- createEncounterCompletionObservation(input: EncounterCompletionObservation): EncounterCompletionObservation
+- evaluateEncounterCompletion(state: EncounterState, entities: EntityCollection, policy: EncounterCompletionPolicy, observation: EncounterCompletionObservation): EncounterCompletionAssessment
+
+Thirteen public types: EncounterParticipantLifeFact, EncounterObjectiveStatus,
+EncounterObjectiveFact, EncounterContinuation, EncounterCompletionObservation,
+EncounterVictoryOutcomeTemplate, EncounterDrawOutcomeTemplate, EncounterOutcomeTemplate,
+EncounterCompletionRule, EncounterCompletionPolicy, EncounterResolutionOutcome,
+EncounterCompletionPendingReason, EncounterCompletionAssessment. Exact root runtime
+inventory150 functions;260 type exports. All prior exports/signatures preserved.
+
+Observation has exactly encounterId/participants/objectives/continuation. Facts use
+canonical EntityLifeState with exact nested entity binding. Missing current roster
+Life is incomplete; foreign/duplicate facts and identity mismatches throw TypeError.
+Objectives are pending/succeeded/failed; missing/pending cannot satisfy a rule.
+Policy definitionId must match state. All rules/references/facts validate before any
+domain return, including unselected rules and inactive encounters. Closed own data,
+dense arrays, exact opaque nonblank IDs, no accessors/coercion, deep freeze/detachment.
+
+Ordered rules: side_elimination has at least two unique declared contender sides
+and explicit zeroSurvivors pending|draw. Empty contender roster never means dead.
+One live side wins; other named contenders lose in policy order; zero live sides
+draw only by explicit policy; multiple live sides continue to later rules. Objective
+rules match exact objectiveId/whenStatus and project explicit side templates. Victory
+requires nonempty unique winners disjoint from unique defeated sides; objective
+defeated may be empty. Draw requires both arrays empty. No side inferred from kind.
+
+Precedence after structural validation: encounter_not_active; continuation_pending;
+participant_fact_missing (first canonical roster ID); first matching rule; otherwise
+no_completion_condition_met. Pending has null ruleId/outcome and nullable missing ID.
+Resolvable has reason rule_matched, exact ruleId, participantEntityId:null and
+frozen outcome. No state candidate/receipt, remembered result, mutation or dispatch.
+L4 owns current Life/World/continuation provenance and any future authoritative commit.
+
 ## v0.7.6 additive root API
 
 Four functions: `evaluateActorAILifeGate(state, entities, actorLife)`,
@@ -2672,3 +2776,158 @@ layout/policies; L4 resolves references, preflights, checks current local inputs
 commits candidates and dispatches. Consumers are verification, not a production
 facade. No new authorization, exactly-once, rollback/refund or concurrency promise.
 See reports/v0.5.6-skill-final-review.md for current-artifact evidence.
+
+## EN01–EN05 Encounter Foundation (v0.8.0)
+
+Root-only runtime exports:
+
+- createEncounterDefinitionReference(input: EncounterDefinitionReference): EncounterDefinitionReference
+- createEncounterSide(input: EncounterSide): EncounterSide
+- createEncounterParticipant(input: EncounterParticipant): EncounterParticipant
+- createEncounterState(reference: EncounterDefinitionReference, initial: EncounterInitialState, entities: EntityCollection): EncounterState
+- validateEncounterState(state: EncounterState, entities: EntityCollection): EncounterState
+
+Types: EncounterDefinitionReference {readonly definitionId: string}; EncounterSide
+{readonly sideId: string}; EncounterParticipant {readonly entityId: string;
+readonly sideId: string}; EncounterStatus = prepared | active | resolved | closed |
+cancelled (string literals). EncounterInitialState has readonly encounterId, sides
+and participants. EncounterState has exactly readonly encounterId, definitionId,
+status, sides and participants; arrays/records are readonly and deeply frozen.
+
+Factories/validator capture detached snapshots, never freeze caller inputs, and
+throw TypeError on malformed/extra/symbol/inherited/accessor fields, unsafe arrays,
+blank IDs, duplicate sides/participants, unknown side or missing canonical Entity.
+Factory always produces prepared, including empty rosters. Structural validator
+recaptures all five statuses but proves no transition, Life admission or authority.
+No package subpaths. Public inventory adds exactly five functions/six types;
+existing APIs and signatures remain unchanged. See approved Encounter task.
+
+## EN06–EN10 Encounter activation (v0.8.1)
+
+Root-only additive functions:
+
+- createEncounterActivationPolicy(input: EncounterActivationPolicy): EncounterActivationPolicy
+- createEncounterActivationObservation(input: EncounterActivationObservation): EncounterActivationObservation
+- evaluateEncounterActivationAdmission(state: EncounterState, entities: EntityCollection, policy: EncounterActivationPolicy, observation: EncounterActivationObservation): EncounterActivationAdmissionResult
+- activateEncounter(state: EncounterState, entities: EntityCollection, policy: EncounterActivationPolicy, observation: EncounterActivationObservation): EncounterActivationTransitionResult
+
+All data is readonly. EncounterActivationPolicy requires exactly
+requiredOccupiedSideIds: readonly string[] (unique opaque nonblank IDs; empty
+allowed), minimumParticipants/minimumOccupiedSides: positive safe integers,
+allowedLifeStatuses: nonempty unique readonly EntityLifeStatus[], and
+requireWorldReady: boolean. There are no defaults.
+EncounterParticipantActivationFact has exactly entityId: string,
+life: EntityLifeState (canonical entityId + alive/dead status), worldReady: boolean.
+EncounterActivationObservation has exactly encounterId and readonly participants.
+Duplicate facts, extra/missing/accessor fields, unsafe arrays, Life ID mismatch,
+foreign participants and mismatched Encounter identity throw TypeError. Fact
+absence is a domain rejection. Factories deeply copy/freeze and do not freeze
+caller input. Observation factory cannot check a roster; evaluation does so.
+
+Validation order is structural state/current collection → policy → observation
+→ matching Encounter ID → no foreign facts, even for terminal states. Domain
+first-match order: not_prepared → insufficient_participants →
+insufficient_occupied_sides → required_side_unoccupied (policy order) →
+participant_fact_missing → participant_life_not_allowed →
+participant_world_not_ready. Participant stages each traverse roster order,
+independent of observation order. Occupied sides come from participants.
+
+EncounterActivationRejectionReason is exactly those seven string literals.
+EncounterActivationAdmissionResult always has exactly status, reason,
+encounterId, sideId, entityId: admitted/none has null diagnostic IDs; nonparticipant
+rejections have null IDs except required_side_unoccupied names its side;
+participant rejections name both roster side and Entity.
+EncounterActivationTransitionResult always has status, reason, encounterId,
+state: activated/none contains a deeply frozen detached active candidate;
+rejected contains the same first-match reason and state:null. No diagnostic ID
+fields or partial candidate. Only candidate status changes; original inputs,
+Entity/Life and all prior snapshots remain unchanged. It revalidates original
+inputs, accepts no admission token and does not reopen active/terminal state.
+
+No spawn, catalog resolution, Life mutation, execution, event, time/RNG provider,
+commit, cross-encounter exclusivity or exactly-once guarantee. L3 owns rules;
+L4 owns current facts and authoritative CAS. Canonical Entity remains the owner.
+Runtime root inventory is exactly139 functions; no package subpaths are added.
+
+## EN11–EN15 Encounter membership (v0.8.2)
+
+Five additive root functions / seven types; prior EN01–EN10 unchanged:
+
+- createEncounterMembershipPolicy(input: EncounterMembershipPolicy): EncounterMembershipPolicy
+- createEncounterMembershipRequest(input: EncounterMembershipRequest): EncounterMembershipRequest
+- getEncounterParticipant(state: EncounterState, entities: EntityCollection, entityId: string): EncounterParticipant | null
+- evaluateEncounterMembershipAdmission(state: EncounterState, entities: EntityCollection, policy: EncounterMembershipPolicy, request: EncounterMembershipRequest): EncounterMembershipAdmissionResult
+- applyEncounterMembershipChange(state: EncounterState, entities: EntityCollection, policy: EncounterMembershipPolicy, request: EncounterMembershipRequest): EncounterMembershipTransitionResult
+
+EncounterMembershipOperation = join | leave | change_side. EncounterMembershipOpenStatus
+= prepared | active. EncounterMembershipPolicy requires joinAllowedStatuses,
+leaveAllowedStatuses, changeSideAllowedStatuses (ordered unique open statuses;
+empty denies), allowedJoinLifeStatuses (nonempty unique canonical alive/dead),
+requireWorldReadyOnJoin:boolean. No defaults/coercion.
+EncounterMembershipRequest is a closed readonly union: join has operation,
+encounterId, entityId, sideId, readiness:EncounterParticipantActivationFact;
+leave has only operation, encounterId, entityId; change_side adds only sideId.
+Readiness and nested Life IDs must match entityId; request binds state.encounterId.
+Complete state/current collection, policy and request validate before domain rejection,
+including terminal inputs. Structural/correlation errors throw TypeError.
+
+EncounterMembershipRejectionReason is encounter_not_open | operation_not_allowed |
+side_not_found | entity_not_found | already_participating | participant_not_found |
+already_on_side | join_life_not_allowed | join_world_not_ready.
+Join priority: open → operation → declared destination → duplicate → canonical new
+Entity → Life → World. Leave: open → operation → existing member. Transfer:
+open → operation → existing member → declared destination → different side.
+
+EncounterMembershipAdmissionResult contains exactly status(admitted/rejected),
+reason(none/rejection), operation, encounterId, entityId, previousSideId, sideId.
+previousSideId is current member's side or null, including rejection. sideId is
+requested join/transfer destination (even nonexistent) or null for leave.
+EncounterMembershipTransitionResult carries the same diagnostics and state:
+applied/none has EncounterState; rejected has null. The transition recomputes all
+inputs and accepts no admission token. Root runtime inventory is exactly144 names.
+
+Join appends; leave removes only the member; transfer replaces sideId in place.
+Every snapshot/read result is deeply frozen and detached; caller data stays mutable.
+Identity, definition, status and declared side universe are preserved. Last-member
+leave retains empty active/prepared state; no victory, cleanup or implicit activation.
+No Life/Resource/Combat/AI mutation. Advisory facts and same-input replay do not prove
+freshness, authorization, cross-Encounter exclusivity or exactly-once commit.
+L4 must check current Entity/World/Encounter authority and commit atomically.
+See the v0.8.2 task for exact unions and literal output oracle.
+
+## v0.8.3 — EN16–EN20 Encounter action scope
+
+Additive root-only functions (native ESM):
+
+- createEncounterActionScopePolicy(input: EncounterActionScopePolicy): EncounterActionScopePolicy
+- createEncounterActionScopeRequest(input: EncounterActionScopeRequest): EncounterActionScopeRequest
+- evaluateEncounterActionScope(state: EncounterState, entities: EntityCollection, policy: EncounterActionScopePolicy, request: EncounterActionScopeRequest): EncounterActionScopeResult
+
+Six types: EncounterActionTargetMode (none|participant),
+EncounterSideMembershipRelation (self|same_side|other_side),
+EncounterActionScopePolicy, EncounterActionScopeRequest,
+EncounterActionScopeRejectionReason, EncounterActionScopeResult.
+Policy has readonly targetMode and readonly allowedSideRelations array.
+None requires an empty relation list; participant requires a nonempty unique list.
+Request has exact readonly encounterId/actionId/sourceEntityId/targetEntityId;
+target is null or an opaque nonblank ID. No normalization or inferred defaults.
+
+Result has exact readonly status/reason and all request fields plus sourceSideId,
+targetSideId, sideRelation. Eligible discriminates reason none and non-null source
+side; rejected uses one of six reasons with nullable diagnostics. Targetless results
+have null target side/relation. Structural validation of state/entities/full policy/
+full request precedes domain outcomes; mismatched encounter identity throws TypeError.
+Closed own-data objects/dense arrays only; getters are never evaluated. Factories and
+results are detached and frozen without freezing input. No stored action counter.
+
+First reason wins: encounter_not_active, source_not_participant, target_required,
+unexpected_target, target_not_participant, side_relation_not_allowed, then eligible.
+Source side remains null until source membership is established. Disallowed existing
+target returns actual target side and relation. Self precedes same-side comparison;
+other_side is never Combat enemy. Dead roster members can satisfy membership only.
+
+ActionId is an opaque caller correlation value, no L2 ledger/authorization receipt.
+Every call rereads only the supplied validated roster. L4 owns snapshot freshness,
+canonical admission, execution, side-policy interpretation and authoritative commit.
+No Combat/Skill/Effect/AI production import; encounter -> [entity] unchanged.
+No cross-Encounter targeted actions, World, result/closure, spawning or scheduler.

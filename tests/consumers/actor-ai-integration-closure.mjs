@@ -323,7 +323,7 @@ contract('E44 E45 E49 E50 E53 E55','closure: optional Entity-only vs full compos
  const registry=definitions.reduce(g.registerModule,g.createModuleRegistry());
  for(const enable of [['entity','actor-ai'],['entity','combat','skill','effect','actor-ai']]){const cfg=g.configureModules(registry,{enable});a.deepEqual(g.composeModules(registry,cfg).moduleIds,enable);a.equal(g.isModuleEnabled(cfg,'combat'),enable.includes('combat'));const f=engaged();a.equal(propose(f).selection.actionKind,'basic_attack');}
  for(const data of [{text:'A'},{position:[2,3]},{position:[2,3,4],projection:'isometric'}]){const before=structuredClone(data),f=engaged();observe(f);a.equal(propose(f).selection.status,'selected');a.deepEqual(data,before);}
- a.equal(Object.keys(g).length,130);a.equal('runAI' in g,false);a.equal('AIManager' in g,false);
+ a.deepEqual(Object.keys(g).filter(name=>name.includes('ActorAI')).sort(), ["createActorAIProfileReference","createActorAIState","validateActorAIState","createActorAIDecisionContext","createActorAIActionIntent","validateActorAIDecisionResult","createActorAIPerceptionSnapshot","validateActorAIPerceptionSnapshot","evaluateActorAIPerception","evaluateActorAITargetSelection","createActorAIBehaviorPolicy","createActorAIBehaviorObservation","evaluateActorAIBehaviorTransition","createActorAIActionSelectionPolicy","createActorAIActionObservation","evaluateActorAIActionSelection","validateActorAIActionExecutionFeedback","evaluateActorAILifeGate","evaluateActorAIReset","createActorAIDecisionTimingState","evaluateActorAIDecisionTiming"].sort());a.equal('runAI' in g,false);a.equal('AIManager' in g,false);
 });
 
 

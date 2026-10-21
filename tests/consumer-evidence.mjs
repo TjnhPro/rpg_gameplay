@@ -8,6 +8,15 @@ export function copyRequiredConsumer(source, destination) {
   fs.copyFileSync(source, destination);
 }
 export function assertVersion(actual, expected) {assert.equal(actual, expected, 'installed package version');}
+// Root source manifest is the oracle; installed metadata cannot certify itself.
+export function assertBuildVersions(rootPackage, lockfile, installedPackage) {
+  const expectedVersion = rootPackage.version;
+  assert.equal(typeof expectedVersion, 'string', 'root package version required');
+  assert.ok(expectedVersion.length > 0, 'root package version required');
+  assertVersion(lockfile.version, expectedVersion);
+  assertVersion(lockfile.packages[''].version, expectedVersion);
+  assertVersion(installedPackage.version, expectedVersion);
+}
 export function assertCoreIntegrity(bytes, expected) {
   assert.equal('sha512-' + createHash('sha512').update(bytes).digest('base64'), expected, 'Core artifact integrity');
 }

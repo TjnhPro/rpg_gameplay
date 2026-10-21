@@ -1,3 +1,87 @@
+## v0.8.7 — Encounter integration and closure EN36–EN40
+
+Installed headless consumers compose existing Entity/Combat/Skill/Effect/Actor AI
+owners with Encounter for PvE, explicit pending/clear reinforcement, independent
+Dungeon encounters and externally selected turns. No new production API or owner
+semantics. EncounterState still has five fields; encounter depends only on Entity.
+
+The final consumer and strict NodeNext pair are mandatory in the central runner.
+Isolated N01–N36 mutations must fail their dedicated assertions, restore exact
+bytes and rerun every positive final group. Historical suites and negative controls
+remain unchanged. Root package.json remains the independent build-version oracle.
+
+Technical closure requires full local verification and eight exact-head push/PR
+Windows/Ubuntu Node22/24 jobs. See the final report and its SHA-bound PR supplement.
+Developer acceptance remains PENDING; PR #13 remains Draft. No Ready/merge/tag/publish
+or next-phase work is authorized. These single-process caller fixtures do not prove
+World spawning, persistent/distributed transactions, exactly-once delivery, rewards,
+renderer integration or game balance. Concrete gameplay profiles NOT_EVALUATED.
+
+[Approved task](tasks/active/v0.8.7-encounter-integration-closure.md) /
+[Final report](reports/v0.8.7-encounter-final-review.md).
+
+Earlier checkpoint sections below are historical.
+
+## v0.8.6 — Encounter continuity and recovery EN31–EN35
+
+No production API or semantics change. Installed consumers compose existing Entity
+Life/resource/revival, Combat damage, membership, completion, resolution and cleanup
+contracts. L3 supplies policy; L4 explicitly commits reinforcement/leave/rejoin,
+refreshes canonical Life and continuation/objective facts, rejects stale proposals,
+and accepts state+disposition together before cleanup. No wave spawner or engine.
+
+The in-memory L4 fixture proves controlled local interleavings only; it does not
+provide durable/distributed transactions, exactly-once cleanup, rewards or World
+spawning. EncounterState remains five fields; root inventory remains155 functions/
+267 types; encounter depends only on Entity. Concrete gameplay profiles NOT_EVALUATED.
+
+Developer approved a harness-only version-oracle exception: root package.json is
+the current-build authority. Central installed runner checks installed manifest,
+top lockfile version and packages[''].version against it. Historical consumers keep
+behavior/export assertions without milestone version literals. Real mismatch probes
+fail before exact-byte restoration and clean rechecks. No Core/graph changes.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; existing PR #13 remains Draft.
+v0.8.7 NOT_STARTED. No Ready, merge, tag or publish. Earlier sections are historical.
+[Task](tasks/active/v0.8.6-encounter-continuity-recovery.md) / [Report](reports/v0.8.6-encounter-continuity-recovery.md).
+
+## Current authorized checkpoint: v0.8.5 Encounter Closure
+
+Approved [task](tasks/active/v0.8.5-encounter-closure.md), EN26–EN30 only, from
+accepted v0.8.4 d29d5ee7bcb0dbb7adf8d59cfa9a0a2e755cfb36 on feat/v0.8-encounter.
+Developer explicitly approved one exception on2026-10-21: only historical consumer
+encounter-completion-resolution.mjs:161 exact version0.8.4→0.8.5; keep every behavior,
+negative and API assertion. Installed0.8.4 must fail the new version oracle.
+This supersedes that specific v0.8.5 blocker, not the prior blocked history.
+
+Production edits confined to Encounter append and additive root exports. Package/lock
+version-only0.8.5; no Core, sibling owner, architecture, registry, workflow or dependency
+change. Existing historical source digest retained with exact additive-root exclusion.
+Mandatory target/negative/strict NodeNext/full verify, scope audit and exact SHA8/8
+push+PR CI precede CHECKPOINT_COMPLETE. Final evidence is a SHA-bound supplement to
+the same Draft PR#13, without a report-only commit after tested HEAD.
+[Report](reports/v0.8.5-encounter-closure.md).
+
+Phase IN_PROGRESS; Developer acceptance PENDING; PR #13 remains Draft.
+v0.8.6/v0.8.7 NOT_STARTED. No Ready UI, merge, tag or publish. Concrete gameplay
+profiles NOT_EVALUATED. Earlier checkpoint sections below are historical.
+
+
+## Current authorized checkpoint: v0.8.4 completion assessment
+
+Developer supplied approved [task](tasks/active/v0.8.4-encounter-victory-defeat-resolution.md); ENC-D01–D07 remain all A.
+Starting accepted v0.8.3 f32f66cfc02f088e4d4a4fc7a0accfe1eb11ca95, clean synchronized
+feat/v0.8-encounter / existing Draft PR #13 to main. Prior exact-head8/8 reaudited.
+Implement EN21–EN25 only: read-only observation/policy/outcome assessment, Entity-only
+Encounter owner plus additive root; package0.8.4. No state transition/outcome store,
+World/reward engine, protected owner/Core/dependency/registry/workflow changes.
+Installed runtime/strict NodeNext/isolated negatives and all historical/local gates
+precede commit/push. Exact delivered-head push+PR8/8 and SHA-bound supplement precede
+CHECKPOINT_COMPLETE. [Report](reports/v0.8.4-encounter-victory-defeat-resolution.md).
+Phase IN_PROGRESS; Developer acceptance PENDING; existing PR #13 remains Draft.
+v0.8.5 NOT_STARTED. No Ready/merge/tag/publish. Concrete gameplay profiles
+NOT_EVALUATED. Prior milestone sections below are historical.
+
 ## v0.7.6 authorized checkpoint
 
 Approved task: tasks/active/v0.7.6-ai-lifecycle-recovery.md (D01–D05 all A).
@@ -372,3 +456,60 @@ Loadout, canonical identity reuse, explicit L3 policies, immutable transitions,
 installed evidence, local gates and exact-head push+PR CI. No protected owner,
 Core/pin/dependency/registry/CI edits. Phase IN_PROGRESS, acceptance PENDING,
 PR remains DRAFT. No Ready/merge/tag/publish or v0.5.6 implementation authorized.
+
+## v0.8.0 Encounter Foundation — EN01–EN05
+
+Package @rpg/gameplay@0.8.0 adds five functions and six types at the root.
+Optional encounter -> [entity] captures one engagement as an immutable five-field
+snapshot. Factory status is always prepared; validation accepts the five status
+names structurally and grants no lifecycle/World authority. Exact opaque IDs,
+unique sides/participant Entity IDs, canonical current Entity membership, dense
+own-data arrays and closed records are required. Empty/dead references are
+structurally allowed; activation readiness is deferred.
+
+No activation, dynamic Join/Leave, spawning, Combat/AI dispatch, completion,
+rewards, global store or scheduler. EN06–EN40 are not implemented/authorized.
+Phase IN_PROGRESS; Developer acceptance PENDING; phase PR remains Draft.
+See [task](tasks/active/v0.8.0-encounter-foundation.md) and
+[report](reports/v0.8.0-encounter-foundation.md).
+
+## v0.8.1 Encounter Creation & Activation — EN06–EN10
+
+Approved checkpoint follows v0.8.0 at04ea03eaa99b3de4b2009c36ae9c16e5cc257841
+on feat/v0.8-encounter, existing Draft PR #13. Four additive root functions and
+six types implement explicit activation policy, bound observations, read-only
+admission and detached frozen prepared → active candidates. The five-field
+EncounterState, prepared factory and EN01–EN05 contracts are unchanged.
+
+Every call validates the current canonical Entity collection/state, full policy
+and full observation before domain rejection, including terminal inputs. L3
+explicitly controls minimum participants/occupied sides, required occupied side
+IDs, allowed canonical Life statuses and World-readiness requirement. No implicit
+two-team, actor-kind, alive-only or PvE policy. Missing facts reject; foreign
+facts and mismatched Encounter/Life IDs throw TypeError.
+
+L4 owns actual spawn, Life/World fact truth/freshness, persistence, CAS/commit,
+events and Combat/Skill/AI orchestration. Activation changes only status in a new
+candidate; repeated calls from the same prepared input are allowed and do not
+prove exactly-once commit. No Join/Leave, completion, rewards, scheduler, global
+store, new engine, Core call or sibling-module execution. Entity remains the
+canonical Life/collection owner; encounter → [entity] is unchanged.
+
+Phase IN_PROGRESS; Developer acceptance PENDING. Existing PR remains Draft.
+v0.8.2 and Ready/merge/tag/publish are NOT AUTHORIZED. See
+[task](tasks/active/v0.8.1-encounter-creation-activation.md) and
+[report](reports/v0.8.1-encounter-creation-activation.md). Prior sections describe
+their milestone boundary; EN06–EN10 are now authorized by this task only.
+
+## Active v0.8.2 — Encounter Participation & Membership
+
+Submitted approved task tasks/active/v0.8.2-encounter-participation-membership.md
+authorizes EN11–EN15 from verified v0.8.1 checkpoint
+56c9546d3958c6bfcafefa14864429725d4ec38e on feat/v0.8-encounter / Draft PR #13.
+Five functions/seven types, version-only0.8.2 and installed membership evidence.
+Only Encounter/root production additions; protected owners/Core/registry/workflow
+remain unchanged. Exact additive root block joins historical normalization without
+rebaselining the historical hash. Earlier sections describe earlier task boundaries.
+Local gates, independent mutation provenance, scope audit and exact-head8/8 CI are
+required. Phase IN_PROGRESS, Developer acceptance PENDING; v0.8.3 NOT_STARTED.
+Stop after delivery; no new PR, Ready transition, merge, tag or publish.

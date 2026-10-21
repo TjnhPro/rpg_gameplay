@@ -138,3 +138,37 @@ export {evaluateActorAILifeGate, evaluateActorAIReset, createActorAIDecisionTimi
   evaluateActorAIDecisionTiming} from './modules/actor-ai/index.js';
 export type {ActorAILifeGateResult, ActorAIResetReason, ActorAIResetRequest, ActorAIResetResult,
   ActorAIDecisionTimingState, ActorAIDecisionTimingPolicy, ActorAIDecisionTimingResult} from './modules/actor-ai/index.js';
+
+export {createEncounterDefinitionReference, createEncounterSide, createEncounterParticipant,
+  createEncounterState, validateEncounterState} from './modules/encounter/index.js';
+export type {EncounterDefinitionReference, EncounterSide, EncounterParticipant, EncounterStatus,
+  EncounterInitialState, EncounterState} from './modules/encounter/index.js';
+
+export {createEncounterActivationPolicy, createEncounterActivationObservation,
+  evaluateEncounterActivationAdmission, activateEncounter} from './modules/encounter/index.js';
+export type {EncounterParticipantActivationFact, EncounterActivationObservation, EncounterActivationPolicy,
+  EncounterActivationRejectionReason, EncounterActivationAdmissionResult, EncounterActivationTransitionResult} from './modules/encounter/index.js';
+
+export {createEncounterMembershipPolicy, createEncounterMembershipRequest, getEncounterParticipant,
+  evaluateEncounterMembershipAdmission, applyEncounterMembershipChange} from './modules/encounter/index.js';
+export type {EncounterMembershipOperation, EncounterMembershipOpenStatus, EncounterMembershipPolicy,
+  EncounterMembershipRequest, EncounterMembershipRejectionReason, EncounterMembershipAdmissionResult,
+  EncounterMembershipTransitionResult} from './modules/encounter/index.js';
+
+export {createEncounterActionScopePolicy, createEncounterActionScopeRequest,
+  evaluateEncounterActionScope} from './modules/encounter/index.js';
+export type {EncounterActionTargetMode, EncounterSideMembershipRelation, EncounterActionScopePolicy,
+  EncounterActionScopeRequest, EncounterActionScopeRejectionReason, EncounterActionScopeResult} from './modules/encounter/index.js';
+
+export {createEncounterCompletionPolicy, createEncounterCompletionObservation,
+  evaluateEncounterCompletion} from './modules/encounter/index.js';
+export type {EncounterParticipantLifeFact, EncounterObjectiveStatus, EncounterObjectiveFact,
+  EncounterContinuation, EncounterCompletionObservation, EncounterVictoryOutcomeTemplate, EncounterDrawOutcomeTemplate,
+  EncounterOutcomeTemplate, EncounterCompletionRule, EncounterCompletionPolicy, EncounterResolutionOutcome,
+  EncounterCompletionPendingReason, EncounterCompletionAssessment} from './modules/encounter/index.js';
+
+export {createEncounterClosurePolicy, resolveEncounter, closeEncounter, cancelEncounter,
+  createEncounterCleanupHandoff} from './modules/encounter/index.js';
+export type {EncounterResolutionTransitionResult, EncounterDispositionRecord, EncounterCloseTransitionResult,
+  EncounterClosurePolicy, EncounterCancellationRequest, EncounterCancellationTransitionResult,
+  EncounterCleanupHandoff} from './modules/encounter/index.js';

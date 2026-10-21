@@ -7,6 +7,7 @@
     {"id": "combat", "optional": true, "dependencies": ["entity"]},
     {"id": "skill", "optional": true, "dependencies": ["entity"]},
     {"id": "effect", "optional": true, "dependencies": ["entity"]},
-    {"id": "actor-ai", "optional": true, "dependencies": ["entity"]}
+    {"id": "actor-ai", "optional": true, "dependencies": ["entity"]},
+    {"id": "encounter", "optional": true, "dependencies": ["entity"]}
   ]
 }
