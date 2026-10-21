@@ -199,3 +199,5 @@ export type {EquipmentOwnerReference, EquippedEntry, EquipmentState, EquipmentIt
   EquipmentValidationContext} from './modules/equipment/index.js';
 export {listEquippedEntries, getEquippedEntryBySlot, hasEquippedItem, assessEquipmentAdmission} from './modules/equipment/index.js';
 export type {EquipmentAdmission, EquipmentAdmissionResult} from './modules/equipment/index.js';
+export {equipEquipmentItem, unequipEquipmentItem, replaceEquipmentItem} from './modules/equipment/index.js';
+export type {EquipmentMutationReason, EquipmentMutationResult} from './modules/equipment/index.js';

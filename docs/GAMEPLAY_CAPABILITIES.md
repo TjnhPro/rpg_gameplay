@@ -1,3 +1,10 @@
+## v0.11.2 — Equipment operations EQ11–EQ15
+
+Pure equip/unequip/single-entry replacement candidates with occupancy protection, exact
+denial priority and safe old Item release. No Item update, Inventory transfer, stat wiring
+or authoritative commit. EQ16–EQ20 NOT_STARTED. Developer acceptance PENDING.
+[Report](reports/v0.11.2-equipment-equip-unequip.md).
+
 ## v0.11.1 — Equipment Slot Queries & Admission EQ06–EQ10
 
 Stable detached listing, whole-entry exact slot lookup, local instance membership and

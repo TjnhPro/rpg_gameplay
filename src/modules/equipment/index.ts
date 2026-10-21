@@ -150,3 +150,77 @@ export function assessEquipmentAdmission(state: EquipmentState, context: Equipme
     throw new TypeError('Equipment admission data could not be inspected safely');
   }
 }
+
+export type EquipmentMutationReason = 'ineligible' | 'already_equipped' | 'slot_occupied' | 'not_equipped' | 'same_instance';
+export type EquipmentMutationResult =
+  | { readonly status: 'accepted'; readonly reason: 'none'; readonly candidate: EquipmentState;
+      readonly released: ItemInstanceState | null }
+  | { readonly status: 'rejected'; readonly reason: EquipmentMutationReason; readonly candidate: null; readonly released: null };
+
+function inspectEquipmentMutation(action: () => EquipmentMutationResult): EquipmentMutationResult {
+  try { return action(); }
+  catch (error) {
+    if (error instanceof TypeError) throw error;
+    throw new TypeError('Equipment mutation data could not be inspected safely');
+  }
+}
+function equipmentEligibility(admission: EquipmentAdmission): boolean {
+  const {eligible} = fields(admission, ['eligible']);
+  if (typeof eligible !== 'boolean') throw new TypeError('Equipment admission requires a boolean eligible fact');
+  return eligible;
+}
+function rejectedEquipmentMutation(reason: EquipmentMutationReason): EquipmentMutationResult {
+  return Object.freeze({status: 'rejected', reason, candidate: null, released: null});
+}
+function acceptedEquipmentMutation(candidate: EquipmentState, context: EquipmentValidationContext,
+  released: ItemInstanceState | null): EquipmentMutationResult {
+  return Object.freeze({status: 'accepted', reason: 'none', candidate: validateEquipmentState(candidate, context), released});
+}
+
+/** Append admitted occupancy; caller still owns entitlement and cross-storage commit. */
+export function equipEquipmentItem(state: EquipmentState, context: EquipmentValidationContext,
+  item: ItemInstanceState, slotIds: readonly string[], admission: EquipmentAdmission): EquipmentMutationResult {
+  return inspectEquipmentMutation(() => {
+    const snapshot = validateEquipmentState(state, context);
+    const assessment = assessEquipmentAdmission(snapshot, context, item, slotIds, admission);
+    if (!assessment.allowed) return rejectedEquipmentMutation(assessment.reason);
+    return acceptedEquipmentMutation({...snapshot, entries: [...snapshot.entries, {item, slotIds}]}, context, null);
+  });
+}
+
+/** Remove local membership and release its canonical Item without deleting it. */
+export function unequipEquipmentItem(state: EquipmentState, context: EquipmentValidationContext,
+  instanceId: string, admission: EquipmentAdmission): EquipmentMutationResult {
+  return inspectEquipmentMutation(() => {
+    const snapshot = validateEquipmentState(state, context), key = id(instanceId);
+    const eligible = equipmentEligibility(admission);
+    const entry = snapshot.entries.find(value => value.item.instanceId === key);
+    if (!entry) return rejectedEquipmentMutation('not_equipped');
+    if (!eligible) return rejectedEquipmentMutation('ineligible');
+    return acceptedEquipmentMutation({...snapshot, entries: snapshot.entries.filter(value => value.item.instanceId !== key)},
+      context, entry.item);
+  });
+}
+
+/** Replace one position only; the old Item is returned for explicit caller placement. */
+export function replaceEquipmentItem(state: EquipmentState, context: EquipmentValidationContext,
+  replacedInstanceId: string, replacementItem: ItemInstanceState, replacementSlotIds: readonly string[],
+  admission: EquipmentAdmission): EquipmentMutationResult {
+  return inspectEquipmentMutation(() => {
+    const snapshot = validateEquipmentState(state, context), key = id(replacedInstanceId);
+    // Validate the full request independently of current occupancy, even for missing/denied targets.
+    const request = validateEquipmentState({equipmentId: snapshot.equipmentId, owner: null,
+      entries: [{item: replacementItem, slotIds: replacementSlotIds}]}, context).entries[0]!;
+    const eligible = equipmentEligibility(admission);
+    const previous = snapshot.entries.find(entry => entry.item.instanceId === key);
+    if (!previous) return rejectedEquipmentMutation('not_equipped');
+    if (request.item.instanceId === key) return rejectedEquipmentMutation('same_instance');
+    const remaining = snapshot.entries.filter(entry => entry.item.instanceId !== key);
+    // Only the explicitly replaced entry releases its occupancy for this assessment.
+    const assessment = assessEquipmentAdmission({...snapshot, entries: remaining}, context,
+      request.item, request.slotIds, {eligible});
+    if (!assessment.allowed) return rejectedEquipmentMutation(assessment.reason);
+    return acceptedEquipmentMutation({...snapshot,
+      entries: snapshot.entries.map(entry => entry.item.instanceId === key ? request : entry)}, context, previous.item);
+  });
+}

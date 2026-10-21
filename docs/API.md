@@ -1,3 +1,19 @@
+## v0.11.2 — Equip, Unequip & Safe Replacement (EQ11–EQ15)
+
+Three additive functions: `equipEquipmentItem(state,context,item,slotIds,admission)`,
+`unequipEquipmentItem(state,context,instanceId,admission)`, and
+`replaceEquipmentItem(state,context,replacedInstanceId,replacementItem,replacementSlotIds,admission)`.
+All return readonly `EquipmentMutationResult`: accepted has reason none, full immutable
+candidate and released Item/null; rejected has `EquipmentMutationReason` and both fields null.
+`EquipmentMutationReason` is ineligible/already_equipped/slot_occupied/not_equipped/same_instance.
+Full structural validation precedes denial. Equip uses existing admission priority and appends;
+unequip checks not_equipped before ineligible; replace checks not_equipped → same_instance →
+already_equipped → slot_occupied → ineligible. Replacement retains the old entry position and
+may reuse only that entry's slots. Unequip/replace always return its detached frozen old Item.
+Every accepted candidate is revalidated by Foundation. No Item update, Inventory commit,
+slot policy, stat execution or ownership guarantee. Foundation/query/admission API unchanged.
+EQ16+ NOT_STARTED; Developer acceptance PENDING. [Report](reports/v0.11.2-equipment-equip-unequip.md).
+
 ## v0.11.1 — Equipment Slot Queries & Admission (EQ06–EQ10)
 
 Four additive functions: `listEquippedEntries(state,context):readonly EquippedEntry[]`,

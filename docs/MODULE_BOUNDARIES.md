@@ -1,3 +1,12 @@
+## v0.11.2 — Equipment candidate boundary
+
+Graph remains equipment->[item] only. Three pure operations own Equipment membership/slots;
+all accepted candidates pass the canonical Foundation validator. Equip and remaining-entry
+replacement checks reuse admission. Unequip/replace return the old canonical Item; L4 owns
+destination validation and atomic cross-storage commit. No Inventory/Core/Entity import,
+Item update, stat grants or transaction owner. EQ16+ NOT_STARTED.
+[Report](reports/v0.11.2-equipment-equip-unequip.md).
+
 ## v0.11.1 — Equipment read/admission boundary
 
 Graph remains equipment->[item] only. Query/admission reuse Foundation validation, including
