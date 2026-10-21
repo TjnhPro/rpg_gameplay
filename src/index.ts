@@ -187,3 +187,5 @@ export type {ItemStackPolicy, ItemStackCompatibilityResult} from './modules/item
 export {createInventoryState, validateInventoryState} from './modules/inventory/index.js';
 export type {InventoryOwnerReference, InventoryEntry, InventoryState, InventoryItemContext,
   InventoryValidationContext, InventoryTransitionResult} from './modules/inventory/index.js';
+export {getInventoryEntry, listInventoryEntries, hasInventoryItem, assessInventoryCapacity} from './modules/inventory/index.js';
+export type {InventoryCapacityPolicy, InventoryCapacityAssessment} from './modules/inventory/index.js';

@@ -121,3 +121,54 @@ export function validateInventoryState(state: InventoryState, context: Inventory
 export function createInventoryState(input: InventoryState, context: InventoryValidationContext): InventoryState {
   return validateInventoryState(input, context);
 }
+
+export interface InventoryCapacityPolicy {
+  readonly maxEntries: number | null;
+}
+export type InventoryCapacityAssessment = {
+  readonly fits: boolean;
+  readonly occupied: number;
+  readonly available: number | null;
+};
+
+/** Exact lookup over a newly validated, detached snapshot. */
+export function getInventoryEntry(state: InventoryState, context: InventoryValidationContext, instanceId: string): InventoryEntry | null {
+  const snapshot = validateInventoryState(state, context);
+  const key = id(instanceId);
+  return snapshot.entries.find(entry => entry.item.instanceId === key) ?? null;
+}
+
+export function listInventoryEntries(state: InventoryState, context: InventoryValidationContext): readonly InventoryEntry[] {
+  return validateInventoryState(state, context).entries;
+}
+
+export function hasInventoryItem(state: InventoryState, context: InventoryValidationContext, instanceId: string): boolean {
+  return getInventoryEntry(state, context, instanceId) !== null;
+}
+
+function entryCount(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0) {
+    throw new TypeError('Inventory entry count must be a nonnegative safe integer');
+  }
+  return value;
+}
+
+/** Advisory L3 entry-count policy; never changes or invalidates the state. */
+export function assessInventoryCapacity(state: InventoryState, context: InventoryValidationContext,
+  policy: InventoryCapacityPolicy, additionalEntries: number): InventoryCapacityAssessment {
+  const snapshot = validateInventoryState(state, context);
+  const additional = entryCount(additionalEntries);
+  let maximum: number | null;
+  try {
+    const input = fields(policy, ['maxEntries']);
+    maximum = input.maxEntries === null ? null : entryCount(input.maxEntries);
+  } catch (error) {
+    if (error instanceof TypeError) throw error;
+    throw new TypeError('Inventory capacity policy could not be inspected safely');
+  }
+  const occupied = snapshot.entries.length;
+  const available = maximum === null ? null : Math.max(maximum - occupied, 0);
+  // Compare remaining capacity instead of adding two potentially large integers.
+  const fits = maximum === null || (occupied <= maximum && additional <= maximum - occupied);
+  return Object.freeze({fits, occupied, available});
+}

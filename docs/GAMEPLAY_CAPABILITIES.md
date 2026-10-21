@@ -1,3 +1,10 @@
+## v0.10.1 — Inventory IN06–IN10
+
+Exact lookup, ordered list, membership and pure entry-count capacity assessment implemented.
+Outputs are detached/frozen; all calls use canonical complete validation. No mutation,
+weight/layout policy or authorization. Developer acceptance PENDING.
+[Report](reports/v0.10.1-inventory-queries-capacity.md).
+
 ## v0.10.0 — Inventory Foundation IN01–IN05
 
 Implemented: explicit identity, neutral nullable owner, ordered immutable canonical

@@ -1,3 +1,18 @@
+## v0.10.1 — Inventory Queries & Capacity (IN06–IN10)
+
+Root adds getInventoryEntry(state, context, instanceId), listInventoryEntries(state, context),
+hasInventoryItem(state, context, instanceId), assessInventoryCapacity(state, context, policy, additionalEntries).
+Types: InventoryCapacityPolicy {readonly maxEntries: number | null} and
+InventoryCapacityAssessment {readonly fits: boolean; readonly occupied: number; readonly available: number | null}.
+All calls validate the complete state/context first. IDs match exactly, without case folding
+or Unicode normalization; blank lookup IDs throw TypeError. Entries/lists are detached/frozen.
+Capacity counts entries, not quantity. Policy is a closed own-data record; maximum and
+additional count are nonnegative safe integers (explicit null maximum means unbounded).
+Finite available is max(maximum - occupied, 0); fits requires the existing state and
+additional entries to fit. Unbounded fits is true for any valid additional count, without
+adding potentially unsafe integers. Over-capacity state remains valid and unchanged.
+Foundation shapes/semantics unchanged. [Report](reports/v0.10.1-inventory-queries-capacity.md).
+
 ## v0.10.0 — Inventory Foundation (IN01–IN05)
 
 Root adds `createInventoryState(input, context)` and `validateInventoryState(state, context)`;
