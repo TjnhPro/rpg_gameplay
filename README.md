@@ -1,3 +1,16 @@
+# v0.8.4 — Encounter Victory / Defeat Resolution
+
+EN21–EN25 adds read-only completion assessment: explicit canonical Life/objective
+observations, L4 continuation barrier and ordered L3 elimination/objective rules.
+Three functions/thirteen types; no change to five-field EncounterState or EN01–EN20.
+A resolvable side victory/draw is advisory, never active → resolved, reward or closure.
+Encounter remains optional with Entity-only dependency; Core/protected owners unchanged.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; existing PR #13 remains Draft.
+v0.8.5 NOT_STARTED. No Ready/merge/tag/publish. Concrete gameplay profiles
+NOT_EVALUATED. Prior milestone sections below are historical.
+[Task](docs/tasks/active/v0.8.4-encounter-victory-defeat-resolution.md) / [Report](docs/reports/v0.8.4-encounter-victory-defeat-resolution.md).
+
 # v0.8.3 — Encounter Combat & Actor AI Integration
 
 EN16–EN20 adds a pure current-snapshot Encounter action scope assessment. Three

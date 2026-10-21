@@ -417,3 +417,147 @@ export function evaluateEncounterActionScope(state: EncounterState, entities: En
   }
   return Object.freeze({status: 'eligible', reason: 'none', ...action, sourceSideId, targetSideId, sideRelation});
 }
+
+export interface EncounterParticipantLifeFact { readonly entityId: string; readonly life: EntityLifeState; }
+export type EncounterObjectiveStatus = 'pending' | 'succeeded' | 'failed';
+export interface EncounterObjectiveFact { readonly objectiveId: string; readonly status: EncounterObjectiveStatus; }
+export type EncounterContinuation = 'pending' | 'clear';
+/** Caller observations, never durable proof of World truth or commit authority. */
+export interface EncounterCompletionObservation {
+  readonly encounterId: string;
+  readonly participants: readonly EncounterParticipantLifeFact[];
+  readonly objectives: readonly EncounterObjectiveFact[];
+  readonly continuation: EncounterContinuation;
+}
+export type EncounterVictoryOutcomeTemplate = {
+  readonly kind: 'victory'; readonly winnerSideIds: readonly string[]; readonly defeatedSideIds: readonly string[];
+};
+export type EncounterDrawOutcomeTemplate = {
+  readonly kind: 'draw'; readonly winnerSideIds: readonly []; readonly defeatedSideIds: readonly [];
+};
+export type EncounterOutcomeTemplate = EncounterVictoryOutcomeTemplate | EncounterDrawOutcomeTemplate;
+export type EncounterCompletionRule =
+  | {readonly ruleId: string; readonly kind: 'side_elimination'; readonly contenderSideIds: readonly string[];
+      readonly zeroSurvivors: 'pending' | 'draw'}
+  | {readonly ruleId: string; readonly kind: 'objective'; readonly objectiveId: string;
+      readonly whenStatus: 'succeeded' | 'failed'; readonly outcome: EncounterOutcomeTemplate};
+export interface EncounterCompletionPolicy { readonly definitionId: string; readonly rules: readonly EncounterCompletionRule[]; }
+export type EncounterResolutionOutcome = EncounterOutcomeTemplate;
+export type EncounterCompletionPendingReason = 'encounter_not_active' | 'continuation_pending'
+  | 'participant_fact_missing' | 'no_completion_condition_met';
+export type EncounterCompletionAssessment =
+  | {readonly status: 'resolvable'; readonly reason: 'rule_matched'; readonly encounterId: string; readonly ruleId: string;
+      readonly participantEntityId: null; readonly outcome: EncounterResolutionOutcome}
+  | {readonly status: 'pending'; readonly reason: EncounterCompletionPendingReason; readonly encounterId: string;
+      readonly ruleId: null; readonly participantEntityId: string | null; readonly outcome: null};
+
+function completionIds(input: unknown): readonly string[] {
+  const ids = array(input).map(id);
+  if (new Set(ids).size !== ids.length) throw new TypeError('Duplicate Encounter completion side ID');
+  return Object.freeze(ids);
+}
+function completionKind(input: unknown): unknown {
+  if (typeof input !== 'object' || input === null) throw new TypeError('Encounter completion requires a record');
+  return Object.getOwnPropertyDescriptor(input, 'kind')?.value as unknown;
+}
+function completionOutcome(input: unknown): EncounterResolutionOutcome {
+  const data = fields(input, ['kind', 'winnerSideIds', 'defeatedSideIds']);
+  const winnerSideIds = completionIds(data.winnerSideIds), defeatedSideIds = completionIds(data.defeatedSideIds);
+  if (winnerSideIds.some(side => defeatedSideIds.includes(side))) throw new TypeError('Encounter completion sides overlap');
+  if (data.kind === 'victory' && winnerSideIds.length > 0) {
+    return Object.freeze({kind: 'victory', winnerSideIds, defeatedSideIds});
+  }
+  if (data.kind === 'draw' && winnerSideIds.length === 0 && defeatedSideIds.length === 0) {
+    return Object.freeze({kind: 'draw', winnerSideIds: Object.freeze([] as const), defeatedSideIds: Object.freeze([] as const)});
+  }
+  throw new TypeError('Invalid Encounter completion outcome');
+}
+function completionRule(input: unknown): EncounterCompletionRule {
+  const kind = completionKind(input);
+  if (kind === 'side_elimination') {
+    const data = fields(input, ['ruleId', 'kind', 'contenderSideIds', 'zeroSurvivors']);
+    const contenderSideIds = completionIds(data.contenderSideIds);
+    if (contenderSideIds.length < 2 || (data.zeroSurvivors !== 'pending' && data.zeroSurvivors !== 'draw')) {
+      throw new TypeError('Invalid Encounter elimination rule');
+    }
+    return Object.freeze({ruleId: id(data.ruleId), kind, contenderSideIds, zeroSurvivors: data.zeroSurvivors});
+  }
+  const data = fields(input, ['ruleId', 'kind', 'objectiveId', 'whenStatus', 'outcome']);
+  if (kind !== 'objective' || (data.whenStatus !== 'succeeded' && data.whenStatus !== 'failed')) {
+    throw new TypeError('Invalid Encounter objective rule');
+  }
+  return Object.freeze({ruleId: id(data.ruleId), kind, objectiveId: id(data.objectiveId),
+    whenStatus: data.whenStatus, outcome: completionOutcome(data.outcome)});
+}
+export function createEncounterCompletionPolicy(input: EncounterCompletionPolicy): EncounterCompletionPolicy {
+  const data = fields(input, ['definitionId', 'rules']);
+  const rules = array(data.rules).map(completionRule);
+  if (new Set(rules.map(rule => rule.ruleId)).size !== rules.length) throw new TypeError('Duplicate Encounter completion rule ID');
+  return Object.freeze({definitionId: id(data.definitionId), rules: Object.freeze(rules)});
+}
+export function createEncounterCompletionObservation(input: EncounterCompletionObservation): EncounterCompletionObservation {
+  const data = fields(input, ['encounterId', 'participants', 'objectives', 'continuation']);
+  const participantIds = new Set<string>(), objectiveIds = new Set<string>();
+  const participants = array(data.participants).map(value => {
+    const fact = fields(value, ['entityId', 'life']), entityId = id(fact.entityId);
+    const life = fields(fact.life, ['entityId', 'status']);
+    if (id(life.entityId) !== entityId) throw new TypeError('Encounter completion Life identity mismatch');
+    if (participantIds.has(entityId)) throw new TypeError('Duplicate Encounter completion participant fact');
+    participantIds.add(entityId);
+    return Object.freeze({entityId, life: Object.freeze({entityId, status: activationLifeStatus(life.status)})});
+  });
+  const objectives = array(data.objectives).map(value => {
+    const fact = fields(value, ['objectiveId', 'status']), objectiveId = id(fact.objectiveId);
+    if (objectiveIds.has(objectiveId)) throw new TypeError('Duplicate Encounter completion objective fact');
+    if (fact.status !== 'pending' && fact.status !== 'succeeded' && fact.status !== 'failed') throw new TypeError('Unknown Encounter objective status');
+    objectiveIds.add(objectiveId);
+    return Object.freeze({objectiveId, status: fact.status});
+  });
+  if (data.continuation !== 'pending' && data.continuation !== 'clear') throw new TypeError('Unknown Encounter continuation');
+  return Object.freeze({encounterId: id(data.encounterId), participants: Object.freeze(participants),
+    objectives: Object.freeze(objectives), continuation: data.continuation});
+}
+/** Read-only proposal. L4 must refresh Life/World/roster and authorize any later commit. */
+export function evaluateEncounterCompletion(state: EncounterState, entities: EntityCollection,
+  policy: EncounterCompletionPolicy, observation: EncounterCompletionObservation): EncounterCompletionAssessment {
+  const current = validateEncounterState(state, entities);
+  const rules = createEncounterCompletionPolicy(policy), observed = createEncounterCompletionObservation(observation);
+  if (rules.definitionId !== current.definitionId) throw new TypeError('Encounter completion definition mismatch');
+  if (observed.encounterId !== current.encounterId) throw new TypeError('Encounter completion observation mismatch');
+  const roster = new Set(current.participants.map(participant => participant.entityId));
+  for (const fact of observed.participants) {
+    if (!roster.has(fact.entityId)) throw new TypeError('Foreign Encounter completion participant fact');
+  }
+  const sides = new Set(current.sides.map(side => side.sideId));
+  for (const rule of rules.rules) {
+    const references = rule.kind === 'side_elimination' ? rule.contenderSideIds
+      : [...rule.outcome.winnerSideIds, ...rule.outcome.defeatedSideIds];
+    if (references.some(side => !sides.has(side))) throw new TypeError('Unknown Encounter completion side reference');
+  }
+  const pending = (reason: EncounterCompletionPendingReason, participantEntityId: string | null = null): EncounterCompletionAssessment =>
+    Object.freeze({status: 'pending', reason, encounterId: current.encounterId, ruleId: null, participantEntityId, outcome: null});
+  if (current.status !== 'active') return pending('encounter_not_active');
+  if (observed.continuation === 'pending') return pending('continuation_pending');
+  const lives = new Map(observed.participants.map(fact => [fact.entityId, fact.life.status]));
+  for (const participant of current.participants) {
+    if (!lives.has(participant.entityId)) return pending('participant_fact_missing', participant.entityId);
+  }
+  for (const rule of rules.rules) {
+    let outcome: EncounterResolutionOutcome | null = null;
+    if (rule.kind === 'objective') {
+      if (observed.objectives.some(fact => fact.objectiveId === rule.objectiveId && fact.status === rule.whenStatus)) {
+        outcome = completionOutcome(rule.outcome);
+      }
+    } else {
+      const rosters = rule.contenderSideIds.map(side => current.participants.filter(participant => participant.sideId === side));
+      if (rosters.some(participants => participants.length === 0)) continue;
+      const aliveSides = rule.contenderSideIds.filter((_, index) => rosters[index]!.some(participant => lives.get(participant.entityId) === 'alive'));
+      if (aliveSides.length === 1) outcome = completionOutcome({kind: 'victory', winnerSideIds: aliveSides,
+        defeatedSideIds: rule.contenderSideIds.filter(side => !aliveSides.includes(side))});
+      if (aliveSides.length === 0 && rule.zeroSurvivors === 'draw') outcome = completionOutcome({kind: 'draw', winnerSideIds: [], defeatedSideIds: []});
+    }
+    if (outcome) return Object.freeze({status: 'resolvable', reason: 'rule_matched', encounterId: current.encounterId,
+      ruleId: rule.ruleId, participantEntityId: null, outcome});
+  }
+  return pending('no_completion_condition_met');
+}

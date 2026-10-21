@@ -1,3 +1,17 @@
+## v0.8.4 — completion ownership
+
+EN21–EN25 only: Encounter owns immutable observations, closed ordered rules and
+side-based pending/resolvable proposals. Generic side elimination reads supplied
+canonical Life predicates, not HP/formulas/kind. L3 owns contenders/zero-survivors/
+objective outcome/order; L4 owns objective and continuation truth/freshness/commit.
+No active → resolved, persisted outcome, World/wave/turn/reward engine, sibling
+imports, Core call or numerical fallback. encounter → [entity] unchanged; no global
+store, automatic event, timer, reward or Life change. v0.8.5–v0.8.7 remain deferred.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; existing PR #13 remains Draft.
+v0.8.5 NOT_STARTED. No Ready/merge/tag/publish. Concrete gameplay profiles
+NOT_EVALUATED. Prior milestone sections below are historical.
+
 ## v0.7.6 Actor AI lifecycle checkpoint
 
 AI31 reads Entity Life and composes existing target loss. AI32 provides explicit

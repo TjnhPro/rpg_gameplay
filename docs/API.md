@@ -1,3 +1,41 @@
+## v0.8.4 — EN21–EN25 completion assessment
+
+Root-only native ESM functions:
+
+- createEncounterCompletionPolicy(input: EncounterCompletionPolicy): EncounterCompletionPolicy
+- createEncounterCompletionObservation(input: EncounterCompletionObservation): EncounterCompletionObservation
+- evaluateEncounterCompletion(state: EncounterState, entities: EntityCollection, policy: EncounterCompletionPolicy, observation: EncounterCompletionObservation): EncounterCompletionAssessment
+
+Thirteen public types: EncounterParticipantLifeFact, EncounterObjectiveStatus,
+EncounterObjectiveFact, EncounterContinuation, EncounterCompletionObservation,
+EncounterVictoryOutcomeTemplate, EncounterDrawOutcomeTemplate, EncounterOutcomeTemplate,
+EncounterCompletionRule, EncounterCompletionPolicy, EncounterResolutionOutcome,
+EncounterCompletionPendingReason, EncounterCompletionAssessment. Exact root runtime
+inventory150 functions;260 type exports. All prior exports/signatures preserved.
+
+Observation has exactly encounterId/participants/objectives/continuation. Facts use
+canonical EntityLifeState with exact nested entity binding. Missing current roster
+Life is incomplete; foreign/duplicate facts and identity mismatches throw TypeError.
+Objectives are pending/succeeded/failed; missing/pending cannot satisfy a rule.
+Policy definitionId must match state. All rules/references/facts validate before any
+domain return, including unselected rules and inactive encounters. Closed own data,
+dense arrays, exact opaque nonblank IDs, no accessors/coercion, deep freeze/detachment.
+
+Ordered rules: side_elimination has at least two unique declared contender sides
+and explicit zeroSurvivors pending|draw. Empty contender roster never means dead.
+One live side wins; other named contenders lose in policy order; zero live sides
+draw only by explicit policy; multiple live sides continue to later rules. Objective
+rules match exact objectiveId/whenStatus and project explicit side templates. Victory
+requires nonempty unique winners disjoint from unique defeated sides; objective
+defeated may be empty. Draw requires both arrays empty. No side inferred from kind.
+
+Precedence after structural validation: encounter_not_active; continuation_pending;
+participant_fact_missing (first canonical roster ID); first matching rule; otherwise
+no_completion_condition_met. Pending has null ruleId/outcome and nullable missing ID.
+Resolvable has reason rule_matched, exact ruleId, participantEntityId:null and
+frozen outcome. No state candidate/receipt, remembered result, mutation or dispatch.
+L4 owns current Life/World/continuation provenance and any future authoritative commit.
+
 ## v0.7.6 additive root API
 
 Four functions: `evaluateActorAILifeGate(state, entities, actorLife)`,

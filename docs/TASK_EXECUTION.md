@@ -1,3 +1,18 @@
+## Current authorized checkpoint: v0.8.4 completion assessment
+
+Developer supplied approved [task](tasks/active/v0.8.4-encounter-victory-defeat-resolution.md); ENC-D01–D07 remain all A.
+Starting accepted v0.8.3 f32f66cfc02f088e4d4a4fc7a0accfe1eb11ca95, clean synchronized
+feat/v0.8-encounter / existing Draft PR #13 to main. Prior exact-head8/8 reaudited.
+Implement EN21–EN25 only: read-only observation/policy/outcome assessment, Entity-only
+Encounter owner plus additive root; package0.8.4. No state transition/outcome store,
+World/reward engine, protected owner/Core/dependency/registry/workflow changes.
+Installed runtime/strict NodeNext/isolated negatives and all historical/local gates
+precede commit/push. Exact delivered-head push+PR8/8 and SHA-bound supplement precede
+CHECKPOINT_COMPLETE. [Report](reports/v0.8.4-encounter-victory-defeat-resolution.md).
+Phase IN_PROGRESS; Developer acceptance PENDING; existing PR #13 remains Draft.
+v0.8.5 NOT_STARTED. No Ready/merge/tag/publish. Concrete gameplay profiles
+NOT_EVALUATED. Prior milestone sections below are historical.
+
 ## v0.7.6 authorized checkpoint
 
 Approved task: tasks/active/v0.7.6-ai-lifecycle-recovery.md (D01–D05 all A).

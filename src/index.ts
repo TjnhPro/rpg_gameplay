@@ -159,3 +159,10 @@ export {createEncounterActionScopePolicy, createEncounterActionScopeRequest,
   evaluateEncounterActionScope} from './modules/encounter/index.js';
 export type {EncounterActionTargetMode, EncounterSideMembershipRelation, EncounterActionScopePolicy,
   EncounterActionScopeRequest, EncounterActionScopeRejectionReason, EncounterActionScopeResult} from './modules/encounter/index.js';
+
+export {createEncounterCompletionPolicy, createEncounterCompletionObservation,
+  evaluateEncounterCompletion} from './modules/encounter/index.js';
+export type {EncounterParticipantLifeFact, EncounterObjectiveStatus, EncounterObjectiveFact,
+  EncounterContinuation, EncounterCompletionObservation, EncounterVictoryOutcomeTemplate, EncounterDrawOutcomeTemplate,
+  EncounterOutcomeTemplate, EncounterCompletionRule, EncounterCompletionPolicy, EncounterResolutionOutcome,
+  EncounterCompletionPendingReason, EncounterCompletionAssessment} from './modules/encounter/index.js';

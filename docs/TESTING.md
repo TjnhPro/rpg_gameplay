@@ -1,3 +1,29 @@
+## v0.8.4 — installed completion verification
+
+Mandatory encounter-completion-resolution.mjs/.ts:13 substantive runtime groups
+cover R01–R58/R60; central mandatory registration, strict external NodeNext and full
+history prove R59/R60. R59 exact-head CI is a separate delivery audit. Literal
+independent replay, canonical Combat/Kernel→Entity defeat, read-only scope, empty-side
+safety, continuation/first-missing/ordered-rule precedence and getter-zero snapshots.
+Root inventory150 runtime functions/260 types is exact, not a count-only assertion.
+
+N01–N26 mutations target installed new owner, manifest, declarations and test runner;
+require intended dedicated diagnostics, restore in finally and clean13/13 rerun,
+with installed dist bytes matched to pack. Types export control directly asserts
+canonical path + packed membership + file existence; strict NodeNext positive and
+real wrong declaration/consumer negatives remain independent (skipLibCheck:false).
+Required commands: core:prepare, npm ci --ignore-scripts, harness:check/selftest,
+build, typecheck, test:functional, npm run verify, git diff --check. Preserve every
+prior consumer/negative and accepted scope hash; normalize only exact approved
+additive root block, without changing prior hash/behavior. Scope audit is mandatory.
+Both push and pull_request need Windows/Ubuntu Node22/24 exact delivered SHA8/8,
+full step/log/provenance audit. Pre-push report CI_PENDING is completed only by a
+SHA-bound PR supplement. Never claim checkpoint complete from local markers alone.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; existing PR #13 remains Draft.
+v0.8.5 NOT_STARTED. No Ready/merge/tag/publish. Concrete gameplay profiles
+NOT_EVALUATED. Prior milestone sections below are historical.
+
 ## v0.7.6 lifecycle/recovery tests
 
 Installed root consumers add 11 actual contracts: dead/manual precedence and pending
