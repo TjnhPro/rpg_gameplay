@@ -1,3 +1,24 @@
+## v0.12.0 — Loot Foundation (LT01–LT05)
+
+Three root functions: `createLootTableDefinition(input:LootTableDefinition):LootTableDefinition`,
+`validateLootTableDefinition(input:LootTableDefinition):LootTableDefinition` and
+`validateLootRollResult(result:LootRollResult):LootRollResult`. Four readonly types:
+
+```ts
+interface LootTableEntry { readonly entryId:string; readonly definitionId:string; readonly weight:number; readonly quantity:number; }
+interface LootTableDefinition { readonly tableId:string; readonly entries:readonly LootTableEntry[]; readonly noDropWeight:number; }
+interface LootDropIntent { readonly entryId:string; readonly definitionId:string; readonly quantity:number; }
+interface LootRollResult { readonly tableId:string; readonly drops:readonly LootDropIntent[]; }
+```
+
+IDs are exact nonblank strings. Table entry IDs are unique; definition references may
+repeat. Entry weight/quantity are positive safe integers, no-drop weight nonnegative;
+total weight must be positive and safe. Empty tables require positive no-drop weight.
+Closed own-data records and dense standard arrays only; malformed/unsafe data throws
+TypeError without invoking getters. Every return is a fresh detached deeply frozen snapshot.
+Result validation permits empty/multiple/repeated intents, without live-table/catalog
+binding or entitlement. No roll operation exists yet. [Report](reports/v0.12.0-loot-foundation.md).
+
 ## v0.11.3 — Equipment integration evidence (EQ16–EQ20)
 
 Zero production/API delta from v0.11.2: nine Equipment functions and nine types remain

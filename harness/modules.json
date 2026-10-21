@@ -11,6 +11,7 @@
     {"id": "encounter", "optional": true, "dependencies": ["entity"]},
     {"id": "item", "optional": true, "dependencies": []},
     {"id": "inventory", "optional": true, "dependencies": ["item"]},
-    {"id": "equipment", "optional": true, "dependencies": ["item"]}
+    {"id": "equipment", "optional": true, "dependencies": ["item"]},
+    {"id": "loot", "optional": true, "dependencies": []}
   ]
 }

@@ -1,3 +1,11 @@
+## v0.12.0 — Loot Foundation LT01–LT05
+
+Immutable exact table identity, weighted entry/fixed quantity definitions, structural
+ordered drop intents, strict hostile-input validation and optional independent composition.
+No selection, RNG, Item creation, Inventory writes, Reward entitlement or World pickup.
+Future mechanics are design probes only. Developer acceptance PENDING; LT06+ NOT_STARTED.
+[Report](reports/v0.12.0-loot-foundation.md).
+
 ## v0.11.3 — Equipment EQ16–EQ20 closure evidence
 
 Installed end-to-end equip/query/replace/unequip, safe test-local Item/Inventory handoff,
