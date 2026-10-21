@@ -1,3 +1,59 @@
+## v0.11.3 — Equipment integration evidence (EQ16–EQ20)
+
+Zero production/API delta from v0.11.2: nine Equipment functions and nine types remain
+unchanged. Consumer fixtures stage independent Inventory and Equipment candidates,
+publish both locally only on success/current baselines, return released Items and reject
+quantity>1 wholesale handoff. Explicit L3 Item-to-modifier mapping feeds existing
+calculateEntityStats/Core; Equipment does no stat work. Text/2D/2.5D are data fixtures.
+Developer acceptance PENDING. [Final review](reports/v0.11.3-equipment-integration-mvp-closure.md).
+
+## v0.11.2 — Equip, Unequip & Safe Replacement (EQ11–EQ15)
+
+Three additive functions: `equipEquipmentItem(state,context,item,slotIds,admission)`,
+`unequipEquipmentItem(state,context,instanceId,admission)`, and
+`replaceEquipmentItem(state,context,replacedInstanceId,replacementItem,replacementSlotIds,admission)`.
+All return readonly `EquipmentMutationResult`: accepted has reason none, full immutable
+candidate and released Item/null; rejected has `EquipmentMutationReason` and both fields null.
+`EquipmentMutationReason` is ineligible/already_equipped/slot_occupied/not_equipped/same_instance.
+Full structural validation precedes denial. Equip uses existing admission priority and appends;
+unequip checks not_equipped before ineligible; replace checks not_equipped → same_instance →
+already_equipped → slot_occupied → ineligible. Replacement retains the old entry position and
+may reuse only that entry's slots. Unequip/replace always return its detached frozen old Item.
+Every accepted candidate is revalidated by Foundation. No Item update, Inventory commit,
+slot policy, stat execution or ownership guarantee. Foundation/query/admission API unchanged.
+EQ16+ NOT_STARTED; Developer acceptance PENDING. [Report](reports/v0.11.2-equipment-equip-unequip.md).
+
+## v0.11.1 — Equipment Slot Queries & Admission (EQ06–EQ10)
+
+Four additive functions: `listEquippedEntries(state,context):readonly EquippedEntry[]`,
+`getEquippedEntryBySlot(state,context,slotId):EquippedEntry|null`,
+`hasEquippedItem(state,context,instanceId):boolean`, and
+`assessEquipmentAdmission(state,context,item,slotIds,admission):EquipmentAdmissionResult`.
+Two types: `EquipmentAdmission` is readonly `{eligible:boolean}`;
+`EquipmentAdmissionResult` is readonly `{allowed:true,reason:'none'}` or
+`{allowed:false,reason:'already_equipped'|'slot_occupied'|'ineligible'}`.
+All functions validate the full canonical state/context. Queries preserve exact nonblank IDs,
+entry order and whole multi-slot entries; returned data is freshly detached/deeply frozen.
+Admission also validates incoming canonical Item, Foundation slot constraints and exact
+own-data boolean fact before denial. Priority: already_equipped → slot_occupied → ineligible → none.
+Results are fresh/frozen; no reservation, candidate, write or authorization. Foundation shapes,
+graph and semantics unchanged. EQ11+ NOT_STARTED; Developer acceptance PENDING.
+[Report](reports/v0.11.1-equipment-slot-queries-admission.md).
+
+## v0.11.0 — Equipment Foundation (EQ01–EQ05)
+
+New runtime functions: createEquipmentState(input,context), validateEquipmentState(state,context).
+Types: EquipmentOwnerReference {ownerKind,ownerId}; EquippedEntry {item:ItemInstanceState,slotIds};
+EquipmentState {equipmentId,owner:EquipmentOwnerReference|null,entries}; EquipmentItemContext
+{definition:ItemDefinition}; EquipmentValidationContext {items}. All fields readonly.
+IDs are nonblank exact opaque strings. Ordered dense entries have unique Item instance IDs;
+ordered nonempty dense slotIds have no duplicates within/across entries. No fixed slot catalog.
+Context supplies unique complete definitions (unused allowed). Canonical Item validation owns
+binding and nested payloads. Closed own-data inputs, invalid occupancy or context throw TypeError.
+Both functions return fresh detached deeply frozen snapshots, including nonempty rehydration.
+No quantity, equip/unequip transition, Inventory commit, stats, global Item store or authorization.
+[Report](reports/v0.11.0-equipment-foundation.md). EQ06+ NOT_STARTED; Developer acceptance PENDING.
+
 ## v0.10.4 — Inventory integration evidence only (IN21–IN25)
 
 No production source or public API changes from v0.10.3. Installed consumers compose

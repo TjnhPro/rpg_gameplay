@@ -1,3 +1,32 @@
+## v0.11.3 — Equipment EQ16–EQ20 closure evidence
+
+Installed end-to-end equip/query/replace/unequip, safe test-local Item/Inventory handoff,
+canonical Entity/Core recalculation and replay are exercised with no production changes.
+EQ01–EQ20 are ready for Developer review; milestone/phase acceptance PENDING. No durable
+storage guarantee, implicit modifier grants or v0.12 Loot implementation.
+[Final review](reports/v0.11.3-equipment-integration-mvp-closure.md).
+
+## v0.11.2 — Equipment operations EQ11–EQ15
+
+Pure equip/unequip/single-entry replacement candidates with occupancy protection, exact
+denial priority and safe old Item release. No Item update, Inventory transfer, stat wiring
+or authoritative commit. EQ16–EQ20 NOT_STARTED. Developer acceptance PENDING.
+[Report](reports/v0.11.2-equipment-equip-unequip.md).
+
+## v0.11.1 — Equipment Slot Queries & Admission EQ06–EQ10
+
+Stable detached listing, whole-entry exact slot lookup, local instance membership and
+advisory admission with complete structural validation and deterministic denial priority.
+No state transition, Item update, slot reservation or authority. EQ11–EQ20 NOT_STARTED.
+Developer acceptance PENDING. [Report](reports/v0.11.1-equipment-slot-queries-admission.md).
+
+## v0.11.0 — Equipment Foundation EQ01–EQ05
+
+Identity, neutral owner, canonical Item snapshots and ordered opaque multi-slot occupancy,
+validated immutable state and optional equipment->[item] boundary implemented. No equip,
+unequip, queries/admission, stat grants or cross-storage operations. EQ06–EQ20 NOT_STARTED.
+Developer acceptance PENDING. [Report](reports/v0.11.0-equipment-foundation.md).
+
 ## v0.10.4 — Inventory integration and MVP closure evidence
 
 IN21–IN25 add installed deterministic integration evidence with zero production/API

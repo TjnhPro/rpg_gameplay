@@ -193,3 +193,11 @@ export {addInventoryEntry, removeInventoryEntry, adjustInventoryQuantity} from '
 export type {InventoryOperationAdmission, InventoryMutationReason} from './modules/inventory/index.js';
 export {mergeInventoryEntries} from './modules/inventory/index.js';
 export type {InventoryMergeReason} from './modules/inventory/index.js';
+
+export {createEquipmentState, validateEquipmentState} from './modules/equipment/index.js';
+export type {EquipmentOwnerReference, EquippedEntry, EquipmentState, EquipmentItemContext,
+  EquipmentValidationContext} from './modules/equipment/index.js';
+export {listEquippedEntries, getEquippedEntryBySlot, hasEquippedItem, assessEquipmentAdmission} from './modules/equipment/index.js';
+export type {EquipmentAdmission, EquipmentAdmissionResult} from './modules/equipment/index.js';
+export {equipEquipmentItem, unequipEquipmentItem, replaceEquipmentItem} from './modules/equipment/index.js';
+export type {EquipmentMutationReason, EquipmentMutationResult} from './modules/equipment/index.js';

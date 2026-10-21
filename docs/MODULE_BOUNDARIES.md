@@ -1,3 +1,37 @@
+## v0.11.3 — Equipment integration ownership
+
+Production and graph unchanged: item->[], inventory->[item], equipment->[item]. Only
+consumer fixtures compose the owners. L3 maps chosen Item data to Kernel modifiers;
+Entity/Core own all calculations; L4 owns admission, freshness, uniqueness and publication.
+No transfer/stat engine, reverse edge, shared store or adapter was added.
+[Final review](reports/v0.11.3-equipment-integration-mvp-closure.md).
+
+## v0.11.2 — Equipment candidate boundary
+
+Graph remains equipment->[item] only. Three pure operations own Equipment membership/slots;
+all accepted candidates pass the canonical Foundation validator. Equip and remaining-entry
+replacement checks reuse admission. Unequip/replace return the old canonical Item; L4 owns
+destination validation and atomic cross-storage commit. No Inventory/Core/Entity import,
+Item update, stat grants or transaction owner. EQ16+ NOT_STARTED.
+[Report](reports/v0.11.2-equipment-equip-unequip.md).
+
+## v0.11.1 — Equipment read/admission boundary
+
+Graph remains equipment->[item] only. Query/admission reuse Foundation validation, including
+canonical Item binding and exact slot constraints. Caller boolean eligibility is advisory;
+L3 owns game rules and L4 owns freshness, cross-storage uniqueness and commits. No direct
+Inventory/Entity/Core import, new validator owner or operation. EQ11+ NOT_STARTED.
+[Report](reports/v0.11.1-equipment-slot-queries-admission.md).
+
+## v0.11.0 — Equipment canonical owner
+
+Optional equipment->[item] owns only equipped-slot snapshot structure. Item public validators
+own full definitions/instances; Inventory retains independent unequipped membership/quantity.
+No Equipment->Inventory/Entity/Skill/Effect/Core dependency. L3 owns slot/eligibility policies;
+L4 owns current-state authority, cross-storage uniqueness and commits. No ItemStore or manager.
+Multi-slot occupancy is data representation, not two-hand mechanics. EQ06+ NOT_STARTED.
+[Report](reports/v0.11.0-equipment-foundation.md).
+
 ## v0.10.0 — Inventory owner
 
 Optional `inventory -> [item]` adds only create/validate snapshots. Inventory owns
