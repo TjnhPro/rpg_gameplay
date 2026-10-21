@@ -1,3 +1,11 @@
+## v0.10.4 — Inventory integration and MVP closure evidence
+
+IN21–IN25 add installed deterministic integration evidence with zero production/API
+change. Inventory IN01–IN20 remains the same canonical optional function owner.
+Text/2D/2.5D are data fixtures, not implemented games. Future split/storage/Equipment
+handoffs remain design-only. Developer milestone and phase acceptance PENDING.
+[Final review report](reports/v0.10.4-inventory-integration-closure.md).
+
 ## v0.10.3 — Inventory IN16–IN20
 
 Complete same-state merge uses canonical Item compatibility and caller-supplied policy.

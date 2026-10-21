@@ -1,3 +1,12 @@
+## v0.10.4 — Inventory integration evidence only (IN21–IN25)
+
+No production source or public API changes from v0.10.3. Installed consumers compose
+Item creation with Inventory snapshots, queries/capacity, add, quantity adjustment,
+complete merge and removal. Three caller data profiles share the same headless API.
+Hand-authored future handoff snapshots demonstrate representability only; no split,
+transfer, Equipment, slot, persistence or global ownership operation is implemented.
+Developer milestone/phase acceptance PENDING. [Report](reports/v0.10.4-inventory-integration-closure.md).
+
 ## v0.10.3 — Inventory Stack & Merge (IN16–IN20)
 
 Root adds mergeInventoryEntries(state,context,sourceInstanceId,destinationInstanceId,admission)
