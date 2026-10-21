@@ -191,3 +191,5 @@ export {getInventoryEntry, listInventoryEntries, hasInventoryItem, assessInvento
 export type {InventoryCapacityPolicy, InventoryCapacityAssessment} from './modules/inventory/index.js';
 export {addInventoryEntry, removeInventoryEntry, adjustInventoryQuantity} from './modules/inventory/index.js';
 export type {InventoryOperationAdmission, InventoryMutationReason} from './modules/inventory/index.js';
+export {mergeInventoryEntries} from './modules/inventory/index.js';
+export type {InventoryMergeReason} from './modules/inventory/index.js';

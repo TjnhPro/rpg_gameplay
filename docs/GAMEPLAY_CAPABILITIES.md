@@ -1,3 +1,10 @@
+## v0.10.3 — Inventory IN16–IN20
+
+Complete same-state merge uses canonical Item compatibility and caller-supplied policy.
+Destination survives; source membership disappears; quantity is conserved with safe integer
+and cap guards. Full immutable candidates only; no split/partial merge/transfer or storage.
+Developer acceptance PENDING. [Report](reports/v0.10.3-inventory-stack-merge.md).
+
 ## v0.10.2 — Inventory IN11–IN15
 
 Immutable validated add/remove/quantity candidates with explicit admission, typed rejections,

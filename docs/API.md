@@ -1,3 +1,15 @@
+## v0.10.3 — Inventory Stack & Merge (IN16–IN20)
+
+Root adds mergeInventoryEntries(state,context,sourceInstanceId,destinationInstanceId,admission)
+and InventoryMergeReason (ineligible, missing_entry, same_instance, item_incompatible,
+stack_limit_exceeded), returning the existing InventoryTransitionResult union.
+Complete structure validation precedes admission, missing membership and same-ID rejection.
+Canonical Item assessItemStackCompatibility owns full definition/property/policy compatibility.
+Safe integer overflow and explicit cap violations reject the entire merge. On success, remove
+source membership, preserve destination Item and remaining entry order, sum quantity, validate
+and deeply freeze/detach the full candidate. L4 owns commits and global identity invariants.
+No split, remainder, auto-stack or transfer. [Report](reports/v0.10.3-inventory-stack-merge.md).
+
 ## v0.10.2 — Inventory Add, Remove & Quantity (IN11–IN15)
 
 Root adds addInventoryEntry(state,context,entry,capacity,admission),

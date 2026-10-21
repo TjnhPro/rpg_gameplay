@@ -1,4 +1,4 @@
-import {validateItemDefinition, validateItemInstance, validateItemStackPolicy,
+import {assessItemStackCompatibility, validateItemDefinition, validateItemInstance, validateItemStackPolicy,
   type ItemDefinition, type ItemInstanceState, type ItemStackPolicy} from '../item/index.js';
 
 export interface InventoryOwnerReference {
@@ -276,5 +276,41 @@ export function adjustInventoryQuantity(state: InventoryState, context: Inventor
     const entries = snapshot.entries.flatMap(value => value.item.instanceId !== key
       ? [value] : count === 0 ? [] : [{item: value.item, quantity: count}]);
     return acceptedMutation({...snapshot, entries}, context);
+  });
+}
+
+export type InventoryMergeReason =
+  | 'ineligible' | 'missing_entry' | 'same_instance' | 'item_incompatible' | 'stack_limit_exceeded';
+
+/** Complete same-inventory merge; destination represents the surviving membership. */
+export function mergeInventoryEntries(state: InventoryState, context: InventoryValidationContext,
+  sourceInstanceId: string, destinationInstanceId: string,
+  admission: InventoryOperationAdmission): InventoryTransitionResult<InventoryMergeReason> {
+  return inspectMutation(() => {
+    const snapshot = validateInventoryState(state, context);
+    const sourceId = id(sourceInstanceId), destinationId = id(destinationInstanceId);
+    const eligible = eligibleOperation(admission);
+    if (!eligible) return Object.freeze({status: 'rejected', reason: 'ineligible', candidate: null});
+    const source = snapshot.entries.find(entry => entry.item.instanceId === sourceId);
+    const destination = snapshot.entries.find(entry => entry.item.instanceId === destinationId);
+    if (!source || !destination) return Object.freeze({status: 'rejected', reason: 'missing_entry', candidate: null});
+    if (sourceId === destinationId) return Object.freeze({status: 'rejected', reason: 'same_instance', candidate: null});
+    const sourceFact = mutationFacts(context, source.item.definitionId);
+    const destinationFact = mutationFacts(context, destination.item.definitionId);
+    // For equal definition IDs the validated context supplies one canonical policy.
+    const compatibility = assessItemStackCompatibility(sourceFact.definition, source.item,
+      destinationFact.definition, destination.item, destinationFact.stackPolicy);
+    if (!compatibility.compatible) return Object.freeze({status: 'rejected', reason: 'item_incompatible', candidate: null});
+    if (source.quantity > Number.MAX_SAFE_INTEGER - destination.quantity) {
+      return Object.freeze({status: 'rejected', reason: 'stack_limit_exceeded', candidate: null});
+    }
+    const total = source.quantity + destination.quantity;
+    if (destinationFact.maxStackQuantity !== null && total > destinationFact.maxStackQuantity) {
+      return Object.freeze({status: 'rejected', reason: 'stack_limit_exceeded', candidate: null});
+    }
+    const entries = snapshot.entries.filter(entry => entry.item.instanceId !== sourceId)
+      .map(entry => entry.item.instanceId === destinationId ? {item: entry.item, quantity: total} : entry);
+    return Object.freeze({status: 'accepted', reason: 'none',
+      candidate: validateInventoryState({...snapshot, entries}, context)});
   });
 }
