@@ -1,3 +1,13 @@
+## v0.13.0 — Reward canonical owner
+
+`src/modules/reward/index.ts` owns package/line identities, neutral source/recipient
+references and structural claim snapshots only. Optional `reward -> []` has no imports;
+all prior edges stay unchanged. Loot selects intents; Item creates instances; Inventory
+owns quantities/capacity; Progression owns EXP; Equipment owns slots; Core owns numerical
+algorithms. L3 resolves content/policy, L4 owns eligibility, fresh state and atomic grant
+commit. No dispatcher, engine, receipt, global store or claim planning is introduced.
+[Report](reports/v0.13.0-reward-foundation.md).
+
 ## v0.12.0 — Loot canonical owner
 
 `src/modules/loot/index.ts` owns table/intent schemas and detached structural snapshots.

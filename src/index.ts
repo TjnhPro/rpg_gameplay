@@ -205,3 +205,9 @@ export type {EquipmentMutationReason, EquipmentMutationResult} from './modules/e
 export {createLootTableDefinition, validateLootTableDefinition, validateLootRollResult} from './modules/loot/index.js';
 export type {LootTableEntry, LootTableDefinition, LootDropIntent, LootRollResult} from './modules/loot/index.js';
 export {rollLootTable} from './modules/loot/index.js';
+
+export {createRewardPackage, validateRewardPackage, createRewardClaimState, validateRewardClaimState} from './modules/reward/index.js';
+export type {RewardLine, RewardPackage, RewardSourceReference, RewardRecipientReference, RewardClaimState} from './modules/reward/index.js';
+
+export {prepareRewardClaim} from './modules/reward/index.js';
+export type {RewardClaimAdmission, RewardClaimPreparationResult} from './modules/reward/index.js';

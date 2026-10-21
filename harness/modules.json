@@ -12,6 +12,7 @@
     {"id": "item", "optional": true, "dependencies": []},
     {"id": "inventory", "optional": true, "dependencies": ["item"]},
     {"id": "equipment", "optional": true, "dependencies": ["item"]},
-    {"id": "loot", "optional": true, "dependencies": []}
+    {"id": "loot", "optional": true, "dependencies": []},
+    {"id": "reward", "optional": true, "dependencies": []}
   ]
 }

@@ -1,3 +1,29 @@
+## v0.13.2 — Reward RW11–RW15 closure evidence
+
+Installed test-local handoff proves canonical Item3 + EXP100, atomic failure/replay,
+no-op and opaque neutral data. Reward production stays import-free and independent;
+there is no delivery engine, ledger or distributed exactly-once guarantee.
+RW01–RW15 are implemented/evidenced; Developer final phase acceptance PENDING.
+[Report](reports/v0.13.2-reward-integration-mvp-closure.md).
+
+## v0.13.1 — Reward planning RW06–RW10
+
+Canonical snapshot inspection is reused. Explicit admission and claimed-snapshot checks
+prepare immutable complete claim candidates plus ordered intent lines, or exact empty
+rejections. Structural errors remain TypeError before policy rejection; claimed reason
+has priority. No Item/Inventory/EXP execution or authoritative commit; repeat/concurrent
+plans on an available snapshot remain possible. L4 owns freshness and atomic delivery.
+RW11–RW15 deferred; Developer acceptance PENDING.
+[Report](reports/v0.13.1-reward-claim-planning.md).
+
+## v0.13.0 — Reward Foundation RW01–RW05
+
+Implemented exact immutable package/ordered opaque lines, source/recipient references,
+explicit available/claimed snapshots and optional independent validation. Empty/no-op
+packages and fractional positive amounts are structural data. No entitlement policy,
+Item/EXP delivery, claim planning or exactly-once guarantee. RW06–RW15 remain deferred;
+Developer acceptance PENDING. [Report](reports/v0.13.0-reward-foundation.md).
+
 ## v0.12.2 — Loot Integration & MVP Closure LT11–LT15
 
 Consumers demonstrate validation/selection/Item creation/Inventory candidate handoff,

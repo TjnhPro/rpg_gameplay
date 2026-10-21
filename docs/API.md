@@ -1,3 +1,70 @@
+## v0.13.2 — Reward integration closure (RW11–RW15)
+
+No production or public API delta. Test-local L4 resolves Item content, supplies IDs,
+prepares Inventory/Progression candidates, and replaces one composite state only when
+all grants succeed and the baseline remains current. Reward alone neither delivers
+Item/EXP nor prevents stale/concurrent delivery. No currency/unlock consumer exists;
+unsupported kinds and incomplete EXP are rejected by the fixture before commit.
+[Evidence](reports/v0.13.2-reward-integration-mvp-closure.md).
+
+## v0.13.1 — Reward claim planning (RW06–RW10)
+
+One additive root function and two types; all Foundation shapes/functions unchanged:
+```ts
+interface RewardClaimAdmission { readonly eligible:boolean; }
+type RewardClaimPreparationResult =
+  | { readonly status:'accepted'; readonly reason:'none';
+      readonly candidate:RewardClaimState; readonly grants:readonly RewardLine[]; }
+  | { readonly status:'rejected'; readonly reason:'already_claimed'|'ineligible';
+      readonly candidate:null; readonly grants:readonly []; };
+function prepareRewardClaim(state:RewardClaimState,admission:RewardClaimAdmission):RewardClaimPreparationResult;
+```
+
+Entire canonical state validation precedes exact own-data boolean admission validation,
+including for already-claimed inputs. Invalid structure throws TypeError; then rejection
+priority is already_claimed before ineligible. Acceptance returns a complete claimed
+candidate and ordered grant-line intents; empty packages produce accepted empty intents.
+Every result/nested record/array is fresh, detached and frozen; grants also detach from
+candidate package lines. Input remains unchanged. No sorting, merging, rounding or grants.
+
+Eligible is a caller assertion, not proof of entitlement or supported grant kind. Reusing
+an available input can produce another accepted plan. L4 must check current authority,
+references and recipient, then atomically commit all external grants with the claim.
+No global duplicate ledger, receipt, persistence or provider calls. Registry reward->[]
+unchanged. [Report](reports/v0.13.1-reward-claim-planning.md).
+
+## v0.13.0 — Reward Foundation (RW01–RW05)
+
+Root-only exports:
+```ts
+interface RewardLine { readonly lineId:string; readonly grantKindId:string; readonly referenceId:string; readonly amount:number; }
+interface RewardPackage { readonly packageId:string; readonly lines:readonly RewardLine[]; }
+interface RewardSourceReference { readonly kind:string; readonly id:string; }
+interface RewardRecipientReference { readonly kind:string; readonly id:string; }
+interface RewardClaimState {
+  readonly claimId:string;
+  readonly source:RewardSourceReference;
+  readonly recipient:RewardRecipientReference;
+  readonly reward:RewardPackage;
+  readonly status:'available'|'claimed';
+}
+function createRewardPackage(input:RewardPackage):RewardPackage;
+function validateRewardPackage(input:RewardPackage):RewardPackage;
+function createRewardClaimState(input:RewardClaimState):RewardClaimState;
+function validateRewardClaimState(input:RewardClaimState):RewardClaimState;
+```
+
+Every entrypoint returns fresh detached deeply frozen data, including on revalidation.
+Exact own-data closed records (Object/null prototype), dense standard arrays, no symbol
+or accessor fields; malformed/unsafe inspection throws TypeError without getter reads.
+All IDs are exact nonblank strings; line IDs unique only inside each package. Order
+and repeated grant references are preserved. Empty packages are valid. Amounts must
+be finite positive numbers, including fractions; Item quantity and EXP safety rules
+remain the canonical receiver's responsibility. Source/recipient require no Entity.
+Both explicit statuses are valid snapshots; claimed does not prove execution, entitlement
+or exactly-once delivery. No default IDs/time/RNG, handlers, claim operation or store.
+[Report](reports/v0.13.0-reward-foundation.md).
+
 ## v0.12.2 — Loot integration closure (LT11–LT15)
 
 No new runtime API/type or changed schema. Four Loot functions and four readonly types

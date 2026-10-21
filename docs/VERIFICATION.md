@@ -41,3 +41,12 @@ Developer decides acceptance. See [testing limits](TESTING.md).
 
 Past eight-job, installed-consumer, mutation and hash reports are historical only.
 GitHub default branch/protection changes require separate owner authorization.
+
+## v0.13.0 scoped release evidence
+
+Reward direct contracts run in the unchanged daily runner. This milestone additionally
+packs/physically installs the artifact in an independent temporary path, reruns public
+functions via root-native ESM, compiles tests/consumers/reward-foundation.ts externally
+with strict NodeNext and tests focused disposable negative faults with byte restoration.
+These release probes are not a new daily matrix or test-count gate. Actual commands,
+results and exact-head CI supplement: [report](reports/v0.13.0-reward-foundation.md).
