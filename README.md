@@ -1,6 +1,6 @@
 # RPG Gameplay — current verification
 
-L2 reusable headless function-first RPG framework. Package checkpoint: `0.12.2` (Loot Integration & MVP Closure LT11–LT15, Developer acceptance PENDING).
+L2 reusable headless function-first RPG framework. Package checkpoint: `0.13.0` (Reward Foundation RW01–RW05, Developer acceptance PENDING).
 Daily checks: `npm run verify` runs boundaries, build, strict repo NodeNext typecheck
 and direct public function tests. Fresh setup: `npm run core:prepare` then
 `npm ci --ignore-scripts`. CI is one Ubuntu/Node22 PR job.
@@ -18,6 +18,12 @@ Item/Inventory handoff, including no-drop and rejected delivery. These are headl
 test-local data flows, not live games or durable/exactly-once grants. No production API
 or behavior changes in this checkpoint.
 See [Loot closure evidence](docs/reports/v0.12.2-loot-integration-mvp-closure.md).
+
+Reward provides detached immutable resolved packages and claim snapshots: four root
+functions, five readonly types, optional `reward -> []`. Grant kind/reference and
+source/recipient are opaque. `claimed` is supplied data, not proof of delivery.
+No claim planning, Item/EXP grants or persistence is implemented in this checkpoint.
+See [Reward Foundation evidence](docs/reports/v0.13.0-reward-foundation.md).
 
 See [testing and limitations](docs/TESTING.md), [verification](docs/VERIFICATION.md)
 and [harness migration report](docs/reports/harness-simplification-mvp.md).

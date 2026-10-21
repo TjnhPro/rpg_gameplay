@@ -1,3 +1,11 @@
+## v0.13.0 — Reward Foundation RW01–RW05
+
+Implemented exact immutable package/ordered opaque lines, source/recipient references,
+explicit available/claimed snapshots and optional independent validation. Empty/no-op
+packages and fractional positive amounts are structural data. No entitlement policy,
+Item/EXP delivery, claim planning or exactly-once guarantee. RW06–RW15 remain deferred;
+Developer acceptance PENDING. [Report](reports/v0.13.0-reward-foundation.md).
+
 ## v0.12.2 — Loot Integration & MVP Closure LT11–LT15
 
 Consumers demonstrate validation/selection/Item creation/Inventory candidate handoff,

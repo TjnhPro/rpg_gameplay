@@ -1,3 +1,35 @@
+## v0.13.0 — Reward Foundation (RW01–RW05)
+
+Root-only exports:
+```ts
+interface RewardLine { readonly lineId:string; readonly grantKindId:string; readonly referenceId:string; readonly amount:number; }
+interface RewardPackage { readonly packageId:string; readonly lines:readonly RewardLine[]; }
+interface RewardSourceReference { readonly kind:string; readonly id:string; }
+interface RewardRecipientReference { readonly kind:string; readonly id:string; }
+interface RewardClaimState {
+  readonly claimId:string;
+  readonly source:RewardSourceReference;
+  readonly recipient:RewardRecipientReference;
+  readonly reward:RewardPackage;
+  readonly status:'available'|'claimed';
+}
+function createRewardPackage(input:RewardPackage):RewardPackage;
+function validateRewardPackage(input:RewardPackage):RewardPackage;
+function createRewardClaimState(input:RewardClaimState):RewardClaimState;
+function validateRewardClaimState(input:RewardClaimState):RewardClaimState;
+```
+
+Every entrypoint returns fresh detached deeply frozen data, including on revalidation.
+Exact own-data closed records (Object/null prototype), dense standard arrays, no symbol
+or accessor fields; malformed/unsafe inspection throws TypeError without getter reads.
+All IDs are exact nonblank strings; line IDs unique only inside each package. Order
+and repeated grant references are preserved. Empty packages are valid. Amounts must
+be finite positive numbers, including fractions; Item quantity and EXP safety rules
+remain the canonical receiver's responsibility. Source/recipient require no Entity.
+Both explicit statuses are valid snapshots; claimed does not prove execution, entitlement
+or exactly-once delivery. No default IDs/time/RNG, handlers, claim operation or store.
+[Report](reports/v0.13.0-reward-foundation.md).
+
 ## v0.12.2 — Loot integration closure (LT11–LT15)
 
 No new runtime API/type or changed schema. Four Loot functions and four readonly types
