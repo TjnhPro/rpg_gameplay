@@ -1,3 +1,13 @@
+## v0.9.2 — Item compatibility owner
+
+Existing optional item -> [] alone owns the two new structural functions. The
+private comparator consumes only canonical validated snapshots; it adds no parser,
+state store, numerical calculator or runtime engine. No sibling/Core changes.
+L3 supplies explicit stackability and L4 supplies current authoritative operands;
+future Inventory owns quantity/merge/storage, future Equipment remains separate.
+Only exact two-function/two-type root additions and historical exact inventory
+updates are authorized. Every historical behavioral assertion remains protected.
+
 ## v0.9.1 — Item property owner
 
 The existing optional item -> [] owner alone adds three property operations.

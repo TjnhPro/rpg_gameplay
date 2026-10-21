@@ -1,3 +1,24 @@
+## v0.9.2 — Item stack compatibility installed verification
+
+Mandatory item-stack.mjs/.ts add eight installed runtime groups covering S01–S21
+and S24; S22 is actual external strict NodeNext with skipLibCheck:false; S23 is
+central completion after all historical consumers. A physical packed package and
+pinned Core are installed independently in a path containing spaces. Literal
+oracles cover complete operand validation, deterministic reasons, full definition
+content, exact nested own-key equality, ordered arrays and Object.is negative zero.
+
+Nineteen targeted controls cover missing fixtures, disabled registration, missing
+markers, skipped/zero assertions, ignored definition content, JSON equality,
+unordered arrays, ignored same-ID/policy guards, early refusal before validation,
+negative-zero loss, root export, version, Core artifact, readonly/discriminant
+declarations and undeclared item -> inventory. Changed bytes restore in finally;
+clean eight-test runtime reruns and restored strict compilation are mandatory.
+All prior Item/historical behaviors, original hash oracles and negative controls
+remain. Exact runtime/type inventories add only the approved two names each;
+module graph, Core pin and full CI workflow remain unchanged. Full verification
+and audited same-HEAD push/PR Windows/Ubuntu Node22/24 are required. Developer
+acceptance PENDING; stop at v0.9.2. Earlier sections are historical.
+
 ## v0.9.1 — Item property installed verification
 
 Mandatory item-properties.mjs/.ts: eight runtime contracts cover P01–P20/P22–P23;

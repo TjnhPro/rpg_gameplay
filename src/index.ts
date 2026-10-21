@@ -180,3 +180,6 @@ export type {ItemDefinitionReference, ItemInstanceInitialIdentity, ItemInstanceR
 
 export {getItemInstanceProperty, setItemInstanceProperty, replaceItemInstanceProperties} from './modules/item/index.js';
 export type {ItemPropertyReadResult, ItemPropertyOperationAdmission, ItemPropertyOperationResult} from './modules/item/index.js';
+
+export {validateItemStackPolicy, assessItemStackCompatibility} from './modules/item/index.js';
+export type {ItemStackPolicy, ItemStackCompatibilityResult} from './modules/item/index.js';

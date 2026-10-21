@@ -1,3 +1,26 @@
+## v0.9.2 — Item stack compatibility IT09–IT11
+
+Root additions: validateItemStackPolicy(policy) and
+assessItemStackCompatibility(leftDefinition, leftInstance, rightDefinition,
+rightInstance, policy); types ItemStackPolicy and ItemStackCompatibilityResult.
+Policy is exactly {stackable:boolean}; validation returns a fresh frozen snapshot.
+All five complete operands validate canonically before any incompatibility result.
+Invalid own-data/prototype/nested/binding input throws TypeError without getters.
+
+Valid operands yield exactly frozen {compatible,reason}, in priority order:
+same_instance, different_definition, definition_conflict, not_stackable,
+different_properties, then {compatible:true,reason:'none'}. Definition comparison
+includes category, rarity, ordered tags and all properties. Instance comparison
+includes all properties; distinct instance IDs are required. Records compare exact
+own keys independent of insertion order; arrays remain ordered; scalars use
+Object.is (0 differs from -0). Comparisons use validated captured data only.
+
+This is advisory structural compatibility. L3 supplies policy; L4 rechecks current
+ownership/freshness before any future commit. No quantity, stack storage, merge,
+split, ID retirement or global uniqueness evidence. Previous contracts unchanged.
+See [task](tasks/active/v0.9.2-item-stack-compatibility.md) and
+[report](reports/v0.9.2-item-stack-compatibility.md). Earlier sections are historical.
+
 ## v0.9.1 — Item property operations IT06–IT08
 
 Root-only additions: getItemInstanceProperty(definition, instance, key),

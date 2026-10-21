@@ -1,3 +1,13 @@
+## v0.9.2 — Item stack compatibility IT09–IT11
+
+Implemented: closed caller stackability policy, canonical complete pair validation,
+conservative nested structural equality, deterministic refusal priority and frozen
+advisory outcomes. Same-ID refusal and full payload preservation prevent lossy
+compatibility claims. Quantity, capacity, merge/split/storage/retirement remain
+future Inventory responsibilities. Text/2D/2.5D fixtures prove data compatibility
+only; concrete gameplay profiles NOT_EVALUATED. Phase IN_PROGRESS, Developer
+acceptance PENDING, PR #14 Draft. Stop at v0.9.2. Earlier sections are historical.
+
 ## v0.9.1 — Item property operations IT06–IT08
 
 Implemented: exact own-instance reads, immutable single-key set and whole-map

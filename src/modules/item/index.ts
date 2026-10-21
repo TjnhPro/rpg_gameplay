@@ -231,3 +231,55 @@ export function replaceItemInstanceProperties(
     return Object.freeze({status: 'accepted', reason: 'none', candidate});
   });
 }
+
+export interface ItemStackPolicy { readonly stackable: boolean; }
+export type ItemStackCompatibilityResult =
+  | {readonly compatible: true; readonly reason: 'none'}
+  | {readonly compatible: false; readonly reason:
+      'same_instance' | 'different_definition' | 'definition_conflict' | 'not_stackable' | 'different_properties'};
+
+export function validateItemStackPolicy(policy: ItemStackPolicy): ItemStackPolicy {
+  return inspect(() => {
+    const stackable = fields(policy, ['stackable']).stackable;
+    if (typeof stackable !== 'boolean') throw new TypeError('Expected boolean Item stack policy');
+    return Object.freeze({stackable});
+  });
+}
+
+// Only canonical captured Item values reach this comparison. Record insertion
+// order is irrelevant; array order and Object.is scalar equality are exact.
+function equalItemValue(left: ItemPropertyValue, right: ItemPropertyValue): boolean {
+  if (Object.is(left, right)) return true;
+  if (left === null || right === null || typeof left !== 'object' || typeof right !== 'object') return false;
+  if (Array.isArray(left) || Array.isArray(right)) {
+    return Array.isArray(left) && Array.isArray(right) && left.length === right.length
+      && left.every((value, index) => equalItemValue(value, right[index]!));
+  }
+  const a = left as Readonly<Record<string, ItemPropertyValue>>;
+  const b = right as Readonly<Record<string, ItemPropertyValue>>;
+  const keys = Object.keys(a);
+  return keys.length === Object.keys(b).length
+    && keys.every(key => Object.hasOwn(b, key) && equalItemValue(a[key]!, b[key]!));
+}
+
+export function assessItemStackCompatibility(
+  leftDefinition: ItemDefinition, leftInstance: ItemInstanceState,
+  rightDefinition: ItemDefinition, rightInstance: ItemInstanceState, policy: ItemStackPolicy,
+): ItemStackCompatibilityResult {
+  return inspect(() => {
+    const left = validateItemDefinition(leftDefinition);
+    const right = validateItemDefinition(rightDefinition);
+    const a = validateItemInstance(left, leftInstance);
+    const b = validateItemInstance(right, rightInstance);
+    const validatedPolicy = validateItemStackPolicy(policy);
+    if (a.instanceId === b.instanceId) return Object.freeze({compatible: false, reason: 'same_instance'});
+    if (left.definitionId !== right.definitionId) return Object.freeze({compatible: false, reason: 'different_definition'});
+    if (left.categoryId !== right.categoryId || left.rarityId !== right.rarityId
+      || !equalItemValue(left.tagIds, right.tagIds) || !equalItemValue(left.properties, right.properties)) {
+      return Object.freeze({compatible: false, reason: 'definition_conflict'});
+    }
+    if (!validatedPolicy.stackable) return Object.freeze({compatible: false, reason: 'not_stackable'});
+    if (!equalItemValue(a.properties, b.properties)) return Object.freeze({compatible: false, reason: 'different_properties'});
+    return Object.freeze({compatible: true, reason: 'none'});
+  });
+}

@@ -9,7 +9,7 @@ import {copyRequiredConsumer,assertTapEvidence,assertBuildVersions,assertCoreInt
 // Developer-authorized exception: strip only these exact additive Item bytes.
 // Original historical digests and every other protected byte remain authoritative.
 const additions = new Map([
-  ['src/index.ts',"\nexport {createItemDefinitionReference, createItemInstanceReference, validateItemInstanceReference,\n  createItemDefinition, validateItemDefinition, createItemInstance, validateItemInstance} from './modules/item/index.js';\nexport type {ItemDefinitionReference, ItemInstanceInitialIdentity, ItemInstanceReference, ItemPropertyValue,\n  ItemDefinitionContent, ItemDefinition, ItemInstanceInitialState, ItemInstanceState} from './modules/item/index.js';\n\nexport {getItemInstanceProperty, setItemInstanceProperty, replaceItemInstanceProperties} from './modules/item/index.js';\nexport type {ItemPropertyReadResult, ItemPropertyOperationAdmission, ItemPropertyOperationResult} from './modules/item/index.js';\n"],
+  ['src/index.ts',"\nexport {createItemDefinitionReference, createItemInstanceReference, validateItemInstanceReference,\n  createItemDefinition, validateItemDefinition, createItemInstance, validateItemInstance} from './modules/item/index.js';\nexport type {ItemDefinitionReference, ItemInstanceInitialIdentity, ItemInstanceReference, ItemPropertyValue,\n  ItemDefinitionContent, ItemDefinition, ItemInstanceInitialState, ItemInstanceState} from './modules/item/index.js';\n\nexport {getItemInstanceProperty, setItemInstanceProperty, replaceItemInstanceProperties} from './modules/item/index.js';\nexport type {ItemPropertyReadResult, ItemPropertyOperationAdmission, ItemPropertyOperationResult} from './modules/item/index.js';\n\nexport {validateItemStackPolicy, assessItemStackCompatibility} from './modules/item/index.js';\nexport type {ItemStackPolicy, ItemStackCompatibilityResult} from './modules/item/index.js';\n"],
   ['harness/modules.json',',\n    {"id": "item", "optional": true, "dependencies": []}'],
 ]);
 export function historicalBeforeItem(name,text) {
@@ -46,8 +46,8 @@ export function runItemFoundation({root,temp,installed,exec,rootPackage,lock,pac
   assert.deepEqual([...declarations.matchAll(/export (?:interface|type) (\w+)/g)].map(m=>m[1]).sort(),[
     'ItemDefinitionReference','ItemInstanceInitialIdentity','ItemInstanceReference','ItemPropertyValue',
     'ItemDefinitionContent','ItemDefinition','ItemInstanceInitialState','ItemInstanceState',
-    'ItemPropertyReadResult','ItemPropertyOperationAdmission','ItemPropertyOperationResult'].sort());
-  assert.equal([...declarations.matchAll(/export declare function /g)].length,10);
+    'ItemPropertyReadResult','ItemPropertyOperationAdmission','ItemPropertyOperationResult','ItemStackPolicy','ItemStackCompatibilityResult'].sort());
+  assert.equal([...declarations.matchAll(/export declare function /g)].length,12);
   assert.ok(packed.files.some(f=>f.path==='dist/modules/item/index.d.ts'));
   const done=id=>console.log('ITEM_NEGATIVE_PASS '+id+' restored_exact_bytes clean8/8');
   const red=(id,title,diagnostic)=>{

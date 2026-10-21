@@ -124,5 +124,5 @@ contract('P20 P22 P23','replay and composition',a=>{
   for(const data of [{text:{description:'opaque'}},{sprite2d:{frame:0}},{view25d:{angle:30}}]){
     a.deepEqual(g.replaceItemInstanceProperties(definition(),before(),data,yes),expected(data));
   }
-  a.deepEqual(Object.keys(g).filter(k=>k.includes('Item')).sort(),['createItemDefinitionReference','createItemInstanceReference','validateItemInstanceReference','createItemDefinition','validateItemDefinition','createItemInstance','validateItemInstance','getItemInstanceProperty','setItemInstanceProperty','replaceItemInstanceProperties'].sort());
+  a.deepEqual(Object.keys(g).filter(k=>k.includes('Item')).sort(),['createItemDefinitionReference','createItemInstanceReference','validateItemInstanceReference','createItemDefinition','validateItemDefinition','createItemInstance','validateItemInstance','getItemInstanceProperty','setItemInstanceProperty','replaceItemInstanceProperties','validateItemStackPolicy','assessItemStackCompatibility'].sort());
 });
