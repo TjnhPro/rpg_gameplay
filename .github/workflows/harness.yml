@@ -1,26 +1,29 @@
-name: RPG Gameplay Harness
+name: RPG Gameplay MVP
 on:
-  push:
   pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   verify:
-    name: Foundation (${{ matrix.os }}, Node ${{ matrix.node }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        node: ['22', '24']
-        os: [ubuntu-latest, windows-latest]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: '22'
+          cache: npm
       - name: Pin npm tooling
         run: npm install --global npm@12.2.0
-      - name: Rebuild pinned Core artifact
+      # No Core artifact cache: rebuild once per job and check lockfile SHA-512.
+      - name: Prepare and validate pinned Core artifact
         run: npm run core:prepare
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
-      - name: Run gates
+      - name: Verify
         run: npm run verify

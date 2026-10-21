@@ -25,15 +25,17 @@ Repository này là **L2 reusable headless function-first RPG framework**, KHÔN
 Preflight repo & approved task -> xác nhận boundaries -> implement chỉ trong scope -> viết functional/contract evidence -> `npm run verify` -> self-review -> báo cáo PASS/BLOCKED và các gate chưa chạy. Developer tự quyết định acceptance.
 
 ## Quick commands
-- `npm run harness:check`: check registry, imports, module boundary.
-- `npm run harness:selftest`: chứng minh checker bắt được các vi phạm cơ bản.
-- Fresh install: `npm run core:prepare` then `npm ci --ignore-scripts` (see Core integration).
-- `npm run verify`: boundaries, self-tests, build, strict typecheck and installed GF01–GF16/EC01–EC18 contracts. Messaging/execution are opt-in; providers and lifecycle cleanup are caller-wired. Text/2D/2.5D probes cover Foundation data compatibility only; gameplay profile behavior remains NOT_EVALUATED. Entity phase acceptance requires final Developer review.
+- Setup: `npm run core:prepare` then `npm ci --ignore-scripts`.
+- `npm run harness:check`: registry, imports and module boundaries.
+- `npm run verify`: boundaries -> build -> strict typecheck -> direct public function tests, once each.
+- Targeted after build: `node --test tests/unit/item.test.mjs`.
 
-v0.2.0–v0.2.5 add installed EC01–EC18 identity/collection/attribute/Kernel-stat/resource/life contracts; `harness/modules.json`
-declares optional Entity at `src/modules/entity/`. GF01–GF16 is the accepted
-baseline. Entity phase uses one branch/PR through v0.2.5; v0.2.5 reports
-READY_FOR_REVIEW after all gates, with Developer acceptance PENDING. Gameplay profile behavior remains
-NOT_EVALUATED. See `docs/TASK_EXECUTION.md` for the approved phase workflow.
-
-Không claim gameplay pass khi chưa có gameplay. Không sửa baseline/expected chỉ để làm test xanh.
+Current MVP rules are in `docs/TESTING.md` and `docs/VERIFICATION.md`.
+Use independent expected values, useful positives/material negatives, explicit time/RNG.
+No quotas, historical source hashes, export inventories, installed consumers or mutation
+matrices in daily verification. Approved additive modules need focused tests, not new
+permission to change historical oracles. Old phase reports/tasks are historical evidence.
+CI is one Ubuntu/Node22 PR job; report exact-head results and coverage limits. Windows,
+Node24, installed packaging and broad L4 regressions are not assured by that job.
+Developer decides acceptance. No merge/tag/publish or next phase without authorization.
+Không claim gameplay pass khi chưa có gameplay. Không sửa expected chỉ để làm test xanh.

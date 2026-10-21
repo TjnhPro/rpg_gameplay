@@ -1,3 +1,20 @@
+# RPG Gameplay — current verification
+
+L2 reusable headless function-first RPG framework. Package remains `0.9.3`.
+Daily checks: `npm run verify` runs boundaries, build, strict repo NodeNext typecheck
+and direct public function tests. Fresh setup: `npm run core:prepare` then
+`npm ci --ignore-scripts`. CI is one Ubuntu/Node22 PR job.
+
+See [testing and limitations](docs/TESTING.md), [verification](docs/VERIFICATION.md)
+and [harness migration report](docs/reports/harness-simplification-mvp.md).
+
+---
+
+**Historical checkpoint notes below:** descriptions of mandatory installed consumers,
+mutation/hash inventories and eight-job CI reflect past evidence only. Current
+verification rules above supersede those instructions. Production contracts and
+Developer architectural decisions remain unchanged.
+
 ## v0.9.3 — Item MVP integration closure (IT12–IT14)
 
 Item is an optional, independent headless library: twelve functions and thirteen
