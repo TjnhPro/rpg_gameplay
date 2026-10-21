@@ -1,3 +1,48 @@
+## v0.9.3 — Item closure boundary
+
+Zero production changes: optional item -> [], all sibling owners, root exports,
+Core pin and CI matrix remain byte-identical to 0.9.2. Integration readers/source
+labels exist only in tests/consumers/item-integration-closure.mjs/.ts. No Inventory,
+Equipment, Loot or Reward implementation; no numerical owner or alternate engine.
+An injected item -> inventory import must fail the unchanged boundary checker.
+
+## v0.9.2 — Item compatibility owner
+
+Existing optional item -> [] alone owns the two new structural functions. The
+private comparator consumes only canonical validated snapshots; it adds no parser,
+state store, numerical calculator or runtime engine. No sibling/Core changes.
+L3 supplies explicit stackability and L4 supplies current authoritative operands;
+future Inventory owns quantity/merge/storage, future Equipment remains separate.
+Only exact two-function/two-type root additions and historical exact inventory
+updates are authorized. Every historical behavioral assertion remains protected.
+
+## v0.9.1 — Item property owner
+
+The existing optional item -> [] owner alone adds three property operations.
+It reuses canonical Item validators and recursive capture helpers; Foundation state
+and public shapes stay unchanged. Core owns calculations, but these operations
+perform structural data replacement only and make no numerical Kernel call.
+L3 supplies property rules, L4 supplies explicit admission/current authoritative
+inputs and commits candidates. No sibling dependency, store, Inventory quantity,
+Equipment binding, Effect application, durability formula or second runtime owner.
+
+## v0.9.0 — Item owner
+
+The only Item production owner is src/modules/item/index.ts, optional item -> [].
+Only src/index.ts re-exports its seven functions/eight types. Existing seven module
+entries/owners and the exact Core pin remain unchanged. Item imports no sibling,
+Foundation, Node runtime or external dependency. No numerical operation is needed.
+
+L2 validates/captures immutable structural data; L3 owns property meanings and
+policies; L4 owns lookup, identity allocation/uniqueness, ownership, persistence and
+commit. Inventory quantity, Equipment slots/storage, Currency, Loot and Reward
+remain separate deferred owners, not fields or engines added inside Item.
+
+The approved historical exception removes only the exact Item root export block
+and registry entry before comparing original historical hashes. Full current root
+and registry inventories remain exact. No historical behavioral assertion is changed.
+See [report](reports/v0.9.0-item-foundation.md). Earlier sections are historical.
+
 ## v0.8.7 — Encounter integration closure EN36–EN40
 
 Existing public functions compose installed PvE, pending/clear waves, independent

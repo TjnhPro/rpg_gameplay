@@ -1,3 +1,35 @@
+# RPG Gameplay — current verification
+
+L2 reusable headless function-first RPG framework. Package remains `0.9.3`.
+Daily checks: `npm run verify` runs boundaries, build, strict repo NodeNext typecheck
+and direct public function tests. Fresh setup: `npm run core:prepare` then
+`npm ci --ignore-scripts`. CI is one Ubuntu/Node22 PR job.
+
+See [testing and limitations](docs/TESTING.md), [verification](docs/VERIFICATION.md)
+and [harness migration report](docs/reports/harness-simplification-mvp.md).
+
+---
+
+**Historical checkpoint notes below:** descriptions of mandatory installed consumers,
+mutation/hash inventories and eight-job CI reflect past evidence only. Current
+verification rules above supersede those instructions. Production contracts and
+Developer architectural decisions remain unchanged.
+
+## v0.9.3 — Item MVP integration closure (IT12–IT14)
+
+Item is an optional, independent headless library: twelve functions and thirteen
+public types for immutable definitions/instances, property proposals and structural
+stack assessments. This milestone adds installed integration evidence with zero
+production/API/graph changes. Test-local readers and source labels cover
+Inventory/Equipment handoff and Loot/Reward-neutral creation using Text/2D/2.5D
+data. Those future systems, storage transactions and game behavior are unimplemented.
+
+The mandatory installed closure pair adds literal end-to-end replay, deep isolation,
+strict external NodeNext and fault-targeted guards. See the [final Item review](docs/reports/v0.9.3-item-integration-mvp-closure.md)
+and its exact-SHA supplement on [Draft PR #14](https://github.com/TjnhPro/rpg_gameplay/pull/14).
+Developer milestone and phase acceptance remain PENDING. Stop at this milestone;
+no Inventory, Ready, merge, tag or publication. Earlier sections are historical.
+
 ## v0.8.7 — Encounter integration and closure EN36–EN40
 
 Installed headless consumers compose existing Entity/Combat/Skill/Effect/Actor AI

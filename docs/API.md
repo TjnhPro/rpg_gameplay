@@ -1,3 +1,88 @@
+## v0.9.3 — Item API frozen, integration evidence only
+
+No production or public declaration changes from 0.9.2: exactly twelve Item
+functions/thirteen types. Installed consumers use root ESM and readonly public
+shapes for definition → instance → inspect → set/replace candidate → revalidate →
+compatibility → read handoff. The missing-property result remains {found:false};
+explicit null is present. Source labels stay outside Item. Candidates and advisory
+compatibility prove neither authoritative commit nor ownership/quantity/equipment.
+See the v0.9.3 final report; milestone and phase acceptance PENDING.
+
+## v0.9.2 — Item stack compatibility IT09–IT11
+
+Root additions: validateItemStackPolicy(policy) and
+assessItemStackCompatibility(leftDefinition, leftInstance, rightDefinition,
+rightInstance, policy); types ItemStackPolicy and ItemStackCompatibilityResult.
+Policy is exactly {stackable:boolean}; validation returns a fresh frozen snapshot.
+All five complete operands validate canonically before any incompatibility result.
+Invalid own-data/prototype/nested/binding input throws TypeError without getters.
+
+Valid operands yield exactly frozen {compatible,reason}, in priority order:
+same_instance, different_definition, definition_conflict, not_stackable,
+different_properties, then {compatible:true,reason:'none'}. Definition comparison
+includes category, rarity, ordered tags and all properties. Instance comparison
+includes all properties; distinct instance IDs are required. Records compare exact
+own keys independent of insertion order; arrays remain ordered; scalars use
+Object.is (0 differs from -0). Comparisons use validated captured data only.
+
+This is advisory structural compatibility. L3 supplies policy; L4 rechecks current
+ownership/freshness before any future commit. No quantity, stack storage, merge,
+split, ID retirement or global uniqueness evidence. Previous contracts unchanged.
+See [task](tasks/active/v0.9.2-item-stack-compatibility.md) and
+[report](reports/v0.9.2-item-stack-compatibility.md). Earlier sections are historical.
+
+## v0.9.1 — Item property operations IT06–IT08
+
+Root-only additions: getItemInstanceProperty(definition, instance, key),
+setItemInstanceProperty(definition, instance, key, value, admission), and
+replaceItemInstanceProperties(definition, instance, properties, admission).
+New types: ItemPropertyReadResult, ItemPropertyOperationAdmission and
+ItemPropertyOperationResult. The eight Foundation types/seven functions stay unchanged.
+
+Read returns exactly {found:false} or {found:true,value}; it reads instance own
+properties only, distinguishing absent, null and all falsy data. Keys are any exact
+strings, including empty/whitespace, Unicode and __proto__. Set replaces/adds one
+key; replacement removes every omitted key. Both return a new full same-ID candidate
+for closed {eligible:true}, or {status:'rejected',reason:'ineligible',candidate:null}
+for valid {eligible:false}. Accepted shape is
+{status:'accepted',reason:'none',candidate:<ItemInstanceState>}.
+
+Canonical complete definition/instance validation and recursive payload/admission
+validation precede rejection. Malformed input throws TypeError. Every returned
+object is detached/deeply frozen; inputs remain untouched. ECMAScript own-key order
+is preserved. Admission is a caller assertion; L3 owns permitted property semantics
+and L4 rechecks current authoritative state and commits. No arithmetic, implicit
+definition defaults, deletion operation, events or persistence.
+
+## v0.9.0 — Item foundation (IT01–IT05)
+
+Root-only seven functions: createItemDefinitionReference, createItemInstanceReference,
+validateItemInstanceReference, createItemDefinition, validateItemDefinition,
+createItemInstance, validateItemInstance. Eight types: ItemDefinitionReference,
+ItemInstanceInitialIdentity, ItemInstanceReference, ItemPropertyValue,
+ItemDefinitionContent, ItemDefinition, ItemInstanceInitialState, ItemInstanceState.
+
+Definition has definitionId/categoryId/tagIds/rarityId/properties. Instance has
+instanceId/definitionId/properties. IDs are exact nonblank strings; category/rarity
+are opaque nullable IDs; tags are ordered unique IDs. Instance properties are its
+own explicit data and never inherit definition properties. Narrow reference helpers
+require a projected {definitionId}, not a contentful definition.
+
+Creation and validation return fresh detached deeply frozen snapshots. Records
+are closed own-data plain/null-prototype objects. Recursive properties accept
+null, strings, finite numbers (including -0), booleans, dense arrays and plain
+records, including arbitrary dangerous string keys as inert own data. Accessors,
+cycles, unsupported values/prototypes, symbol keys and sparse/extended arrays
+throw TypeError. Reflection reads descriptors, not getters. JavaScript cannot
+portably detect every Proxy; inspection failures are rejected. No arbitrary size
+policy is added; deeply nested/large untrusted inputs still need caller budgets.
+
+No quantity/slot/owner/location, arithmetic, catalog, store, implicit ID, property
+operations, stack compatibility, Inventory/Equipment/Loot/Reward execution.
+See [task](tasks/active/v0.9.0-item-foundation.md) and
+[report](reports/v0.9.0-item-foundation.md). Developer acceptance PENDING;
+phase IN_PROGRESS, PR Draft. Earlier sections are historical.
+
 ## v0.8.7 — Encounter integration closure EN36–EN40
 
 Existing public functions compose installed PvE, pending/clear waves, independent

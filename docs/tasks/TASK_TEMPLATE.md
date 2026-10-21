@@ -1,38 +1,29 @@
-# TASK — <task-id>: <title>
+# TASK — <id>: <title>
 
-**Status:** PROPOSED (Developer changes to APPROVED explicitly)
-**Approval evidence:** <Developer message / link / exact approved text>
-**Baseline:** <commit / tree status>
-**Core dependency:** <pinned artifact or NOT_REQUIRED>
+**Approval:** <Developer instruction / link>
+**Baseline:** <branch, SHA, working tree>
+**Objective:** <one measurable behavior>
 
-## Objective
-<One measurable behavior/capability>
+## Scope and ownership
 
-## In scope
-<Modules, files, public contracts; no implied expansion>
+<Allowed files/modules/public contracts and explicit non-goals. Canonical owner,
+module dependencies, Kernel calls and L3/L4 responsibilities. Escalate real gaps.>
 
-## Out of scope
-<Clear non-goals incl. game apps/renderers>
+## Functional evidence
 
-## Ownership and dependency impact
-<Canonical owner, allowed module deps, Kernel calls, L3/L4 boundaries>
+| Contract | Public function and explicit input | Independent expected result | Test file |
+| --- | --- | --- | --- |
+| <invariant> | <call> | <positive and material rejection/edge> | tests/unit/<owner>.test.mjs |
 
-## Functional acceptance evidence
+Use deterministic providers. No test quotas, historical hashes, synthetic mutation
+matrices, export counts or mandatory installed consumers. Add focused release checks
+only when a concrete need is approved. Record coverage limitations honestly.
 
-| Requirement/invariant | Function / observable output | Expected independently derived from | Targeted test | Profile applicability |
-| --- | --- | --- | --- | --- |
-| R-01 | ... | ... | ... | Text/2D/2.5D / N/A |
+## Verification and delivery
 
-## Verification required
-<Targeted tests, typecheck, boundaries; full verify before review>
-
-## Stop conditions
-<Specific capability gaps, contract changes or ambiguity requiring approval>
-
-## Result (agent fills only after running)
-- Implementation commit/diff:
-- Commands + result:
-- Requirement-to-test evidence:
-- Known limitations / NOT_RUN:
-- Status: READY_FOR_REVIEW / BLOCKED_WITH_EVIDENCE
-- Developer acceptance: PENDING (set only by Developer)
+- Setup dependencies separately; build before targeted direct function tests.
+- Run `npm run verify`: boundaries, build, strict typecheck, function tests once.
+- Review scope/diff; commit/push only approved changes to the specified branch/PR.
+- Record actual local results and exact-head single Ubuntu/Node22 CI result.
+- Report READY_FOR_DEVELOPER_REVIEW or concrete blocker; Developer accepts completion.
+- No merge, publish, tag, Ready conversion or next phase without authorization.

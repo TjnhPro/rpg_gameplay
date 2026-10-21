@@ -172,3 +172,14 @@ export {createEncounterClosurePolicy, resolveEncounter, closeEncounter, cancelEn
 export type {EncounterResolutionTransitionResult, EncounterDispositionRecord, EncounterCloseTransitionResult,
   EncounterClosurePolicy, EncounterCancellationRequest, EncounterCancellationTransitionResult,
   EncounterCleanupHandoff} from './modules/encounter/index.js';
+
+export {createItemDefinitionReference, createItemInstanceReference, validateItemInstanceReference,
+  createItemDefinition, validateItemDefinition, createItemInstance, validateItemInstance} from './modules/item/index.js';
+export type {ItemDefinitionReference, ItemInstanceInitialIdentity, ItemInstanceReference, ItemPropertyValue,
+  ItemDefinitionContent, ItemDefinition, ItemInstanceInitialState, ItemInstanceState} from './modules/item/index.js';
+
+export {getItemInstanceProperty, setItemInstanceProperty, replaceItemInstanceProperties} from './modules/item/index.js';
+export type {ItemPropertyReadResult, ItemPropertyOperationAdmission, ItemPropertyOperationResult} from './modules/item/index.js';
+
+export {validateItemStackPolicy, assessItemStackCompatibility} from './modules/item/index.js';
+export type {ItemStackPolicy, ItemStackCompatibilityResult} from './modules/item/index.js';

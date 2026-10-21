@@ -1,3 +1,47 @@
+## v0.9.3 — Item MVP technical closure evidence IT12–IT14
+
+Installed literal E2E, source-neutral creation, readonly Inventory/Equipment reader
+handoffs and three L3 fixture profiles exercise the accepted IT01–IT11 API without
+new production capability. IT12–IT14 add integration, isolation, replay and final
+regression evidence. Inventory, Equipment, Loot/Reward and concrete game profiles
+remain unimplemented/NOT_EVALUATED. Developer milestone/phase acceptance PENDING;
+PR #14 remains Draft. See the v0.9.3 report and exact-HEAD CI supplement.
+
+## v0.9.2 — Item stack compatibility IT09–IT11
+
+Implemented: closed caller stackability policy, canonical complete pair validation,
+conservative nested structural equality, deterministic refusal priority and frozen
+advisory outcomes. Same-ID refusal and full payload preservation prevent lossy
+compatibility claims. Quantity, capacity, merge/split/storage/retirement remain
+future Inventory responsibilities. Text/2D/2.5D fixtures prove data compatibility
+only; concrete gameplay profiles NOT_EVALUATED. Phase IN_PROGRESS, Developer
+acceptance PENDING, PR #14 Draft. Stop at v0.9.2. Earlier sections are historical.
+
+## v0.9.1 — Item property operations IT06–IT08
+
+Implemented: exact own-instance reads, immutable single-key set and whole-map
+replacement candidates, structural TypeErrors and explicit closed caller admission
+with accepted/rejected discriminants. Foundation schemas and optional item -> []
+remain unchanged. Opaque numbers are data; L3 owns property meaning and L4 current
+state/commit. Installed inert Text/2D/2.5D examples prove API compatibility only;
+concrete gameplay profiles NOT_EVALUATED. No Inventory/Equipment/Loot/Reward,
+stacking or v0.9.2 work. Phase IN_PROGRESS; Developer acceptance PENDING; PR #14 Draft.
+
+## v0.9.0 — implemented Item foundation only
+
+IT01–IT05 provide definition/reference/instance identity and content, recursive safe
+properties, immutable structural validation and optional independent item -> [].
+L3 supplies catalogs/vocabulary/policies; L4 supplies explicit IDs, uniqueness,
+ownership, authoritative storage and commit. C-D01–C-D07 remain as approved in the
+[task](tasks/active/v0.9.0-item-foundation.md). Quantity belongs to future Inventory;
+Equipment has separate storage; Currency is independent; Loot selects explicit
+creation data. No mechanics from those future systems are implemented.
+
+Text/2D/2.5D probes prove data compatibility only; concrete gameplay profiles
+NOT_EVALUATED. IT06 onward is deferred; stop after v0.9.0, acceptance PENDING.
+Encounter prerequisite is merged PR #13 at cc7a42e. Earlier status sections describe
+historical checkpoints.
+
 ## v0.8.7 — Encounter integration closure EN36–EN40
 
 Existing public functions compose installed PvE, pending/clear waves, independent
