@@ -1,3 +1,70 @@
+## v0.10.4 — Inventory integration evidence only (IN21–IN25)
+
+No production source or public API changes from v0.10.3. Installed consumers compose
+Item creation with Inventory snapshots, queries/capacity, add, quantity adjustment,
+complete merge and removal. Three caller data profiles share the same headless API.
+Hand-authored future handoff snapshots demonstrate representability only; no split,
+transfer, Equipment, slot, persistence or global ownership operation is implemented.
+Developer milestone/phase acceptance PENDING. [Report](reports/v0.10.4-inventory-integration-closure.md).
+
+## v0.10.3 — Inventory Stack & Merge (IN16–IN20)
+
+Root adds mergeInventoryEntries(state,context,sourceInstanceId,destinationInstanceId,admission)
+and InventoryMergeReason (ineligible, missing_entry, same_instance, item_incompatible,
+stack_limit_exceeded), returning the existing InventoryTransitionResult union.
+Complete structure validation precedes admission, missing membership and same-ID rejection.
+Canonical Item assessItemStackCompatibility owns full definition/property/policy compatibility.
+Safe integer overflow and explicit cap violations reject the entire merge. On success, remove
+source membership, preserve destination Item and remaining entry order, sum quantity, validate
+and deeply freeze/detach the full candidate. L4 owns commits and global identity invariants.
+No split, remainder, auto-stack or transfer. [Report](reports/v0.10.3-inventory-stack-merge.md).
+
+## v0.10.2 — Inventory Add, Remove & Quantity (IN11–IN15)
+
+Root adds addInventoryEntry(state,context,entry,capacity,admission),
+removeInventoryEntry(state,context,instanceId,admission) and
+adjustInventoryQuantity(state,context,instanceId,delta,admission).
+Types: InventoryOperationAdmission {readonly eligible:boolean} and InventoryMutationReason
+(ineligible, already_present, missing_entry, capacity_exceeded, quantity_underflow,
+stack_limit_exceeded, quantity_not_allowed). All use the existing InventoryTransitionResult union.
+Structural validation precedes admission, including the incoming Item, safe positive quantity,
+closed capacity/admission, IDs and nonzero safe-integer delta. Invalid structure throws TypeError.
+Then admission rejection takes precedence; add checks duplicate, capacity, stackability and cap
+in that order; remove/adjust check missing membership. Overflow rejects stack_limit_exceeded.
+Positive safe quantities violating stackability/caps yield business rejections, not TypeError.
+Accepted full candidates pass canonical validation and are detached/frozen; results are frozen.
+Add appends without merging, remove preserves remaining order, adjust to zero removes membership.
+No authoritative Item grant/delete or storage commit. [Report](reports/v0.10.2-inventory-add-remove-quantity.md).
+
+## v0.10.1 — Inventory Queries & Capacity (IN06–IN10)
+
+Root adds getInventoryEntry(state, context, instanceId), listInventoryEntries(state, context),
+hasInventoryItem(state, context, instanceId), assessInventoryCapacity(state, context, policy, additionalEntries).
+Types: InventoryCapacityPolicy {readonly maxEntries: number | null} and
+InventoryCapacityAssessment {readonly fits: boolean; readonly occupied: number; readonly available: number | null}.
+All calls validate the complete state/context first. IDs match exactly, without case folding
+or Unicode normalization; blank lookup IDs throw TypeError. Entries/lists are detached/frozen.
+Capacity counts entries, not quantity. Policy is a closed own-data record; maximum and
+additional count are nonnegative safe integers (explicit null maximum means unbounded).
+Finite available is max(maximum - occupied, 0); fits requires the existing state and
+additional entries to fit. Unbounded fits is true for any valid additional count, without
+adding potentially unsafe integers. Over-capacity state remains valid and unchanged.
+Foundation shapes/semantics unchanged. [Report](reports/v0.10.1-inventory-queries-capacity.md).
+
+## v0.10.0 — Inventory Foundation (IN01–IN05)
+
+Root adds `createInventoryState(input, context)` and `validateInventoryState(state, context)`;
+both return fresh detached/frozen complete snapshots or throw TypeError.
+Six types: InventoryOwnerReference, InventoryEntry, InventoryState, InventoryItemContext,
+InventoryValidationContext and InventoryTransitionResult<TReason extends string>.
+State contains only inventoryId, nullable neutral owner and ordered entries with canonical
+ItemInstanceState plus positive safe-integer quantity. Instance ID is the membership key.
+Context supplies complete definitions, Item stackability and explicit maximum/null;
+it is not stored. Item public validators own Item binding/properties. No Add/Remove,
+Merge/Split/Transfer, slots, capacity, authorization or global identity management.
+[Approved task](tasks/active/v0.10.0-inventory-foundation.md) / [report](reports/v0.10.0-inventory-foundation.md).
+Earlier checkpoint sections below are historical.
+
 ## v0.9.3 — Item API frozen, integration evidence only
 
 No production or public declaration changes from 0.9.2: exactly twelve Item

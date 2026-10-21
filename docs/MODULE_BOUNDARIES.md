@@ -1,3 +1,12 @@
+## v0.10.0 — Inventory owner
+
+Optional `inventory -> [item]` adds only create/validate snapshots. Inventory owns
+membership/quantity; complete Item data is validated/detached by Item public APIs.
+No Entity, Equipment, Loot/Reward or Core imports, state store or alternate engine.
+All existing graph entries/owners are unchanged. L3 supplies stack policies and caps;
+L4 supplies identities, ownership facts, current inputs and authoritative commit.
+Earlier checkpoint sections below are historical.
+
 ## v0.9.3 — Item closure boundary
 
 Zero production changes: optional item -> [], all sibling owners, root exports,

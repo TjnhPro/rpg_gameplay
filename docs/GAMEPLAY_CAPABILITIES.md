@@ -1,3 +1,41 @@
+## v0.10.4 — Inventory integration and MVP closure evidence
+
+IN21–IN25 add installed deterministic integration evidence with zero production/API
+change. Inventory IN01–IN20 remains the same canonical optional function owner.
+Text/2D/2.5D are data fixtures, not implemented games. Future split/storage/Equipment
+handoffs remain design-only. Developer milestone and phase acceptance PENDING.
+[Final review report](reports/v0.10.4-inventory-integration-closure.md).
+
+## v0.10.3 — Inventory IN16–IN20
+
+Complete same-state merge uses canonical Item compatibility and caller-supplied policy.
+Destination survives; source membership disappears; quantity is conserved with safe integer
+and cap guards. Full immutable candidates only; no split/partial merge/transfer or storage.
+Developer acceptance PENDING. [Report](reports/v0.10.3-inventory-stack-merge.md).
+
+## v0.10.2 — Inventory IN11–IN15
+
+Immutable validated add/remove/quantity candidates with explicit admission, typed rejections,
+capacity and canonical Item stack limits. No hidden commit, Item creation, auto-merge,
+split or transfer. Foundation/query contracts unchanged. Developer acceptance PENDING.
+[Report](reports/v0.10.2-inventory-add-remove-quantity.md).
+
+## v0.10.1 — Inventory IN06–IN10
+
+Exact lookup, ordered list, membership and pure entry-count capacity assessment implemented.
+Outputs are detached/frozen; all calls use canonical complete validation. No mutation,
+weight/layout policy or authorization. Developer acceptance PENDING.
+[Report](reports/v0.10.1-inventory-queries-capacity.md).
+
+## v0.10.0 — Inventory Foundation IN01–IN05
+
+Implemented: explicit identity, neutral nullable owner, ordered immutable canonical
+Item snapshots and safe quantities, complete caller-context validation, optional
+inventory -> [item]. Two root functions/six types. No mutation operations, slots,
+weight/capacity, transfer/equipment or persistence. Developer acceptance PENDING;
+see [checkpoint report](reports/v0.10.0-inventory-foundation.md).
+Earlier checkpoint sections below are historical.
+
 ## v0.9.3 — Item MVP technical closure evidence IT12–IT14
 
 Installed literal E2E, source-neutral creation, readonly Inventory/Equipment reader

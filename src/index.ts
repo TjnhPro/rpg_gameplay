@@ -183,3 +183,13 @@ export type {ItemPropertyReadResult, ItemPropertyOperationAdmission, ItemPropert
 
 export {validateItemStackPolicy, assessItemStackCompatibility} from './modules/item/index.js';
 export type {ItemStackPolicy, ItemStackCompatibilityResult} from './modules/item/index.js';
+
+export {createInventoryState, validateInventoryState} from './modules/inventory/index.js';
+export type {InventoryOwnerReference, InventoryEntry, InventoryState, InventoryItemContext,
+  InventoryValidationContext, InventoryTransitionResult} from './modules/inventory/index.js';
+export {getInventoryEntry, listInventoryEntries, hasInventoryItem, assessInventoryCapacity} from './modules/inventory/index.js';
+export type {InventoryCapacityPolicy, InventoryCapacityAssessment} from './modules/inventory/index.js';
+export {addInventoryEntry, removeInventoryEntry, adjustInventoryQuantity} from './modules/inventory/index.js';
+export type {InventoryOperationAdmission, InventoryMutationReason} from './modules/inventory/index.js';
+export {mergeInventoryEntries} from './modules/inventory/index.js';
+export type {InventoryMergeReason} from './modules/inventory/index.js';
