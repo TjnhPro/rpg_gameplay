@@ -1,3 +1,30 @@
+## v0.8.6 — installed continuity/recovery evidence
+
+Required encounter-continuity-recovery.mjs/.ts:17 assertion-bearing runtime groups
+cover T01–T67; strict external NodeNext (skipLibCheck:false) proves T68, mandatory
+historical runtime/negative gates prove T69. T70 additionally requires exact-head
+push+pull_request Windows/Ubuntu Node22/24 eight-job log audit; local tests alone
+cannot certify it. Runtime total is356 tests/54 installed groups, plus3 outer tests.
+
+N01–N30 inject isolated installed owner/L4 fixture/runner/declaration/owner inventory
+faults. Each requires its named assertion, restores original bytes in finally,
+checks restoration and reruns clean17/17. Used declaration corruption must fail
+real tsc and compile again after restoration. Protected source inventory is pinned
+to accepted v0.8.5 bytes, normalizing checkout line endings only.
+
+Root package.json is the independent version oracle; central checks compare both
+lock versions and actual installed manifest. Previous-patch installed version,
+each lock mismatch and changed root must fail in real child processes, then pass
+after exact-byte restore. Historical gameplay/export assertions remain unchanged;
+the approved exception removes only two historical version assertions and routes
+their old negative probes through the central current-build oracle.
+
+Required local gates: core:prepare, npm ci --ignore-scripts, harness:check/selftest,
+build, typecheck, installed targeted runtime/NodeNext/negatives, test:functional,
+npm run verify, diff and protected-scope review. No production changes. Phase
+IN_PROGRESS; Developer acceptance PENDING; v0.8.7 NOT_STARTED. Earlier sections
+are historical. [Report](reports/v0.8.6-encounter-continuity-recovery.md).
+
 ## v0.8.5 — installed closure verification
 
 Required encounter-closure.mjs/.ts:19 assertion-bearing groups cover C01–C67,

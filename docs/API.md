@@ -1,3 +1,13 @@
+## v0.8.6 — composition only, no new public API
+
+EN31–EN35 use current canonical Life and existing activateEncounter,
+applyEncounterMembershipChange, evaluateEncounterCompletion, resolveEncounter,
+closeEncounter, cancelEncounter and createEncounterCleanupHandoff. Callers refresh
+full-roster facts and retain L4 revision/fact generations; returned candidates do
+not authenticate a commit or authorize side effects. No new recovery/wave status,
+participant Life store, module export or default game policy. See the
+[installed evidence](reports/v0.8.6-encounter-continuity-recovery.md).
+
 ## v0.8.5 — EN26–EN30 terminal candidate API
 
 Root-only ESM signatures (EntityCollection is the canonical Entity owner):

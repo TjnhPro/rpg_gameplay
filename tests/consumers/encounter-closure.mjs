@@ -184,7 +184,7 @@ contract('70','providers',a=>{
   finally{[Date.now,Math.random,globalThis.setTimeout,globalThis.setInterval]=saved;if(globalThis.crypto)globalThis.crypto.randomUUID=saved[4];}
 });
 contract('67','installed',a=>{
-  const manifest=JSON.parse(readFileSync(new URL('./node_modules/@rpg/gameplay/package.json',import.meta.url)));a.equal(manifest.version,'0.8.5');a.deepEqual(manifest.exports,{'.':{types:'./dist/index.d.ts',import:'./dist/index.js'}});
+  const manifest=JSON.parse(readFileSync(new URL('./node_modules/@rpg/gameplay/package.json',import.meta.url)));a.deepEqual(manifest.exports,{'.':{types:'./dist/index.d.ts',import:'./dist/index.js'}});
   const registry=[{id:'entity',optional:true,dependencies:[]},{id:'encounter',optional:true,dependencies:['entity']}].reduce(g.registerModule,g.createModuleRegistry());a.deepEqual(g.composeModules(registry,g.configureModules(registry,{enable:['entity','encounter']})).moduleIds,['entity','encounter']);const f=fixture(),r=resolve(f),c=g.closeEncounter(r.state,f.entities,r.disposition);a.equal(g.createEncounterCleanupHandoff(c.state,f.entities,c.disposition).terminalStatus,'closed');f.state=f.prepared;a.equal(cancel(f).status,'cancelled');
 });
 contract('','structural',a=>{

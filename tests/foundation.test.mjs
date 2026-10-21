@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import test from 'node:test';
-import {copyRequiredConsumer, assertVersion, assertCoreIntegrity, assertTapEvidence} from './consumer-evidence.mjs';
+import {copyRequiredConsumer, assertVersion, assertBuildVersions, assertCoreIntegrity, assertTapEvidence} from './consumer-evidence.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const cli = process.env.npm_execpath;
@@ -50,12 +50,22 @@ function assertClosureRegistration(receipt) {
  assert.equal(receipt.typechecked,true,'mandatory closure strict NodeNext');
 }
 
-test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40 + EN01–EN30, ESM root, closed exports, strict declarations and real Kernel', () => {
+function assertContinuityRegistration(receipt) {
+ assert.ok(receipt, 'mandatory Encounter continuity registration');
+ assertTapEvidence(receipt.runtime,17,Array.from({length:67},(_,i)=>'ENCOUNTER_T'+String(i+1).padStart(2,'0')+'_PASS'));
+ assert.equal(receipt.typechecked,true,'mandatory continuity strict NodeNext');
+}
+
+test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 + SK01–SK35 + EF01–EF40 + AI01–AI40 + EN01–EN35, ESM root, closed exports, strict declarations and real Kernel', () => {
   assert.ok(cli, 'run with npm run test:functional');
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'rpg package consumer '));
   try {
     const pin = JSON.parse(fs.readFileSync(path.join(root, 'harness/core-pin.json'), 'utf8'));
+    const rootPackage = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+    const expectedVersion = rootPackage.version;
     const lock = JSON.parse(fs.readFileSync(path.join(root, 'package-lock.json'), 'utf8'));
+    assertVersion(lock.version, expectedVersion);
+    assertVersion(lock.packages[''].version, expectedVersion);
     const coreArtifact = path.join(root, '.artifacts', pin.artifact);
     assertCoreIntegrity(fs.readFileSync(coreArtifact), lock.packages['node_modules/@rpg/core'].integrity);
     const packedResult = JSON.parse(exec([cli, 'pack', '--ignore-scripts', '--json', '--pack-destination', temp], root));
@@ -77,7 +87,7 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     fs.writeFileSync(path.join(temp, 'package.json'), JSON.stringify({name: 'foundation-consumer', private: true, type: 'module'}));
     exec([cli, 'install', '--ignore-scripts', '--no-audit', '--no-fund', path.join(temp, packed.filename), coreArtifact], temp);
     const installed = path.join(temp, 'node_modules/@rpg/gameplay');
-    let activationReceipt, membershipReceipt, integrationReceipt, completionReceipt, closureReceipt;
+    let activationReceipt, membershipReceipt, integrationReceipt, completionReceipt, closureReceipt, continuityReceipt;
     const expectedPackedFiles = packed.files.filter(file => file.path.startsWith('dist/'))
       .map(file => [file.path, fs.readFileSync(path.join(root, file.path))]);
     const assertPackedFiles = () => {
@@ -98,8 +108,33 @@ test('installed artifact: GF01–GF16 + EC01–EC18 + PG01–PG19 + CB01–CB30 
     assert.ok(fs.existsSync(path.join(installed, 'dist/index.d.ts')));
     assert.equal(fs.existsSync(path.join(installed, 'src')), false);
     const packageJson = JSON.parse(fs.readFileSync(path.join(installed, 'package.json'), 'utf8'));
-    assertVersion(packageJson.version, '0.8.5');
+    assertBuildVersions(rootPackage, lock, packageJson);
     assertVersion(JSON.parse(fs.readFileSync(path.join(temp, 'node_modules/@rpg/core/package.json'), 'utf8')).version, pin.version);
+    // Same central oracle runs against independent root/lock and actual installed bytes.
+    {
+      const rootCopy=path.join(temp,'version-root.json'),lockCopy=path.join(temp,'version-lock.json');
+      const manifest=path.join(installed,'package.json'),saved=fs.readFileSync(manifest);
+      const rootBytes=Buffer.from(JSON.stringify(rootPackage)),lockBytes=Buffer.from(JSON.stringify(lock));
+      fs.writeFileSync(rootCopy,rootBytes);fs.writeFileSync(lockCopy,lockBytes);
+      const guard=path.join(temp,'version-oracle.mjs');
+      fs.writeFileSync(guard,`import fs from 'node:fs';import {assertBuildVersions} from ${JSON.stringify(new URL('./consumer-evidence.mjs',import.meta.url).href)};assertBuildVersions(JSON.parse(fs.readFileSync(${JSON.stringify(rootCopy)})),JSON.parse(fs.readFileSync(${JSON.stringify(lockCopy)})),JSON.parse(fs.readFileSync(${JSON.stringify(manifest)})));`);
+      const probe=()=>spawnSync(process.execPath,[guard],{cwd:temp,shell:false,encoding:'utf8'});
+      assert.equal(probe().status,0);
+      for(const kind of ['installed_previous','lock_top','lock_package','root_changed']){
+        try{
+          if(kind==='installed_previous'){const m=JSON.parse(saved);const parts=expectedVersion.split('.').map(Number);m.version=parts[0]+'.'+parts[1]+'.'+(parts[2]-1);assert.notEqual(m.version,expectedVersion);fs.writeFileSync(manifest,JSON.stringify(m));}
+          if(kind==='lock_top'||kind==='lock_package'){const m=JSON.parse(lockBytes);if(kind==='lock_top')m.version='0.0.0-wrong-lock';else m.packages[''].version='0.0.0-wrong-lock';fs.writeFileSync(lockCopy,JSON.stringify(m));}
+          if(kind==='root_changed'){const m=JSON.parse(rootBytes);m.version='0.0.0-wrong-root';fs.writeFileSync(rootCopy,JSON.stringify(m));}
+          const result=probe();assert.ifError(result.error);assert.equal(result.status,1,result.stdout+result.stderr);assert.match(result.stderr,/installed package version/);
+          console.log('BUILD_VERSION_NEGATIVE_RED '+kind+' exit=1 root_source_oracle');
+        }finally{fs.writeFileSync(manifest,saved);fs.writeFileSync(rootCopy,rootBytes);fs.writeFileSync(lockCopy,lockBytes);}
+        assert.deepEqual(fs.readFileSync(manifest),saved);assert.deepEqual(fs.readFileSync(rootCopy),rootBytes);assert.deepEqual(fs.readFileSync(lockCopy),lockBytes);assert.equal(probe().status,0);
+        assertBuildVersions(rootPackage,lock,JSON.parse(fs.readFileSync(manifest)));
+        console.log('BUILD_VERSION_NEGATIVE_PASS '+kind+' restored_exact_bytes');
+      }
+      console.log('BUILD_VERSION_ORACLE_PASS root_package_authority; root_lock_installed_agree');
+    }
+
     assert.equal(fs.lstatSync(path.join(temp, 'node_modules/@rpg/core')).isSymbolicLink(), false);
     assert.deepEqual(packageJson.peerDependencies, {'@rpg/core': '2.0.0'});
     assert.equal(packageJson.private, true);
@@ -1219,7 +1254,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     try{const text=rootBytes.toString('utf8');assert.ok(text.includes('createEncounterState,'));fs.writeFileSync(rootFile,text.replace('createEncounterState,','createEncounterState as missingEncounterState,'));red('N02','prepared:',/createEncounterState is not a function/);}
     finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.0.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.3');`,/installed package version/);}
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.0.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,${JSON.stringify(expectedVersion)});`,/installed package version/);}
     finally{fs.writeFileSync(manifestFile,manifestBytes);}done('N03');
     const coreManifest=path.join(temp,'node_modules/@rpg/core/package.json'),coreBytes=fs.readFileSync(coreManifest);
     try{const manifest=JSON.parse(coreBytes);manifest.version='0.0.0';fs.writeFileSync(coreManifest,JSON.stringify(manifest));guardRed('N04_version',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(coreManifest)})).version,${JSON.stringify(pin.version)});`,/installed package version/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
@@ -1307,7 +1342,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     try{const text=rootBytes.toString('utf8');assert.match(text,/\bactivateEncounter\b/);fs.writeFileSync(rootFile,text.replace(/\bactivateEncounter\b/,'activateEncounter as deliberatelyMissingActivation'));red('N02',null,/does not provide an export named 'activateEncounter'/);}
     finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.3');`,/installed package version/);}
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.0';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,${JSON.stringify(expectedVersion)});`,/installed package version/);}
     finally{fs.writeFileSync(manifestFile,manifestBytes);}done('N03');
     const pinFile=path.join(temp,'activation-core-pin.json');fs.writeFileSync(pinFile,fs.readFileSync(path.join(root,'harness/core-pin.json')));const pinBytes=fs.readFileSync(pinFile);
     try{const changed=JSON.parse(pinBytes);changed.revision='0000000000000000000000000000000000000000';fs.writeFileSync(pinFile,JSON.stringify(changed));guardRed('N04_revision',`assert.equal(JSON.parse(fs.readFileSync(${JSON.stringify(pinFile)})).revision,'04b7239f998c3c688a0dfa3202f11811a9acd775','activation pinned Core revision');`,/activation pinned Core revision/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
@@ -1400,7 +1435,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     try{const text=rootBytes.toString('utf8');assert.match(text,/\bapplyEncounterMembershipChange\b/);fs.writeFileSync(rootFile,text.replace(/\bapplyEncounterMembershipChange\b/,'applyEncounterMembershipChange as deliberatelyMissingMembership'));red('N02',null,/does not provide an export named 'applyEncounterMembershipChange'/);}
     finally{fs.writeFileSync(rootFile,rootBytes);}done('N02');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.1';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.3');`,/installed package version/);}
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.1';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N03',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,${JSON.stringify(expectedVersion)});`,/installed package version/);}
     finally{fs.writeFileSync(manifestFile,manifestBytes);}assert.deepEqual(fs.readFileSync(manifestFile),manifestBytes);done('N03');
     const pinFile=path.join(temp,'membership-core-pin.json');fs.writeFileSync(pinFile,fs.readFileSync(path.join(root,'harness/core-pin.json')));const pinBytes=fs.readFileSync(pinFile);
     try{const changed=JSON.parse(pinBytes);changed.revision='0000000000000000000000000000000000000000';fs.writeFileSync(pinFile,JSON.stringify(changed));guardRed('N04_revision',`assert.equal(JSON.parse(fs.readFileSync(${JSON.stringify(pinFile)})).revision,'04b7239f998c3c688a0dfa3202f11811a9acd775','membership pinned Core revision');`,/membership pinned Core revision/);guardRed('N04_integrity',`assertCoreIntegrity(Buffer.concat([fs.readFileSync(${JSON.stringify(coreArtifact)}),Buffer.from('corrupt')]),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
@@ -1533,7 +1568,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     finally{fs.writeFileSync(file,bytes);}done('N24_skipped');
     for(const ext of ['mjs','ts']){const required=path.join(temp,'encounter-combat-ai-integration.'+ext),saved=fs.readFileSync(required);try{fs.renameSync(required,required+'.saved');guardRed('N21_'+ext,`copyRequiredConsumer(${JSON.stringify(required)},${JSON.stringify(required+'.copy')});`,/ENOENT/);}finally{if(fs.existsSync(required+'.saved'))fs.renameSync(required+'.saved',required);}assert.deepEqual(fs.readFileSync(required),saved);done('N21_'+ext);}
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.2';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N22_version',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.3');`,/installed package version/);}
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.2';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N22_version',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,${JSON.stringify(expectedVersion)});`,/installed package version/);}
     finally{fs.writeFileSync(manifestFile,manifestBytes);}done('N22_version');
     const rootFile=path.join(installed,'dist/index.js'),rootBytes=fs.readFileSync(rootFile);
     try{const text=rootBytes.toString('utf8');assert.match(text,/\bevaluateEncounterActionScope\b/);fs.writeFileSync(rootFile,text.replace(/\bevaluateEncounterActionScope\b/,'evaluateEncounterActionScope as deliberatelyMissingScope'));red('N22_export',null,/does not provide an export named 'evaluateEncounterActionScope'/);}
@@ -1622,7 +1657,7 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     try{const text=rootBytes.toString('utf8');assert.match(text,/\bevaluateEncounterCompletion\b/);fs.writeFileSync(rootFile,text.replace(/\bevaluateEncounterCompletion\b/,'evaluateEncounterCompletion as deliberatelyMissingCompletion'));red('N22',null,/does not provide an export named 'evaluateEncounterCompletion'/);}
     finally{fs.writeFileSync(rootFile,rootBytes);}assert.deepEqual(fs.readFileSync(rootFile),rootBytes);done('N22');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.3';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N23_version',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,'0.8.4');`,/installed package version/);}
+    try{const manifest=JSON.parse(manifestBytes);manifest.version='0.8.3';fs.writeFileSync(manifestFile,JSON.stringify(manifest));guardRed('N23_version',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,${JSON.stringify(expectedVersion)});`,/installed package version/);}
     finally{fs.writeFileSync(manifestFile,manifestBytes);}assert.deepEqual(fs.readFileSync(manifestFile),manifestBytes);done('N23_version');
     const coreFile=path.join(temp,'completion-Core-copy.tgz'),coreBytes=fs.readFileSync(coreArtifact);fs.writeFileSync(coreFile,coreBytes);
     try{fs.appendFileSync(coreFile,'fault');guardRed('N23_Core',`assertCoreIntegrity(fs.readFileSync(${JSON.stringify(coreFile)}),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}
@@ -1688,8 +1723,9 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     const rootFile=path.join(installed,'dist/index.js'),rootBytes=fs.readFileSync(rootFile);
     try{assert.ok(rootBytes.toString().includes('resolveEncounter'));fs.writeFileSync(rootFile,rootBytes.toString().replace(/\bresolveEncounter\b/,'resolveEncounter as deliberatelyMissingResolution'));red('N04',null,/does not provide an export named 'resolveEncounter'/);}finally{fs.writeFileSync(rootFile,rootBytes);}assert.deepEqual(fs.readFileSync(rootFile),rootBytes);done('N04');
     const manifestFile=path.join(installed,'package.json'),manifestBytes=fs.readFileSync(manifestFile);
-    try{const m=JSON.parse(manifestBytes);m.version='0.8.4';fs.writeFileSync(manifestFile,JSON.stringify(m));red('N05','installed',/0\.8\.4/);
-      const historical=spawnSync(process.execPath,['--test','--test-reporter=tap','--test-name-pattern=Encounter completion installed-surface','encounter-completion-resolution.mjs'],{cwd:temp,shell:false,encoding:'utf8',env});assert.ifError(historical.error);assert.equal(historical.status,1,historical.stdout+historical.stderr);assert.match(historical.stdout,/0\.8\.4/);assert.match(historical.stdout,/0\.8\.5/);console.log('ENCOUNTER_CLOSURE_NEGATIVE_RED N05_historical exit=1 intended=approved_exact_version_assertion');}finally{fs.writeFileSync(manifestFile,manifestBytes);}assert.deepEqual(fs.readFileSync(manifestFile),manifestBytes);done('N05');
+    try{const m=JSON.parse(manifestBytes);m.version='0.0.0-wrong-package';fs.writeFileSync(manifestFile,JSON.stringify(m));guardRed('N05',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,${JSON.stringify(expectedVersion)});`,/installed package version/);
+      guardRed('N05_historical',`assertVersion(JSON.parse(fs.readFileSync(${JSON.stringify(manifestFile)})).version,${JSON.stringify(expectedVersion)});`,/installed package version/);
+    }finally{fs.writeFileSync(manifestFile,manifestBytes);}assert.deepEqual(fs.readFileSync(manifestFile),manifestBytes);assertBuildVersions(rootPackage,lock,JSON.parse(manifestBytes));done('N05');
     const coreFile=path.join(temp,'closure-Core-copy.tgz'),coreBytes=fs.readFileSync(coreArtifact);fs.writeFileSync(coreFile,coreBytes);
     try{fs.appendFileSync(coreFile,'fault');guardRed('N06',`assertCoreIntegrity(fs.readFileSync(${JSON.stringify(coreFile)}),${JSON.stringify(lock.packages['node_modules/@rpg/core'].integrity)});`,/Core artifact integrity/);}finally{fs.writeFileSync(coreFile,coreBytes);}assert.deepEqual(fs.readFileSync(coreFile),coreBytes);assertCoreIntegrity(fs.readFileSync(coreFile),lock.packages['node_modules/@rpg/core'].integrity);done('N06');
     const runtimeFile=path.join(installed,'dist/modules/encounter/index.js'),runtimeBytes=fs.readFileSync(runtimeFile),runtime=runtimeBytes.toString('utf8');
@@ -1752,6 +1788,80 @@ for (const spec of ['@rpg/gameplay/modules/encounter','@rpg/gameplay/dist/module
     assertClosureRegistration(closureReceipt);
     // This point is reached only after every mandatory historical runtime/negative group above executed.
     console.log('ENCOUNTER_C68_PASS mandatory_historical_installed_consumers; final_external_compile_and_CI_required');
+
+    { // EN31-EN35: existing canonical owners, with test-local L4 freshness/commit seams.
+    for(const ext of ['mjs','ts'])copyRequiredConsumer(path.join(root,'tests/consumers/encounter-continuity-recovery.'+ext),path.join(temp,'encounter-continuity-recovery.'+ext));
+    const file=path.join(temp,'encounter-continuity-recovery.mjs'),bytes=fs.readFileSync(file),source=bytes.toString('utf8');
+    const markers=Array.from({length:67},(_,i)=>'ENCOUNTER_T'+String(i+1).padStart(2,'0')+'_PASS');
+    const run=()=>exec(['--test','--test-reporter=tap','encounter-continuity-recovery.mjs'],temp);
+    const clean=()=>{assertTapEvidence(run(),17,markers);assertPackedFiles();assertBuildVersions(rootPackage,lock,JSON.parse(fs.readFileSync(path.join(installed,'package.json'))));};
+    const evidence=run();assertTapEvidence(evidence,17,markers);for(const marker of markers)console.log(evidence.split(/\r?\n/).find(line=>line.includes(marker)));
+    console.log(evidence.split(/\r?\n/).find(line=>line.includes('ENCOUNTER_CONTINUITY_REPLAY_SHA256')));
+    console.log('INSTALLED_ENCOUNTER_CONTINUITY_PASS EN31-EN35; consumer_tests=17 skipped=0; zero_production_delta; L4_test_only');
+    const env={...process.env};delete env.NODE_TEST_CONTEXT;
+    const raw=()=>spawnSync(process.execPath,['--test','--test-reporter=tap','encounter-continuity-recovery.mjs'],{cwd:temp,shell:false,encoding:'utf8',env});
+    function red(id,title,diagnostic){const r=raw();assert.ifError(r.error);assert.equal(r.signal,null);assert.equal(r.status,1,r.stdout+r.stderr);assert.match(r.stdout,new RegExp('not ok \\d+ - Continuity '+title));assert.match(r.stdout+r.stderr,diagnostic,id+' intended assertion');assert.match(r.stdout,/# skipped 0\r?$/m);assert.doesNotMatch(r.stdout+r.stderr,/SyntaxError|ERR_MODULE_NOT_FOUND|ENOENT|ReferenceError/);console.log('ENCOUNTER_CONTINUITY_NEGATIVE_RED '+id+' exit=1 target='+title+' intended='+diagnostic.source);}
+    const done=id=>{clean();console.log('ENCOUNTER_CONTINUITY_NEGATIVE_PASS '+id+' restored_bytes; clean17/17');};
+    const runtimeFile=path.join(installed,'dist/modules/encounter/index.js'),runtimeBytes=fs.readFileSync(runtimeFile),runtime=runtimeBytes.toString('utf8');
+    const faults=[
+      ['N01','life-validation',"if (!lives.has(participant.entityId))","if (false)",/N01 missing Life/],
+      ['N02','life-validation',"if (participantIds.has(entityId))","if (false)",/N02 duplicate Life/],
+      ['N03','life-validation',"if (!roster.has(fact.entityId))\n            throw new TypeError('Foreign Encounter completion participant fact');","if (false)\n            throw new TypeError('Foreign Encounter completion participant fact');",/N03 foreign Life/],
+      ['N04','continuation',"if (observed.continuation === 'pending')","if (false)",/N04 pending barrier/],
+      ['N05','continuation',"return pending('no_completion_condition_met');","return rules.rules.length===0 ? {status:'resolvable',reason:'rule_matched',outcome:{kind:'draw',winnerSideIds:[],defeatedSideIds:[]}} : pending('no_completion_condition_met');",/N05 clear requires rule/],
+      ['N07','empty-side',"if (rosters.some(participants => participants.length === 0))","if (false)",/N07 empty side/],
+      ['N08','reinforcement',"if (!getEntity(entities, change.entityId))","if (false)",/N08 identity/],
+      ['N09','reinforcement',"if (!statuses.includes(current.status))","if (false)",/N09 join policy/],
+      ['N10','reinforcement',"if (!rules.allowedJoinLifeStatuses.includes(change.readiness.life.status))","if (false)",/N10 dead join/],
+      ['N11','reinforcement',"if (rules.requireWorldReadyOnJoin && !change.readiness.worldReady)","if (false)",/N11 World readiness/],
+      ['N12','reinforcement',"if (member)\n            return reject('already_participating');","if (false)\n            return reject('already_participating');",/N12 duplicate/],
+      ['N15','terminal-membership',"if (current.status !== 'prepared' && current.status !== 'active')\n        return reject('encounter_not_open');","if (false)\n        return reject('encounter_not_open');",/N15 terminal membership/],
+    ];
+    function mutate(id,title,target,original,expected,faulty,diagnostic){assert.equal(original.split(expected).length-1,1,id+' unique mutation anchor');try{fs.writeFileSync(target,original.replace(expected,faulty));red(id,title,diagnostic);}finally{fs.writeFileSync(target,target===file?bytes:runtimeBytes);}assert.deepEqual(fs.readFileSync(target),target===file?bytes:runtimeBytes);done(id);}
+    for(const [id,title,expected,faulty,diagnostic] of faults)mutate(id,title,runtimeFile,runtime,expected,faulty,diagnostic);
+    const l4Faults=[
+      ['N06','canonical-life',"  return applied;","  if(w.life[target].status==='dead')w.state={...w.state,participants:w.state.participants.filter(p=>p.entityId!==target)};return applied;",/N06 dead member retained/],
+      ['N13','leave-rejoin',"if(operation==='change_side')w.sideVersion++;return result;","if(operation==='leave')w.state={...w.state,participants:[...w.state.participants,{entityId:id,sideId:side}]};if(operation==='change_side')w.sideVersion++;return result;",/N13 no auto rejoin/],
+      ['N14','leave-rejoin',"if(operation==='change_side')w.sideVersion++;return result;","if(operation==='leave')w.controller='manual';if(operation==='change_side')w.sideVersion++;return result;",/N14 no controller takeover/],
+      ['N16','revival',"w.life[id]=g.reviveEntity(w.life[id],w.resources[id],{resourceId:'health',minimum:0,maximum}).state;","g.reviveEntity(w.life[id],w.resources[id],{resourceId:'health',minimum:0,maximum});",/N16 fresh canonical revival/],
+      ['N17','races',"if(p.rev!==w.rev)return 'stale_revision';","",/N17 isolated revision/],
+      ['N18','races',"if(p.lifeVersion!==w.lifeVersion)return 'stale_life';","",/N18 isolated life/],
+      ['N19','races',"if(p.continuationVersion!==w.continuationVersion)return 'stale_continuation';","",/N19 isolated continuation/],
+      ['N20','races',"if(p.objectiveVersion!==w.objectiveVersion)return 'stale_objective';","",/N20 isolated objective/],
+      ['N21','races',"if(p.sideVersion!==w.sideVersion)return 'stale_side';","",/N21 isolated side/],
+      ['N22','dispatch',"if(p.controllerVersion!==w.controllerVersion)return 'stale_controller';","",/N22 current dispatch controller/],
+      ['N23','terminal-races',"if(fail)throw new Error('atomic staging failure');","if(fail){w.disposition=c.disposition;throw new Error('atomic staging failure');}",/N23 atomic pair/],
+      ['N24','terminal-races',"if(!allowed)return 'terminal_guard';","",/N24 independent terminal pair/],
+      ['N25','cleanup',"if(!['closed','cancelled'].includes(w.state.status)||token(candidate.state)!==token(w.state)||token(candidate.disposition)!==token(w.disposition))return 'unauthorized_cleanup';","if(!['closed','cancelled'].includes(w.state.status)){w.events.push(['premature cleanup']);return 'dispatched';}",/N25 before terminal commit/],
+      ['N26','cleanup',"if(w.cleanupReceipts.has(key))return 'duplicate_cleanup';","",/N26 one cleanup receipt/],
+      ['N27','providers',"function hit(w,target='wolf1',mode='landed',roll=.8){","function hit(w,target='wolf1',mode='landed',roll=.8){Date.now();",/N27 hidden provider/],
+      ['N28','replay',"return {w,trace};","return {w:globalThis.__sharedContinuityWorld??(globalThis.__sharedContinuityWorld=w),trace};",/N28 independent sessions/],
+      ['N29_zero','canonical-life',"assertions++;","",/Continuity requires actual assertions/],
+    ];
+    for(const [id,title,expected,faulty,diagnostic] of l4Faults)mutate(id,title,file,source,expected,faulty,diagnostic);
+    const guard=path.join(temp,'continuity-guard.mjs');
+    const prelude=`import assert from 'node:assert/strict';import fs from 'node:fs';const assertTapEvidence=${assertTapEvidence.toString()};const copyRequiredConsumer=${copyRequiredConsumer.toString()};const assertContinuityRegistration=${assertContinuityRegistration.toString()};\n`;
+    function guardRed(id,code,diagnostic){fs.writeFileSync(guard,prelude+code);const r=spawnSync(process.execPath,[guard],{cwd:temp,shell:false,encoding:'utf8'});assert.ifError(r.error);assert.equal(r.signal,null);assert.equal(r.status,1,r.stdout+r.stderr);assert.match(r.stderr,diagnostic);console.log('ENCOUNTER_CONTINUITY_NEGATIVE_RED '+id+' exit=1 intended='+diagnostic.source);}
+    for(const ext of ['mjs','ts']){const f=path.join(temp,'encounter-continuity-recovery.'+ext),saved=fs.readFileSync(f);try{fs.renameSync(f,f+'.saved');guardRed('N29_missing_'+ext,`copyRequiredConsumer(${JSON.stringify(f)},${JSON.stringify(f+'.copy')});`,/ENOENT/);}finally{fs.renameSync(f+'.saved',f);}assert.deepEqual(fs.readFileSync(f),saved);done('N29_missing_'+ext);}
+    guardRed('N29_registration','assertContinuityRegistration(undefined);',/mandatory Encounter continuity registration/);done('N29_registration');
+    try{fs.writeFileSync(file,source.replace("test('Continuity '","test.skip('Continuity '"));const r=raw();assert.ifError(r.error);assert.equal(r.status,0);guardRed('N29_skip',`assertTapEvidence(${JSON.stringify(r.stdout)},17);`,/required tests must execute|TAP skipped|required test count|0 !== 17/);}finally{fs.writeFileSync(file,bytes);}assert.deepEqual(fs.readFileSync(file),bytes);done('N29_skip');
+    const config=path.join(temp,'continuity-tsconfig.json');fs.writeFileSync(config,JSON.stringify({compilerOptions:{target:'ES2022',lib:['ES2022'],module:'NodeNext',moduleResolution:'NodeNext',strict:true,noEmit:true,skipLibCheck:false,types:[]},files:['encounter-continuity-recovery.ts']}));
+    const compile=()=>exec([path.join(root,'node_modules/typescript/bin/tsc'),'-p',config],temp);compile();
+    const declaration=path.join(installed,'dist/modules/encounter/index.d.ts'),saved=fs.readFileSync(declaration);const anchor='export interface EncounterCompletionObservation {';assert.ok(saved.toString().includes(anchor));
+    try{fs.writeFileSync(declaration,saved.toString().replace(anchor,'export interface EncounterCompletionObservation ??? {'));assert.throws(compile,/TS\d+/);console.log('ENCOUNTER_CONTINUITY_NEGATIVE_RED N30_declaration real_tsc_exit=1 intended=used_declaration_syntax');}finally{fs.writeFileSync(declaration,saved);}assert.deepEqual(fs.readFileSync(declaration),saved);compile();done('N30_declaration');
+    const rootFile=path.join(installed,'dist/index.js'),rootBytes=fs.readFileSync(rootFile);try{fs.writeFileSync(rootFile,rootBytes.toString().replace(/\bresolveEncounter\b/,'resolveEncounter as deliberatelyMissingContinuityResolution'));const r=raw();assert.ifError(r.error);assert.equal(r.status,1);assert.match(r.stdout+r.stderr,/g.resolveEncounter is not a function/);console.log('ENCOUNTER_CONTINUITY_NEGATIVE_RED N30_export exit=1 intended=missing_root_resolution');}finally{fs.writeFileSync(rootFile,rootBytes);}assert.deepEqual(fs.readFileSync(rootFile),rootBytes);done('N30_export');
+    // Protected inventory uses the accepted v0.8.5 source bytes, not an oracle derived from the installed mutant.
+    const protectedFiles=[["ARCHITECTURE.md","420c87ca893a49001cb7fd921e1df26c42f45c57c144a1af20ca7b2d3e2bfc27"],["harness/core-pin.json","4982ab0d0f15061bafd8db53b4afaa206d39970d78f47545a67d7300e82da0d8"],["harness/modules.json","aa9a1f915f956926820f6c5c17605a58a968e1ee4d0f3081723856a5eef86f2a"],["src/foundation/execution/index.ts","57d990a188ed32ff73998d74d8d921579fd4dcba9aa07dd4a9b72897b98f23f2"],["src/foundation/messaging/index.ts","1fbfd36a5b765e9928d95dd11713f7e10ea460625e1d8e116dcb171a0d49cdfb"],["src/foundation/modules/index.ts","ce9feff385f5901a94708fba9e999a51b9d1000198329d294250a53c6c3bf390"],["src/foundation/runtime/index.ts","8abe9ae3824943fbc52fc82ea7b1fcb4cb16cafbbdcef898ff48cc9db1f958a8"],["src/index.ts","8b95874f64634164b27cc8a74ec8377fd3c83d1d37ccfa3aba82502cb0b1899a"],["src/modules/actor-ai/index.ts","41749cec2b192b13a1b9e6389776a522b6a0f8be9512eec31c2a0bb1d16ed906"],["src/modules/combat/index.ts","35e72eefb91fa4fd7c0b2b980f0760951b425ea2012513b293e1399d4de215c0"],["src/modules/effect/index.ts","67ee30b77b08e79a2d490796a82a8ea841c4a16f1c5b0ccaf208b6ad3b94df39"],["src/modules/encounter/index.ts","7c8c8fd60d54ad7bb3dc723d47a916b11ea9d2cde79d44f4d837477de01d7bbe"],["src/modules/entity/index.ts","90f739541097914463c47d2b391849d9055bed11f4cf96cf1a4280b0e9899d6f"],["src/modules/progression/index.ts","4da9c388218c4f8731f7ad6dc61e9b566c7578ad261f5e955889adf16c1b63df"],["src/modules/skill/index.ts","bcc5137839bdf97807fd03da3914e3f7d32ae5a320d57cb48d20485cf43f91b8"]];
+    function checkProtected(base){for(const [name,hash] of protectedFiles)assert.equal(createHash('sha256').update(fs.readFileSync(path.join(base,name),'utf8').replace(/\r\n/g,'\n')).digest('hex'),hash,'continuity protected owner '+name);}
+    checkProtected(root);
+    const copy=path.join(temp,'continuity-protected-copy');for(const [name] of protectedFiles){fs.mkdirSync(path.dirname(path.join(copy,name)),{recursive:true});fs.copyFileSync(path.join(root,name),path.join(copy,name));}checkProtected(copy);
+    for(const name of ['src/modules/actor-ai/index.ts','harness/core-pin.json']){const f=path.join(copy,name),b=fs.readFileSync(f);try{fs.appendFileSync(f,'\nmutation\n');assert.throws(()=>checkProtected(copy),/continuity protected owner/);console.log('ENCOUNTER_CONTINUITY_NEGATIVE_RED N30_protected_'+name+' exit=assertion intended=protected_inventory');}finally{fs.writeFileSync(f,b);}assert.deepEqual(fs.readFileSync(f),b);checkProtected(copy);done('N30_protected_'+name);}
+    clean();compile();continuityReceipt={runtime:evidence,typechecked:true};assertContinuityRegistration(continuityReceipt);
+    console.log('ENCOUNTER_T68_PASS strict_external_NodeNext; skipLibCheck_false; corrupted_used_declaration_fails');
+    console.log('ENCOUNTER_T69_PASS all_mandatory_historical_runtime_and_negative_gates_executed');
+    console.log('INSTALLED_ENCOUNTER_CONTINUITY_DECLARATION_PASS strict_NodeNext; skipLibCheck_false; restored');
+    console.log('INSTALLED_ENCOUNTER_CONTINUITY_NEGATIVE_PASS N01-N30; isolated_intended_assertions; restored_clean');
+    }
 
     const effectDeclarations = fs.readFileSync(path.join(installed, 'dist/modules/effect/index.d.ts'), 'utf8');
     assert.doesNotMatch(effectDeclarations, /\b(?:any|effectFields|sourceSnapshot|instanceSnapshot|applyPolicySnapshot|lifecycleTime|lifecycleArray|lifecycleSnapshot|durationSnapshot|sameEffectInstance|applicationSnapshot|lifecycleEvent|companionTransition|CompanionTransition|statusCapture|statusState|periodicCapture|periodicNext|periodicState|periodicDue|periodicLife|Set|Map|WeakMap|EffectEngine|EffectRuntime)\b|\bfunction\s+(?:effectId|statusIds)\b/);

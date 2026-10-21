@@ -1,3 +1,26 @@
+## v0.8.6 — Encounter continuity and recovery EN31–EN35
+
+No production API or semantics change. Installed consumers compose existing Entity
+Life/resource/revival, Combat damage, membership, completion, resolution and cleanup
+contracts. L3 supplies policy; L4 explicitly commits reinforcement/leave/rejoin,
+refreshes canonical Life and continuation/objective facts, rejects stale proposals,
+and accepts state+disposition together before cleanup. No wave spawner or engine.
+
+The in-memory L4 fixture proves controlled local interleavings only; it does not
+provide durable/distributed transactions, exactly-once cleanup, rewards or World
+spawning. EncounterState remains five fields; root inventory remains155 functions/
+267 types; encounter depends only on Entity. Concrete gameplay profiles NOT_EVALUATED.
+
+Developer approved a harness-only version-oracle exception: root package.json is
+the current-build authority. Central installed runner checks installed manifest,
+top lockfile version and packages[''].version against it. Historical consumers keep
+behavior/export assertions without milestone version literals. Real mismatch probes
+fail before exact-byte restoration and clean rechecks. No Core/graph changes.
+
+Phase IN_PROGRESS; Developer acceptance PENDING; existing PR #13 remains Draft.
+v0.8.7 NOT_STARTED. No Ready, merge, tag or publish. Earlier sections are historical.
+[Task](tasks/active/v0.8.6-encounter-continuity-recovery.md) / [Report](reports/v0.8.6-encounter-continuity-recovery.md).
+
 ## v0.8.5 — installed closure verification
 
 Required encounter-closure.mjs/.ts:19 assertion-bearing groups cover C01–C67,
