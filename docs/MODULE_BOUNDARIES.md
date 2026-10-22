@@ -1,3 +1,14 @@
+## v0.15.0 — State Archive structural owner
+
+Optional state-archive -> [] owns PortableValue, GameplayStateRecord and
+GameplayStateArchive structural capture only, with zero imports. Existing domain
+owners keep their schemas, validation context, numerical/lifecycle semantics and
+transitions. Archive schema labels do not imply owner validity or compatibility.
+L3 chooses desired records/policy; L4 owns authoritative snapshots, serialization,
+storage, owner validation/reconstruction, consistency and atomic publication.
+No global state manager, adapter registry, numerical engine, migration, replay or IO.
+[Report](reports/v0.15.0-state-archive-foundation.md).
+
 ## v0.14.2 — Currency closure evidence
 
 Production bytes and module graph unchanged. Reward prepares claim candidates and

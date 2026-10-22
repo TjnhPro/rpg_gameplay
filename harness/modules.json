@@ -14,6 +14,7 @@
     {"id": "equipment", "optional": true, "dependencies": ["item"]},
     {"id": "loot", "optional": true, "dependencies": []},
     {"id": "reward", "optional": true, "dependencies": []},
-    {"id": "currency", "optional": true, "dependencies": []}
+    {"id": "currency", "optional": true, "dependencies": []},
+    {"id": "state-archive", "optional": true, "dependencies": []}
   ]
 }

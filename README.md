@@ -1,6 +1,11 @@
 # RPG Gameplay — current verification
 
-L2 reusable headless function-first RPG framework. Package checkpoint: `0.14.2` (Currency CU01–CU15, Developer acceptance PENDING).
+L2 reusable headless function-first RPG framework. Package checkpoint: `0.15.0` (State Archive ST01–ST05, Developer acceptance PENDING).
+State Archive captures explicit portable versioned records as detached deeply frozen
+data, unique by module/kind/ID. Structural validation only: no save/load, domain
+rehydration, version compatibility decision or authoritative restore.
+See [State Archive report](docs/reports/v0.15.0-state-archive-foundation.md).
+
 Currency captures complete immutable multi-currency wallets: independent wallet/owner IDs,
 optional neutral owner, opaque ordered balances and nonnegative safe integer units.
 Explicit zero entries are retained (Developer CU-D03 choice). Query, credit and debit

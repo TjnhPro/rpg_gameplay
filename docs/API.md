@@ -1,3 +1,32 @@
+## v0.15.0 — State Archive Foundation (ST01–ST05)
+
+```ts
+type PortableValue = null | string | number | boolean |
+  readonly PortableValue[] | {readonly [key:string]:PortableValue};
+interface GameplayStateRecord {
+  readonly moduleId:string; readonly stateKind:string; readonly stateId:string;
+  readonly schemaVersion:number; readonly payload:PortableValue;
+}
+interface GameplayStateArchive {
+  readonly formatVersion:number; readonly records:readonly GameplayStateRecord[];
+}
+function validateGameplayStateRecord(record:GameplayStateRecord):GameplayStateRecord;
+function validateGameplayStateArchive(archive:GameplayStateArchive):GameplayStateArchive;
+```
+
+Archive validation reuses the same record/payload validator. Exact nonblank IDs;
+unique (moduleId,stateKind,stateId); dense ordered records, including empty archives.
+Versions are independent positive safe integer labels, not package semver or proof of
+schema compatibility. Payloads accept plain Object/null dictionaries, dense standard
+arrays, strings/booleans/null and finite numbers excluding -0. All data properties must
+be enumerable own string keys; hidden/symbol/accessor fields and nonportable types,
+cycles/sparse/augmented arrays/nonplain prototypes fail TypeError without invoking getters.
+Shared noncyclic references are copied as independent values; __proto__ remains inert
+own data. Inputs untouched; outputs detached/deeply frozen. Failed inspection becomes
+TypeError; transparent proxies cannot universally be identified in JavaScript.
+No domain semantics/catalog lookup, queries, constructor, serializer, save/load or restore.
+[Report](reports/v0.15.0-state-archive-foundation.md).
+
 ## v0.14.2 — Currency integration closure (CU11–CU15)
 
 No production/API/schema delta. Direct public-root tests compose prepareRewardClaim

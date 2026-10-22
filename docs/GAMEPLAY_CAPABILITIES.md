@@ -1,3 +1,12 @@
+## v0.15.0 — State Archive ST01–ST05
+
+Original group14 now has one optional state-archive -> [] structural representation
+owner: explicit versioned envelopes/records, exact triple uniqueness and detached
+frozen portable payloads. No domain restore/validation, storage, compatibility policy,
+queries or global state engine. Currency remains additional, not original group14.
+Developer checkpoint acceptance PENDING.
+[Report](reports/v0.15.0-state-archive-foundation.md).
+
 ## v0.14.2 — Currency integration closure CU11–CU15
 
 CU01–CU15 now have direct functional/closure evidence, including real Reward currency
