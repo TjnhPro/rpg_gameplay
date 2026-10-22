@@ -1,3 +1,39 @@
+## v0.15.3 — Closure composition evidence
+
+Production owners, exports and graph remain identical to v0.15.2. The L4 test fixture
+calls public owner validators, then checks cross-owner bindings and freshness before
+one in-memory assignment. No serialization, restore engine, dispatcher or storage
+dependency is introduced into L2. [Final review](reports/v0.15.3-state-archive-final-review.md).
+
+## v0.15.2 — Explicit restore compatibility policy
+
+State Archive remains optional state-archive -> [], with zero imports. Its restore
+preparation assesses only format/kind/schema labels and required exact keys supplied
+by the caller, then hands off detached frozen portable records. Ready does not prove
+owner semantics, current references, clock validity, permission or completeness.
+Gameplay owners validate real domain state; L4 checks and publishes whole restoration.
+No discovery/adapter registry, callback, migration, replay, clock catch-up or state commit.
+[Report](reports/v0.15.2-restore-compatibility-preparation.md).
+
+## v0.15.1 — Explicit assembly and inspection
+
+The same optional state-archive -> [] owner adds assembly and exact-key get/list.
+Every accepted result uses the existing structural archive validator. Caller/L4
+selects records; reads validate all records, including those beyond a lookup match.
+No imports, owner calls, global state, automatic discovery or authoritative mutation.
+[Report](reports/v0.15.1-snapshot-assembly-inspection.md).
+
+## v0.15.0 — State Archive structural owner
+
+Optional state-archive -> [] owns PortableValue, GameplayStateRecord and
+GameplayStateArchive structural capture only, with zero imports. Existing domain
+owners keep their schemas, validation context, numerical/lifecycle semantics and
+transitions. Archive schema labels do not imply owner validity or compatibility.
+L3 chooses desired records/policy; L4 owns authoritative snapshots, serialization,
+storage, owner validation/reconstruction, consistency and atomic publication.
+No global state manager, adapter registry, numerical engine, migration, replay or IO.
+[Report](reports/v0.15.0-state-archive-foundation.md).
+
 ## v0.14.2 — Currency closure evidence
 
 Production bytes and module graph unchanged. Reward prepares claim candidates and

@@ -1,3 +1,105 @@
+## v0.15.3 — Integration evidence (ST16–ST20)
+
+No public signature, type or production behavior changes; package remains 0.15.2.
+The [closure fixture](../tests/unit/state-archive-integration.test.mjs) demonstrates
+archive preparation followed by canonical Inventory/Equipment/Currency/Reward validation,
+with Item definitions supplied separately. JSON handling and atomic-in-memory publication
+belong only to the L4 fixture. [Evidence and limits](reports/v0.15.3-state-archive-final-review.md).
+
+## v0.15.2 — Restore Compatibility & Preparation (ST11–ST15)
+
+```ts
+interface GameplayStateSchemaSupport {
+  readonly moduleId: string;
+  readonly stateKind: string;
+  readonly supportedSchemaVersions: readonly number[];
+}
+interface GameplayStateRestorePolicy {
+  readonly supportedFormatVersions: readonly number[];
+  readonly schemas: readonly GameplayStateSchemaSupport[];
+  readonly requiredRecords: readonly GameplayStateRecordKey[];
+}
+type GameplayStateRestorePreparation =
+  | {readonly status: 'ready'; readonly reason: 'none'; readonly records: readonly GameplayStateRecord[]}
+  | {readonly status: 'rejected';
+     readonly reason: 'unsupported_format' | 'unknown_state_kind' | 'unsupported_schema' | 'missing_required';
+     readonly records: null};
+function prepareGameplayStateRestore(
+  archive: GameplayStateArchive, policy: GameplayStateRestorePolicy,
+): GameplayStateRestorePreparation;
+```
+
+The full archive and closed own-data policy are validated before any typed rejection.
+IDs retain exact nonblank strings. Format/schema support lists are nonempty, unique
+positive safe integers; schema entries are unique by module/kind; required keys are
+unique exact triples referencing a declared kind. Schemas and required lists may be
+empty; arrays must be dense without extra fields. Getters/hidden/symbol data fail
+TypeError using existing safe structural helpers.
+
+Priority: unsupported format, then unknown kind in archive order, then unsupported
+schema in archive order, then missing required key in policy order, then ready.
+Unknown kinds are always rejected; no filtering/loose mode. Rejections are frozen
+with records:null. Ready returns revalidated, detached, deeply frozen records in
+archive order. A ready label is metadata compatibility only; owner schema validity,
+references, time origin, freshness, permissions, storage and atomic commit remain
+outside this function. No migration, callbacks, owner imports or domain restoration.
+Previous structural/query contracts are unchanged.
+[Report](reports/v0.15.2-restore-compatibility-preparation.md).
+
+## v0.15.1 — Snapshot Assembly & Inspection (ST06–ST10)
+
+```ts
+interface GameplayStateRecordKey {
+  readonly moduleId: string;
+  readonly stateKind: string;
+  readonly stateId: string;
+}
+function assembleGameplayStateArchive(
+  formatVersion: number, records: readonly GameplayStateRecord[],
+): GameplayStateArchive;
+function getGameplayStateRecord(
+  archive: GameplayStateArchive, key: GameplayStateRecordKey,
+): GameplayStateRecord | null;
+function listGameplayStateRecords(archive: GameplayStateArchive): readonly GameplayStateRecord[];
+```
+
+Assembly delegates to the unchanged structural validator with the caller's complete
+ordered list; empty is valid. Both reads validate the entire archive first and return
+detached deeply frozen data. Lookup requires exactly three enumerable own string data
+fields with nonblank exact IDs; malformed keys/archives throw TypeError, valid absence
+returns null. No normalization, owner selection, discovery, append/upsert/delete,
+registry, storage or restore. Original archive/record/portable shapes remain unchanged.
+[Report](reports/v0.15.1-snapshot-assembly-inspection.md).
+
+## v0.15.0 — State Archive Foundation (ST01–ST05)
+
+```ts
+type PortableValue = null | string | number | boolean |
+  readonly PortableValue[] | {readonly [key:string]:PortableValue};
+interface GameplayStateRecord {
+  readonly moduleId:string; readonly stateKind:string; readonly stateId:string;
+  readonly schemaVersion:number; readonly payload:PortableValue;
+}
+interface GameplayStateArchive {
+  readonly formatVersion:number; readonly records:readonly GameplayStateRecord[];
+}
+function validateGameplayStateRecord(record:GameplayStateRecord):GameplayStateRecord;
+function validateGameplayStateArchive(archive:GameplayStateArchive):GameplayStateArchive;
+```
+
+Archive validation reuses the same record/payload validator. Exact nonblank IDs;
+unique (moduleId,stateKind,stateId); dense ordered records, including empty archives.
+Versions are independent positive safe integer labels, not package semver or proof of
+schema compatibility. Payloads accept plain Object/null dictionaries, dense standard
+arrays, strings/booleans/null and finite numbers excluding -0. All data properties must
+be enumerable own string keys; hidden/symbol/accessor fields and nonportable types,
+cycles/sparse/augmented arrays/nonplain prototypes fail TypeError without invoking getters.
+Shared noncyclic references are copied as independent values; __proto__ remains inert
+own data. Inputs untouched; outputs detached/deeply frozen. Failed inspection becomes
+TypeError; transparent proxies cannot universally be identified in JavaScript.
+No domain semantics/catalog lookup, queries, constructor, serializer, save/load or restore.
+[Report](reports/v0.15.0-state-archive-foundation.md).
+
 ## v0.14.2 — Currency integration closure (CU11–CU15)
 
 No production/API/schema delta. Direct public-root tests compose prepareRewardClaim

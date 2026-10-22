@@ -1,3 +1,38 @@
+## v0.15.3 — State Archive ST16–ST20 closure evidence
+
+Representative public Item/Inventory, Equipment, Currency and claimed Reward states
+roundtrip through portable archive/JSON/policy and canonical owner validation in an
+L4-only fixture. Invalid versions/domain data/cross-owner bindings and stale inputs
+cannot publish. Production/package API is unchanged; no comprehensive recovery,
+storage, migration or distributed atomicity is claimed. Developer acceptance PENDING.
+[Final review](reports/v0.15.3-state-archive-final-review.md).
+
+## v0.15.2 — State Archive ST11–ST15
+
+Pure restore preparation checks explicit format/per-kind schema support and required
+exact records, with deterministic all-or-nothing ready/rejected results. Strict
+unknown kinds fail; invalid archive/policy throws before compatibility outcomes.
+Ready hands off frozen records for later owner validation, not restored state.
+No owner calls, storage or authoritative commit. Developer acceptance PENDING.
+[Report](reports/v0.15.2-restore-compatibility-preparation.md).
+
+## v0.15.1 — State Archive ST06–ST10
+
+Explicit caller-selected assembly, exact triple lookup and deterministic ordered
+listing now reuse structural archive capture. Outputs remain detached/deeply frozen;
+invalid keys/archives fail, valid missing keys return null. L4 selection and authority
+are unchanged; no storage, restore or automatic collection. Developer acceptance PENDING.
+[Report](reports/v0.15.1-snapshot-assembly-inspection.md).
+
+## v0.15.0 — State Archive ST01–ST05
+
+Original group14 now has one optional state-archive -> [] structural representation
+owner: explicit versioned envelopes/records, exact triple uniqueness and detached
+frozen portable payloads. No domain restore/validation, storage, compatibility policy,
+queries or global state engine. Currency remains additional, not original group14.
+Developer checkpoint acceptance PENDING.
+[Report](reports/v0.15.0-state-archive-foundation.md).
+
 ## v0.14.2 — Currency integration closure CU11–CU15
 
 CU01–CU15 now have direct functional/closure evidence, including real Reward currency

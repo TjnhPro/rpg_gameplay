@@ -216,3 +216,10 @@ export {createCurrencyWalletState, validateCurrencyWalletState} from './modules/
 export type {CurrencyReference, CurrencyWalletOwner, CurrencyBalance, CurrencyWalletState} from './modules/currency/index.js';
 export {getCurrencyBalance, creditCurrency, debitCurrency} from './modules/currency/index.js';
 export type {CurrencyBalancePolicy, CurrencyOperationAdmission, CurrencyMutationReason, CurrencyTransitionResult} from './modules/currency/index.js';
+
+export {validateGameplayStateRecord, validateGameplayStateArchive} from './modules/state-archive/index.js';
+export type {PortableValue, GameplayStateRecord, GameplayStateArchive} from './modules/state-archive/index.js';
+export {assembleGameplayStateArchive, getGameplayStateRecord, listGameplayStateRecords} from './modules/state-archive/index.js';
+export type {GameplayStateRecordKey} from './modules/state-archive/index.js';
+export {prepareGameplayStateRestore} from './modules/state-archive/index.js';
+export type {GameplayStateSchemaSupport, GameplayStateRestorePolicy, GameplayStateRestorePreparation} from './modules/state-archive/index.js';

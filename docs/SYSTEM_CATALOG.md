@@ -3,10 +3,12 @@
 Purpose: **capability discovery + correct owner routing**, not an approved work list,
 API reference replacement, or authority competing with source.
 
-Audit: 2026-10-21; branch `docs/system-catalog` created from `origin/main` at
-`4d415d21f5bb41fd62bf4428007fcc5191d35f63`; package `@rpg/gameplay@0.14.2`.
-All production capabilities below refer to that baseline, including merged Reward
-and Currency. The task's older 0.12.2 snapshot is superseded by this source audit.
+Audit: 2026-10-22; branch `feat/v0.15-state-archive` based on `origin/main` at
+`cf303335737da2b57421b1459eff2a0da154a60d`, plus ST01–ST20 evidence described here;
+package `@rpg/gameplay@0.15.2` (no closure version bump). The ST16–ST20 production baseline is
+`80ab84545e8d47a499a5f53f8a44804918fcd5a7`. State Archive is implemented on this feature branch,
+not asserted merged on main. Other capabilities retain the prior merged baseline.
+Exact delivered branch SHA is recorded in the checkpoint report's PR evidence supplement.
 `IMPLEMENTED`, Developer acceptance, and merged-on-main are separate facts. Merge
 is observable (Currency PR19 is in this main); historical reports still say acceptance
 PENDING. This catalog does not infer formal acceptance from a merge or green tests.
@@ -45,7 +47,7 @@ invocation requires an entrypoint/task-prompt change under a separately approved
 ## Quick system index
 
 The original **14 accepted scope groups are not 14 implementation modules**.
-All 13 registry modules below are optional. Dependencies list gameplay modules only;
+All 14 registry modules below are optional. Dependencies list gameplay modules only;
 Foundation and public Kernel usage are described in entries, not invented registry edges.
 
 | System | Canonical location | Dependency | Current implementation status | Note / entry |
@@ -63,7 +65,7 @@ Foundation and public Kernel usage are described in entries, not invented regist
 | 11 Equipment | src/modules/equipment/ | equipment → [item] | IMPLEMENTED | [slots/equip/replacement](#equipment-system) |
 | 12 Loot | src/modules/loot/ | loot → [] | IMPLEMENTED | [weighted selection](#loot-system) |
 | 13 Reward | src/modules/reward/ | reward → [] | IMPLEMENTED | [claim candidates/intents](#reward-system) |
-| 14 Gameplay State & Persistence Contracts | existing owner validators; no dedicated module | no persistence registry entry | scope candidate; unified contract UNVERIFIED | [separate data from storage](#gameplay-state--persistence-contracts-system) |
+| 14 Gameplay State & Persistence Contracts | src/modules/state-archive/ + domain owners | state-archive → [] | IMPLEMENTED structural archive only, on feature branch | [separate data from storage](#gameplay-state--persistence-contracts-system) |
 | Additional phase/system — Currency | src/modules/currency/ | currency → [] | IMPLEMENTED | [wallet operations](#additional-phasesystem--currency-system) |
 
 ## Canonical owner routing guide
@@ -294,19 +296,42 @@ an implied L2 generic transaction engine.
 
 ## Gameplay State & Persistence Contracts System
 
-- **Canonical location / graph:** no dedicated persistence module in the registry/root.
-  Existing [owner APIs](../src/index.ts) own their snapshots; no new owner is assigned here.
-- **Owns / does not own:** group14 is accepted scope, not a shipped unified save format.
-  DB, save slots, serialization schema, migrations and persistent authority belong to L4.
-- **Existing related behavior:** `validateInventoryState`, `validateEquipmentState`,
-  `validateCurrencyWalletState` validate complete owner data. Evidence:
-  [Inventory](../tests/unit/inventory.test.mjs), [Equipment](../tests/unit/equipment.test.mjs),
-  [Currency](../tests/unit/currency.test.mjs). These do not establish cross-system restore.
-- **Known gap:** UNVERIFIED unified portable capture/restore contract; no dedicated
-  public API identified at this baseline. Scope acceptance alone is not an approved
-  schema/implementation plan, nor permission to create a second gameplay state store.
-- **Where to extend:** audit existing owner validators and L4 save requirements before
-  assigning any new L2 contract owner; obtain Developer approval. [Scope](GAMEPLAY_CAPABILITIES.md).
+- **Canonical owner / graph:** [state-archive](../src/modules/state-archive/index.ts);
+  state-archive → []. Existing domain owners retain their snapshots and semantic validators.
+- **Owns / does not own:** portable ordered versioned archive representation/structural
+  capture only; no global state, persistence, domain reconstruction or authoritative restore.
+- **Implemented ST01–ST05:** `validateGameplayStateRecord`, `validateGameplayStateArchive`
+  capture detached deeply frozen JSON-compatible payloads, exact triple identities,
+  independent positive version labels and safe own keys. Reject lossy/hostile structures
+  including -0 without invoking getters. Evidence: [archive tests](../tests/unit/state-archive.test.mjs).
+- **Implemented ST06–ST10:** `assembleGameplayStateArchive` captures explicit caller
+  records; `getGameplayStateRecord` uses exact triple keys and returns null on valid
+  absence; `listGameplayStateRecords` preserves order. Both reads validate the whole
+  archive before returning detached deeply frozen data. Malformed keys/archives fail.
+  Evidence: [query tests](../tests/unit/state-archive-queries.test.mjs).
+- **Implemented ST11–ST15:** `prepareGameplayStateRestore` validates explicit policy
+  and archive, then assesses format, known kind, schema and exact required records
+  in that priority. Rejections never return partial records; ready returns detached
+  frozen handoff data. Evidence: [restore tests](../tests/unit/state-archive-restore.test.mjs).
+- **ST16–ST20 composition evidence:** [direct integration fixture](../tests/unit/state-archive-integration.test.mjs)
+  captures representative Item/Inventory, Equipment, Currency (including explicit zero)
+  and claimed Reward states, JSON roundtrips, revalidates untrusted data, prepares policy
+  and calls actual public owner validators with independent L3 catalog/stack facts.
+  L4-only identity/owner/recipient/uniqueness/freshness checks precede one assignment;
+  incompatible, corrupt and conflicting inputs preserve authoritative pre-state.
+  Claimed Reward replay stays rejected. No production restore coordinator was added.
+- **NOT_EVALUATED:** Entity/Progression/Combat/Skill/Effect/Actor AI/Encounter state
+  rehydration. They have separate owner/context/lifecycle or clock contracts; this
+  fixture does not establish a complete snapshot set, clock origin or recovery order.
+  Loot definitions and Foundation callback capabilities are not evaluated as portable
+  owner state either. Extending coverage needs owner-specific evidence, not archive casts.
+- **Known gaps:** no production domain restore, owner schema validation, migration or storage;
+  ready proves only metadata compatibility, never owner semantics, clock validity,
+  current references, permissions, cross-system consistency or atomic publication.
+- **Where to extend:** same State Archive owner for approved portable format operations;
+  domain validation stays with each owner, L3 chooses records/schema policy, L4 performs
+  serialization/storage/owner calls/freshness/all-or-nothing publication. No implicit
+  adapter registry or duplicate validator. [Final review](reports/v0.15.3-state-archive-final-review.md).
 
 ## Additional phase/system — Currency System
 
