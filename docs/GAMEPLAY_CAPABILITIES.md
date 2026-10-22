@@ -1,3 +1,11 @@
+## v0.15.1 — State Archive ST06–ST10
+
+Explicit caller-selected assembly, exact triple lookup and deterministic ordered
+listing now reuse structural archive capture. Outputs remain detached/deeply frozen;
+invalid keys/archives fail, valid missing keys return null. L4 selection and authority
+are unchanged; no storage, restore or automatic collection. Developer acceptance PENDING.
+[Report](reports/v0.15.1-snapshot-assembly-inspection.md).
+
 ## v0.15.0 — State Archive ST01–ST05
 
 Original group14 now has one optional state-archive -> [] structural representation

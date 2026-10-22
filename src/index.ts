@@ -219,3 +219,5 @@ export type {CurrencyBalancePolicy, CurrencyOperationAdmission, CurrencyMutation
 
 export {validateGameplayStateRecord, validateGameplayStateArchive} from './modules/state-archive/index.js';
 export type {PortableValue, GameplayStateRecord, GameplayStateArchive} from './modules/state-archive/index.js';
+export {assembleGameplayStateArchive, getGameplayStateRecord, listGameplayStateRecords} from './modules/state-archive/index.js';
+export type {GameplayStateRecordKey} from './modules/state-archive/index.js';

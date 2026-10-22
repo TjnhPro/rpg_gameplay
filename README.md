@@ -1,10 +1,12 @@
 # RPG Gameplay — current verification
 
-L2 reusable headless function-first RPG framework. Package checkpoint: `0.15.0` (State Archive ST01–ST05, Developer acceptance PENDING).
+L2 reusable headless function-first RPG framework. Package checkpoint: `0.15.1` (State Archive ST01–ST10, Developer acceptance PENDING).
 State Archive captures explicit portable versioned records as detached deeply frozen
 data, unique by module/kind/ID. Structural validation only: no save/load, domain
 rehydration, version compatibility decision or authoritative restore.
-See [State Archive report](docs/reports/v0.15.0-state-archive-foundation.md).
+Caller-selected records can be assembled, listed in input order and looked up by
+exact module/kind/ID. Reads validate the complete archive and return frozen detached data.
+See [assembly/inspection report](docs/reports/v0.15.1-snapshot-assembly-inspection.md).
 
 Currency captures complete immutable multi-currency wallets: independent wallet/owner IDs,
 optional neutral owner, opaque ordered balances and nonnegative safe integer units.

@@ -1,3 +1,28 @@
+## v0.15.1 — Snapshot Assembly & Inspection (ST06–ST10)
+
+```ts
+interface GameplayStateRecordKey {
+  readonly moduleId: string;
+  readonly stateKind: string;
+  readonly stateId: string;
+}
+function assembleGameplayStateArchive(
+  formatVersion: number, records: readonly GameplayStateRecord[],
+): GameplayStateArchive;
+function getGameplayStateRecord(
+  archive: GameplayStateArchive, key: GameplayStateRecordKey,
+): GameplayStateRecord | null;
+function listGameplayStateRecords(archive: GameplayStateArchive): readonly GameplayStateRecord[];
+```
+
+Assembly delegates to the unchanged structural validator with the caller's complete
+ordered list; empty is valid. Both reads validate the entire archive first and return
+detached deeply frozen data. Lookup requires exactly three enumerable own string data
+fields with nonblank exact IDs; malformed keys/archives throw TypeError, valid absence
+returns null. No normalization, owner selection, discovery, append/upsert/delete,
+registry, storage or restore. Original archive/record/portable shapes remain unchanged.
+[Report](reports/v0.15.1-snapshot-assembly-inspection.md).
+
 ## v0.15.0 — State Archive Foundation (ST01–ST05)
 
 ```ts

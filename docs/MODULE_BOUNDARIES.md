@@ -1,3 +1,11 @@
+## v0.15.1 — Explicit assembly and inspection
+
+The same optional state-archive -> [] owner adds assembly and exact-key get/list.
+Every accepted result uses the existing structural archive validator. Caller/L4
+selects records; reads validate all records, including those beyond a lookup match.
+No imports, owner calls, global state, automatic discovery or authoritative mutation.
+[Report](reports/v0.15.1-snapshot-assembly-inspection.md).
+
 ## v0.15.0 — State Archive structural owner
 
 Optional state-archive -> [] owns PortableValue, GameplayStateRecord and

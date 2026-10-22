@@ -103,3 +103,34 @@ export function validateGameplayStateArchive(archive: GameplayStateArchive): Gam
     return Object.freeze({formatVersion, records: Object.freeze(records)});
   });
 }
+
+export interface GameplayStateRecordKey {
+  readonly moduleId: string;
+  readonly stateKind: string;
+  readonly stateId: string;
+}
+
+/** Capture the complete record list explicitly selected by the caller. */
+export function assembleGameplayStateArchive(
+  formatVersion: number, records: readonly GameplayStateRecord[],
+): GameplayStateArchive {
+  return validateGameplayStateArchive({formatVersion, records});
+}
+
+/** Validate the whole archive, then inspect its exact identity triple. */
+export function getGameplayStateRecord(
+  archive: GameplayStateArchive, key: GameplayStateRecordKey,
+): GameplayStateRecord | null {
+  return inspect(() => {
+    const snapshot = validateGameplayStateArchive(archive);
+    const data = fields(key, ['moduleId', 'stateKind', 'stateId']);
+    const moduleId = id(data.moduleId), stateKind = id(data.stateKind), stateId = id(data.stateId);
+    return snapshot.records.find(record => record.moduleId === moduleId &&
+      record.stateKind === stateKind && record.stateId === stateId) ?? null;
+  });
+}
+
+/** Preserve caller order in a detached, deeply frozen validated record list. */
+export function listGameplayStateRecords(archive: GameplayStateArchive): readonly GameplayStateRecord[] {
+  return validateGameplayStateArchive(archive).records;
+}

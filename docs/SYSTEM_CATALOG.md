@@ -4,8 +4,9 @@ Purpose: **capability discovery + correct owner routing**, not an approved work 
 API reference replacement, or authority competing with source.
 
 Audit: 2026-10-22; branch `feat/v0.15-state-archive` based on `origin/main` at
-`cf303335737da2b57421b1459eff2a0da154a60d`, plus ST01–ST05 changes described here;
-package `@rpg/gameplay@0.15.0`. State Archive is implemented on this feature branch,
+`cf303335737da2b57421b1459eff2a0da154a60d`, plus ST01–ST10 changes described here;
+package `@rpg/gameplay@0.15.1`. The ST06–ST10 baseline is v0.15.0 commit
+`605c7219aa45d3928fdd00a9eace3e1187bc4925`. State Archive is implemented on this feature branch,
 not asserted merged on main. Other capabilities retain the prior merged baseline.
 Exact delivered branch SHA is recorded in the checkpoint report's PR evidence supplement.
 `IMPLEMENTED`, Developer acceptance, and merged-on-main are separate facts. Merge
@@ -303,14 +304,18 @@ an implied L2 generic transaction engine.
   capture detached deeply frozen JSON-compatible payloads, exact triple identities,
   independent positive version labels and safe own keys. Reject lossy/hostile structures
   including -0 without invoking getters. Evidence: [archive tests](../tests/unit/state-archive.test.mjs).
-- **Known gaps:** PLANNED approved phase direction for assembly/inspection and explicit
-  compatibility/restore preparation, each awaiting its own implementation instruction;
-  no query/factory/version acceptance policy in this checkpoint. Structural acceptance
+- **Implemented ST06–ST10:** `assembleGameplayStateArchive` captures explicit caller
+  records; `getGameplayStateRecord` uses exact triple keys and returns null on valid
+  absence; `listGameplayStateRecords` preserves order. Both reads validate the whole
+  archive before returning detached deeply frozen data. Malformed keys/archives fail.
+  Evidence: [query tests](../tests/unit/state-archive-queries.test.mjs).
+- **Known gaps:** PLANNED explicit compatibility/restore preparation, awaiting its
+  own implementation instruction; no version acceptance policy. Structural acceptance
   never proves owner semantics, cross-system consistency or a migration strategy.
 - **Where to extend:** same State Archive owner for approved portable format operations;
   domain validation stays with each owner, L3 chooses records/schema policy, L4 performs
   serialization/storage/owner calls/freshness/all-or-nothing publication. No implicit
-  adapter registry or duplicate validator. [Checkpoint](reports/v0.15.0-state-archive-foundation.md).
+  adapter registry or duplicate validator. [Checkpoint](reports/v0.15.1-snapshot-assembly-inspection.md).
 
 ## Additional phase/system — Currency System
 
