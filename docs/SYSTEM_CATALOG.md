@@ -4,9 +4,9 @@ Purpose: **capability discovery + correct owner routing**, not an approved work 
 API reference replacement, or authority competing with source.
 
 Audit: 2026-10-22; branch `feat/v0.15-state-archive` based on `origin/main` at
-`cf303335737da2b57421b1459eff2a0da154a60d`, plus ST01–ST10 changes described here;
-package `@rpg/gameplay@0.15.1`. The ST06–ST10 baseline is v0.15.0 commit
-`605c7219aa45d3928fdd00a9eace3e1187bc4925`. State Archive is implemented on this feature branch,
+`cf303335737da2b57421b1459eff2a0da154a60d`, plus ST01–ST15 changes described here;
+package `@rpg/gameplay@0.15.2`. The ST11–ST15 baseline is v0.15.1 commit
+`81aad919fcadb3e3ad6f92df5ecd806f48ec7847`. State Archive is implemented on this feature branch,
 not asserted merged on main. Other capabilities retain the prior merged baseline.
 Exact delivered branch SHA is recorded in the checkpoint report's PR evidence supplement.
 `IMPLEMENTED`, Developer acceptance, and merged-on-main are separate facts. Merge
@@ -309,13 +309,17 @@ an implied L2 generic transaction engine.
   absence; `listGameplayStateRecords` preserves order. Both reads validate the whole
   archive before returning detached deeply frozen data. Malformed keys/archives fail.
   Evidence: [query tests](../tests/unit/state-archive-queries.test.mjs).
-- **Known gaps:** PLANNED explicit compatibility/restore preparation, awaiting its
-  own implementation instruction; no version acceptance policy. Structural acceptance
-  never proves owner semantics, cross-system consistency or a migration strategy.
+- **Implemented ST11–ST15:** `prepareGameplayStateRestore` validates explicit policy
+  and archive, then assesses format, known kind, schema and exact required records
+  in that priority. Rejections never return partial records; ready returns detached
+  frozen handoff data. Evidence: [restore tests](../tests/unit/state-archive-restore.test.mjs).
+- **Known gaps:** no domain restore, owner schema validation, migration or storage;
+  ready proves only metadata compatibility, never owner semantics, clock validity,
+  current references, permissions, cross-system consistency or atomic publication.
 - **Where to extend:** same State Archive owner for approved portable format operations;
   domain validation stays with each owner, L3 chooses records/schema policy, L4 performs
   serialization/storage/owner calls/freshness/all-or-nothing publication. No implicit
-  adapter registry or duplicate validator. [Checkpoint](reports/v0.15.1-snapshot-assembly-inspection.md).
+  adapter registry or duplicate validator. [Checkpoint](reports/v0.15.2-restore-compatibility-preparation.md).
 
 ## Additional phase/system — Currency System
 

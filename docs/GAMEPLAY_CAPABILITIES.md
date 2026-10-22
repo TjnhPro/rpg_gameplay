@@ -1,3 +1,12 @@
+## v0.15.2 — State Archive ST11–ST15
+
+Pure restore preparation checks explicit format/per-kind schema support and required
+exact records, with deterministic all-or-nothing ready/rejected results. Strict
+unknown kinds fail; invalid archive/policy throws before compatibility outcomes.
+Ready hands off frozen records for later owner validation, not restored state.
+No owner calls, storage or authoritative commit. Developer acceptance PENDING.
+[Report](reports/v0.15.2-restore-compatibility-preparation.md).
+
 ## v0.15.1 — State Archive ST06–ST10
 
 Explicit caller-selected assembly, exact triple lookup and deterministic ordered

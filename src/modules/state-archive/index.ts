@@ -134,3 +134,82 @@ export function getGameplayStateRecord(
 export function listGameplayStateRecords(archive: GameplayStateArchive): readonly GameplayStateRecord[] {
   return validateGameplayStateArchive(archive).records;
 }
+
+export interface GameplayStateSchemaSupport {
+  readonly moduleId: string;
+  readonly stateKind: string;
+  readonly supportedSchemaVersions: readonly number[];
+}
+export interface GameplayStateRestorePolicy {
+  readonly supportedFormatVersions: readonly number[];
+  readonly schemas: readonly GameplayStateSchemaSupport[];
+  readonly requiredRecords: readonly GameplayStateRecordKey[];
+}
+export type GameplayStateRestorePreparation =
+  | {readonly status: 'ready'; readonly reason: 'none'; readonly records: readonly GameplayStateRecord[]}
+  | {readonly status: 'rejected';
+     readonly reason: 'unsupported_format' | 'unknown_state_kind' | 'unsupported_schema' | 'missing_required';
+     readonly records: null};
+
+function versions(input: unknown): number[] {
+  const result = arrayValues(input).map(version);
+  if (!result.length || new Set(result).size !== result.length) {
+    throw new TypeError('Expected nonempty unique supported versions');
+  }
+  return result;
+}
+function sameKind(left: GameplayStateRecordKey | GameplayStateSchemaSupport,
+  right: GameplayStateRecordKey | GameplayStateSchemaSupport): boolean {
+  return left.moduleId === right.moduleId && left.stateKind === right.stateKind;
+}
+function sameRecord(left: GameplayStateRecordKey, right: GameplayStateRecordKey): boolean {
+  return sameKind(left, right) && left.stateId === right.stateId;
+}
+function restorePolicy(input: unknown): GameplayStateRestorePolicy {
+  const data = fields(input, ['supportedFormatVersions', 'schemas', 'requiredRecords']);
+  const supportedFormatVersions = versions(data.supportedFormatVersions);
+  const schemas: GameplayStateSchemaSupport[] = [];
+  for (const value of arrayValues(data.schemas)) {
+    const support = fields(value, ['moduleId', 'stateKind', 'supportedSchemaVersions']);
+    const schema = {moduleId: id(support.moduleId), stateKind: id(support.stateKind),
+      supportedSchemaVersions: versions(support.supportedSchemaVersions)};
+    if (schemas.some(other => sameKind(other, schema))) throw new TypeError('Duplicate supported state kind');
+    schemas.push(schema);
+  }
+  const requiredRecords: GameplayStateRecordKey[] = [];
+  for (const value of arrayValues(data.requiredRecords)) {
+    const key = fields(value, ['moduleId', 'stateKind', 'stateId']);
+    const required = {moduleId: id(key.moduleId), stateKind: id(key.stateKind), stateId: id(key.stateId)};
+    if (!schemas.some(schema => sameKind(schema, required)) ||
+      requiredRecords.some(other => sameRecord(other, required))) {
+      throw new TypeError('Required records must be unique and reference a supported kind');
+    }
+    requiredRecords.push(required);
+  }
+  return {supportedFormatVersions, schemas, requiredRecords};
+}
+function rejectRestore(reason: Exclude<GameplayStateRestorePreparation['reason'], 'none'>): GameplayStateRestorePreparation {
+  return Object.freeze({status: 'rejected', reason, records: null});
+}
+
+/** Metadata compatibility only; ready records still require owner validation and L4 authority. */
+export function prepareGameplayStateRestore(
+  archive: GameplayStateArchive, policy: GameplayStateRestorePolicy,
+): GameplayStateRestorePreparation {
+  return inspect(() => {
+    const snapshot = validateGameplayStateArchive(archive), support = restorePolicy(policy);
+    if (!support.supportedFormatVersions.includes(snapshot.formatVersion)) return rejectRestore('unsupported_format');
+    // Separate passes preserve category priority even when a later record has an unknown kind.
+    for (const record of snapshot.records) {
+      if (!support.schemas.some(schema => sameKind(schema, record))) return rejectRestore('unknown_state_kind');
+    }
+    for (const record of snapshot.records) {
+      const schema = support.schemas.find(candidate => sameKind(candidate, record))!;
+      if (!schema.supportedSchemaVersions.includes(record.schemaVersion)) return rejectRestore('unsupported_schema');
+    }
+    for (const required of support.requiredRecords) {
+      if (!snapshot.records.some(record => sameRecord(record, required))) return rejectRestore('missing_required');
+    }
+    return Object.freeze({status: 'ready', reason: 'none', records: snapshot.records});
+  });
+}

@@ -1,3 +1,43 @@
+## v0.15.2 — Restore Compatibility & Preparation (ST11–ST15)
+
+```ts
+interface GameplayStateSchemaSupport {
+  readonly moduleId: string;
+  readonly stateKind: string;
+  readonly supportedSchemaVersions: readonly number[];
+}
+interface GameplayStateRestorePolicy {
+  readonly supportedFormatVersions: readonly number[];
+  readonly schemas: readonly GameplayStateSchemaSupport[];
+  readonly requiredRecords: readonly GameplayStateRecordKey[];
+}
+type GameplayStateRestorePreparation =
+  | {readonly status: 'ready'; readonly reason: 'none'; readonly records: readonly GameplayStateRecord[]}
+  | {readonly status: 'rejected';
+     readonly reason: 'unsupported_format' | 'unknown_state_kind' | 'unsupported_schema' | 'missing_required';
+     readonly records: null};
+function prepareGameplayStateRestore(
+  archive: GameplayStateArchive, policy: GameplayStateRestorePolicy,
+): GameplayStateRestorePreparation;
+```
+
+The full archive and closed own-data policy are validated before any typed rejection.
+IDs retain exact nonblank strings. Format/schema support lists are nonempty, unique
+positive safe integers; schema entries are unique by module/kind; required keys are
+unique exact triples referencing a declared kind. Schemas and required lists may be
+empty; arrays must be dense without extra fields. Getters/hidden/symbol data fail
+TypeError using existing safe structural helpers.
+
+Priority: unsupported format, then unknown kind in archive order, then unsupported
+schema in archive order, then missing required key in policy order, then ready.
+Unknown kinds are always rejected; no filtering/loose mode. Rejections are frozen
+with records:null. Ready returns revalidated, detached, deeply frozen records in
+archive order. A ready label is metadata compatibility only; owner schema validity,
+references, time origin, freshness, permissions, storage and atomic commit remain
+outside this function. No migration, callbacks, owner imports or domain restoration.
+Previous structural/query contracts are unchanged.
+[Report](reports/v0.15.2-restore-compatibility-preparation.md).
+
 ## v0.15.1 — Snapshot Assembly & Inspection (ST06–ST10)
 
 ```ts

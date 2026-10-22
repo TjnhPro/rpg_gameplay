@@ -1,3 +1,13 @@
+## v0.15.2 — Explicit restore compatibility policy
+
+State Archive remains optional state-archive -> [], with zero imports. Its restore
+preparation assesses only format/kind/schema labels and required exact keys supplied
+by the caller, then hands off detached frozen portable records. Ready does not prove
+owner semantics, current references, clock validity, permission or completeness.
+Gameplay owners validate real domain state; L4 checks and publishes whole restoration.
+No discovery/adapter registry, callback, migration, replay, clock catch-up or state commit.
+[Report](reports/v0.15.2-restore-compatibility-preparation.md).
+
 ## v0.15.1 — Explicit assembly and inspection
 
 The same optional state-archive -> [] owner adds assembly and exact-key get/list.

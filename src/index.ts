@@ -221,3 +221,5 @@ export {validateGameplayStateRecord, validateGameplayStateArchive} from './modul
 export type {PortableValue, GameplayStateRecord, GameplayStateArchive} from './modules/state-archive/index.js';
 export {assembleGameplayStateArchive, getGameplayStateRecord, listGameplayStateRecords} from './modules/state-archive/index.js';
 export type {GameplayStateRecordKey} from './modules/state-archive/index.js';
+export {prepareGameplayStateRestore} from './modules/state-archive/index.js';
+export type {GameplayStateSchemaSupport, GameplayStateRestorePolicy, GameplayStateRestorePreparation} from './modules/state-archive/index.js';
