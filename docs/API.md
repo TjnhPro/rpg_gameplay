@@ -1,3 +1,11 @@
+## v0.15.3 — Integration evidence (ST16–ST20)
+
+No public signature, type or production behavior changes; package remains 0.15.2.
+The [closure fixture](../tests/unit/state-archive-integration.test.mjs) demonstrates
+archive preparation followed by canonical Inventory/Equipment/Currency/Reward validation,
+with Item definitions supplied separately. JSON handling and atomic-in-memory publication
+belong only to the L4 fixture. [Evidence and limits](reports/v0.15.3-state-archive-final-review.md).
+
 ## v0.15.2 — Restore Compatibility & Preparation (ST11–ST15)
 
 ```ts

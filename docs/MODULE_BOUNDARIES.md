@@ -1,3 +1,10 @@
+## v0.15.3 — Closure composition evidence
+
+Production owners, exports and graph remain identical to v0.15.2. The L4 test fixture
+calls public owner validators, then checks cross-owner bindings and freshness before
+one in-memory assignment. No serialization, restore engine, dispatcher or storage
+dependency is introduced into L2. [Final review](reports/v0.15.3-state-archive-final-review.md).
+
 ## v0.15.2 — Explicit restore compatibility policy
 
 State Archive remains optional state-archive -> [], with zero imports. Its restore

@@ -4,9 +4,9 @@ Purpose: **capability discovery + correct owner routing**, not an approved work 
 API reference replacement, or authority competing with source.
 
 Audit: 2026-10-22; branch `feat/v0.15-state-archive` based on `origin/main` at
-`cf303335737da2b57421b1459eff2a0da154a60d`, plus ST01–ST15 changes described here;
-package `@rpg/gameplay@0.15.2`. The ST11–ST15 baseline is v0.15.1 commit
-`81aad919fcadb3e3ad6f92df5ecd806f48ec7847`. State Archive is implemented on this feature branch,
+`cf303335737da2b57421b1459eff2a0da154a60d`, plus ST01–ST20 evidence described here;
+package `@rpg/gameplay@0.15.2` (no closure version bump). The ST16–ST20 production baseline is
+`80ab84545e8d47a499a5f53f8a44804918fcd5a7`. State Archive is implemented on this feature branch,
 not asserted merged on main. Other capabilities retain the prior merged baseline.
 Exact delivered branch SHA is recorded in the checkpoint report's PR evidence supplement.
 `IMPLEMENTED`, Developer acceptance, and merged-on-main are separate facts. Merge
@@ -313,13 +313,25 @@ an implied L2 generic transaction engine.
   and archive, then assesses format, known kind, schema and exact required records
   in that priority. Rejections never return partial records; ready returns detached
   frozen handoff data. Evidence: [restore tests](../tests/unit/state-archive-restore.test.mjs).
-- **Known gaps:** no domain restore, owner schema validation, migration or storage;
+- **ST16–ST20 composition evidence:** [direct integration fixture](../tests/unit/state-archive-integration.test.mjs)
+  captures representative Item/Inventory, Equipment, Currency (including explicit zero)
+  and claimed Reward states, JSON roundtrips, revalidates untrusted data, prepares policy
+  and calls actual public owner validators with independent L3 catalog/stack facts.
+  L4-only identity/owner/recipient/uniqueness/freshness checks precede one assignment;
+  incompatible, corrupt and conflicting inputs preserve authoritative pre-state.
+  Claimed Reward replay stays rejected. No production restore coordinator was added.
+- **NOT_EVALUATED:** Entity/Progression/Combat/Skill/Effect/Actor AI/Encounter state
+  rehydration. They have separate owner/context/lifecycle or clock contracts; this
+  fixture does not establish a complete snapshot set, clock origin or recovery order.
+  Loot definitions and Foundation callback capabilities are not evaluated as portable
+  owner state either. Extending coverage needs owner-specific evidence, not archive casts.
+- **Known gaps:** no production domain restore, owner schema validation, migration or storage;
   ready proves only metadata compatibility, never owner semantics, clock validity,
   current references, permissions, cross-system consistency or atomic publication.
 - **Where to extend:** same State Archive owner for approved portable format operations;
   domain validation stays with each owner, L3 chooses records/schema policy, L4 performs
   serialization/storage/owner calls/freshness/all-or-nothing publication. No implicit
-  adapter registry or duplicate validator. [Checkpoint](reports/v0.15.2-restore-compatibility-preparation.md).
+  adapter registry or duplicate validator. [Final review](reports/v0.15.3-state-archive-final-review.md).
 
 ## Additional phase/system — Currency System
 

@@ -1,3 +1,12 @@
+## v0.15.3 — State Archive ST16–ST20 closure evidence
+
+Representative public Item/Inventory, Equipment, Currency and claimed Reward states
+roundtrip through portable archive/JSON/policy and canonical owner validation in an
+L4-only fixture. Invalid versions/domain data/cross-owner bindings and stale inputs
+cannot publish. Production/package API is unchanged; no comprehensive recovery,
+storage, migration or distributed atomicity is claimed. Developer acceptance PENDING.
+[Final review](reports/v0.15.3-state-archive-final-review.md).
+
 ## v0.15.2 — State Archive ST11–ST15
 
 Pure restore preparation checks explicit format/per-kind schema support and required
